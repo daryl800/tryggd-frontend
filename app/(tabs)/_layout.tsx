@@ -1,14 +1,17 @@
-import { Redirect, Slot } from "expo-router";
+// app/(tabs)/_layout.tsx
+import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function TabsLayout() {
-  const { status } = useAuth();
+  const { user, initialized } = useAuth();
 
-  if (status === "loading") return null;
+  if (!initialized) return null;
+  if (!user) return <Redirect href="/(auth)/login" />;
 
-  if (status !== "authenticated") {
-    return <Redirect href="/(auth)/login" />;
-  }
-
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="profile" />
+    </Stack>
+  );
 }

@@ -10,10 +10,7 @@ import { supabase } from "../../lib/supabase";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { user } = useAuth();
-
-  // New state for profile
-  const [profile, setProfile] = useState<{ display_name: string; avatar_url?: string } | null>(null);
+  const { user, profile, loading } = useAuth();
 
   const [now, setNow] = useState(new Date());
   const [checkedInToday, setCheckedInToday] = useState(false);
@@ -25,37 +22,14 @@ export default function HomeScreen() {
 
   const isActive = (tab: string) => tab === "home";
 
-  // Fetch profile whenever user changes
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const fetchProfile = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (error) throw error;
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to fetch profile:", err);
-      }
-    };
-
-    fetchProfile();
-
-    // Optional: real-time subscription to profile updates
-    //   const subscription = supabase
-    //     .from(`profiles:id=eq.${user.id}`)
-    //     .on("UPDATE", payload => setProfile(payload.new))
-    //     .subscribe();
-
-    //   return () => {
-    //     supabase.removeSubscription(subscription);
-    //   };
-  }, [user?.id]);
+  // Get greeting based on time of day
+  const getGreeting = () => {
+    const hour = now.getHours();
+    if (hour >= 5 && hour < 12) return "God morgon";
+    if (hour >= 12 && hour < 18) return "God eftermiddag";
+    if (hour >= 18 && hour < 22) return "God kväll";
+    return "God natt";
+  };
 
   const formatTimeLeft = (ms: number) => {
     const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -97,6 +71,15 @@ export default function HomeScreen() {
       resetAllState();
     }
   }, []);
+
+  // 🔐 Auth guard – wait for auth to finish
+  useEffect(() => {
+    if (loading) return;        // ⛔ wait
+    if (!user) {
+      router.replace("/(auth)/login");
+    }
+  }, [loading, user]);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -199,17 +182,39 @@ export default function HomeScreen() {
   const progress = Math.min(elapsedMs / totalMsInDay, 1);
   const remainingMs = Math.max(0, totalMsInDay - elapsedMs);
 
-  if (isInitialLoad) return <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} />;
+  if (loading || isInitialLoad) {
+    return <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} />;
+  }
+
+
+  const NameSkeleton = () => (
+    <View
+      style={{
+        width: 180,
+        height: 34,
+        borderRadius: 8,
+        backgroundColor: "#E5E7EB",
+        marginTop: 6,
+        opacity: 0.6,
+      }}
+    />
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", padding: 24, paddingBottom: 0 }}>
       {/* Header */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
         <View>
-          <Text style={{ fontSize: 14, color: "#5E7F74", fontWeight: "500" }}>God morgon</Text>
-          <Text style={{ fontSize: 32, fontWeight: "700", marginTop: 2 }}>
-            {profile?.display_name || "Hej!"}
+          <Text style={{ fontSize: 14, color: "#5E7F74", fontWeight: "500" }}>
+            {getGreeting()}
           </Text>
+          {loading ? (
+            <NameSkeleton />
+          ) : (
+            <Text style={{ fontSize: 32, fontWeight: "700", marginTop: 2 }}>
+              {profile?.display_name}
+            </Text>
+          )}
         </View>
 
         <TouchableOpacity
@@ -235,7 +240,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           onPress={handleCheckIn}
           style={{ width: size, height: size, alignItems: "center", justifyContent: "center", position: "relative" }}
-        // REMOVED: disabled={checkedInToday} - Allow multiple check-ins
+        // Allow multiple check-ins
         >
           {/* Outer circle - Show progress bar only when not checked in */}
           {!checkedInToday ? (
@@ -293,8 +298,8 @@ export default function HomeScreen() {
                 <Text style={{ color: "#5FA893", fontSize: 28, fontWeight: "700", marginTop: 8 }}>
                   {formatTimeLeft(remainingMs)}
                 </Text>
-                <Text style={{ color: "#5FA893", fontSize: 14, marginTop: 4, fontWeight: "600" }}>
-                  KVAR IDAG
+                <Text style={{ color: "#5FA893", fontSize: 12, marginTop: 10, fontWeight: "600" }}>
+                  KLICKA PÅ MIG
                 </Text>
               </>
             )}
