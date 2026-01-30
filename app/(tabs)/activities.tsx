@@ -21,8 +21,8 @@ export default function ActivitiesScreen() {
   const fetchActivities = async () => {
     try {
       const { data, error } = await supabase
-        .from<Activity>("user_latest_checkins")
-        .select("*");
+        .from("user_latest_checkins")
+        .select("*") as { data: Activity[] | null; error: any };
 
       if (error) throw error;
 
@@ -69,7 +69,9 @@ export default function ActivitiesScreen() {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
