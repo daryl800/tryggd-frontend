@@ -99,30 +99,30 @@ export default function ActivitiesScreen() {
         style={{
           flexDirection: "row",
           justifyContent: "space-around",
+          marginTop: "auto",
           paddingVertical: 16,
           borderTopWidth: 1,
           borderTopColor: "#F3F4F6",
-          backgroundColor: "#fff",
         }}
       >
-        <TouchableOpacity onPress={() => router.push("/(tabs)")}>
+        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)")}>
           <Ionicons name="home-outline" size={24} color="#9CA3AF" />
-          <Text style={{ fontSize: 12, color: "#9CA3AF" }}>Hem</Text>
+          <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Hem</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Ionicons name="pulse" size={24} color="#5FA893" />
-          <Text style={{ fontSize: 12, color: "#5FA893" }}>Aktivitet</Text>
+        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/activities")}>
+          <Ionicons name="list" size={24} color="#5FA893" />
+          <Text style={{ fontSize: 12, color: "#5FA893", marginTop: 4 }}>Aktivitet</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/(tabs)/contacts")}>
+        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/contacts")}>
           <Ionicons name="people-outline" size={24} color="#9CA3AF" />
-          <Text style={{ fontSize: 12, color: "#9CA3AF" }}>Kontakter</Text>
+          <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Kontakter</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
+        <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/profile")}>
           <Ionicons name="person-outline" size={24} color="#9CA3AF" />
-          <Text style={{ fontSize: 12, color: "#9CA3AF" }}>Profil</Text>
+          <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Profil</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

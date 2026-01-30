@@ -12,6 +12,9 @@ export default function TabsLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="profile" />
+      <Stack.Screen name="activities" />
+      <Stack.Screen name="contacts" />
+      <Stack.Screen name="settings" />
     </Stack>
   );
 }

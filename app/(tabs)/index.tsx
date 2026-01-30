@@ -344,7 +344,7 @@ export default function HomeScreen() {
             }}
           >
             <Text style={{ color: "#5E7F74", fontSize: 14, fontWeight: "600" }}>Aktivitet</Text>
-            <Ionicons name="pulse" size={28} color="#5FA893" style={{ marginTop: 8 }} />
+            <Ionicons name="list" size={28} color="#5FA893" style={{ marginTop: 8 }} />
           </TouchableOpacity>
         )}
 
@@ -384,7 +384,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/activities")}>
-          <Ionicons name="pulse-outline" size={24} color="#9CA3AF" />
+          <Ionicons name="list-outline" size={24} color="#9CA3AF" />
           <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Aktivitet</Text>
         </TouchableOpacity>
 

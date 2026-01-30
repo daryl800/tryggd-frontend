@@ -408,7 +408,7 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/activities")}>
-                    <Ionicons name="pulse-outline" size={24} color="#9CA3AF" />
+                    <Ionicons name="list-outline" size={24} color="#9CA3AF" />
                     <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Aktivitet</Text>
                 </TouchableOpacity>
 

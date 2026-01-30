@@ -15,6 +15,8 @@ function RootLayoutNav() {
     );
   }
 
+  // app/_layout.tsx - Add this
+  console.log("[RootLayout] Render - initialized:", initialized);
   // Once auth is initialized, let the nested layouts handle routing
   return <Slot />;
 }
