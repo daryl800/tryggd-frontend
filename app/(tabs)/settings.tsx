@@ -373,52 +373,6 @@ export default function SettingsScreen() {
                 </SettingSection>
             </ScrollView>
 
-            {/* Bottom Navigation */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    marginTop: "auto",
-                    paddingVertical: 16,
-                    borderTopWidth: 1,
-                    borderTopColor: "#F3F4F6",
-                }}
-            >
-                <TouchableOpacity
-                    style={{ alignItems: "center" }}
-                    onPress={() => router.push("/(tabs)")}
-                >
-                    <Ionicons name="home-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>
-                        {language === "sv" ? "Hem" : "Home"}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ alignItems: "center" }}
-                    onPress={() => router.push("/(tabs)/activities")}
-                >
-                    <Ionicons name="list-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>
-                        {language === "sv" ? "Aktivitet" : "Activity"}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{ alignItems: "center" }}
-                    onPress={() => router.push("/(tabs)/contacts")}
-                >
-                    <Ionicons name="people-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>
-                        {language === "sv" ? "Kontakter" : "Contacts"}
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/profile")}>
-                    <Ionicons name="person-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Profile</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 }

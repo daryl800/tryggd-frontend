@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -252,37 +251,6 @@ export default function ContactsScreen() {
                 </Text>
             </TouchableOpacity>
 
-            {/* Bottom Navigation */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    marginTop: "auto",
-                    paddingVertical: 16,
-                    borderTopWidth: 1,
-                    borderTopColor: "#F3F4F6",
-                }}
-            >
-                <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)")}>
-                    <Ionicons name="home-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Hem</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/activities")}>
-                    <Ionicons name="list-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Aktivitet</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/contacts")} >
-                    <Ionicons name="people" size={24} color="#5FA893" />
-                    <Text style={{ fontSize: 12, color: "#5FA893", marginTop: 4 }}>Kontakter</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{ alignItems: "center" }} onPress={() => router.push("/(tabs)/profile")} >
-                    <Ionicons name="person-outline" size={24} color="#9CA3AF" />
-                    <Text style={{ fontSize: 12, color: "#9CA3AF", marginTop: 4 }}>Profil</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 }
