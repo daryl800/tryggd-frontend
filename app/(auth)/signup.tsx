@@ -1,56 +1,75 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+    Alert,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
 export default function SignupScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [displayName, setDisplayName] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const [loading, setLoading] = useState(false);
 
     const signUp = async () => {
-        if (!email || !password || !displayName) {
+        if (!displayName || !email || !password || !confirmPassword) {
             Alert.alert("Fel", "Fyll i namn, email och lösenord!");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert("Fel", "Lösenorden matchar inte");
+            return;
+        }
+
+        if (password.length < 6) {
+            Alert.alert("Fel", "Lösenordet måste vara minst 6 tecken");
             return;
         }
 
         setLoading(true);
 
         try {
-            // 1️⃣ Sign up user with Supabase Auth
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    emailRedirectTo: "http://localhost:3000", // dev mode, skip email confirmation
-                },
-            });
+            // 1️⃣ Supabase signup
+            const { data: authData, error: authError } =
+                await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo: "http://localhost:3000", // dev mode
+                    },
+                });
 
             if (authError) throw authError;
             if (!authData.user) throw new Error("Signup failed");
 
             const userId = authData.user.id;
 
-            // 2️⃣ Create profile row in `profiles` table
-            const { data: profileData, error: profileError } = await supabase
+            // 2️⃣ Create profile
+            const { error: profileError } = await supabase
                 .from("profiles")
                 .insert({
                     id: userId,
                     display_name: displayName,
-                    avatar_url: "", // optional
+                    avatar_url: "",
                 });
 
             if (profileError) throw profileError;
 
-            // 3️⃣ Show success alert and navigate
             Alert.alert(
                 "Konto skapat!",
-                "Användaren har skapats. Du kan logga in direkt (test mode)."
+                "Ditt konto har skapats. Du kan nu logga in."
             );
-
-            // Optional: automatically navigate to home page
-            // router.push("/(tabs)");
 
         } catch (err: any) {
             console.error("Signup error:", err);
@@ -66,6 +85,7 @@ export default function SignupScreen() {
                 Skapa konto
             </Text>
 
+            {/* Display name */}
             <TextInput
                 placeholder="Namn"
                 value={displayName}
@@ -79,9 +99,11 @@ export default function SignupScreen() {
                 }}
             />
 
+            {/* Email */}
             <TextInput
                 placeholder="Email"
                 autoCapitalize="none"
+                keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
                 style={{
@@ -93,30 +115,107 @@ export default function SignupScreen() {
                 }}
             />
 
-            <TextInput
-                placeholder="Lösenord"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
+            {/* Password */}
+            <View
                 style={{
+                    flexDirection: "row",
+                    alignItems: "center",
                     borderWidth: 1,
                     borderColor: "#E5E7EB",
-                    padding: 12,
                     borderRadius: 8,
+                    paddingHorizontal: 12,
+                    marginBottom: 12,
+                }}
+            >
+                <TextInput
+                    placeholder="Lösenord"
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                    style={{
+                        flex: 1,
+                        paddingVertical: 12,
+                    }}
+                />
+
+                {password.length > 0 && (
+                    <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons
+                            name={
+                                showPassword
+                                    ? "eye-off-outline"
+                                    : "eye-outline"
+                            }
+                            size={22}
+                            color="#6B7280"
+                        />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {/* Confirm password */}
+            <View
+                style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    borderWidth: 1,
+                    borderColor: "#E5E7EB",
+                    borderRadius: 8,
+                    paddingHorizontal: 12,
                     marginBottom: 24,
                 }}
-            />
+            >
+                <TextInput
+                    placeholder="Bekräfta lösenord"
+                    secureTextEntry={!showConfirmPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    style={{
+                        flex: 1,
+                        paddingVertical: 12,
+                    }}
+                />
 
+                {confirmPassword.length > 0 && (
+                    <TouchableOpacity
+                        onPress={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <Ionicons
+                            name={
+                                showConfirmPassword
+                                    ? "eye-off-outline"
+                                    : "eye-outline"
+                            }
+                            size={22}
+                            color="#6B7280"
+                        />
+                    </TouchableOpacity>
+                )}
+            </View>
+
+            {/* Signup button */}
             <TouchableOpacity
                 onPress={signUp}
                 disabled={loading}
                 style={{
-                    backgroundColor: "#5FA893",
+                    backgroundColor: loading ? "#9CA3AF" : "#5FA893",
                     padding: 16,
                     borderRadius: 8,
                 }}
             >
-                <Text style={{ color: "white", textAlign: "center", fontSize: 16 }}>
+                <Text
+                    style={{
+                        color: "white",
+                        textAlign: "center",
+                        fontSize: 16,
+                    }}
+                >
                     {loading ? "Skapar konto..." : "Skapa konto"}
                 </Text>
             </TouchableOpacity>
