@@ -20,8 +20,6 @@ export default function HomeScreen() {
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const isActive = (tab: string) => tab === "home";
-
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = now.getHours();

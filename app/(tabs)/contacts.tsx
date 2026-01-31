@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Alert,
@@ -25,7 +24,6 @@ interface UserSearchResult {
 }
 
 export default function ContactsScreen() {
-    const router = useRouter();
     const [contacts, setContacts] = useState<ContactSlot[]>([
         { email: "" },
         { email: "" },
