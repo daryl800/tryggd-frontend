@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
@@ -15,6 +16,7 @@ type Activity = {
 export default function ActivitiesScreen() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [contactMap, setContactMap] = useState<Map<string, { email: string; display_name: string }>>(new Map());
 
   // Use refs to track state without causing re-renders
@@ -22,6 +24,10 @@ export default function ActivitiesScreen() {
   const checkinsChannelRef = useRef<any>(null);
   const contactsChannelRef = useRef<any>(null);
   const isInitialized = useRef(false);
+  const isFocused = useRef(false);
+
+  // Use ref for contactMap to avoid closure issues
+  const contactMapRef = useRef<Map<string, { email: string; display_name: string }>>(new Map());
 
   // Fetch current user's contacts for email/display_name mapping
   const fetchContacts = async (): Promise<{
@@ -52,7 +58,9 @@ export default function ActivitiesScreen() {
           ids.push(c.contact_user_id);
         });
 
+        // Update both state and ref
         setContactMap(map);
+        contactMapRef.current = map;
         myContactIds.current = ids;
 
         console.log('Returning map with entries:', Array.from(map.entries()));
@@ -89,7 +97,7 @@ export default function ActivitiesScreen() {
 
       console.log('Raw checkins data:', data);
 
-      // Enrich with the FRESH contactMap (not the stale one from closure)
+      // Enrich with the FRESH contactMap
       const enriched = (data || []).map(activity => {
         const contactInfo = freshContactMap.get(activity.user_id);
 
@@ -123,10 +131,11 @@ export default function ActivitiesScreen() {
       console.error("Failed to load activities:", err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  // Setup checkins subscription (FIXED: Only subscribe once)
+  // Setup checkins subscription - FIXED: Use ref for contactMap
   const setupCheckinsSubscription = () => {
     // Clean up existing subscription
     if (checkinsChannelRef.current) {
@@ -162,8 +171,11 @@ export default function ActivitiesScreen() {
             return;
           }
 
-          // For INSERT/UPDATE, enrich with contact info from current contactMap
-          const contactInfo = contactMap.get(updated.user_id);
+          // For INSERT/UPDATE - USE contactMapRef.current (not state)
+          const contactInfo = contactMapRef.current.get(updated.user_id);
+
+          console.log('Checkin update for user:', updated.user_id, 'Contact info:', contactInfo);
+
           const enriched = {
             ...updated,
             display_name: contactInfo?.display_name || updated.display_name,
@@ -198,7 +210,7 @@ export default function ActivitiesScreen() {
     checkinsChannelRef.current = channel;
   };
 
-  // Setup contacts subscription (FIXED: Only subscribe once)
+  // Setup contacts subscription
   const setupContactsSubscription = () => {
     // Clean up existing subscription
     if (contactsChannelRef.current) {
@@ -222,17 +234,19 @@ export default function ActivitiesScreen() {
             table: "contacts",
             filter: `owner_user_id=eq.${user.id}`
           },
-          () => {
+          async () => {
             console.log('Contacts changed, refreshing...');
 
             // Refresh contacts and activities
-            fetchContacts().then(() => {
-              // Update checkins subscription with new contact list
-              setupCheckinsSubscription();
+            const { ids, map } = await fetchContacts();
 
-              // Refetch activities to get updated emails
-              fetchActivities();
-            });
+            console.log('Contacts updated, new count:', ids.length);
+
+            // Update checkins subscription with new contact list
+            setupCheckinsSubscription();
+
+            // Refetch activities to get updated emails
+            fetchActivities();
           }
         )
         .subscribe((status) => {
@@ -243,12 +257,15 @@ export default function ActivitiesScreen() {
     });
   };
 
-  // Initialize everything (FIXED: Run only once)
-  const initialize = async () => {
-    if (isInitialized.current) return;
-    isInitialized.current = true;
+  // Initialize everything - can be called multiple times
+  const initialize = async (force = false) => {
+    if (isInitialized.current && !force) {
+      console.log('Already initialized, skipping...');
+      return;
+    }
 
-    console.log('Initializing...');
+    isInitialized.current = true;
+    console.log('🚀 INITIALIZE CALLED (force:', force, ')');
 
     // Fetch data first
     await fetchActivities();
@@ -258,7 +275,65 @@ export default function ActivitiesScreen() {
     setupCheckinsSubscription();
   };
 
-  // Re-enrich activities when contactMap changes
+  // Manual refresh function
+  const handleRefresh = async () => {
+    console.log('🔄 Manual refresh triggered');
+    setRefreshing(true);
+    await fetchActivities();
+  };
+
+  // Handle screen focus
+  const handleScreenFocus = useCallback(() => {
+    console.log('🎯 Activity screen focused');
+    isFocused.current = true;
+
+    // Refresh data when screen comes into focus
+    if (isInitialized.current) {
+      console.log('🔄 Refreshing data on focus');
+      fetchActivities();
+    } else {
+      console.log('🔧 Initializing on first focus');
+      initialize();
+    }
+  }, []);
+
+  // Handle screen blur
+  const handleScreenBlur = useCallback(() => {
+    console.log('👋 Activity screen blurred');
+    isFocused.current = false;
+  }, []);
+
+  // Use focus effect to handle screen visibility
+  useFocusEffect(
+    useCallback(() => {
+      handleScreenFocus();
+      return () => handleScreenBlur();
+    }, [handleScreenFocus, handleScreenBlur])
+  );
+
+  // Main useEffect - runs only on mount
+  useEffect(() => {
+    console.log('🏗️ ActivityScreen mounted');
+
+    // Initial setup
+    initialize();
+
+    // Cleanup on unmount
+    return () => {
+      console.log('🧹 ActivityScreen unmounting - full cleanup');
+      if (checkinsChannelRef.current) {
+        supabase.removeChannel(checkinsChannelRef.current);
+        checkinsChannelRef.current = null;
+      }
+      if (contactsChannelRef.current) {
+        supabase.removeChannel(contactsChannelRef.current);
+        contactsChannelRef.current = null;
+      }
+      isInitialized.current = false;
+    };
+  }, []);
+
+  // Re-enrich activities when contactMap changes (still useful for UI updates)
   useEffect(() => {
     if (activities.length > 0 && contactMap.size > 0) {
       console.log('ContactMap updated, checking if re-enrichment needed');
@@ -285,26 +360,21 @@ export default function ActivitiesScreen() {
     }
   }, [contactMap]);
 
-  // Main useEffect - RUNS ONLY ONCE
-  useEffect(() => {
-    initialize();
-
-    // Cleanup on unmount
-    return () => {
-      if (checkinsChannelRef.current) {
-        supabase.removeChannel(checkinsChannelRef.current);
-      }
-      if (contactsChannelRef.current) {
-        supabase.removeChannel(contactsChannelRef.current);
-      }
-    };
-  }, []);
-
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#fff", padding: 24, paddingBottom: 0 }}
     >
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={["#000"]}
+            tintColor="#000"
+          />
+        }
+      >
         <Text style={{ fontSize: 28, fontWeight: "700", marginBottom: 24 }}>
           Aktivitet
         </Text>
@@ -319,13 +389,11 @@ export default function ActivitiesScreen() {
 
         {!loading &&
           activities.map((item) => {
-            console.log('Rendering item:', {
-              id: item.user_id,
+            console.log('Rendering activity:', {
               name: item.display_name,
               email: item.email,
-              hasEmail: !!item.email
+              userId: item.user_id
             });
-
             return (
               <ActivityItem
                 key={item.user_id}
@@ -341,7 +409,7 @@ export default function ActivitiesScreen() {
   );
 }
 
-// ActivityItem component
+// ActivityItem component (unchanged)
 function ActivityItem({
   name,
   email,
@@ -366,8 +434,6 @@ function ActivityItem({
     const timeStr = d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
     statusText = `Senast bekräftat ${dateStr} ${timeStr}`;
   }
-
-  console.log('ActivityItem rendering:', { name, email });
 
   return (
     <View style={{ flexDirection: "row", marginBottom: 20, alignItems: "flex-start" }}>
