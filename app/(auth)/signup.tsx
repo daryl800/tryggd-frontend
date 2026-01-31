@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { Link } from "expo-router";
+import { useRef, useState } from "react";
 import {
     Alert,
     Text,
@@ -12,68 +13,57 @@ import { supabase } from "../../lib/supabase";
 
 export default function SignupScreen() {
     const [email, setEmail] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [displayName, setDisplayName] = useState("");
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
     const [loading, setLoading] = useState(false);
 
+    const confirmRef = useRef<TextInput>(null);
+
+    const passwordsMatch =
+        password.length > 0 &&
+        confirmPassword.length > 0 &&
+        password === confirmPassword;
+
+    const canSubmit =
+        displayName &&
+        email &&
+        password.length >= 6 &&
+        passwordsMatch &&
+        !loading;
+
     const signUp = async () => {
-        if (!displayName || !email || !password || !confirmPassword) {
-            Alert.alert("Fel", "Fyll i namn, email och lösenord!");
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            Alert.alert("Fel", "Lösenorden matchar inte");
-            return;
-        }
-
-        if (password.length < 6) {
-            Alert.alert("Fel", "Lösenordet måste vara minst 6 tecken");
-            return;
-        }
+        if (!canSubmit) return;
 
         setLoading(true);
 
         try {
-            // 1️⃣ Supabase signup
-            const { data: authData, error: authError } =
-                await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        emailRedirectTo: "http://localhost:3000", // dev mode
-                    },
-                });
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    emailRedirectTo: "http://localhost:3000",
+                },
+            });
 
-            if (authError) throw authError;
-            if (!authData.user) throw new Error("Signup failed");
+            if (error) throw error;
+            if (!data.user) throw new Error("Signup failed");
 
-            const userId = authData.user.id;
-
-            // 2️⃣ Create profile
-            const { error: profileError } = await supabase
-                .from("profiles")
-                .insert({
-                    id: userId,
-                    display_name: displayName,
-                    avatar_url: "",
-                });
-
-            if (profileError) throw profileError;
+            await supabase.from("profiles").insert({
+                id: data.user.id,
+                display_name: displayName,
+                avatar_url: "",
+            });
 
             Alert.alert(
-                "Konto skapat!",
-                "Ditt konto har skapats. Du kan nu logga in."
+                "Konto skapat 🎉",
+                "Ditt konto är klart. Du kan nu logga in."
             );
-
         } catch (err: any) {
-            console.error("Signup error:", err);
-            Alert.alert("Fel vid registrering", err.message || "Okänt fel");
+            Alert.alert("Fel", err.message || "Okänt fel");
         } finally {
             setLoading(false);
         }
@@ -85,18 +75,12 @@ export default function SignupScreen() {
                 Skapa konto
             </Text>
 
-            {/* Display name */}
+            {/* Name */}
             <TextInput
                 placeholder="Namn"
                 value={displayName}
                 onChangeText={setDisplayName}
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                }}
+                style={inputStyle}
             />
 
             {/* Email */}
@@ -106,49 +90,23 @@ export default function SignupScreen() {
                 keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                }}
+                style={inputStyle}
             />
 
             {/* Password */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    borderRadius: 8,
-                    paddingHorizontal: 12,
-                    marginBottom: 12,
-                }}
-            >
+            <View style={passwordWrapper}>
                 <TextInput
-                    placeholder="Lösenord"
+                    placeholder="Lösenord (minst 6 tecken)"
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
-                    style={{
-                        flex: 1,
-                        paddingVertical: 12,
-                    }}
+                    onSubmitEditing={() => confirmRef.current?.focus()}
+                    style={passwordInput}
                 />
-
                 {password.length > 0 && (
-                    <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         <Ionicons
-                            name={
-                                showPassword
-                                    ? "eye-off-outline"
-                                    : "eye-outline"
-                            }
+                            name={showPassword ? "eye-off-outline" : "eye-outline"}
                             size={22}
                             color="#6B7280"
                         />
@@ -157,34 +115,20 @@ export default function SignupScreen() {
             </View>
 
             {/* Confirm password */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    borderRadius: 8,
-                    paddingHorizontal: 12,
-                    marginBottom: 24,
-                }}
-            >
+            <View style={passwordWrapper}>
                 <TextInput
+                    ref={confirmRef}
                     placeholder="Bekräfta lösenord"
                     secureTextEntry={!showConfirmPassword}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
-                    style={{
-                        flex: 1,
-                        paddingVertical: 12,
-                    }}
+                    style={passwordInput}
                 />
-
                 {confirmPassword.length > 0 && (
                     <TouchableOpacity
                         onPress={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                         }
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                         <Ionicons
                             name={
@@ -199,12 +143,26 @@ export default function SignupScreen() {
                 )}
             </View>
 
+            {/* Live feedback */}
+            {confirmPassword.length > 0 && (
+                <Text
+                    style={{
+                        marginBottom: 16,
+                        color: passwordsMatch ? "#059669" : "#DC2626",
+                    }}
+                >
+                    {passwordsMatch
+                        ? "✔ Lösenorden matchar"
+                        : "✖ Lösenorden matchar inte"}
+                </Text>
+            )}
+
             {/* Signup button */}
             <TouchableOpacity
                 onPress={signUp}
-                disabled={loading}
+                disabled={!canSubmit}
                 style={{
-                    backgroundColor: loading ? "#9CA3AF" : "#5FA893",
+                    backgroundColor: canSubmit ? "#5FA893" : "#9CA3AF",
                     padding: 16,
                     borderRadius: 8,
                 }}
@@ -219,6 +177,38 @@ export default function SignupScreen() {
                     {loading ? "Skapar konto..." : "Skapa konto"}
                 </Text>
             </TouchableOpacity>
+
+            {/* Back to login */}
+            <Link href="/(auth)/login" style={{ marginTop: 16 }}>
+                <Text style={{ textAlign: "center", color: "#5FA893" }}>
+                    Har du redan ett konto? Logga in
+                </Text>
+            </Link>
         </SafeAreaView>
     );
 }
+
+/* ---------- styles ---------- */
+
+const inputStyle = {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+};
+
+const passwordWrapper = {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+};
+
+const passwordInput = {
+    flex: 1,
+    paddingVertical: 12,
+};
