@@ -948,7 +948,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   timeText: {
-    fontSize: 16,
+    fontSize: 26,
     color: colors.textMuted,
     fontWeight: "500",
   },
