@@ -1,375 +1,3 @@
-// import { Ionicons } from "@expo/vector-icons";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useRouter } from "expo-router";
-// import { useCallback, useEffect, useState } from "react";
-// import { AppState, Text, TouchableOpacity, View } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import { Circle, Svg } from "react-native-svg";
-// import { useAuth } from "../../contexts/AuthContext";
-// import { supabase } from "../../lib/supabase";
-
-// export default function HomeScreen() {
-//   const router = useRouter();
-//   const { user, profile, loading } = useAuth();
-
-//   const [now, setNow] = useState(new Date());
-//   const [checkedInToday, setCheckedInToday] = useState(false);
-//   const [lastCheckin, setLastCheckin] = useState<Date | null>(null);
-//   const [lastCheckinId, setLastCheckinId] = useState<string | null>(null);
-//   const [streak, setStreak] = useState(0);
-//   const [showResetButton, setShowResetButton] = useState(false);
-//   const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-//   // Get greeting based on time of day
-//   const getGreeting = () => {
-//     const hour = now.getHours();
-//     if (hour >= 5 && hour < 12) return "God morgon";
-//     if (hour >= 12 && hour < 18) return "God eftermiddag";
-//     if (hour >= 18 && hour < 22) return "God kväll";
-//     return "God natt";
-//   };
-
-//   const formatTimeLeft = (ms: number) => {
-//     const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-//     const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-//     const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-//     const s = String(totalSeconds % 60).padStart(2, "0");
-//     return `${h}:${m}:${s}`;
-//   };
-
-//   const calculateStreak = (dates: Date[]) => {
-//     if (!dates.length) return 0;
-//     const sorted = [...dates].sort((a, b) => b.getTime() - a.getTime());
-//     let count = 0;
-//     const today = new Date();
-//     today.setHours(0, 0, 0, 0);
-//     if (sorted[0].toDateString() !== today.toDateString()) return 0;
-//     for (let i = 0; i < sorted.length; i++) {
-//       const d = new Date(sorted[i]);
-//       d.setHours(0, 0, 0, 0);
-//       const expected = new Date(today);
-//       expected.setDate(today.getDate() - count);
-//       if (d.getTime() === expected.getTime()) count++;
-//       else break;
-//     }
-//     return count;
-//   };
-
-//   const resetAllState = async () => {
-//     setCheckedInToday(false);
-//     setLastCheckin(null);
-//     setLastCheckinId(null);
-//     setShowResetButton(false);
-//     await AsyncStorage.removeItem("@checkin_state");
-//   };
-
-//   const checkAndResetIfPastMidnight = useCallback(() => {
-//     const now = new Date();
-//     if ((now.getHours() === 0 && now.getMinutes() === 0) || (now.getHours() === 23 && now.getMinutes() === 59)) {
-//       resetAllState();
-//     }
-//   }, []);
-
-//   // 🔐 Auth guard – wait for auth to finish
-//   useEffect(() => {
-//     if (loading) return;        // ⛔ wait
-//     if (!user) {
-//       router.replace("/(auth)/login");
-//     }
-//   }, [loading, user]);
-
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setNow(new Date());
-//       checkAndResetIfPastMidnight();
-//     }, 1000);
-
-//     const subscription = AppState.addEventListener("change", (next) => {
-//       if (next === "active") checkAndResetIfPastMidnight();
-//     });
-
-//     return () => {
-//       clearInterval(interval);
-//       subscription.remove();
-//     };
-//   }, [checkAndResetIfPastMidnight]);
-
-//   useEffect(() => {
-//     const loadState = async () => {
-//       const saved = await AsyncStorage.getItem("@checkin_state");
-//       if (saved) {
-//         const { checkedInToday: c, lastCheckin: l } = JSON.parse(saved);
-//         setCheckedInToday(c);
-//         setLastCheckin(l ? new Date(l) : null);
-//         setShowResetButton(c);
-//       }
-//       setIsInitialLoad(false);
-//     };
-//     loadState();
-//   }, []);
-
-//   const fetchStreak = async () => {
-//     try {
-//       const { data: { user: authUser } } = await supabase.auth.getUser();
-//       if (!authUser) return;
-//       const { data: checkins } = await supabase
-//         .from("checkins")
-//         .select("created_at,id")
-//         .eq("user_id", authUser.id)
-//         .order("created_at", { ascending: false });
-
-//       if (!checkins) {
-//         setStreak(0);
-//         return;
-//       }
-//       const dates = checkins.map(c => new Date(c.created_at));
-//       setStreak(calculateStreak(dates));
-//     } catch (err) {
-//       console.error(err);
-//       setStreak(0);
-//     }
-//   };
-
-//   const handleCheckIn = async () => {
-//     try {
-//       if (!user) throw new Error("No user found");
-
-//       // Update UI immediately with current time
-//       const now = new Date();
-//       setCheckedInToday(true);
-//       setShowResetButton(true);
-//       setLastCheckin(now);
-
-//       // Save to local storage immediately
-//       await AsyncStorage.setItem("@checkin_state", JSON.stringify({
-//         checkedInToday: true,
-//         lastCheckin: now
-//       }));
-
-//       // Always make Supabase API call to create new check-in record
-//       const { data, error } = await supabase
-//         .from("checkins")
-//         .insert({ user_id: user.id })
-//         .select()
-//         .single();
-
-//       if (error) throw error;
-
-//       if (data?.id) setLastCheckinId(data.id);
-
-//       // Update streak after new check-in
-//       await fetchStreak();
-
-//     } catch (err) {
-//       console.error("Check-in error:", err);
-//       // If Supabase fails, we still keep the local check-in state
-//       // so the user sees they checked in
-//     }
-//   };
-
-//   const size = 250;
-//   const strokeWidth = 12;
-//   const radius = (size - strokeWidth) / 2;
-//   const gap = 6;
-
-//   const startOfDay = new Date();
-//   startOfDay.setHours(0, 0, 0, 0);
-//   const totalMsInDay = 24 * 60 * 60 * 1000;
-//   const elapsedMs = now.getTime() - startOfDay.getTime();
-//   const progress = Math.min(elapsedMs / totalMsInDay, 1);
-//   const remainingMs = Math.max(0, totalMsInDay - elapsedMs);
-
-//   if (loading || isInitialLoad) {
-//     return <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} />;
-//   }
-
-
-//   const NameSkeleton = () => (
-//     <View
-//       style={{
-//         width: 180,
-//         height: 34,
-//         borderRadius: 8,
-//         backgroundColor: "#E5E7EB",
-//         marginTop: 6,
-//         opacity: 0.6,
-//       }}
-//     />
-//   );
-
-//   return (
-//     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", padding: 24, paddingBottom: 0 }}>
-//       {/* Header */}
-//       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-//         <View>
-//           <Text style={{ fontSize: 14, color: "#5E7F74", fontWeight: "500" }}>
-//             {getGreeting()}
-//           </Text>
-//           {loading ? (
-//             <NameSkeleton />
-//           ) : (
-//             <Text style={{ fontSize: 32, fontWeight: "700", marginTop: 2 }}>
-//               {profile?.display_name}
-//             </Text>
-//           )}
-//         </View>
-
-//         <TouchableOpacity
-//           onPress={() => router.push("/(tabs)/profile")}
-//           style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#F3F4F6", alignItems: "center", justifyContent: "center" }}
-//         >
-//           <Ionicons name="person-outline" size={22} />
-//         </TouchableOpacity>
-//       </View>
-
-//       {/* Date */}
-//       <View style={{ alignItems: "center", marginTop: 10 }}>
-//         <Text style={{ fontSize: 16, color: "#5E7F74" }}>
-//           {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-//         </Text>
-//         <Text style={{ fontSize: 16, color: "#5E7F74", marginTop: 4 }}>
-//           {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-//         </Text>
-//       </View>
-
-//       {/* Check-in Button */}
-//       <View style={{ alignItems: "center", marginTop: 30 }}>
-//         <TouchableOpacity
-//           onPress={handleCheckIn}
-//           style={{ width: size, height: size, alignItems: "center", justifyContent: "center", position: "relative" }}
-//         // Allow multiple check-ins
-//         >
-//           {/* Outer circle - Show progress bar only when not checked in */}
-//           {!checkedInToday ? (
-//             <Svg width={size} height={size} style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}>
-//               <Circle cx={size / 2} cy={size / 2} r={radius} stroke="#E5E7EB" strokeWidth={strokeWidth} fill="none" />
-//               <Circle
-//                 cx={size / 2}
-//                 cy={size / 2}
-//                 r={radius}
-//                 stroke="#5FA893"
-//                 strokeWidth={strokeWidth}
-//                 fill="none"
-//                 strokeDasharray={2 * Math.PI * radius}
-//                 strokeDashoffset={2 * Math.PI * radius * (1 - progress)}
-//                 strokeLinecap="round"
-//               />
-//             </Svg>
-//           ) : (
-//             // When checked in, show a complete circle with the same color
-//             <Svg width={size} height={size} style={{ position: "absolute" }}>
-//               <Circle cx={size / 2} cy={size / 2} r={radius} stroke="#5FA893" strokeWidth={strokeWidth} fill="none" />
-//             </Svg>
-//           )}
-
-//           {/* Inner button with GAP */}
-//           <View
-//             style={{
-//               width: size - strokeWidth * 2 - gap * 2,
-//               height: size - strokeWidth * 2 - gap * 2,
-//               borderRadius: (size - strokeWidth * 2 - gap * 2) / 2,
-//               backgroundColor: checkedInToday ? "#5FA893" : "#F0F9F6",
-//               alignItems: "center",
-//               justifyContent: "center",
-//               borderWidth: 3,
-//               borderColor: "#5FA893",
-//             }}
-//           >
-//             <Ionicons
-//               name={checkedInToday ? "checkmark-circle" : "heart"}
-//               size={56}
-//               color={checkedInToday ? "white" : "#5FA893"}
-//             />
-
-//             {checkedInToday ? (
-//               <>
-//                 <Text style={{ color: "white", fontSize: 28, fontWeight: "700", marginTop: 8 }}>
-//                   Checked In
-//                 </Text>
-//                 <Text style={{ color: "white", fontSize: 16, marginTop: 4, fontWeight: "600" }}>
-//                   {lastCheckin?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) || ""}
-//                 </Text>
-//               </>
-//             ) : (
-//               <>
-//                 <Text style={{ color: "#5FA893", fontSize: 28, fontWeight: "700", marginTop: 8 }}>
-//                   {formatTimeLeft(remainingMs)}
-//                 </Text>
-//                 <Text style={{ color: "#5FA893", fontSize: 12, marginTop: 10, fontWeight: "600" }}>
-//                   KLICKA PÅ MIG
-//                 </Text>
-//               </>
-//             )}
-//           </View>
-//         </TouchableOpacity>
-
-//         {/* Status message */}
-//         <Text style={{ textAlign: "center", marginTop: 28, fontWeight: "700", fontSize: 14, color: checkedInToday ? "#5E7F74" : "red" }}>
-//           {!checkedInToday && "YOU HAVE NOT CHECKED IN TODAY!"}
-//         </Text>
-//       </View>
-
-//       {/* Cards */}
-//       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 40, paddingHorizontal: 8 }}>
-//         {showResetButton ? (
-//           <TouchableOpacity
-//             onPress={resetAllState}
-//             style={{
-//               width: "48%",
-//               backgroundColor: "#FEF3F2",
-//               borderRadius: 16,
-//               padding: 16,
-//               alignItems: "center",
-//               borderWidth: 1,
-//               borderColor: "#FCA5A5",
-//             }}
-//           >
-//             <Ionicons name="refresh" size={28} color="#DC2626" />
-//             <Text style={{ color: "#DC2626", fontWeight: "600", marginTop: 10 }}>Återställ Timer</Text>
-//           </TouchableOpacity>
-//         ) : (
-//           <TouchableOpacity
-//             onPress={() => router.push("/(tabs)/activities")}
-//             style={{
-//               width: "48%",
-//               backgroundColor: "#F0F9F6",
-//               borderRadius: 16,
-//               padding: 16,
-//               alignItems: "center",
-//               borderWidth: 1,
-//               borderColor: "#E0F2E9",
-//             }}
-//           >
-//             <Text style={{ color: "#5E7F74", fontSize: 14, fontWeight: "600" }}>Aktivitet</Text>
-//             <Ionicons name="list" size={28} color="#5FA893" style={{ marginTop: 8 }} />
-//           </TouchableOpacity>
-//         )}
-
-//         <TouchableOpacity
-//           onPress={() => router.push("/(tabs)/statistics")}
-//           style={{
-//             width: "48%",
-//             backgroundColor: "#F0F9F6",
-//             borderRadius: 16,
-//             padding: 16,
-//             alignItems: "center",
-//             borderWidth: 1,
-//             borderColor: "#E0F2E9",
-//           }}
-//         >
-//           <Text style={{ color: "#5E7F74", fontSize: 14, fontWeight: "600" }}>Streak</Text>
-//           <Text style={{ fontSize: 22, fontWeight: "700", marginTop: 8, color: "#5FA893" }}>
-//             {streak} {streak === 1 ? "dag" : "dagar"}
-//           </Text>
-//         </TouchableOpacity>
-//       </View>
-
-//     </SafeAreaView>
-//   );
-// }
-
-
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
@@ -378,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   AppState,
+  Dimensions,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -389,6 +19,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 
 // ==================== CONSTANTS ====================
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const colors = {
   primary: "#5FA893",
@@ -402,15 +34,20 @@ const colors = {
   error: "#DC2626",
   errorLight: "#FEF3F2",
   errorBorder: "#FCA5A5",
+  background: "#FAFAFA",
 };
 
-const CIRCLE_SIZE = 250;
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.68, 260);
 const STROKE_WIDTH = 12;
 const CIRCLE_RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
 const CIRCLE_GAP = 6;
 
 const STORAGE_KEY = "@checkin_state";
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
+
+// Platform-specific adjustments
+const IS_IOS = Platform.OS === 'ios';
+const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 10;
 
 // ==================== UTILITY FUNCTIONS ====================
 
@@ -468,12 +105,14 @@ export default function HomeScreen() {
   const [streak, setStreak] = useState(0);
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [containerHeight, setContainerHeight] = useState(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const successScaleAnim = useRef(new Animated.Value(0)).current;
+  const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
   // ==================== ANIMATION EFFECTS ====================
 
@@ -486,9 +125,10 @@ export default function HomeScreen() {
     }).start();
   }, []);
 
-  // Subtle pulse when not checked in
+  // Heart beat animation when not checked in
   useEffect(() => {
     if (!checkedInToday && !isInitialLoad) {
+      // Main button pulse animation
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -504,7 +144,40 @@ export default function HomeScreen() {
         ])
       );
       pulse.start();
-      return () => pulse.stop();
+
+      // Heart beat animation
+      const heartBeat = Animated.loop(
+        Animated.sequence([
+          Animated.timing(heartBeatAnim, {
+            toValue: 1.15,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.timing(heartBeatAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.delay(800),
+          Animated.timing(heartBeatAnim, {
+            toValue: 1.1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.timing(heartBeatAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.delay(600),
+        ])
+      );
+      heartBeat.start();
+
+      return () => {
+        pulse.stop();
+        heartBeat.stop();
+      };
     }
   }, [checkedInToday, isInitialLoad]);
 
@@ -517,6 +190,7 @@ export default function HomeScreen() {
         tension: 100,
         useNativeDriver: true,
       }).start();
+      heartBeatAnim.setValue(1); // Reset heart animation
     } else {
       successScaleAnim.setValue(0);
     }
@@ -526,6 +200,20 @@ export default function HomeScreen() {
 
   const triggerCheckInAnimation = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    // Heart pulse effect when pressing
+    Animated.sequence([
+      Animated.timing(heartBeatAnim, {
+        toValue: 1.3,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(heartBeatAnim, {
+        toValue: 0.9,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -700,7 +388,13 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+      <Animated.View
+        style={[styles.content, { opacity: fadeAnim }]}
+        onLayout={(event) => {
+          const { height } = event.nativeEvent.layout;
+          setContainerHeight(height);
+        }}
+      >
         {/* ========== HEADER ========== */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -738,6 +432,8 @@ export default function HomeScreen() {
           <Animated.View
             style={{
               transform: [{ scale: Animated.multiply(pulseAnim, scaleAnim) }],
+              position: 'absolute',
+              top: containerHeight > 0 ? (containerHeight - CIRCLE_SIZE) / 2 : '30%',
             }}
           >
             <TouchableOpacity
@@ -793,7 +489,7 @@ export default function HomeScreen() {
                 )}
               </Svg>
 
-              {/* Inner Button */}
+              {/* Inner Button with ABSOLUTE positioned elements */}
               <View
                 style={[
                   styles.innerButton,
@@ -803,33 +499,66 @@ export default function HomeScreen() {
                   },
                 ]}
               >
-                <Ionicons
-                  name={checkedInToday ? "checkmark-circle" : "heart"}
-                  size={56}
-                  color={checkedInToday ? colors.surface : colors.primary}
-                />
+                {/* Icon - Absolutely positioned with animation */}
+                <View style={styles.iconContainer}>
+                  {checkedInToday ? (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={56}
+                      color={colors.surface}
+                    />
+                  ) : (
+                    <Animated.View
+                      style={{
+                        transform: [{ scale: heartBeatAnim }],
+                      }}
+                    >
+                      <Ionicons
+                        name="heart"
+                        size={56}
+                        color={colors.primary}
+                      />
+                    </Animated.View>
+                  )}
+                </View>
 
                 {checkedInToday ? (
-                  <Animated.View
-                    style={[
-                      styles.checkedInContent,
-                      { transform: [{ scale: successScaleAnim }] },
-                    ]}
-                  >
-                    <Text style={styles.checkedInText}>Incheckad!</Text>
-                    <Text style={styles.checkInTime}>
-                      {lastCheckin?.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }) || ""}
-                    </Text>
-                  </Animated.View>
+                  <>
+                    {/* "Incheckad!" text - Absolutely positioned */}
+                    <View style={styles.mainTextContainer}>
+                      <Animated.View
+                        style={[
+                          styles.checkedInTextContainer,
+                          { transform: [{ scale: successScaleAnim }] },
+                        ]}
+                      >
+                        <Text style={styles.checkedInText}>Incheckad!</Text>
+                      </Animated.View>
+                    </View>
+
+                    {/* Check-in time - Absolutely positioned */}
+                    <View style={styles.timeContainer}>
+                      <Text style={styles.checkInTime}>
+                        {lastCheckin?.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) || ""}
+                      </Text>
+                    </View>
+                  </>
                 ) : (
                   <>
-                    <Text style={styles.countdownText}>
-                      {formatTimeLeft(remainingMs)}
-                    </Text>
-                    <Text style={styles.ctaText}>TRYCK FÖR ATT{'\n'}CHECKA IN</Text>
+                    {/* "CHECKA IN" text - Absolutely positioned */}
+                    <View style={styles.mainTextContainer}>
+                      <Text style={styles.ctaText}>CHECKA IN HÄR</Text>
+                    </View>
+
+                    {/* Countdown time - Absolutely positioned */}
+                    <View style={styles.timeContainer}>
+                      <Text style={styles.countdownText}>
+                        {formatTimeLeft(remainingMs)}
+                      </Text>
+                    </View>
                   </>
                 )}
               </View>
@@ -838,7 +567,13 @@ export default function HomeScreen() {
 
           {/* Warning message */}
           {!checkedInToday && (
-            <View style={styles.warningContainer}>
+            <View style={[
+              styles.warningContainer,
+              {
+                position: 'absolute',
+                bottom: BOTTOM_BUTTON_MARGIN + 135,
+              }]}
+            >
               <Ionicons name="alert-circle" size={16} color={colors.error} />
               <Text style={styles.warningText}>
                 Du har inte checkat in idag!
@@ -848,25 +583,35 @@ export default function HomeScreen() {
         </View>
 
         {/* ========== ACTION CARDS ========== */}
-        <View style={styles.cardsContainer}>
+        <View style={[
+          styles.cardsContainer,
+          {
+            marginBottom: BOTTOM_BUTTON_MARGIN,
+            marginTop: containerHeight > 0 ? 'auto' : 0,
+          }
+        ]}>
           {showResetButton ? (
             <TouchableOpacity
               onPress={resetAllState}
               style={[styles.card, styles.resetCard]}
               activeOpacity={0.8}
             >
-              <Ionicons name="refresh" size={28} color={colors.error} />
+              <View style={styles.cardIcon}>
+                <Ionicons name="refresh" size={24} color={colors.error} />
+              </View>
               <Text style={styles.resetText}>Återställ</Text>
               <Text style={styles.cardSubtext}>Timer</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
-              onPress={() => router.push("/(tabs)/activities")}
+              onPress={() => router.push("/(tabs)/activity")}
               style={styles.card}
               activeOpacity={0.8}
             >
+              <View style={styles.cardIcon}>
+                <Ionicons name="list" size={24} color={colors.primary} />
+              </View>
               <Text style={styles.cardLabel}>Aktivitet</Text>
-              <Ionicons name="list" size={28} color={colors.primary} style={{ marginTop: 8 }} />
             </TouchableOpacity>
           )}
 
@@ -875,6 +620,9 @@ export default function HomeScreen() {
             style={styles.card}
             activeOpacity={0.8}
           >
+            <View style={styles.cardIcon}>
+              <Ionicons name="flame" size={24} color={colors.primary} />
+            </View>
             <Text style={styles.cardLabel}>Streak</Text>
             <Text style={styles.streakValue}>
               {streak} {streak === 1 ? "dag" : "dagar"}
@@ -891,7 +639,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -906,8 +654,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
-    paddingBottom: 0,
+    paddingHorizontal: 20,
+    paddingTop: 16,
   },
 
   // Header
@@ -916,7 +664,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 8,
-    marginBottom: 10,
+    marginBottom: 16,
   },
   headerLeft: {
     flex: 1,
@@ -934,18 +682,21 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.border,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginLeft: 12,
   },
 
   // Date & Time
   dateContainer: {
     alignItems: "center",
-    marginTop: 10,
+    marginBottom: 20,
   },
   timeText: {
     fontSize: 26,
@@ -961,9 +712,12 @@ const styles = StyleSheet.create({
 
   // Check-in Button
   checkInContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: "center",
-    marginTop: 30,
-    flex: 1,
     justifyContent: "center",
   },
   checkInButton: {
@@ -981,33 +735,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
+    position: 'relative',
   },
-  checkedInContent: {
+
+  // Absolute positioned elements inside the button
+  iconContainer: {
+    position: 'absolute',
+    top: '15%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  mainTextContainer: {
+    position: 'absolute',
+    top: '50%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: [{ translateY: -10 }],
+  },
+
+  timeContainer: {
+    position: 'absolute',
+    bottom: '20%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  checkedInTextContainer: {
     alignItems: "center",
+    justifyContent: "center",
   },
   checkedInText: {
     color: colors.surface,
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "700",
-    marginTop: 8,
+    textAlign: "center",
   },
   checkInTime: {
     color: colors.surface,
-    fontSize: 16,
-    marginTop: 4,
+    fontSize: 20,
     fontWeight: "600",
-  },
-  countdownText: {
-    color: colors.primary,
-    fontSize: 28,
-    fontWeight: "700",
-    marginTop: 8,
+    textAlign: "center",
   },
   ctaText: {
     color: colors.primary,
-    fontSize: 12,
-    marginTop: 10,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    lineHeight: 30,
+  },
+  countdownText: {
+    color: colors.primary,
+    fontSize: 20,
+    fontWeight: "700",
     textAlign: "center",
   },
 
@@ -1015,12 +795,18 @@ const styles = StyleSheet.create({
   warningContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 28,
     gap: 6,
+    backgroundColor: colors.errorLight,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.errorBorder,
+    alignSelf: 'center',
   },
   warningText: {
     textAlign: "center",
-    fontWeight: "700",
+    fontWeight: "600",
     fontSize: 14,
     color: colors.error,
   },
@@ -1029,41 +815,54 @@ const styles = StyleSheet.create({
   cardsContainer: {
     flexDirection: "row",
     gap: 16,
-    paddingHorizontal: 8,
-    paddingBottom: 24,
+    paddingHorizontal: 4,
+    position: 'absolute',
+    bottom: 0,
+    left: 20,
+    right: 20,
   },
   card: {
     flex: 1,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: colors.primaryBorder,
+    borderColor: colors.border,
+    minHeight: 110,
+    maxHeight: 120,
+    justifyContent: 'space-between',
   },
   resetCard: {
     backgroundColor: colors.errorLight,
     borderColor: colors.errorBorder,
   },
+  cardIcon: {
+    marginBottom: 8,
+  },
   cardLabel: {
     color: colors.textMuted,
     fontSize: 14,
     fontWeight: "600",
+    textAlign: 'center',
   },
   cardSubtext: {
     color: colors.textMuted,
     fontSize: 12,
     marginTop: 4,
+    textAlign: 'center',
   },
   resetText: {
     color: colors.error,
     fontWeight: "600",
-    marginTop: 10,
+    fontSize: 15,
+    textAlign: 'center',
   },
   streakValue: {
     fontSize: 22,
     fontWeight: "700",
-    marginTop: 8,
+    marginTop: 4,
     color: colors.primary,
+    textAlign: 'center',
   },
 });
