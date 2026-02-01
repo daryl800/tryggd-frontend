@@ -2,7 +2,7 @@
   "expo": {
     "name": "tryggd",
     "slug": "tryggd-frontend",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tryggdfrontend",
@@ -20,7 +20,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.yourcompany.yourapp",
+      "package": "com.dreamworks.tryggd",
       "versionCode": 1,
       "permissions": []
     },

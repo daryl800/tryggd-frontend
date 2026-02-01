@@ -16,10 +16,10 @@ export default function TabsLayout() {
       tabBarActiveTintColor: '#5FA893',
     }}>
       {/* Only 4 tabs shown */}
-      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} /> }} />
-      <Tabs.Screen name="activities" options={{ title: "Activities", tabBarIcon: ({ color, size }) => <Ionicons name="list" color={color} size={size} /> }} />
-      <Tabs.Screen name="contacts" options={{ title: "Contacts", tabBarIcon: ({ color, size }) => <Ionicons name="people" color={color} size={size} /> }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size }) => <Ionicons name="person" color={color} size={size} /> }} />
+      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} /> }} />
+      <Tabs.Screen name="activities" options={{ title: "Activities", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "list" : "list-outline"} color={color} size={size} /> }} />
+      <Tabs.Screen name="contacts" options={{ title: "Contacts", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "people" : "people-outline"} color={color} size={size} /> }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} /> }} />
 
       {/* Settings hidden from tabs but accessible via router */}
       <Tabs.Screen
