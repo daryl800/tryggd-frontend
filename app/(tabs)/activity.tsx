@@ -3,6 +3,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -22,6 +23,7 @@ type Activity = {
   email?: string | null;
   contact_display_name?: string;
   is_owner?: boolean;
+  hasNewUpdate?: boolean; // For animation
 };
 
 // ==================== CONSTANTS ====================
@@ -36,11 +38,15 @@ const colors = {
   surface: "#FFFFFF",
   border: "#E5E7EB",
   error: "#EF4444",
-  errorLight: "#FEF3F2",
+  errorLight: "#FEF2F2",
+  errorBorder: "#FECACA",
   warning: "#F59E0B",
   warningLight: "#FEF3C7",
-  success: "#22C55E",
-  successLight: "#D1FAE5",
+  success: "#10B981",
+  successLight: "#ECFDF5",
+  background: "#FAFAFA",
+  highlight: "red", // Red for highlighted time
+  highlightLight: "#E0E7FF",
 };
 
 // ==================== MAIN COMPONENT ====================
@@ -56,6 +62,9 @@ export default function ActivityScreen() {
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Track last checkin times to detect new updates
+  const lastCheckinTimes = useRef<Map<string, string>>(new Map());
 
   // Use refs to track state without causing re-renders
   const myContactIds = useRef<string[]>([]);
@@ -141,10 +150,16 @@ export default function ActivityScreen() {
       }
 
       if (data) {
+        const isNew = !lastCheckinTimes.current.has(user.id) ||
+          lastCheckinTimes.current.get(user.id) !== data.last_checkin;
+
+        lastCheckinTimes.current.set(user.id, data.last_checkin);
+
         setOwnerActivity({
           ...data,
           display_name: "Du",
           is_owner: true,
+          hasNewUpdate: isNew,
         });
       } else {
         // User exists but hasn't checked in yet
@@ -154,6 +169,7 @@ export default function ActivityScreen() {
           last_checkin: null,
           priority: 0,
           is_owner: true,
+          hasNewUpdate: false,
         });
       }
     } catch (err) {
@@ -189,6 +205,14 @@ export default function ActivityScreen() {
       const enriched = (data || []).map((activity) => {
         const contactInfo = freshContactMap.get(activity.user_id);
 
+        // Check if this is a new check-in
+        const isNew = !lastCheckinTimes.current.has(activity.user_id) ||
+          lastCheckinTimes.current.get(activity.user_id) !== activity.last_checkin;
+
+        if (activity.last_checkin) {
+          lastCheckinTimes.current.set(activity.user_id, activity.last_checkin);
+        }
+
         const finalDisplayName =
           contactInfo?.display_name || activity.display_name;
         const email = contactInfo?.email || null;
@@ -198,6 +222,7 @@ export default function ActivityScreen() {
           display_name: finalDisplayName,
           email,
           contact_display_name: contactInfo?.display_name,
+          hasNewUpdate: isNew,
         };
       });
 
@@ -241,21 +266,33 @@ export default function ActivityScreen() {
           },
           (payload) => {
             if (payload.eventType === "DELETE") {
+              lastCheckinTimes.current.delete(user.id);
               setOwnerActivity({
                 user_id: user.id,
                 display_name: "Du",
                 last_checkin: null,
                 priority: 0,
                 is_owner: true,
+                hasNewUpdate: false,
               });
               return;
             }
 
             if (payload.new) {
+              const isNew = !lastCheckinTimes.current.has(user.id) ||
+                lastCheckinTimes.current.get(user.id) !== payload.new.last_checkin;
+
+              if (payload.new.last_checkin) {
+                lastCheckinTimes.current.set(user.id, payload.new.last_checkin);
+              }
+
               setOwnerActivity({
-                ...payload.new,
+                user_id: payload.new.user_id,
+                last_checkin: payload.new.last_checkin,
+                priority: payload.new.priority,
                 display_name: "Du",
                 is_owner: true,
+                hasNewUpdate: isNew,
               });
             }
           }
@@ -293,6 +330,7 @@ export default function ActivityScreen() {
 
           // Handle delete
           if (payload.eventType === "DELETE") {
+            lastCheckinTimes.current.delete(payload.old.user_id);
             setActivities((prev) =>
               prev.filter((a) => a.user_id !== payload.old.user_id)
             );
@@ -302,11 +340,20 @@ export default function ActivityScreen() {
           // For INSERT/UPDATE - USE contactMapRef.current (not state)
           const contactInfo = contactMapRef.current.get(updated.user_id);
 
+          // Check if this is a new check-in
+          const isNew = !lastCheckinTimes.current.has(updated.user_id) ||
+            lastCheckinTimes.current.get(updated.user_id) !== updated.last_checkin;
+
+          if (updated.last_checkin) {
+            lastCheckinTimes.current.set(updated.user_id, updated.last_checkin);
+          }
+
           const enriched = {
             ...updated,
             display_name: contactInfo?.display_name || updated.display_name,
             email: contactInfo?.email || null,
             contact_display_name: contactInfo?.display_name,
+            hasNewUpdate: isNew,
           };
 
           setActivities((prev) => {
@@ -381,6 +428,9 @@ export default function ActivityScreen() {
 
     isInitialized.current = true;
 
+    // Clear previous check-in times
+    lastCheckinTimes.current.clear();
+
     // Fetch data first
     await fetchActivities();
 
@@ -439,6 +489,7 @@ export default function ActivityScreen() {
         ownerCheckinsChannelRef.current = null;
       }
       isInitialized.current = false;
+      lastCheckinTimes.current.clear();
     };
   }, []);
 
@@ -469,10 +520,11 @@ export default function ActivityScreen() {
   // ==================== RENDER ====================
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
         <ScrollView
           style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
@@ -484,56 +536,84 @@ export default function ActivityScreen() {
           }
         >
           {/* Header */}
-          <Text style={styles.title}>Aktivitet</Text>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <Ionicons name="pulse" size={28} color="#5FA893" />
+              <Text style={styles.title}>Aktivitet</Text>
+            </View>
+            <Text style={styles.subtitle}>
+              Din och dina kontakters senaste check-ins
+            </Text>
+          </View>
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Laddar...</Text>
+              <Ionicons name="refresh" size={36} color="#9CA3AF" style={styles.loadingIcon} />
+              <Text style={styles.loadingText}>Laddar aktiviteter...</Text>
             </View>
           ) : (
             <>
-              {/* Owner's Activity */}
+              {/* Owner's Activity Card */}
               {ownerActivity && (
-                <View style={styles.ownerSection}>
+                <View style={styles.ownerCard}>
+                  <View style={styles.cardHeader}>
+                    <Ionicons name="person-circle" size={20} color="#5FA893" />
+                    <Text style={styles.cardTitle}>Din aktivitet</Text>
+                  </View>
                   <ActivityItem
                     name={ownerActivity.display_name}
                     timestamp={ownerActivity.last_checkin}
                     priority={ownerActivity.priority}
                     isOwner={true}
+                    hasNewUpdate={ownerActivity.hasNewUpdate}
+                    userId={ownerActivity.user_id}
                   />
                 </View>
               )}
 
-              {/* Divider */}
-              {ownerActivity && activities.length > 0 && (
-                <View style={styles.divider} />
-              )}
-
-              {/* Contacts Activities */}
-              {activities.length > 0 ? (
-                activities.map((item) => (
-                  <ActivityItem
-                    key={item.user_id}
-                    name={item.display_name}
-                    email={item.email}
-                    timestamp={item.last_checkin}
-                    priority={item.priority}
-                    isOwner={false}
-                  />
-                ))
-              ) : (
-                <View style={styles.emptyState}>
-                  <Ionicons
-                    name="people-outline"
-                    size={48}
-                    color={colors.textLight}
-                  />
-                  <Text style={styles.emptyText}>
-                    Inga aktiviteter än. Lägg till kontakter för att se deras
-                    aktiviteter.
-                  </Text>
+              {/* Contacts Activities Card */}
+              <View style={styles.contactsCard}>
+                <View style={styles.cardHeader}>
+                  <Ionicons name="people" size={20} color="#5FA893" />
+                  <Text style={styles.cardTitle}>Kontakter</Text>
+                  {activities.length > 0 && (
+                    <View style={styles.contactCount}>
+                      <Text style={styles.contactCountText}>{activities.length}</Text>
+                    </View>
+                  )}
                 </View>
-              )}
+
+                {activities.length > 0 ? (
+                  activities.map((item, index) => (
+                    <ActivityItem
+                      key={item.user_id}
+                      name={item.display_name}
+                      email={item.email}
+                      timestamp={item.last_checkin}
+                      priority={item.priority}
+                      isOwner={false}
+                      hasNewUpdate={item.hasNewUpdate}
+                      userId={item.user_id}
+                      isLast={index === activities.length - 1}
+                    />
+                  ))
+                ) : (
+                  <View style={styles.emptyState}>
+                    <Ionicons
+                      name="people-outline"
+                      size={40}
+                      color="#D1D5DB"
+                    />
+                    <Text style={styles.emptyTitle}>Inga kontakter</Text>
+                    <Text style={styles.emptyText}>
+                      Lägg till kontakter för att se deras aktiviteter
+                    </Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Bottom spacing */}
+              <View style={styles.bottomSpacing} />
             </>
           )}
         </ScrollView>
@@ -550,57 +630,194 @@ function ActivityItem({
   timestamp,
   priority,
   isOwner = false,
+  hasNewUpdate = false,
+  userId,
+  isLast = false,
 }: {
   name: string;
   email?: string | null;
   timestamp: string | null;
   priority: number;
   isOwner?: boolean;
+  hasNewUpdate?: boolean;
+  userId: string;
+  isLast?: boolean;
 }) {
-  const getPriorityColor = () => {
-    if (priority === 2) return colors.error;
-    if (priority === 1) return colors.warning;
-    return colors.success;
+  const timeScaleAnim = useRef(new Animated.Value(1)).current;
+  const timeColorAnim = useRef(new Animated.Value(0)).current;
+
+  // Animation for new updates
+  useEffect(() => {
+    if (hasNewUpdate && timestamp) {
+      // Reset animations
+      timeScaleAnim.setValue(1);
+      timeColorAnim.setValue(0);
+
+      // Step 1: Make time bigger and change color
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(timeScaleAnim, {
+            toValue: 1.25, // Make time 40% bigger
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(timeScaleAnim, {
+            toValue: 1.15, // Stay slightly bigger
+            duration: 1800,
+            useNativeDriver: true,
+          }),
+          Animated.spring(timeScaleAnim, {
+            toValue: 1,
+            friction: 5,
+            tension: 100,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(timeColorAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(timeColorAnim, {
+            toValue: 1,
+            duration: 1800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(timeColorAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+
+      // Clear the new update flag after 2 seconds
+      const timer = setTimeout(() => {
+        // This would be handled by parent component
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasNewUpdate, timestamp]);
+
+  const getPriorityInfo = () => {
+    if (priority === 2) return {
+      color: "#EF4444",
+      icon: "alert-circle",
+      label: "Misslyckad",
+      bgColor: "#FEF2F2"
+    };
+    if (priority === 1) return {
+      color: "#F59E0B",
+      icon: "time",
+      label: "Pågående",
+      bgColor: "#FEF3C7"
+    };
+    return {
+      color: "#10B981",
+      icon: "checkmark-circle",
+      label: "Lyckad",
+      bgColor: "#ECFDF5"
+    };
   };
 
-  const color = getPriorityColor();
+  const priorityInfo = getPriorityInfo();
 
-  let statusText = "Ingen aktivitet ännu";
+  let timeText = "";
+  let dateText = "";
 
   if (timestamp) {
     const d = new Date(timestamp);
-    const dateStr = d.toLocaleDateString("sv-SE", {
-      month: "short",
-      day: "numeric",
-    });
-    const timeStr = d.toLocaleTimeString("sv-SE", {
+    timeText = d.toLocaleTimeString("sv-SE", {
       hour: "2-digit",
       minute: "2-digit",
     });
-    statusText = `Senast bekräftat ${dateStr} ${timeStr}`;
+    dateText = d.toLocaleDateString("sv-SE", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
   }
 
+  const isRecent = timestamp && (Date.now() - new Date(timestamp).getTime() < 5 * 60 * 1000);
+
+  // Interpolate color for time animation
+  const timeColor = timeColorAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [isRecent ? colors.highlight : colors.textDark, colors.highlight]
+  });
+
   return (
-    <View style={[styles.activityItem, isOwner && styles.ownerItem]}>
-      <View style={styles.activityRow}>
-        <View style={[styles.statusDot, { backgroundColor: color }]} />
-        <View style={styles.activityContent}>
-          <View style={styles.nameRow}>
-            <Text style={styles.activityName} numberOfLines={1}>
-              {name}
-            </Text>
-            {isOwner && (
-              <View style={styles.ownerBadge}>
-                <Text style={styles.ownerBadgeText}>Du</Text>
-              </View>
-            )}
+    <View style={[styles.activityItem, !isLast && styles.activityItemBorder]}>
+      <View style={styles.activityContent}>
+        <View style={styles.activityHeader}>
+          <View style={styles.nameContainer}>
+            <View style={styles.nameRow}>
+              <Text style={styles.activityName} numberOfLines={1}>
+                {name}
+              </Text>
+              {isOwner && (
+                <View style={styles.ownerBadge}>
+                  <Text style={styles.ownerBadgeText}>Du</Text>
+                </View>
+              )}
+            </View>
             {email && (
               <Text style={styles.activityEmail} numberOfLines={1}>
-                {` (${email})`}
+                {email}
               </Text>
             )}
           </View>
-          <Text style={[styles.activityStatus, { color }]}>{statusText}</Text>
+          <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
+            <Ionicons name={priorityInfo.icon as any} size={12} color={priorityInfo.color} />
+            <Text style={[styles.priorityText, { color: priorityInfo.color }]}>
+              {priorityInfo.label}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.activityFooter}>
+          {timestamp ? (
+            <View style={styles.timeRow}>
+              <View style={styles.timeContainer}>
+                <Ionicons
+                  name="time"
+                  size={16}
+                  color={isRecent ? colors.highlight : colors.textLight}
+                />
+                <Animated.Text
+                  style={[
+                    styles.timeText,
+                    {
+                      transform: [{ scale: timeScaleAnim }],
+                      color: timeColor,
+                    }
+                  ]}
+                >
+                  {timeText}
+                </Animated.Text>
+              </View>
+              <Text style={[
+                styles.dateText,
+                isRecent && styles.recentDateText
+              ]}>
+                {dateText}
+              </Text>
+              {isRecent && (
+                <View style={[styles.recentBadge, { backgroundColor: colors.highlightLight }]}>
+                  <Text style={[styles.recentBadgeText, { color: colors.highlight }]}>
+                    Nyss
+                  </Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View style={styles.noActivityContainer}>
+              <Ionicons name="ellipsis-horizontal" size={14} color="#9CA3AF" />
+              <Text style={styles.noActivityText}>Ingen aktivitet</Text>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -612,119 +829,250 @@ function ActivityItem({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 0,
   },
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
 
   // Header
+  header: {
+    marginBottom: 24,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
   title: {
     fontSize: 28,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.textDark,
-    marginBottom: 24,
+    marginLeft: 10,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: "#6B7280",
+    lineHeight: 20,
   },
 
   // Loading
   loadingContainer: {
-    paddingVertical: 40,
     alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  loadingIcon: {
+    marginBottom: 10,
   },
   loadingText: {
-    fontSize: 16,
-    color: colors.textMuted,
+    fontSize: 15,
+    color: "#6B7280",
   },
 
-  // Owner Section
-  ownerSection: {
-    marginBottom: 8,
+  // Cards
+  ownerCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
-
-  // Divider
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: 20,
+  contactsCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: colors.textDark,
+    marginLeft: 8,
+  },
+  contactCount: {
+    marginLeft: 'auto',
+    backgroundColor: "#EDF7F4",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
+  contactCountText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#5FA893",
   },
 
   // Activity Item
   activityItem: {
-    marginBottom: 20,
+    paddingVertical: 10,
   },
-  ownerItem: {
-    backgroundColor: colors.primaryLight,
-    marginHorizontal: -12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.primaryBorder,
-  },
-  activityRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginTop: 6,
-    marginRight: 12,
-    flexShrink: 0,
+  activityItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
   },
   activityContent: {
     flex: 1,
   },
+  activityHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+  nameContainer: {
+    flex: 1,
+    marginRight: 8,
+  },
   nameRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     alignItems: "center",
-    gap: 6,
+    flexWrap: "wrap",
+    marginBottom: 2,
   },
   activityName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: colors.textDark,
   },
   ownerBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
+    backgroundColor: "#5FA893",
+    borderRadius: 6,
+    marginLeft: 6,
   },
   ownerBadgeText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "700",
-    color: colors.surface,
+    color: "#fff",
   },
   activityEmail: {
     fontSize: 13,
-    color: colors.textMuted,
+    color: "#6B7280",
   },
-  activityStatus: {
-    fontSize: 16,
-    marginTop: 4,
+  priorityBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    gap: 4,
+  },
+  priorityText: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  activityFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flex: 1,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  timeText: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginLeft: 5,
+  },
+  dateText: {
+    fontSize: 14,
+    color: colors.textDark,
+    marginLeft: 'auto',
+    marginRight: 8,
+  },
+  recentDateText: {
+    color: colors.highlight,
     fontWeight: "500",
+  },
+  recentBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  recentBadgeText: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
+  noActivityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  noActivityText: {
+    fontSize: 14,
+    color: "#9CA3AF",
+    fontStyle: "italic",
   },
 
   // Empty State
   emptyState: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 40,
+    paddingVertical: 32,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.textDark,
+    marginTop: 12,
+    marginBottom: 6,
   },
   emptyText: {
     textAlign: "center",
-    color: colors.textMuted,
-    marginTop: 16,
-    fontSize: 15,
-    lineHeight: 22,
+    color: "#6B7280",
+    fontSize: 14,
+    lineHeight: 20,
+    paddingHorizontal: 20,
+  },
+
+  // Bottom spacing
+  bottomSpacing: {
+    height: 20,
   },
 });

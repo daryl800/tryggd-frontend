@@ -17,7 +17,7 @@ export default function TabsLayout() {
     }}>
       {/* Only 4 tabs shown */}
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} /> }} />
-      <Tabs.Screen name="activity" options={{ title: "Activity", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "list" : "list-outline"} color={color} size={size} /> }} />
+      <Tabs.Screen name="activity" options={{ title: "Activity", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "pulse" : "pulse-outline"} color={color} size={size} /> }} />
       <Tabs.Screen name="contacts" options={{ title: "Contacts", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "people" : "people-outline"} color={color} size={size} /> }} />
       <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, size, focused }) => <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} /> }} />
 

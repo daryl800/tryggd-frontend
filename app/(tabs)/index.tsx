@@ -571,7 +571,7 @@ export default function HomeScreen() {
             >
               <View style={styles.cardIcon}>
                 <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                  <Ionicons name="list" size={24} color={colors.primary} />
+                  <Ionicons name="pulse" size={24} color={colors.primary} />
                 </View>
               </View>
               <Text style={styles.cardLabel}>Aktivitet</Text>
