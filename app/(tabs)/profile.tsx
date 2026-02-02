@@ -5,10 +5,13 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Alert,
+    Dimensions,
     Image,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
+    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -25,11 +28,14 @@ type UserProfile = {
     avatar_url?: string;
 };
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 export default function ProfileScreen() {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     const [profile, setProfile] = useState<UserProfile>({
         id: "",
@@ -47,7 +53,6 @@ export default function ProfileScreen() {
         try {
             setLoading(true);
 
-            // Get current user
             const { data: { user } } = await supabase.auth.getUser();
 
             if (!user) {
@@ -55,7 +60,6 @@ export default function ProfileScreen() {
                 return;
             }
 
-            // Fetch profile from Supabase
             const { data, error } = await supabase
                 .from("profiles")
                 .select("*")
@@ -64,7 +68,6 @@ export default function ProfileScreen() {
 
             if (error) {
                 console.error("Error fetching profile:", error);
-                // If profile doesn't exist, create one
                 await createProfile(user);
                 return;
             }
@@ -78,7 +81,6 @@ export default function ProfileScreen() {
                     avatar_url: data.avatar_url || "",
                 });
 
-                // Also save locally for offline use
                 await AsyncStorage.setItem("@user_profile", JSON.stringify({
                     display_name: data.display_name || "",
                     email: user.email || "",
@@ -109,7 +111,6 @@ export default function ProfileScreen() {
                 return;
             }
 
-            // Reload profile after creation
             loadProfile();
         } catch (error) {
             console.error("Error creating profile:", error);
@@ -118,9 +119,8 @@ export default function ProfileScreen() {
 
     const saveProfile = async () => {
         try {
-            setLoading(true);
+            setSaving(true);
 
-            // Get current user
             const { data: { user } } = await supabase.auth.getUser();
 
             if (!user) {
@@ -128,12 +128,11 @@ export default function ProfileScreen() {
                 return;
             }
 
-            // Update profile in Supabase
             const { error } = await supabase
                 .from("profiles")
                 .update({
-                    display_name: profile.display_name,
-                    phone: profile.phone,
+                    display_name: profile.display_name.trim(),
+                    phone: profile.phone?.trim() || "",
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", user.id);
@@ -144,7 +143,6 @@ export default function ProfileScreen() {
                 return;
             }
 
-            // Update user email if changed (requires auth update)
             if (profile.email !== user.email) {
                 const { error: emailError } = await supabase.auth.updateUser({
                     email: profile.email,
@@ -156,7 +154,6 @@ export default function ProfileScreen() {
                 }
             }
 
-            // Save locally for offline use
             await AsyncStorage.setItem("@user_profile", JSON.stringify({
                 display_name: profile.display_name,
                 email: profile.email,
@@ -169,7 +166,7 @@ export default function ProfileScreen() {
             console.error("Error saving profile:", error);
             Alert.alert("Fel", "Kunde inte spara profilen");
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
 
@@ -182,13 +179,9 @@ export default function ProfileScreen() {
             });
 
             if (!result.canceled) {
-                // Here you would upload to Supabase Storage
-                // For now, we'll just update the local state
                 setProfile({ ...profile, avatar_url: result.assets[0].uri });
                 setShowAvatarModal(false);
-
-                // TODO: Upload to Supabase Storage and update avatar_url
-                // await uploadAvatar(result.assets[0].uri);
+                // TODO: Upload to Supabase Storage
             }
         } catch (error) {
             console.error("Error picking avatar:", error);
@@ -212,7 +205,6 @@ export default function ProfileScreen() {
             if (!result.canceled) {
                 setProfile({ ...profile, avatar_url: result.assets[0].uri });
                 setShowAvatarModal(false);
-
                 // TODO: Upload to Supabase Storage
             }
         } catch (error) {
@@ -222,7 +214,10 @@ export default function ProfileScreen() {
 
     const handleLogout = async () => {
         Alert.alert("Logga ut", "Är du säker?", [
-            { text: "Avbryt", style: "cancel" },
+            {
+                text: "Avbryt",
+                style: "cancel",
+            },
             {
                 text: "Logga ut",
                 style: "destructive",
@@ -235,162 +230,508 @@ export default function ProfileScreen() {
         ]);
     };
 
+    const cancelEdit = () => {
+        setIsEditing(false);
+        loadProfile(); // Reload original data
+    };
+
     const renderField = (
         label: string,
         value: string,
-        field: keyof UserProfile
+        field: keyof UserProfile,
+        editable: boolean = true
     ) => (
-        <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 4 }}>
-                {label}
-            </Text>
+        <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>{label}</Text>
             {isEditing ? (
                 <TextInput
                     value={value}
                     onChangeText={(t) => setProfile({ ...profile, [field]: t })}
-                    style={{
-                        backgroundColor: "#F9FAFB",
-                        borderWidth: 1,
-                        borderColor: "#D1D5DB",
-                        borderRadius: 8,
-                        padding: 12,
-                    }}
-                    editable={field !== "email"} // Email requires special handling
+                    style={[
+                        styles.input,
+                        !editable && styles.inputDisabled
+                    ]}
+                    editable={editable}
+                    placeholderTextColor="#9CA3AF"
                 />
             ) : (
-                <Text style={{ fontSize: 16, fontWeight: "500" }}>{value}</Text>
+                <Text style={styles.fieldValue}>
+                    {value || <Text style={styles.placeholderText}>Ej angivet</Text>}
+                </Text>
             )}
         </View>
     );
 
     if (loading) {
         return (
-            <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text>Laddar profil...</Text>
+            <SafeAreaView style={styles.loadingContainer}>
+                <Ionicons name="refresh" size={40} color="#9CA3AF" style={styles.loadingIcon} />
+                <Text style={styles.loadingText}>Laddar profil...</Text>
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", padding: 24, paddingBottom: 0 }}>
-            <ScrollView style={{ flex: 1 }}>
+        <SafeAreaView style={styles.container} edges={['top']}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
                 {/* Header */}
-                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                    <Text style={{ fontSize: 28, fontWeight: "700" }}>Profil</Text>
+                <View style={styles.header}>
+                    <View style={styles.headerRow}>
+                        <Ionicons name="person-circle" size={28} color="#5FA893" />
+                        <Text style={styles.title}>Profil</Text>
+                    </View>
                     {!isEditing ? (
-                        <TouchableOpacity onPress={() => setIsEditing(true)}>
-                            <Text style={{ color: "#5FA893", fontWeight: "600" }}>
-                                Redigera
-                            </Text>
+                        <TouchableOpacity
+                            onPress={() => setIsEditing(true)}
+                            style={styles.editButton}
+                            activeOpacity={0.7}
+                        >
+                            <Ionicons name="create-outline" size={20} color="#5FA893" />
+                            <Text style={styles.editButtonText}>Redigera</Text>
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity onPress={saveProfile} disabled={loading}>
-                            <Text style={{ color: "#5FA893", fontWeight: "600" }}>
-                                {loading ? "Sparar..." : "Spara"}
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={styles.editActions}>
+                            <TouchableOpacity
+                                onPress={cancelEdit}
+                                style={[styles.actionButton, styles.cancelButton]}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={styles.cancelButtonText}>Avbryt</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={saveProfile}
+                                disabled={saving}
+                                style={[styles.actionButton, styles.saveButton, saving && styles.saveButtonDisabled]}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons name="save-outline" size={18} color="#fff" />
+                                <Text style={styles.saveButtonText}>
+                                    {saving ? "Sparar..." : "Spara"}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
                 </View>
 
-                {/* Avatar */}
-                <View style={{ alignItems: "center", marginVertical: 32 }}>
+                {/* Avatar Section */}
+                <View style={styles.avatarSection}>
                     <TouchableOpacity
                         disabled={!isEditing}
                         onPress={() => setShowAvatarModal(true)}
+                        style={styles.avatarTouchable}
+                        activeOpacity={0.8}
                     >
                         {profile.avatar_url ? (
                             <Image
                                 source={{ uri: profile.avatar_url }}
-                                style={{
-                                    width: 120,
-                                    height: 120,
-                                    borderRadius: 60,
-                                    borderWidth: 3,
-                                    borderColor: "#5FA893",
-                                }}
+                                style={styles.avatarImage}
                             />
                         ) : (
-                            <View
-                                style={{
-                                    width: 120,
-                                    height: 120,
-                                    borderRadius: 60,
-                                    backgroundColor: "#F3F4F6",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <Ionicons name="person" size={48} color="#9CA3AF" />
+                            <View style={styles.avatarPlaceholder}>
+                                <Ionicons name="person" size={52} color="#9CA3AF" />
+                            </View>
+                        )}
+                        {isEditing && (
+                            <View style={styles.editOverlay}>
+                                <Ionicons name="camera" size={24} color="#fff" />
                             </View>
                         )}
                     </TouchableOpacity>
 
-                    <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 16 }}>
+                    <Text style={styles.displayName}>
                         {profile.display_name || "Användare"}
                     </Text>
-                    <Text style={{ color: "#6B7280" }}>{profile.email}</Text>
+                    <Text style={styles.emailText}>{profile.email}</Text>
                 </View>
 
-                {/* Info */}
-                <View style={{ backgroundColor: "#F9FAFB", padding: 20, borderRadius: 12 }}>
-                    {renderField("Namn", profile.display_name || "", "display_name")}
-                    {renderField("E-post", profile.email || "", "email")}
-                    {renderField("Telefon", profile.phone || "", "phone")}
+                {/* Profile Info Card */}
+                <View style={styles.infoCard}>
+                    <View style={styles.infoCardHeader}>
+                        <Ionicons name="information-circle" size={22} color="#5FA893" />
+                        <Text style={styles.infoCardTitle}>Profilinformation</Text>
+                    </View>
+
+                    {renderField("Visningsnamn", profile.display_name || "", "display_name")}
+                    {renderField("E-postadress", profile.email || "", "email", false)}
+                    {renderField("Telefonnummer", profile.phone || "", "phone")}
                 </View>
 
-                {/* Settings entry */}
+                {/* Settings Card */}
                 <TouchableOpacity
-                    style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        paddingVertical: 20,
-                    }}
+                    style={styles.settingsCard}
                     onPress={() => router.push("../settings")}
+                    activeOpacity={0.7}
                 >
-                    <Ionicons name="settings-outline" size={22} />
-                    <Text style={{ marginLeft: 12, fontSize: 16 }}>Inställningar</Text>
+                    <View style={styles.settingsContent}>
+                        <View style={styles.settingsIconContainer}>
+                            <Ionicons name="settings-outline" size={22} color="#5FA893" />
+                        </View>
+                        <View style={styles.settingsTextContainer}>
+                            <Text style={styles.settingsTitle}>Inställningar</Text>
+                            <Text style={styles.settingsSubtitle}>Appinställningar och meddelanden</Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                    </View>
                 </TouchableOpacity>
 
-                {/* Logout */}
+                {/* Logout Button */}
                 <TouchableOpacity
-                    style={{ paddingVertical: 20 }}
+                    style={styles.logoutButton}
                     onPress={handleLogout}
+                    activeOpacity={0.7}
                 >
-                    <Text style={{ color: "#EF4444", fontSize: 16 }}>Logga ut</Text>
+                    <Ionicons name="log-out-outline" size={20} color="#EF4444" />
+                    <Text style={styles.logoutText}>Logga ut</Text>
                 </TouchableOpacity>
             </ScrollView>
 
-            {/* Avatar modal */}
-            <Modal visible={showAvatarModal} transparent animationType="slide">
+            {/* Avatar Selection Modal */}
+            <Modal visible={showAvatarModal} transparent animationType="fade">
                 <Pressable
-                    style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}
+                    style={styles.modalOverlay}
                     onPress={() => setShowAvatarModal(false)}
                 >
-                    <Pressable style={{
-                        position: "absolute",
-                        bottom: 0,
-                        width: "100%",
-                        backgroundColor: "#fff",
-                        borderTopLeftRadius: 16,
-                        borderTopRightRadius: 16,
-                        paddingBottom: 40
-                    }}>
+                    <Pressable style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Ändra profilbild</Text>
+                            <TouchableOpacity onPress={() => setShowAvatarModal(false)}>
+                                <Ionicons name="close" size={24} color="#6B7280" />
+                            </TouchableOpacity>
+                        </View>
+
                         <TouchableOpacity
                             onPress={pickAvatar}
-                            style={{ padding: 20, borderBottomWidth: 1, borderBottomColor: "#F3F4F6" }}
+                            style={styles.modalOption}
+                            activeOpacity={0.7}
                         >
-                            <Text style={{ fontSize: 16 }}>Välj från bibliotek</Text>
+                            <Ionicons name="images-outline" size={24} color="#5FA893" />
+                            <Text style={styles.modalOptionText}>Välj från bibliotek</Text>
                         </TouchableOpacity>
+
                         <TouchableOpacity
                             onPress={takePhoto}
-                            style={{ padding: 20 }}
+                            style={styles.modalOption}
+                            activeOpacity={0.7}
                         >
-                            <Text style={{ fontSize: 16 }}>Ta foto</Text>
+                            <Ionicons name="camera-outline" size={24} color="#5FA893" />
+                            <Text style={styles.modalOptionText}>Ta foto</Text>
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
             </Modal>
-
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+    },
+    loadingIcon: {
+        marginBottom: 12,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: "#6B7280",
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 40,
+    },
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 16,
+        marginBottom: 8,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    headerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: "800",
+        marginLeft: 12,
+        color: "#1F2937",
+    },
+    editButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        backgroundColor: "#EDF7F4",
+        borderRadius: 12,
+    },
+    editButtonText: {
+        marginLeft: 6,
+        color: "#5FA893",
+        fontWeight: "600",
+        fontSize: 14,
+    },
+    editActions: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+    },
+    actionButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 12,
+    },
+    cancelButton: {
+        backgroundColor: "#F3F4F6",
+    },
+    cancelButtonText: {
+        color: "#6B7280",
+        fontWeight: "600",
+        fontSize: 14,
+    },
+    saveButton: {
+        backgroundColor: "#5FA893",
+        ...Platform.select({
+            ios: {
+                shadowColor: '#5FA893',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 3,
+            },
+        }),
+    },
+    saveButtonDisabled: {
+        backgroundColor: "#9CA3AF",
+    },
+    saveButtonText: {
+        marginLeft: 6,
+        color: "#fff",
+        fontWeight: "600",
+        fontSize: 14,
+    },
+    avatarSection: {
+        alignItems: "center",
+        marginVertical: 24,
+        paddingHorizontal: 20,
+    },
+    avatarTouchable: {
+        position: "relative",
+        marginBottom: 16,
+    },
+    avatarImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: "#5FA893",
+    },
+    avatarPlaceholder: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: "#F3F4F6",
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 3,
+        borderColor: "#E5E7EB",
+    },
+    editOverlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        borderRadius: 60,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    displayName: {
+        fontSize: 24,
+        fontWeight: "700",
+        color: "#1F2937",
+        marginBottom: 4,
+    },
+    emailText: {
+        fontSize: 15,
+        color: "#6B7280",
+    },
+    infoCard: {
+        backgroundColor: "#F9FAFB",
+        borderRadius: 20,
+        padding: 20,
+        marginHorizontal: 20,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: "#F3F4F6",
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
+    },
+    infoCardHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    infoCardTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#1F2937",
+        marginLeft: 10,
+    },
+    fieldContainer: {
+        marginBottom: 20,
+    },
+    fieldLabel: {
+        fontSize: 14,
+        color: "#6B7280",
+        marginBottom: 8,
+        fontWeight: "500",
+    },
+    fieldValue: {
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#1F2937",
+    },
+    placeholderText: {
+        color: "#9CA3AF",
+        fontStyle: "italic",
+    },
+    input: {
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        padding: 14,
+        fontSize: 16,
+        color: "#1F2937",
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+    },
+    inputDisabled: {
+        backgroundColor: "#F9FAFB",
+        color: "#6B7280",
+    },
+    settingsCard: {
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        padding: 20,
+        marginHorizontal: 20,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: "#F3F4F6",
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
+    },
+    settingsContent: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    settingsIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: "#EDF7F4",
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 16,
+    },
+    settingsTextContainer: {
+        flex: 1,
+    },
+    settingsTitle: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#1F2937",
+        marginBottom: 2,
+    },
+    settingsSubtitle: {
+        fontSize: 14,
+        color: "#6B7280",
+    },
+    logoutButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#FEF2F2",
+        borderRadius: 16,
+        padding: 18,
+        marginHorizontal: 20,
+        borderWidth: 1,
+        borderColor: "#FEE2E2",
+        gap: 10,
+    },
+    logoutText: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#EF4444",
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "flex-end",
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+    },
+    modalHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#F3F4F6",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#1F2937",
+    },
+    modalOption: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 18,
+        gap: 16,
+    },
+    modalOptionText: {
+        fontSize: 16,
+        color: "#1F2937",
+    },
+});

@@ -20,7 +20,7 @@ import { supabase } from "../../lib/supabase";
 
 // ==================== CONSTANTS ====================
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const colors = {
   primary: "#5FA893",
@@ -31,23 +31,25 @@ const colors = {
   textLight: "#9CA3AF",
   surface: "#FFFFFF",
   border: "#E5E7EB",
-  error: "#DC2626",
-  errorLight: "#FEF3F2",
-  errorBorder: "#FCA5A5",
+  error: "#EF4444",
+  errorLight: "#FEF2F2",
+  errorBorder: "#FECACA",
   background: "#FAFAFA",
+  success: "#10B981",
+  successLight: "#ECFDF5",
 };
 
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.68, 260);
-const STROKE_WIDTH = 12;
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 280);
+const STROKE_WIDTH = 14;
 const CIRCLE_RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
-const CIRCLE_GAP = 6;
+const CIRCLE_GAP = 8;
 
 const STORAGE_KEY = "@checkin_state";
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 // Platform-specific adjustments
 const IS_IOS = Platform.OS === 'ios';
-const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 10;
+const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 16;
 
 // ==================== UTILITY FUNCTIONS ====================
 
@@ -105,7 +107,6 @@ export default function HomeScreen() {
   const [streak, setStreak] = useState(0);
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [containerHeight, setContainerHeight] = useState(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -132,13 +133,13 @@ export default function HomeScreen() {
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.02,
-            duration: 1800,
+            toValue: 1.03,
+            duration: 2000,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1800,
+            duration: 2000,
             useNativeDriver: true,
           }),
         ])
@@ -158,18 +159,7 @@ export default function HomeScreen() {
             duration: 300,
             useNativeDriver: true,
           }),
-          Animated.delay(800),
-          Animated.timing(heartBeatAnim, {
-            toValue: 1.1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(heartBeatAnim, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-          Animated.delay(600),
+          Animated.delay(1000),
         ])
       );
       heartBeat.start();
@@ -390,15 +380,14 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <Animated.View
         style={[styles.content, { opacity: fadeAnim }]}
-        onLayout={(event) => {
-          const { height } = event.nativeEvent.layout;
-          setContainerHeight(height);
-        }}
       >
         {/* ========== HEADER ========== */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>{getGreeting(now)}</Text>
+            <View style={styles.headerRow}>
+              <Ionicons name="sunny" size={24} color="#5FA893" />
+              <Text style={styles.greeting}>{getGreeting(now)}</Text>
+            </View>
             <Text style={styles.displayName} numberOfLines={1}>
               {profile?.display_name || "Välkommen"}
             </Text>
@@ -409,187 +398,168 @@ export default function HomeScreen() {
             style={styles.profileButton}
             activeOpacity={0.7}
           >
-            <Ionicons name="person-outline" size={22} color={colors.textDark} />
+            <Ionicons name="person" size={24} color="#5FA893" />
           </TouchableOpacity>
         </View>
 
-        {/* ========== DATE & TIME ========== */}
-        <View style={styles.dateContainer}>
-          <Text style={styles.timeText}>
-            {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          </Text>
-          <Text style={styles.dateText}>
-            {now.toLocaleDateString("sv-SE", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </Text>
+        {/* ========== DATE & TIME CARD ========== */}
+        <View style={styles.dateCard}>
+          <View style={styles.dateContent}>
+            <Ionicons name="calendar" size={22} color="#5FA893" />
+            <View style={styles.dateTextContainer}>
+              <Text style={styles.timeText}>
+                {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </Text>
+              <Text style={styles.dateText}>
+                {now.toLocaleDateString("sv-SE", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        {/* ========== CHECK-IN BUTTON ========== */}
-        <View style={styles.checkInContainer}>
-          <Animated.View
-            style={{
-              transform: [{ scale: Animated.multiply(pulseAnim, scaleAnim) }],
-              position: 'absolute',
-              top: containerHeight > 0 ? (containerHeight - CIRCLE_SIZE) / 2 : '30%',
-            }}
-          >
-            <TouchableOpacity
-              onPress={handleCheckIn}
-              activeOpacity={0.9}
-              style={[styles.checkInButton, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
+        {/* ========== MAIN CHECK-IN AREA ========== */}
+        <View style={styles.mainArea}>
+          <View style={styles.checkInContainer}>
+            <Animated.View
+              style={{
+                transform: [{ scale: Animated.multiply(pulseAnim, scaleAnim) }],
+              }}
             >
-              {/* Progress Ring */}
-              <Svg
-                width={CIRCLE_SIZE}
-                height={CIRCLE_SIZE}
-                style={[styles.svg, { transform: [{ rotate: "-90deg" }] }]}
+              <TouchableOpacity
+                onPress={handleCheckIn}
+                activeOpacity={0.9}
+                style={[styles.checkInButton, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
               >
-                <Defs>
-                  <SvgGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <Stop offset="0%" stopColor={colors.primary} />
-                    <Stop offset="100%" stopColor="#7DC4B0" />
-                  </SvgGradient>
-                </Defs>
+                {/* Progress Ring */}
+                <Svg
+                  width={CIRCLE_SIZE}
+                  height={CIRCLE_SIZE}
+                  style={[styles.svg, { transform: [{ rotate: "-90deg" }] }]}
+                >
+                  <Defs>
+                    <SvgGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <Stop offset="0%" stopColor={colors.primary} />
+                      <Stop offset="100%" stopColor="#7DC4B0" />
+                    </SvgGradient>
+                  </Defs>
 
-                {/* Background circle */}
-                <Circle
-                  cx={CIRCLE_SIZE / 2}
-                  cy={CIRCLE_SIZE / 2}
-                  r={CIRCLE_RADIUS}
-                  stroke={colors.border}
-                  strokeWidth={STROKE_WIDTH}
-                  fill="none"
-                />
-
-                {/* Progress/Complete circle */}
-                {!checkedInToday ? (
+                  {/* Background circle */}
                   <Circle
                     cx={CIRCLE_SIZE / 2}
                     cy={CIRCLE_SIZE / 2}
                     r={CIRCLE_RADIUS}
-                    stroke="url(#gradient)"
-                    strokeWidth={STROKE_WIDTH}
-                    fill="none"
-                    strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
-                    strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
-                    strokeLinecap="round"
-                  />
-                ) : (
-                  <Circle
-                    cx={CIRCLE_SIZE / 2}
-                    cy={CIRCLE_SIZE / 2}
-                    r={CIRCLE_RADIUS}
-                    stroke={colors.primary}
+                    stroke="#F3F4F6"
                     strokeWidth={STROKE_WIDTH}
                     fill="none"
                   />
-                )}
-              </Svg>
 
-              {/* Inner Button with ABSOLUTE positioned elements */}
-              <View
-                style={[
-                  styles.innerButton,
-                  {
-                    backgroundColor: checkedInToday ? colors.primary : colors.primaryLight,
-                    borderColor: colors.primary,
-                  },
-                ]}
-              >
-                {/* Icon - Absolutely positioned with animation */}
-                <View style={styles.iconContainer}>
-                  {checkedInToday ? (
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={56}
-                      color={colors.surface}
+                  {/* Progress/Complete circle */}
+                  {!checkedInToday ? (
+                    <Circle
+                      cx={CIRCLE_SIZE / 2}
+                      cy={CIRCLE_SIZE / 2}
+                      r={CIRCLE_RADIUS}
+                      stroke="url(#gradient)"
+                      strokeWidth={STROKE_WIDTH}
+                      fill="none"
+                      strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
+                      strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
+                      strokeLinecap="round"
                     />
                   ) : (
-                    <Animated.View
-                      style={{
-                        transform: [{ scale: heartBeatAnim }],
-                      }}
-                    >
-                      <Ionicons
-                        name="heart"
-                        size={56}
-                        color={colors.primary}
-                      />
-                    </Animated.View>
+                    <Circle
+                      cx={CIRCLE_SIZE / 2}
+                      cy={CIRCLE_SIZE / 2}
+                      r={CIRCLE_RADIUS}
+                      stroke={colors.primary}
+                      strokeWidth={STROKE_WIDTH}
+                      fill="none"
+                    />
                   )}
-                </View>
+                </Svg>
 
-                {checkedInToday ? (
-                  <>
-                    {/* "Incheckad!" text - Absolutely positioned */}
-                    <View style={styles.mainTextContainer}>
+                {/* Inner Button */}
+                <View
+                  style={[
+                    styles.innerButton,
+                    checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked
+                  ]}
+                >
+                  {/* Icon */}
+                  <View style={styles.iconContainer}>
+                    {checkedInToday ? (
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={60}
+                        color="#fff"
+                      />
+                    ) : (
                       <Animated.View
-                        style={[
-                          styles.checkedInTextContainer,
-                          { transform: [{ scale: successScaleAnim }] },
-                        ]}
+                        style={{
+                          transform: [{ scale: heartBeatAnim }],
+                        }}
                       >
-                        <Text style={styles.checkedInText}>Incheckad!</Text>
+                        <Ionicons
+                          name="heart"
+                          size={60}
+                          color={colors.primary}
+                        />
                       </Animated.View>
-                    </View>
+                    )}
+                  </View>
 
-                    {/* Check-in time - Absolutely positioned */}
-                    <View style={styles.timeContainer}>
-                      <Text style={styles.checkInTime}>
-                        {lastCheckin?.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }) || ""}
-                      </Text>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    {/* "CHECKA IN" text - Absolutely positioned */}
-                    <View style={styles.mainTextContainer}>
-                      <Text style={styles.ctaText}>CHECKA IN HÄR</Text>
-                    </View>
-
-                    {/* Countdown time - Absolutely positioned */}
-                    <View style={styles.timeContainer}>
-                      <Text style={styles.countdownText}>
-                        {formatTimeLeft(remainingMs)}
-                      </Text>
-                    </View>
-                  </>
-                )}
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
+                  {/* Text Content */}
+                  <View style={styles.textContainer}>
+                    {checkedInToday ? (
+                      <>
+                        <Animated.View
+                          style={[
+                            styles.checkedInTextContainer,
+                            { transform: [{ scale: successScaleAnim }] },
+                          ]}
+                        >
+                          <Text style={styles.checkedInText}>Incheckad!</Text>
+                        </Animated.View>
+                        <Text style={styles.checkInTime}>
+                          {lastCheckin?.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }) || ""}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text style={styles.ctaText}>CHECKA IN</Text>
+                        <Text style={styles.countdownText}>
+                          {formatTimeLeft(remainingMs)}
+                        </Text>
+                      </>
+                    )}
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
 
           {/* Warning message */}
           {!checkedInToday && (
-            <View style={[
-              styles.warningContainer,
-              {
-                position: 'absolute',
-                bottom: BOTTOM_BUTTON_MARGIN + 135,
-              }]}
-            >
-              <Ionicons name="alert-circle" size={16} color={colors.error} />
+            <View style={styles.warningContainer}>
+              <View style={styles.warningIconContainer}>
+                <Ionicons name="alert-circle" size={18} color={colors.error} />
+              </View>
               <Text style={styles.warningText}>
-                Du har inte checkat in idag!
+                Glöm inte att checka in idag!
               </Text>
             </View>
           )}
         </View>
 
         {/* ========== ACTION CARDS ========== */}
-        <View style={[
-          styles.cardsContainer,
-          {
-            marginBottom: BOTTOM_BUTTON_MARGIN,
-            marginTop: containerHeight > 0 ? 'auto' : 0,
-          }
-        ]}>
+        <View style={styles.cardsContainer}>
           {showResetButton ? (
             <TouchableOpacity
               onPress={resetAllState}
@@ -597,7 +567,9 @@ export default function HomeScreen() {
               activeOpacity={0.8}
             >
               <View style={styles.cardIcon}>
-                <Ionicons name="refresh" size={24} color={colors.error} />
+                <View style={styles.resetIconContainer}>
+                  <Ionicons name="refresh" size={24} color={colors.error} />
+                </View>
               </View>
               <Text style={styles.resetText}>Återställ</Text>
               <Text style={styles.cardSubtext}>Timer</Text>
@@ -609,9 +581,12 @@ export default function HomeScreen() {
               activeOpacity={0.8}
             >
               <View style={styles.cardIcon}>
-                <Ionicons name="list" size={24} color={colors.primary} />
+                <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
+                  <Ionicons name="list" size={24} color={colors.primary} />
+                </View>
               </View>
               <Text style={styles.cardLabel}>Aktivitet</Text>
+              <Text style={styles.cardSubtext}>Historik</Text>
             </TouchableOpacity>
           )}
 
@@ -621,7 +596,9 @@ export default function HomeScreen() {
             activeOpacity={0.8}
           >
             <View style={styles.cardIcon}>
-              <Ionicons name="flame" size={24} color={colors.primary} />
+              <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
+                <Ionicons name="flame" size={24} color={colors.primary} />
+              </View>
             </View>
             <Text style={styles.cardLabel}>Streak</Text>
             <Text style={styles.streakValue}>
@@ -656,6 +633,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 16,
+    paddingBottom: BOTTOM_BUTTON_MARGIN,
   },
 
   // Header
@@ -663,23 +641,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 8,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   headerLeft: {
     flex: 1,
   },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
   greeting: {
-    fontSize: 14,
-    color: colors.textMuted,
+    fontSize: 16,
+    color: "#6B7280",
     fontWeight: "500",
     textTransform: "capitalize",
+    marginLeft: 8,
   },
   displayName: {
     fontSize: 32,
-    fontWeight: "700",
+    fontWeight: "800",
     color: colors.textDark,
-    marginTop: 2,
   },
   profileButton: {
     width: 44,
@@ -688,37 +670,73 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 2,
+    borderColor: "#F3F4F6",
     marginLeft: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
   },
 
-  // Date & Time
-  dateContainer: {
-    alignItems: "center",
+  // Date Card
+  dateCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    padding: 16,
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  dateContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dateTextContainer: {
+    marginLeft: 12,
   },
   timeText: {
-    fontSize: 26,
-    color: colors.textMuted,
-    fontWeight: "500",
+    fontSize: 24,
+    fontWeight: "700",
+    color: colors.textDark,
   },
   dateText: {
     fontSize: 16,
-    color: colors.textMuted,
-    marginTop: 4,
+    color: "#6B7280",
+    marginTop: 2,
     textTransform: "capitalize",
   },
 
-  // Check-in Button
+  // Main Check-in Area
+  mainArea: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    minHeight: 370, // Ensure enough space for the circle
+  },
   checkInContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 5, // Space from date card
+    marginBottom: 30,
   },
   checkInButton: {
     alignItems: "center",
@@ -735,79 +753,74 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    position: 'relative',
   },
-
-  // Absolute positioned elements inside the button
+  innerButtonUnchecked: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+  },
+  innerButtonChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
   iconContainer: {
-    position: 'absolute',
-    top: '15%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 12,
   },
-
-  mainTextContainer: {
-    position: 'absolute',
-    top: '50%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    transform: [{ translateY: -10 }],
+  textContainer: {
+    alignItems: "center",
   },
-
-  timeContainer: {
-    position: 'absolute',
-    bottom: '20%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
   checkedInTextContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   checkedInText: {
     color: colors.surface,
-    fontSize: 25,
-    fontWeight: "700",
+    fontSize: 26,
+    fontWeight: "800",
     textAlign: "center",
   },
   checkInTime: {
     color: colors.surface,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
     textAlign: "center",
+    marginTop: 8,
   },
   ctaText: {
     color: colors.primary,
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "800",
     textAlign: "center",
-    lineHeight: 30,
+    letterSpacing: 1,
   },
   countdownText: {
     color: colors.primary,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
+    marginTop: 8,
   },
 
   // Warning
   warningContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
     backgroundColor: colors.errorLight,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.errorBorder,
     alignSelf: 'center',
+    marginTop: 0, // Space from check-in button
+    marginBottom: 32, // Space before cards
+  },
+  warningIconContainer: {
+    marginRight: 10,
   },
   warningText: {
     textAlign: "center",
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 15,
     color: colors.error,
   },
 
@@ -816,51 +829,80 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
     paddingHorizontal: 4,
-    position: 'absolute',
-    bottom: 0,
-    left: 20,
-    right: 20,
   },
   card: {
     flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 8,
+    padding: 8,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: colors.border,
-    minHeight: 110,
-    maxHeight: 120,
+    borderColor: "#F3F4F6",
+    minHeight: 100,
     justifyContent: 'space-between',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   resetCard: {
     backgroundColor: colors.errorLight,
     borderColor: colors.errorBorder,
   },
   cardIcon: {
-    marginBottom: 8,
+    marginBottom: 12,
+  },
+  iconContainerBase: {
+    width: 30,
+    height: 30,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activityIconContainer: {
+    backgroundColor: "#EDF7F4",
+  },
+  streakIconContainer: {
+    backgroundColor: "#FFF7ED",
+  },
+  resetIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: colors.errorLight,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.errorBorder,
   },
   cardLabel: {
-    color: colors.textMuted,
-    fontSize: 14,
+    color: colors.textDark,
+    fontSize: 16,
     fontWeight: "600",
     textAlign: 'center',
   },
   cardSubtext: {
-    color: colors.textMuted,
-    fontSize: 12,
-    marginTop: 4,
+    color: "#6B7280",
+    fontSize: 13,
+    marginTop: 2,
     textAlign: 'center',
   },
   resetText: {
     color: colors.error,
-    fontWeight: "600",
-    fontSize: 15,
+    fontWeight: "700",
+    fontSize: 16,
     textAlign: 'center',
   },
   streakValue: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 24,
+    fontWeight: "800",
     marginTop: 4,
     color: colors.primary,
     textAlign: 'center',
