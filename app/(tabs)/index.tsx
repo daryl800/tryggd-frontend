@@ -403,22 +403,17 @@ export default function HomeScreen() {
         </View>
 
         {/* ========== DATE & TIME CARD ========== */}
-        <View style={styles.dateCard}>
-          <View style={styles.dateContent}>
-            <Ionicons name="calendar" size={22} color="#5FA893" />
-            <View style={styles.dateTextContainer}>
-              <Text style={styles.timeText}>
-                {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </Text>
-              <Text style={styles.dateText}>
-                {now.toLocaleDateString("sv-SE", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                })}
-              </Text>
-            </View>
-          </View>
+        <View style={styles.dateTimeContainer}>
+          <Text style={styles.timeText}>
+            {now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </Text>
+          <Text style={styles.dateText}>
+            {now.toLocaleDateString("sv-SE", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+          </Text>
         </View>
 
         {/* ========== MAIN CHECK-IN AREA ========== */}
@@ -498,17 +493,11 @@ export default function HomeScreen() {
                         color="#fff"
                       />
                     ) : (
-                      <Animated.View
-                        style={{
-                          transform: [{ scale: heartBeatAnim }],
-                        }}
-                      >
-                        <Ionicons
-                          name="heart"
-                          size={60}
-                          color={colors.primary}
-                        />
-                      </Animated.View>
+                      <Ionicons
+                        name="heart"
+                        size={60}
+                        color={colors.primary}
+                      />
                     )}
                   </View>
 
@@ -686,43 +675,24 @@ const styles = StyleSheet.create({
     }),
   },
 
-  // Date Card
-  dateCard: {
-    backgroundColor: colors.surface,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  dateContent: {
-    flexDirection: "row",
+  // Date & Time (centered, no card)
+  dateTimeContainer: {
     alignItems: "center",
-  },
-  dateTextContainer: {
-    marginLeft: 12,
+    justifyContent: "center",
+    marginBottom: 30, // Adjust this spacing as needed
   },
   timeText: {
-    fontSize: 24,
+    fontSize: 26, // Slightly larger for emphasis
     fontWeight: "700",
     color: colors.textDark,
+    textAlign: "center",
   },
   dateText: {
     fontSize: 16,
     color: "#6B7280",
-    marginTop: 2,
+    marginTop: 6, // Spacing between time and date
     textTransform: "capitalize",
+    textAlign: "center",
   },
 
   // Main Check-in Area
@@ -833,7 +803,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     backgroundColor: colors.surface,
-    borderRadius: 8,
+    borderRadius: 20,
     padding: 8,
     alignItems: "center",
     borderWidth: 1,
