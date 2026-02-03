@@ -500,9 +500,6 @@ export default function ActivityScreen() {
 }
 
 // ==================== ACTIVITY ITEM ====================
-
-// ==================== ACTIVITY ITEM ====================
-
 function ActivityItem({
   name,
   email,
@@ -623,27 +620,27 @@ function ActivityItem({
         {/* Left icon */}
         <Ionicons
           name={isOwner ? "person-circle" : "person"}
-          size={28}
+          size={20} // Changed from 28 to 24
           color={colors.primary}
-          style={{ marginRight: 12 }}
+          style={{ marginRight: 10 }} // Also reduced from 12
         />
 
         {/* Main content */}
         <View style={{ flex: 1 }}>
           {/* Name and Email row */}
           <View style={styles.nameEmailRow}>
-            <Text style={styles.activityName}>{name}</Text>
-            {email && (
-              <Text style={styles.activityEmail} numberOfLines={1} ellipsizeMode="tail">
-                {email}
-              </Text>
-            )}
+            <Text>
+              <Text style={styles.activityName}>{name}</Text>
+              {email && (
+                <Text style={styles.activityEmail}>  {email}</Text>
+              )}
+            </Text>
           </View>
 
           {/* Time row with timezone and date on right */}
           {isValidTimestamp ? (
             <View style={styles.timeRow}>
-              <View style={styles.timeDot} />
+              {/* <View style={styles.timeDot} /> */}
               <Animated.Text
                 style={[
                   styles.activityTime,
@@ -665,7 +662,7 @@ function ActivityItem({
             </View>
           ) : (
             <View style={styles.timeRow}>
-              <View style={styles.timeDot} />
+              {/* <View style={styrles.timeDot} /> */}
               <Text style={[styles.activityTime, { color: colors.textLight }]}>
                 Ingen check-in ännu
               </Text>
@@ -736,14 +733,16 @@ const styles = StyleSheet.create({
   },
   contactCount: {
     backgroundColor: colors.primaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    minWidth: 24,
-    alignItems: 'center'
+    paddingHorizontal: 4,
+    paddingVertical: 0,  // No vertical padding
+    borderRadius: 6,
+    minWidth: 18,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   contactCountText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600',
     color: colors.primary
   },
@@ -769,7 +768,7 @@ const styles = StyleSheet.create({
   // ==================== STYLES: activityItem ====================
 
   activityItem: {
-    paddingVertical: 16,
+    paddingVertical: 0,
     borderBottomWidth: 1,
     borderBottomColor: "#F3F4F6"
   },
@@ -802,13 +801,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  timeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.primary,
-    marginRight: 8
-  },
+  // timeDot: {
+  //   width: 6,
+  //   height: 6,
+  //   borderRadius: 3,
+  //   backgroundColor: colors.primary,
+  //   marginRight: 8
+  // },
   activityTime: {
     fontSize: 16,
     fontWeight: "600",
