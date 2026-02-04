@@ -19,6 +19,7 @@ type ContactSlot = {
     email: string;
     user_id?: string;
     display_name?: string;
+    id?: string;
 };
 
 interface UserSearchResult {
@@ -34,14 +35,14 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const getKeyboardVerticalOffset = () => {
     if (Platform.OS === 'ios') {
         if (SCREEN_HEIGHT < 700) {
-            return 60; // For smaller screens (iPhone SE, 8, etc.)
+            return 60;
         } else if (SCREEN_HEIGHT < 800) {
-            return 80; // For medium screens (iPhone 11, 12, etc.)
+            return 80;
         } else {
-            return 90; // For larger screens (iPhone Pro Max, etc.)
+            return 90;
         }
     }
-    return 0; // Android handles it differently
+    return 0;
 };
 
 // Memoized Contact Card Component
@@ -52,8 +53,9 @@ const ContactCard = memo(({
     onEmailChange,
     onFocus,
     onBlur,
-    onClear,
+    onRemove,
     inputRef,
+    isNewContact,
 }: {
     contact: ContactSlot;
     index: number;
@@ -61,8 +63,9 @@ const ContactCard = memo(({
     onEmailChange: (text: string) => void;
     onFocus: () => void;
     onBlur: () => void;
-    onClear: () => void;
+    onRemove: () => void;
     inputRef: (ref: TextInput | null) => void;
+    isNewContact: boolean;
 }) => {
     return (
         <View style={[
@@ -74,40 +77,61 @@ const ContactCard = memo(({
                     <View style={styles.cardNumber}>
                         <Text style={styles.cardNumberText}>{index + 1}</Text>
                     </View>
-                    <Text style={styles.cardTitleText}>Kontakt {index + 1}</Text>
+                    <Text style={styles.cardTitleText}>
+                        {isNewContact ? `Ny kontakt` : `Kontakt ${index + 1}`}
+                    </Text>
                 </View>
-                {contact.email.trim() !== "" && (
-                    <TouchableOpacity
-                        onPress={onClear}
-                        style={styles.clearButton}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                        <Ionicons name="close-circle" size={24} color="#9CA3AF" />
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    onPress={onRemove}
+                    style={styles.removeButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                    <Ionicons
+                        name={isNewContact ? "close-circle" : "trash-outline"}
+                        size={24}
+                        color={isNewContact ? "#9CA3AF" : "#EF4444"}
+                    />
+                </TouchableOpacity>
             </View>
 
-            <TextInput
-                ref={inputRef}
-                placeholder="Ange e-postadress"
-                placeholderTextColor="#9CA3AF"
-                value={contact.email}
-                onChangeText={onEmailChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoCorrect={false}
-                spellCheck={false}
-                style={styles.input}
-            />
+            {isNewContact ? (
+                <>
+                    <TextInput
+                        ref={inputRef}
+                        placeholder="Ange e-postadress"
+                        placeholderTextColor="#9CA3AF"
+                        value={contact.email}
+                        onChangeText={onEmailChange}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        autoCorrect={false}
+                        spellCheck={false}
+                        style={styles.input}
+                    />
 
-            {contact.display_name && contact.display_name.trim() !== "" && (
-                <View style={styles.displayNameContainer}>
-                    <Ionicons name="checkmark-circle" size={18} color="#5FA893" />
-                    <Text style={styles.displayNameText}>
-                        Visar som: {contact.display_name}
-                    </Text>
+                    {contact.display_name && contact.display_name.trim() !== "" && (
+                        <View style={styles.displayNameContainer}>
+                            <Ionicons name="checkmark-circle" size={18} color="#5FA893" />
+                            <Text style={styles.displayNameText}>
+                                Visar som: {contact.display_name}
+                            </Text>
+                        </View>
+                    )}
+                </>
+            ) : (
+                <View style={styles.existingContactInfo}>
+                    <View style={styles.existingContactRow}>
+                        <Ionicons name="mail-outline" size={18} color="#6B7280" />
+                        <Text style={styles.existingContactText}>{contact.email}</Text>
+                    </View>
+                    {contact.display_name && contact.display_name.trim() !== "" && (
+                        <View style={styles.existingContactRow}>
+                            <Ionicons name="person-outline" size={18} color="#6B7280" />
+                            <Text style={styles.existingContactText}>{contact.display_name}</Text>
+                        </View>
+                    )}
                 </View>
             )}
         </View>
@@ -115,16 +139,16 @@ const ContactCard = memo(({
 });
 
 export default function ContactsScreen() {
-    const [contacts, setContacts] = useState<ContactSlot[]>([
-        { email: "" },
-        { email: "" },
-        { email: "" },
-    ]);
+    const [existingContacts, setExistingContacts] = useState<ContactSlot[]>([]);
+    const [newContacts, setNewContacts] = useState<ContactSlot[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [activeInputIndex, setActiveInputIndex] = useState<number | null>(null);
     const scrollViewRef = useRef<ScrollView>(null);
     const inputRefs = useRef<(TextInput | null)[]>([]);
+
+    // Calculate total contacts count
+    const totalContactsCount = existingContacts.length + newContacts.length;
 
     useEffect(() => {
         fetchContacts();
@@ -140,30 +164,21 @@ export default function ContactsScreen() {
 
             const { data: contactRows, error } = await supabase
                 .from("contacts")
-                .select("contact_user_id, contact_email, contact_display_name")
+                .select("id, contact_user_id, contact_email, contact_display_name")
                 .eq("owner_user_id", user.id)
-                .order("created_at")
-                .limit(3);
+                .order("created_at");
 
             if (error) throw error;
 
-            const mapped: ContactSlot[] = [
-                { email: "" },
-                { email: "" },
-                { email: "" }
-            ];
+            const contacts: ContactSlot[] = contactRows?.map(row => ({
+                id: row.id,
+                user_id: row.contact_user_id,
+                email: row.contact_email || "",
+                display_name: row.contact_display_name || "",
+            })) || [];
 
-            if (contactRows?.length) {
-                for (let i = 0; i < contactRows.length; i++) {
-                    mapped[i] = {
-                        user_id: contactRows[i].contact_user_id,
-                        email: contactRows[i].contact_email || "",
-                        display_name: contactRows[i].contact_display_name || "",
-                    };
-                }
-            }
-
-            setContacts(mapped);
+            setExistingContacts(contacts);
+            setNewContacts([]);
         } catch (e: any) {
             console.error("Fetch contacts error:", e);
             Alert.alert("Error", "Failed to load contacts");
@@ -172,8 +187,34 @@ export default function ContactsScreen() {
         }
     };
 
-    const updateContactSlot = useCallback((index: number, email: string) => {
-        setContacts(prev => prev.map((contact, i) =>
+    const handleAddNewContact = () => {
+        // Check if we already have 3 contacts (existing + new)
+        if (totalContactsCount >= 3) {
+            Alert.alert(
+                "Gräns nådd",
+                "Du kan bara lägga till upp till 3 kontakter.",
+                [{ text: "OK" }]
+            );
+            return;
+        }
+
+        // Calculate the new contact's index
+        const newContactIndex = totalContactsCount;
+
+        // Add a new empty contact slot
+        setNewContacts(prev => [...prev, { email: "" }]);
+
+        // Focus on the new input after a short delay
+        setTimeout(() => {
+            const inputRef = inputRefs.current[newContactIndex];
+            if (inputRef) {
+                inputRef.focus();
+            }
+        }, 150);
+    };
+
+    const updateNewContact = useCallback((index: number, email: string) => {
+        setNewContacts(prev => prev.map((contact, i) =>
             i === index
                 ? { ...contact, email, display_name: undefined, user_id: undefined }
                 : contact
@@ -185,17 +226,21 @@ export default function ContactsScreen() {
 
         // Use requestAnimationFrame for smoother scrolling
         requestAnimationFrame(() => {
-            // Calculate scroll position based on which input is focused
-            // For the 3rd input, scroll more to ensure it's visible above keyboard
-            let scrollY = index * 140; // Reduced from 180
-
-            // If it's the 3rd input (index 2), scroll extra to ensure visibility
-            if (index === 2) {
-                scrollY += 40; // Extra scroll for the last item
+            // Validate index
+            if (index < 0 || index >= totalContactsCount) {
+                return;
             }
 
+            // Calculate scroll position
+            let scrollY = index * 140;
+
+            // Extra scroll for last item
+            if (index === totalContactsCount - 1) {
+                scrollY += 40;
+            }
+
+            // Scroll to position
             if (Platform.OS === 'ios') {
-                // iOS needs a small delay for proper scrolling
                 setTimeout(() => {
                     scrollViewRef.current?.scrollTo({
                         y: scrollY,
@@ -203,28 +248,82 @@ export default function ContactsScreen() {
                     });
                 }, 250);
             } else {
-                // Android scrolling
                 scrollViewRef.current?.scrollTo({
                     y: scrollY,
                     animated: true,
                 });
             }
         });
-    }, []);
+    }, [totalContactsCount]);
 
-    const handleInputBlur = useCallback(() => {
+    const handleInputBlur = useCallback((index: number) => {
         setActiveInputIndex(null);
+
+        // Check if this is a new contact with empty email
+        if (index >= existingContacts.length) {
+            const newContactIndex = index - existingContacts.length;
+
+            // Remove empty new contact immediately on blur
+            setNewContacts(prev => {
+                const contact = prev[newContactIndex];
+                if (contact && (!contact.email || contact.email.trim() === "")) {
+                    return prev.filter((_, i) => i !== newContactIndex);
+                }
+                return prev;
+            });
+        }
+    }, [existingContacts.length]);
+
+    const removeNewContact = useCallback((index: number) => {
+        setNewContacts(prev => prev.filter((_, i) => i !== index));
     }, []);
 
-    const clearContact = useCallback((index: number) => {
-        setContacts(prev => prev.map((contact, i) =>
-            i === index ? { email: "" } : contact
-        ));
-    }, []);
+    const removeExistingContact = useCallback(async (index: number) => {
+        const contact = existingContacts[index];
 
-    const saveContacts = async () => {
+        Alert.alert(
+            "Ta bort kontakt",
+            `Är du säker på att du vill ta bort ${contact.display_name || contact.email}?`,
+            [
+                { text: "Avbryt", style: "cancel" },
+                {
+                    text: "Ta bort",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            const { error } = await supabase
+                                .from("contacts")
+                                .delete()
+                                .eq("id", contact.id);
+
+                            if (error) throw error;
+
+                            // Remove from local state
+                            setExistingContacts(prev => prev.filter((_, i) => i !== index));
+                        } catch (error: any) {
+                            Alert.alert("Error", "Failed to delete contact");
+                        }
+                    }
+                }
+            ]
+        );
+    }, [existingContacts]);
+
+    const saveNewContacts = async () => {
         // Dismiss keyboard immediately
         inputRefs.current.forEach(ref => ref?.blur());
+
+        // Filter out any empty new contacts
+        const validNewContacts = newContacts.filter(
+            contact => contact.email && contact.email.trim() !== ""
+        );
+
+        // Check if there are no valid new contacts to save
+        if (validNewContacts.length === 0) {
+            Alert.alert("Inga ändringar", "Inga nya kontakter att spara.");
+            return;
+        }
+
         setSaving(true);
 
         try {
@@ -234,7 +333,8 @@ export default function ContactsScreen() {
 
             const resolved: ContactSlot[] = [];
 
-            for (const c of contacts) {
+            // Validate and resolve each new contact
+            for (const c of validNewContacts) {
                 const emailToSearch = c.email.trim();
                 if (!emailToSearch) continue;
 
@@ -259,6 +359,16 @@ export default function ContactsScreen() {
                     return;
                 }
 
+                // Check if contact already exists
+                const alreadyExists = existingContacts.some(
+                    existing => existing.user_id === userResult.user_id
+                );
+
+                if (alreadyExists) {
+                    Alert.alert("Contact exists", `${emailToSearch} is already in your contacts`);
+                    return;
+                }
+
                 resolved.push({
                     user_id: userResult.user_id,
                     email: userResult.email,
@@ -266,14 +376,7 @@ export default function ContactsScreen() {
                 });
             }
 
-            const { error: deleteError } = await supabase
-                .from("contacts")
-                .delete()
-                .eq("owner_user_id", user.id);
-
-            if (deleteError) throw deleteError;
-
-            if (resolved.length) {
+            if (resolved.length > 0) {
                 const { error: insertError } = await supabase
                     .from("contacts")
                     .insert(
@@ -289,19 +392,19 @@ export default function ContactsScreen() {
                 if (insertError) throw insertError;
             }
 
-            Alert.alert("Saved", "Contacts updated successfully");
+            Alert.alert("Sparad", "Nya kontakter har lagts till");
 
-            const updatedContacts = [...resolved];
-            while (updatedContacts.length < 3) {
-                updatedContacts.push({ email: "" });
-            }
-            setContacts(updatedContacts);
+            // Refresh contacts
+            await fetchContacts();
         } catch (e: any) {
             Alert.alert("Error", e.message || "Failed to save contacts");
         } finally {
             setSaving(false);
         }
     };
+
+    // Combine existing and new contacts for rendering
+    const allContacts = [...existingContacts, ...newContacts];
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
@@ -313,11 +416,23 @@ export default function ContactsScreen() {
                 {/* Header */}
                 <View style={styles.header}>
                     <View style={styles.headerRow}>
-                        <Ionicons name="people" size={24} color="#5FA893" />
-                        <Text style={styles.title}>Kontakter</Text>
+                        <View style={styles.headerLeft}>
+                            <Ionicons name="people" size={24} color="#5FA893" />
+                            <Text style={styles.title}>Kontakter</Text>
+                        </View>
+                        <TouchableOpacity
+                            onPress={handleAddNewContact}
+                            style={styles.addButton}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        >
+                            <Ionicons name="add-circle" size={36} color="#5FA893" />
+                        </TouchableOpacity>
                     </View>
                     <Text style={styles.subtitle}>
-                        Lägg till upp till 3 kontakter för att dela med dig
+                        {totalContactsCount > 0
+                            ? `Du har ${totalContactsCount} av 3 möjliga kontakter`
+                            : "Lägg till kontakter för att dela med dig (max 3)"
+                        }
                     </Text>
                 </View>
 
@@ -339,46 +454,67 @@ export default function ContactsScreen() {
                             />
                             <Text style={styles.loadingText}>Laddar kontakter...</Text>
                         </View>
+                    ) : allContacts.length === 0 ? (
+                        <View style={styles.emptyState}>
+                            <Ionicons name="people-outline" size={64} color="#D1D5DB" />
+                            <Text style={styles.emptyStateTitle}>Inga kontakter</Text>
+                            <Text style={styles.emptyStateText}>
+                                Tryck på + knappen för att lägga till din första kontakt
+                            </Text>
+                        </View>
                     ) : (
-                        contacts.map((contact, index) => (
-                            <ContactCard
-                                key={`contact-${index}`}
-                                contact={contact}
-                                index={index}
-                                isActive={activeInputIndex === index}
-                                onEmailChange={(text) => updateContactSlot(index, text)}
-                                onFocus={() => handleInputFocus(index)}
-                                onBlur={handleInputBlur}
-                                onClear={() => clearContact(index)}
-                                inputRef={(ref) => inputRefs.current[index] = ref}
-                            />
-                        ))
+                        allContacts.map((contact, index) => {
+                            const isNewContact = index >= existingContacts.length;
+                            const adjustedIndex = isNewContact
+                                ? index - existingContacts.length
+                                : index;
+
+                            return (
+                                <ContactCard
+                                    key={isNewContact ? `new-${adjustedIndex}` : `existing-${contact.id}`}
+                                    contact={contact}
+                                    index={index}
+                                    isActive={activeInputIndex === index}
+                                    onEmailChange={(text) => updateNewContact(adjustedIndex, text)}
+                                    onFocus={() => handleInputFocus(index)}
+                                    onBlur={() => handleInputBlur(index)}
+                                    onRemove={() => isNewContact
+                                        ? removeNewContact(adjustedIndex)
+                                        : removeExistingContact(adjustedIndex)
+                                    }
+                                    inputRef={(ref) => inputRefs.current[index] = ref}
+                                    isNewContact={isNewContact}
+                                />
+                            );
+                        })
                     )}
                 </ScrollView>
 
-                {/* Save Button */}
-                <View style={styles.footer}>
-                    <TouchableOpacity
-                        disabled={saving}
-                        onPress={saveContacts}
-                        activeOpacity={0.8}
-                        style={[
-                            styles.saveButton,
-                            saving && styles.saveButtonDisabled
-                        ]}
-                    >
-                        <View style={styles.buttonContent}>
-                            {saving ? (
-                                <Ionicons name="refresh" size={18} color="#fff" style={styles.buttonIcon} />
-                            ) : (
-                                <Ionicons name="save" size={18} color="#fff" style={styles.buttonIcon} />
-                            )}
-                            <Text style={styles.buttonText}>
-                                {saving ? "Sparar..." : "Spara kontakter"}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                {/* Save Button (only shown when there are new contacts) */}
+                {newContacts.length > 0 && (
+                    <View style={styles.footer}>
+                        <TouchableOpacity
+                            disabled={saving}
+                            onPress={saveNewContacts}
+                            activeOpacity={0.8}
+                            style={[
+                                styles.saveButton,
+                                saving && styles.saveButtonDisabled
+                            ]}
+                        >
+                            <View style={styles.buttonContent}>
+                                {saving ? (
+                                    <Ionicons name="refresh" size={18} color="#fff" style={styles.buttonIcon} />
+                                ) : (
+                                    <Ionicons name="save" size={18} color="#fff" style={styles.buttonIcon} />
+                                )}
+                                <Text style={styles.buttonText}>
+                                    {saving ? "Sparar..." : `Spara ${newContacts.length} ny${newContacts.length > 1 ? 'a' : ''} kontakt${newContacts.length > 1 ? 'er' : ''}`}
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -395,50 +531,76 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 20,
         paddingTop: 12,
-        marginBottom: 16, // Reduced from 24
+        marginBottom: 16,
     },
     headerRow: {
         flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 6, // Reduced from 8
+        marginBottom: 6,
+    },
+    headerLeft: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     title: {
-        fontSize: 28, // Reduced from 32
+        fontSize: 28,
         fontWeight: "800",
-        marginLeft: 10, // Reduced from 12
+        marginLeft: 10,
         color: "#1F2937",
     },
+    addButton: {
+        padding: 4,
+    },
     subtitle: {
-        fontSize: 14, // Reduced from 16
+        fontSize: 14,
         color: "#6B7280",
-        lineHeight: 20, // Reduced from 22
+        lineHeight: 20,
     },
     scrollView: {
         flex: 1,
     },
     scrollContent: {
         paddingHorizontal: 20,
-        paddingBottom: 16, // Reduced from 20
+        paddingBottom: 16,
     },
     loadingContainer: {
         alignItems: "center",
-        padding: 32, // Reduced from 40
+        padding: 32,
     },
     loadingIcon: {
-        marginBottom: 10, // Reduced from 12
+        marginBottom: 10,
     },
     loadingText: {
-        fontSize: 14, // Reduced from 16
+        fontSize: 14,
         color: "#6B7280",
+    },
+    emptyState: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 60,
+        paddingHorizontal: 20,
+    },
+    emptyStateTitle: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: "#374151",
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    emptyStateText: {
+        fontSize: 14,
+        color: "#6B7280",
+        textAlign: "center",
+        lineHeight: 20,
     },
     card: {
         backgroundColor: "#F9FAFB",
-        borderRadius: 16, // Reduced from 20
-        padding: 16, // Reduced from 20
-        marginBottom: 12, // Reduced from 16
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
         borderWidth: 2,
         borderColor: "#F9FAFB",
-        // Use elevation for Android, simpler shadow for iOS
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
@@ -459,70 +621,88 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 10, // Reduced from 12
+        marginBottom: 10,
     },
     cardTitle: {
         flexDirection: "row",
         alignItems: "center",
     },
     cardNumber: {
-        width: 28, // Reduced from 32
-        height: 28, // Reduced from 32
-        borderRadius: 14, // Reduced from 16
+        width: 28,
+        height: 28,
+        borderRadius: 14,
         backgroundColor: "#5FA893",
         alignItems: "center",
         justifyContent: "center",
-        marginRight: 8, // Reduced from 10
+        marginRight: 8,
     },
     cardNumberText: {
         color: "#fff",
         fontWeight: "600",
-        fontSize: 12, // Reduced from 14
+        fontSize: 12,
     },
     cardTitleText: {
-        fontSize: 16, // Reduced from 18
+        fontSize: 16,
         fontWeight: "600",
         color: "#1F2937",
     },
-    clearButton: {
+    removeButton: {
         padding: 4,
     },
     input: {
         backgroundColor: "#fff",
-        borderRadius: 12, // Reduced from 14
-        padding: 12, // Reduced from 16
-        fontSize: 15, // Reduced from 16
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 15,
         color: "#1F2937",
         borderWidth: 1,
         borderColor: "#E5E7EB",
-        minHeight: 44, // Standard touch target height
+        minHeight: 44,
     },
     displayNameContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 8, // Reduced from 12
-        padding: 10, // Reduced from 12
+        marginTop: 8,
+        padding: 10,
         backgroundColor: "#EDF7F4",
-        borderRadius: 10, // Reduced from 12
+        borderRadius: 10,
     },
     displayNameText: {
-        marginLeft: 6, // Reduced from 8
-        fontSize: 13, // Reduced from 14
+        marginLeft: 6,
+        fontSize: 13,
         color: "#047857",
         fontWeight: "500",
     },
+    existingContactInfo: {
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+    },
+    existingContactRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 8,
+    },
+    existingContactText: {
+        marginLeft: 10,
+        fontSize: 15,
+        color: "#1F2937",
+        flex: 1,
+    },
     footer: {
         paddingHorizontal: 20,
-        paddingTop: 12, // Reduced from 16
-        paddingBottom: Platform.OS === 'ios' ? 20 : 16, // Reduced padding
+        paddingTop: 12,
+        paddingBottom: Platform.OS === 'ios' ? 20 : 16,
         backgroundColor: "#fff",
         borderTopWidth: 1,
         borderTopColor: "#F3F4F6",
     },
     saveButton: {
         backgroundColor: "#5FA893",
-        padding: 16, // Reduced from 18
-        borderRadius: 14, // Reduced from 16
+        padding: 16,
+        borderRadius: 14,
         alignItems: "center",
         ...Platform.select({
             ios: {
@@ -544,11 +724,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonIcon: {
-        marginRight: 6, // Reduced from 8
+        marginRight: 6,
     },
     buttonText: {
         color: "#fff",
-        fontSize: 16, // Reduced from 17
+        fontSize: 16,
         fontWeight: "600",
     },
 });
