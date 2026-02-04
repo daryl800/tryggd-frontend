@@ -57,12 +57,29 @@ const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 16;
 
 // ==================== UTILITY FUNCTIONS ====================
 
-const getGreeting = (date: Date): string => {
+// Helper function to get both greeting and icon name
+const getGreetingInfo = (date: Date): { greeting: string; iconName: string } => {
   const hour = date.getHours();
-  if (hour >= 5 && hour < 12) return "God morgon";
-  if (hour >= 12 && hour < 18) return "God eftermiddag";
-  if (hour >= 18 && hour < 22) return "God kväll";
-  return "God natt";
+
+  if (hour >= 5 && hour < 12) return {
+    greeting: "God morgon",
+    iconName: "sunny"
+  };
+
+  if (hour >= 12 && hour < 18) return {
+    greeting: "God eftermiddag",
+    iconName: "partly-sunny" // or "sunny-outline" for a lighter sun
+  };
+
+  if (hour >= 18 && hour < 22) return {
+    greeting: "God kväll",
+    iconName: "moon" // or "cloudy-night"
+  };
+
+  return {
+    greeting: "God natt",
+    iconName: "moon" // or "bed" or "moon-outline"
+  };
 };
 
 const formatTimeLeft = (ms: number): string => {
@@ -90,7 +107,7 @@ export default function HomeScreen() {
   const [checkedInToday, setCheckedInToday] = useState(false);
   const [lastCheckinUtc, setLastCheckinUtc] = useState<string | null>(null);
   const [lastCheckinId, setLastCheckinId] = useState<string | null>(null);
-  const { streak, loading: streakLoading } = useStreak(); // NEW: Use hook
+  const { streak, loading: streakLoading } = useStreak();
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -386,6 +403,8 @@ export default function HomeScreen() {
     );
   }
 
+  const greetingInfo = getGreetingInfo(now);
+
   return (
     <SafeAreaView style={styles.container}>
       <Animated.View
@@ -395,8 +414,8 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.headerRow}>
-              <Ionicons name="sunny" size={24} color="#5FA893" />
-              <Text style={styles.greeting}>{getGreeting(now)}</Text>
+              <Ionicons name={greetingInfo.iconName as any} size={24} color="#5FA893" />
+              <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
             </View>
             <Text style={styles.displayName} numberOfLines={1}>
               {profile?.display_name || "Välkommen"}
