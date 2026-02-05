@@ -1,3 +1,4 @@
+// app/(tabs)/index.tsx
 import { useStreak } from "@/hooks/useStreak";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -5,6 +6,7 @@ import * as Haptics from "expo-haptics";
 import * as Localization from 'expo-localization';
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Animated,
   AppState,
@@ -19,10 +21,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Circle, Defs, Stop, Svg, LinearGradient as SvgGradient } from "react-native-svg";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
-
-// ==================== CONSTANTS ====================
-
-const locale = (Localization as any).locale; // "en-US", "sv-SE", etc.
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -51,34 +49,31 @@ const CIRCLE_GAP = 8;
 const STORAGE_KEY = "@checkin_state";
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
-// Platform-specific adjustments
 const IS_IOS = Platform.OS === 'ios';
 const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 16;
 
-// ==================== UTILITY FUNCTIONS ====================
-
 // Helper function to get both greeting and icon name
-const getGreetingInfo = (date: Date): { greeting: string; iconName: string } => {
+const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
 
   if (hour >= 5 && hour < 12) return {
-    greeting: "God morgon",
+    greeting: t("home.greetings.morning"),
     iconName: "sunny"
   };
 
   if (hour >= 12 && hour < 18) return {
-    greeting: "God eftermiddag",
-    iconName: "partly-sunny" // or "sunny-outline" for a lighter sun
+    greeting: t("home.greetings.afternoon"),
+    iconName: "partly-sunny"
   };
 
   if (hour >= 18 && hour < 22) return {
-    greeting: "God kväll",
-    iconName: "moon" // or "cloudy-night"
+    greeting: t("home.greetings.evening"),
+    iconName: "moon"
   };
 
   return {
-    greeting: "God natt",
-    iconName: "moon" // or "bed" or "moon-outline"
+    greeting: t("home.greetings.night"),
+    iconName: "moon"
   };
 };
 
@@ -96,10 +91,119 @@ const isNearMidnight = (date: Date): boolean => {
   return (hours === 0 && minutes === 0) || (hours === 23 && minutes === 59);
 };
 
-// ==================== MAIN COMPONENT ====================
+// Manual date formatting using translations
+// Fixed date formatting function with safer language checking
+// Fixed date formatting function with safer language checking
+// Helper function to convert numbers to Chinese numerals
+const numberToChinese = (num: number): string => {
+  const chineseNumbers = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+
+  if (num <= 10) {
+    return chineseNumbers[num];
+  } else if (num <= 19) {
+    return '十' + (num === 10 ? '' : chineseNumbers[num % 10]);
+  } else if (num <= 29) {
+    return '二十' + (num === 20 ? '' : chineseNumbers[num % 10]);
+  } else if (num === 30) {
+    return '三十';
+  } else if (num === 31) {
+    return '三十一';
+  } else {
+    return num.toString(); // fallback
+  }
+};
+
+// Updated date formatting function
+const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
+  const weekdayIndex = date.getDay();
+  const monthIndex = date.getMonth();
+  const day = date.getDate();
+
+  // Default to English if no language provided
+  const lang = language || 'en';
+
+  try {
+    // Try to get translations
+    const weekdayKey = `home.dateFormats.weekdays.${weekdayIndex}`;
+    const monthKey = `home.dateFormats.months.${monthIndex}`;
+
+    const weekday = t(weekdayKey, { lng: lang });
+    const month = t(monthKey, { lng: lang });
+
+    // Check if we got valid translations
+    const gotWeekday = weekday && typeof weekday === 'string' && !weekday.includes('home.dateFormats');
+    const gotMonth = month && typeof month === 'string' && !month.includes('home.dateFormats');
+
+    if (gotWeekday && gotMonth) {
+      // We have valid translations
+      const isChinese = lang.startsWith('zh') || lang.includes('Chinese');
+
+      if (isChinese) {
+        // Chinese format: "星期一, 二月五号" (with Chinese numeral)
+        const chineseDay = numberToChinese(day);
+        // Make sure month doesn't already have "月"
+        const cleanMonth = month.replace('月', '');
+        return `${weekday}, ${cleanMonth}月${chineseDay}号`;
+      } else {
+        // Western format: "Monday, 5 February"
+        return `${weekday}, ${day} ${month}`;
+      }
+    }
+  } catch (error) {
+    console.log('Translation attempt failed:', error);
+  }
+
+  // Fallback to English
+  const englishWeekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const englishMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  const weekday = englishWeekdays[weekdayIndex];
+  const month = englishMonths[monthIndex];
+
+  const isChinese = lang.startsWith('zh') || lang.includes('Chinese');
+  if (isChinese) {
+    // Chinese format with English month names (fallback)
+    const chineseDay = numberToChinese(day);
+    return `${weekday}, ${month}月${chineseDay}号`;
+  } else {
+    // English format
+    return `${weekday}, ${day} ${month}`;
+  }
+};
+
+// Time formatting with locale
+const formatTime24h = (date: Date, language: string) => {
+  const localeMap: Record<string, string> = {
+    'en': 'en-US',
+    'sv': 'sv-SE',
+    'no': 'nb-NO',
+    'da': 'da-DK',
+    'fi': 'fi-FI',
+    'zh-Hans': 'zh_Hans',
+    'zh-Hant': 'zh-Hant',
+    'zh': 'zh-CN',
+  };
+
+  const locale = localeMap[language] || 'en-US';
+
+  try {
+    return date.toLocaleTimeString(locale, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } catch (error) {
+    return date.toLocaleTimeString('en-US', {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  }
+};
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
   const { user, profile, loading } = useAuth();
 
   // State
@@ -118,8 +222,6 @@ export default function HomeScreen() {
   const successScaleAnim = useRef(new Animated.Value(0)).current;
   const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
-  // ==================== ANIMATION EFFECTS ====================
-
   // Fade in on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -132,7 +234,6 @@ export default function HomeScreen() {
   // Heart beat animation when not checked in
   useEffect(() => {
     if (!checkedInToday && !isInitialLoad) {
-      // Main button pulse animation
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -149,7 +250,6 @@ export default function HomeScreen() {
       );
       pulse.start();
 
-      // Heart beat animation
       const heartBeat = Animated.loop(
         Animated.sequence([
           Animated.timing(heartBeatAnim, {
@@ -183,32 +283,15 @@ export default function HomeScreen() {
         tension: 100,
         useNativeDriver: true,
       }).start();
-      heartBeatAnim.setValue(1); // Reset heart animation
+      heartBeatAnim.setValue(1);
     } else {
       successScaleAnim.setValue(0);
     }
   }, [checkedInToday]);
 
-  // ==================== HANDLERS ====================
-
-  const formatTime24h = (date: Date) =>
-    date.toLocaleTimeString("sv-SE", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-
-  const formatDateSv = (date: Date) =>
-    date.toLocaleDateString(locale, {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-    });
-
   const triggerCheckInAnimation = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    // Heart pulse effect when pressing
     Animated.sequence([
       Animated.timing(heartBeatAnim, {
         toValue: 1.3,
@@ -252,7 +335,6 @@ export default function HomeScreen() {
     }
   }, [resetAllState]);
 
-
   const fetchLastCheckin = useCallback(async () => {
     if (!user) return;
 
@@ -263,7 +345,7 @@ export default function HomeScreen() {
       .maybeSingle();
 
     if (error) {
-      console.error("Fetch last check-in error:", error);
+      console.error(t("home.errors.fetchLastCheckin"), error);
       return;
     }
 
@@ -272,26 +354,22 @@ export default function HomeScreen() {
       setCheckedInToday(true);
       setShowResetButton(true);
     }
-  }, [user]);
-
+  }, [user, t]);
 
   const handleCheckIn = useCallback(async () => {
     try {
-      if (!user) throw new Error("No user found");
+      if (!user) throw new Error(t("home.errors.noUser"));
 
-      triggerCheckInAnimation(); // existing animation
+      triggerCheckInAnimation();
 
-      // 1️⃣ Detect device timezone
-      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";// e.g., "Asia/Hong_Kong"
+      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       console.log("Device timezone:", tz);
 
-      // 2️⃣ Insert check-in into Supabase
-      //    We now include checkin_timezone
       const { data, error } = await supabase
         .from("checkins")
         .insert({
           user_id: user.id,
-          checkin_timezone: tz, // pass device timezone
+          checkin_timezone: tz,
         })
         .select("id, checked_in_at_utc")
         .single();
@@ -299,13 +377,11 @@ export default function HomeScreen() {
       if (error) throw error;
       if (!data) return;
 
-      // 3️⃣ Update local state
       setCheckedInToday(true);
       setShowResetButton(true);
       setLastCheckinUtc(data.checked_in_at_utc);
       setLastCheckinId(data.id);
 
-      // 4️⃣ Persist locally (UTC + timezone)
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
@@ -316,18 +392,16 @@ export default function HomeScreen() {
       );
 
     } catch (err) {
-      console.error("Check-in error:", err);
+      console.error(t("home.errors.checkin"), err);
     }
-  }, [user]);
+  }, [user, t]);
 
-  // ==================== LIFECYCLE EFFECTS ====================
-
+  // Lifecycle effects
   useEffect(() => {
     if (!loading && user) {
       fetchLastCheckin();
     }
   }, [loading, user, fetchLastCheckin]);
-
 
   useEffect(() => {
     if (loading) return;
@@ -365,26 +439,21 @@ export default function HomeScreen() {
         setShowResetButton(parsed.checkedInToday ?? false);
         setLastCheckinUtc(parsed.lastCheckinUtc ?? null);
       } catch (err) {
-        console.error("Error loading state:", err);
+        console.error(t("home.errors.loadState"), err);
       } finally {
         setIsInitialLoad(false);
       }
     };
 
     loadState();
-  }, []);
+  }, [t]);
 
-
-  // ==================== CALCULATIONS ====================
-
+  // Calculations
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
-
   const elapsedMs = now.getTime() - startOfDay.getTime();
   const progress = Math.min(elapsedMs / MS_IN_DAY, 1);
   const remainingMs = Math.max(0, MS_IN_DAY - elapsedMs);
-
-  // ==================== RENDER ====================
 
   if (loading || isInitialLoad) {
     return (
@@ -403,7 +472,7 @@ export default function HomeScreen() {
     );
   }
 
-  const greetingInfo = getGreetingInfo(now);
+  const greetingInfo = getGreetingInfo(now, t);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -419,7 +488,7 @@ export default function HomeScreen() {
                 <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
               </View>
               <Text style={styles.displayName} numberOfLines={1}>
-                {profile?.display_name || "Välkommen"}
+                {profile?.display_name || t("home.welcome")}
               </Text>
             </View>
 
@@ -436,10 +505,10 @@ export default function HomeScreen() {
         {/* ========== GROUP 2: DATE & TIME ========== */}
         <View style={[styles.dateTimeGroup, styles.groupContainer]}>
           <Text style={styles.timeText}>
-            {formatTime24h(now)}
+            {formatTime24h(now, i18n.language)}
           </Text>
           <Text style={styles.dateText}>
-            {formatDateSv(now)}
+            {formatDateWithTranslation(now, t, i18n.language)}
           </Text>
         </View>
 
@@ -456,7 +525,7 @@ export default function HomeScreen() {
                 activeOpacity={0.9}
                 style={[styles.checkInButton, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
               >
-                {/* Outer Circle Border - ADD THIS */}
+                {/* Outer Circle Border */}
                 <View
                   style={{
                     position: 'absolute',
@@ -550,22 +619,22 @@ export default function HomeScreen() {
                             { transform: [{ scale: successScaleAnim }] },
                           ]}
                         >
-                          <Text style={styles.checkedInText}>Incheckad idag!</Text>
+                          <Text style={styles.checkedInText}>{t("home.checkedInToday")}</Text>
                         </Animated.View>
                         <Text style={styles.checkInTime}>
                           {lastCheckinUtc
-                            ? "@ " + formatTime24h(new Date(lastCheckinUtc))
+                            ? "@ " + formatTime24h(new Date(lastCheckinUtc), i18n.language)
                             : ""}
                         </Text>
                       </>
                     ) : (
                       <>
-                        <Text style={styles.ctaText}>CHECKA IN</Text>
+                        <Text style={styles.ctaText}>{t("home.checkIn")}</Text>
                         <Text style={styles.countdownText}>
                           {formatTimeLeft(remainingMs)}
                         </Text>
                         <Text style={styles.timeLeftText}>
-                          Time left idag
+                          {t("home.timeLeftToday")}
                         </Text>
                       </>
                     )}
@@ -584,7 +653,7 @@ export default function HomeScreen() {
                 <Ionicons name="alert-circle" size={18} color={colors.error} />
               </View>
               <Text style={styles.warningText}>
-                Glöm inte att checka in idag!
+                {t("home.dontForget")}
               </Text>
             </View>
           </View>
@@ -604,8 +673,8 @@ export default function HomeScreen() {
                     <Ionicons name="refresh" size={24} color={colors.error} />
                   </View>
                 </View>
-                <Text style={styles.resetText}>Återställ</Text>
-                <Text style={styles.cardSubtext}>Timer</Text>
+                <Text style={styles.resetText}>{t("home.reset")}</Text>
+                <Text style={styles.cardSubtext}>{t("home.timer")}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -618,8 +687,8 @@ export default function HomeScreen() {
                     <Ionicons name="pulse" size={24} color={colors.primary} />
                   </View>
                 </View>
-                <Text style={styles.cardLabel}>Aktivitet</Text>
-                <Text style={styles.cardSubtext}>Historik</Text>
+                <Text style={styles.cardLabel}>{t("home.activity")}</Text>
+                <Text style={styles.cardSubtext}>{t("home.history")}</Text>
               </TouchableOpacity>
             )}
 
@@ -633,9 +702,9 @@ export default function HomeScreen() {
                   <Ionicons name="flame" size={24} color={colors.primary} />
                 </View>
               </View>
-              <Text style={styles.cardLabel}>Streak</Text>
+              <Text style={styles.cardLabel}>{t("home.streak")}</Text>
               <Text style={styles.streakValue}>
-                {streak} {streak === 1 ? "dag" : "dagar"}
+                {t("home.days", { count: streak })}
               </Text>
             </TouchableOpacity>
           </View>
@@ -646,7 +715,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 24; // Constant spacing between all groups
+const GROUP_GAP = 24;
 
 const styles = StyleSheet.create({
   container: {
@@ -670,16 +739,10 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: BOTTOM_BUTTON_MARGIN,
   },
-
-  // Group container styles
   groupContainer: {
-    marginBottom: GROUP_GAP, // Use constant here
+    marginBottom: GROUP_GAP,
   },
-
-  // Header Group
-  headerGroup: {
-    // REMOVE marginBottom: 16, - let groupContainer handle it
-  },
+  headerGroup: {},
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -727,8 +790,6 @@ const styles = StyleSheet.create({
       },
     }),
   },
-
-  // Date & Time Group
   dateTimeGroup: {
     alignItems: "center",
     justifyContent: "center",
@@ -746,17 +807,13 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     textAlign: "center",
   },
-
-  // Main Check-in Group
   checkInGroup: {
     alignItems: "center",
     justifyContent: "center",
-    // REMOVE minHeight: 370,
   },
   checkInContainer: {
     alignItems: "center",
     justifyContent: "center",
-    // REMOVE marginBottom: 16,
   },
   checkInButton: {
     alignItems: "center",
@@ -826,11 +883,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 2,
   },
-
-  // Warning Group
-  warningGroup: {
-    // REMOVE marginBottom: 16,
-  },
+  warningGroup: {},
   warningContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -851,11 +904,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.error,
   },
-
-  // Action Cards Group
-  cardsGroup: {
-    // REMOVE marginBottom: 16,
-  },
+  cardsGroup: {},
   cardsContainer: {
     flexDirection: "row",
     gap: 16,

@@ -1,0 +1,295 @@
+{
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome",
+    "greetings": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "night": "Good night"
+    },
+    "checkedInToday": "Checked in today!",
+    "dontForget": "Don't forget to check in today!",
+    "checkIn": "CHECK IN",
+    "reset": "Reset",
+    "timer": "Timer",
+    "timeLeftToday": "Time left today",
+    "activity": "Activity",
+    "history": "History",
+    "streak": "Streak",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "dateFormats": {
+      "weekdays": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "months": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ]
+    },
+    "errors": {
+      "fetchLastCheckin": "Failed to fetch last check-in",
+      "noUser": "No user found",
+      "checkin": "Check-in failed",
+      "loadState": "Failed to load state"
+    }
+  },
+  "activity": {
+    "title": "Activity",
+    "subtitle": "Your and your contacts' latest check-ins",
+    "you": "You",
+    "yourActivity": "Your activity",
+    "contacts": "Contacts",
+    "loading": "Loading activities...",
+    "noCheckIn": "No check-in yet",
+    "emptyState": {
+      "title": "No contacts",
+      "message": "Add contacts to see their activities"
+    },
+    "priority": {
+      "failed": "Failed",
+      "ongoing": "Ongoing",
+      "successful": "Successful"
+    },
+    "time": {
+      "locale": "en-US"
+    },
+    "errors": {
+      "loadActivities": "Failed to load activities",
+      "fetchContacts": "Failed to fetch contacts",
+      "fetchOwnerActivity": "Failed to fetch owner activity"
+    }
+  },
+  "contacts": {
+    "title": "Contacts",
+    "contact": "Contact",
+    "newContact": "New contact",
+    "displayingAs": "Displaying as",
+    "loading": "Loading contacts...",
+    "subtitle": {
+      "withContacts": "You have {{count}} of 3 possible contacts",
+      "noContacts": "Add contacts to share with (max 3)"
+    },
+    "emptyState": {
+      "title": "No contacts",
+      "message": "Press the + button to add your first contact"
+    },
+    "tabs": {
+      "contacts": "Contacts",
+      "requests": "Requests"
+    },
+    "requests": {
+      "received": "Received Requests",
+      "sent": "Sent Requests",
+      "waiting": "Waiting for response",
+      "loading": "Loading requests...",
+      "emptyState": {
+        "title": "No requests",
+        "message": "When someone sends you a contact request, it will appear here"
+      }
+    },
+    "placeholders": {
+      "email": "Enter email address"
+    },
+    "buttons": {
+      "accept": "Accept",
+      "reject": "Reject",
+      "delete": "Delete",
+      "cancelRequest": "Cancel request",
+      "sending": "Sending...",
+      "sendRequests": "Send request{{count, plural, =1 {} other {s}}}"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Limit reached",
+        "message": "You can only add up to 3 contacts."
+      },
+      "delete": {
+        "title": "Delete contact",
+        "message": "Are you sure you want to delete {{name}}?"
+      },
+      "contactExists": {
+        "title": "Contact already exists",
+        "message": "{{name}} is already in your contacts"
+      },
+      "requestExists": {
+        "title": "Request already sent",
+        "message": "You have already sent a request to this user."
+      },
+      "requestReceived": {
+        "title": "Request received",
+        "message": "You already have a request from {{email}}. Check under \"Requests\"."
+      },
+      "invalidEmail": {
+        "title": "Invalid email",
+        "message": "{{email}} is not registered or not verified"
+      },
+      "selfContact": {
+        "title": "Invalid contact",
+        "message": "You cannot add yourself as a contact"
+      },
+      "noChanges": {
+        "title": "No changes",
+        "message": "No new contacts to save."
+      },
+      "alreadyInContacts": "This user is already in your contacts",
+      "requestHandled": {
+        "title": "Request already handled",
+        "message": "This request has already been handled"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Request sent",
+        "message": "Contact request sent to {{name}}"
+      },
+      "contactAdded": {
+        "title": "Contact added",
+        "message": "{{name}} has been added to your contacts"
+      },
+      "deleted": {
+        "title": "Contact removed",
+        "message": "{{name}} has been removed. All relationships have been deleted."
+      },
+      "requestRejected": {
+        "title": "Request rejected",
+        "message": "Contact request has been rejected"
+      },
+      "requestCancelled": {
+        "title": "Request cancelled",
+        "message": "Contact request has been cancelled"
+      }
+    },
+    "errors": {
+      "loadData": "Failed to load data",
+      "save": "Failed to save contacts",
+      "delete": "Failed to delete contact",
+      "sendRequest": "Failed to send contact request",
+      "search": "Could not search for user",
+      "requestNotFound": "Could not find contact request or it was already handled",
+      "accept": "Failed to accept contact request",
+      "reject": "Failed to reject request",
+      "cancel": "Failed to cancel request"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "defaultName": "User",
+    "loading": "Loading profile...",
+    "buttons": {
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "logout": "Log Out"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "notSpecified": "Not specified"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "App settings and notifications"
+    },
+    "avatarModal": {
+      "title": "Change Profile Picture",
+      "takePhoto": "Take photo",
+      "chooseFromLibrary": "Choose from library"
+    },
+    "logout": {
+      "title": "Log Out",
+      "confirm": "Are you sure?",
+      "button": "Log Out"
+    },
+    "permissions": {
+      "camera": "Camera access is required"
+    },
+    "notices": {
+      "title": "Notice",
+      "emailConfirmation": "Profile saved but email change requires confirmation"
+    },
+    "success": {
+      "title": "Saved",
+      "saved": "Your profile has been updated."
+    },
+    "errors": {
+      "loadProfile": "Could not load profile",
+      "notLoggedIn": "You are not logged in",
+      "updateProfile": "Could not update profile",
+      "saveProfile": "Could not save profile"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "information": "Information",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "notificationsDesc": "Enable notifications for check-ins",
+    "about": "About",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "logout": "Log Out",
+    "resetData": "Reset Data",
+    "light": "Light",
+    "dark": "Dark",
+    "systemDefault": "Use system setting",
+    "english": "English",
+    "swedish": "Swedish",
+    "norwegian": "Norwegian",
+    "danish": "Danish",
+    "finnish": "Finnish",
+    "chineseSimplified": "Chinese (Simplified)",
+    "chineseTraditional": "Chinese (Traditional)",
+    "resetWarning": "Are you sure? All your data will be deleted.",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "confirmReset": "Reset",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} hour{{count, plural, =1 {} other {s}}} ago",
+    "daysAgo": "{{count}} day{{count, plural, =1 {} other {s}}} ago"
+  },
+  "errors": {
+    "title": "Error",
+    "notAuthenticated": "Not authenticated"
+  },
+  "permissions": {
+    "title": "Permission"
+  }
+}

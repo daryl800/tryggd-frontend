@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // ADD THIS
 import {
     Alert,
     Dimensions,
@@ -32,6 +33,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ProfileScreen() {
     const router = useRouter();
+    const { t } = useTranslation(); // ADD THIS
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -89,7 +91,7 @@ export default function ProfileScreen() {
             }
         } catch (error) {
             console.error("Error loading profile:", error);
-            Alert.alert("Fel", "Kunde inte ladda profilen");
+            Alert.alert(t("errors.title"), t("profile.errors.loadProfile"));
         } finally {
             setLoading(false);
         }
@@ -101,7 +103,7 @@ export default function ProfileScreen() {
                 .from("profiles")
                 .insert({
                     id: user.id,
-                    display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || "Användare",
+                    display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || t("profile.defaultName"),
                     email: user.email || "",
                     avatar_url: "",
                 });
@@ -124,7 +126,7 @@ export default function ProfileScreen() {
             const { data: { user } } = await supabase.auth.getUser();
 
             if (!user) {
-                Alert.alert("Fel", "Du är inte inloggad");
+                Alert.alert(t("errors.title"), t("profile.errors.notLoggedIn"));
                 return;
             }
 
@@ -139,7 +141,7 @@ export default function ProfileScreen() {
 
             if (error) {
                 console.error("Error updating profile:", error);
-                Alert.alert("Fel", "Kunde inte uppdatera profilen");
+                Alert.alert(t("errors.title"), t("profile.errors.updateProfile"));
                 return;
             }
 
@@ -150,7 +152,7 @@ export default function ProfileScreen() {
 
                 if (emailError) {
                     console.error("Error updating email:", emailError);
-                    Alert.alert("Notis", "Profilen sparades men e-poständring kräver bekräftelse");
+                    Alert.alert(t("profile.notices.title"), t("profile.notices.emailConfirmation"));
                 }
             }
 
@@ -161,10 +163,10 @@ export default function ProfileScreen() {
             }));
 
             setIsEditing(false);
-            Alert.alert("Sparat", "Din profil har uppdaterats.");
+            Alert.alert(t("profile.success.title"), t("profile.success.saved"));
         } catch (error) {
             console.error("Error saving profile:", error);
-            Alert.alert("Fel", "Kunde inte spara profilen");
+            Alert.alert(t("errors.title"), t("profile.errors.saveProfile"));
         } finally {
             setSaving(false);
         }
@@ -192,7 +194,7 @@ export default function ProfileScreen() {
         try {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== "granted") {
-                Alert.alert("Behörighet", "Kameraåtkomst krävs");
+                Alert.alert(t("permissions.title"), t("profile.permissions.camera"));
                 return;
             }
 
@@ -213,13 +215,13 @@ export default function ProfileScreen() {
     };
 
     const handleLogout = async () => {
-        Alert.alert("Logga ut", "Är du säker?", [
+        Alert.alert(t("profile.logout.title"), t("profile.logout.confirm"), [
             {
-                text: "Avbryt",
+                text: t("common.cancel"),
                 style: "cancel",
             },
             {
-                text: "Logga ut",
+                text: t("profile.logout.button"),
                 style: "destructive",
                 onPress: async () => {
                     await supabase.auth.signOut();
@@ -256,7 +258,7 @@ export default function ProfileScreen() {
                 />
             ) : (
                 <Text style={styles.fieldValue}>
-                    {value || <Text style={styles.placeholderText}>Ej angivet</Text>}
+                    {value || <Text style={styles.placeholderText}>{t("profile.fields.notSpecified")}</Text>}
                 </Text>
             )}
         </View>
@@ -266,7 +268,7 @@ export default function ProfileScreen() {
         return (
             <SafeAreaView style={styles.loadingContainer}>
                 <Ionicons name="refresh" size={40} color="#9CA3AF" style={styles.loadingIcon} />
-                <Text style={styles.loadingText}>Laddar profil...</Text>
+                <Text style={styles.loadingText}>{t("profile.loading")}</Text>
             </SafeAreaView>
         );
     }
@@ -282,9 +284,8 @@ export default function ProfileScreen() {
                 <View style={styles.header}>
                     <View style={styles.headerRow}>
                         <Ionicons name="person-circle" size={28} color="#5FA893" />
-                        <Text style={styles.title}>Profil</Text>
+                        <Text style={styles.title}>{t("profile.title")}</Text>
                     </View>
-
                 </View>
 
                 {/* Avatar Section */}
@@ -318,7 +319,7 @@ export default function ProfileScreen() {
                             activeOpacity={0.7}
                         >
                             <Ionicons name="create-outline" size={20} color="#5FA893" />
-                            <Text style={styles.editButtonText}>Edit</Text>
+                            <Text style={styles.editButtonText}>{t("profile.buttons.edit")}</Text>
                         </TouchableOpacity>
                     ) : (
                         <View style={styles.editActions}>
@@ -327,7 +328,7 @@ export default function ProfileScreen() {
                                 style={[styles.actionButton, styles.cancelButton]}
                                 activeOpacity={0.7}
                             >
-                                <Text style={styles.cancelButtonText}>Avbryt</Text>
+                                <Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={saveProfile}
@@ -337,7 +338,7 @@ export default function ProfileScreen() {
                             >
                                 <Ionicons name="save-outline" size={18} color="#fff" />
                                 <Text style={styles.saveButtonText}>
-                                    {saving ? "Sparar..." : "Spara"}
+                                    {saving ? t("profile.buttons.saving") : t("profile.buttons.save")}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -346,10 +347,9 @@ export default function ProfileScreen() {
 
                 {/* Profile Info Card */}
                 <View style={styles.infoCard}>
-
-                    {renderField("Name", profile.display_name || "", "display_name")}
-                    {renderField("E-mail", profile.email || "", "email", false)}
-                    {renderField("Phone number", profile.phone || "", "phone")}
+                    {renderField(t("profile.fields.name"), profile.display_name || "", "display_name")}
+                    {renderField(t("profile.fields.email"), profile.email || "", "email", false)}
+                    {renderField(t("profile.fields.phone"), profile.phone || "", "phone")}
                 </View>
 
                 {/* Settings Card */}
@@ -363,8 +363,8 @@ export default function ProfileScreen() {
                             <Ionicons name="settings-outline" size={22} color="#5FA893" />
                         </View>
                         <View style={styles.settingsTextContainer}>
-                            <Text style={styles.settingsTitle}>Inställningar</Text>
-                            <Text style={styles.settingsSubtitle}>Appinställningar och meddelanden</Text>
+                            <Text style={styles.settingsTitle}>{t("profile.settings.title")}</Text>
+                            <Text style={styles.settingsSubtitle}>{t("profile.settings.subtitle")}</Text>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
                     </View>
@@ -377,7 +377,7 @@ export default function ProfileScreen() {
                     activeOpacity={0.7}
                 >
                     <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-                    <Text style={styles.logoutText}>Logga ut</Text>
+                    <Text style={styles.logoutText}>{t("profile.buttons.logout")}</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -389,7 +389,7 @@ export default function ProfileScreen() {
                 >
                     <Pressable style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Ändra profilbild</Text>
+                            <Text style={styles.modalTitle}>{t("profile.avatarModal.title")}</Text>
                             <TouchableOpacity onPress={() => setShowAvatarModal(false)}>
                                 <Ionicons name="close" size={24} color="#6B7280" />
                             </TouchableOpacity>
@@ -401,7 +401,7 @@ export default function ProfileScreen() {
                             activeOpacity={0.7}
                         >
                             <Ionicons name="images-outline" size={24} color="#5FA893" />
-                            <Text style={styles.modalOptionText}>Välj från bibliotek</Text>
+                            <Text style={styles.modalOptionText}>{t("profile.avatarModal.chooseFromLibrary")}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -410,7 +410,7 @@ export default function ProfileScreen() {
                             activeOpacity={0.7}
                         >
                             <Ionicons name="camera-outline" size={24} color="#5FA893" />
-                            <Text style={styles.modalOptionText}>Ta foto</Text>
+                            <Text style={styles.modalOptionText}>{t("profile.avatarModal.takePhoto")}</Text>
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
@@ -586,17 +586,6 @@ const styles = StyleSheet.create({
                 elevation: 2,
             },
         }),
-    },
-    infoCardHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    infoCardTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#1F2937",
-        marginLeft: 10,
     },
     fieldContainer: {
         marginBottom: GAP,

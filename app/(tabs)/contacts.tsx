@@ -2,6 +2,7 @@ import { sendContactRequestNotification } from "@/lib/notifications";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next"; // ADD THIS
 import {
     Alert,
     Dimensions,
@@ -41,10 +42,8 @@ interface UserSearchResult {
     display_name: string;
 }
 
-// Get screen dimensions
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Calculate optimal keyboard vertical offset
 const getKeyboardVerticalOffset = () => {
     if (Platform.OS === 'ios') {
         if (SCREEN_HEIGHT < 700) return 60;
@@ -54,7 +53,6 @@ const getKeyboardVerticalOffset = () => {
     return 0;
 };
 
-// Memoized Contact Card Component
 const ContactCard = memo(({
     contact,
     index,
@@ -76,6 +74,8 @@ const ContactCard = memo(({
     inputRef: (ref: TextInput | null) => void;
     isNewContact: boolean;
 }) => {
+    const { t } = useTranslation(); // ADD THIS
+
     return (
         <View style={[
             styles.card,
@@ -87,7 +87,7 @@ const ContactCard = memo(({
                         <Text style={styles.cardNumberText}>{index + 1}</Text>
                     </View>
                     <Text style={styles.cardTitleText}>
-                        {isNewContact ? `Ny kontakt` : `Kontakt ${index + 1}`}
+                        {isNewContact ? t("contacts.newContact") : `${t("contacts.contact")} ${index + 1}`}
                     </Text>
                 </View>
                 <TouchableOpacity
@@ -107,7 +107,7 @@ const ContactCard = memo(({
                 <>
                     <TextInput
                         ref={inputRef}
-                        placeholder="Ange e-postadress"
+                        placeholder={t("contacts.placeholders.email")}
                         placeholderTextColor="#9CA3AF"
                         value={contact.email}
                         onChangeText={onEmailChange}
@@ -124,7 +124,7 @@ const ContactCard = memo(({
                         <View style={styles.displayNameContainer}>
                             <Ionicons name="checkmark-circle" size={18} color="#5FA893" />
                             <Text style={styles.displayNameText}>
-                                Visar som: {contact.display_name}
+                                {t("contacts.displayingAs")} {contact.display_name}
                             </Text>
                         </View>
                     )}
@@ -147,7 +147,6 @@ const ContactCard = memo(({
     );
 });
 
-// Contact Request Card Component
 const ContactRequestCard = memo(({
     request,
     onAccept,
@@ -161,6 +160,8 @@ const ContactRequestCard = memo(({
     onCancel: () => void;
     isOutgoing: boolean;
 }) => {
+    const { t } = useTranslation(); // ADD THIS
+
     const getTimeAgo = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -169,11 +170,11 @@ const ContactRequestCard = memo(({
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return "Just now";
-        if (diffMins < 60) return `${diffMins} min sedan`;
-        if (diffHours < 24) return `${diffHours} tim sedan`;
-        if (diffDays < 7) return `${diffDays} dag${diffDays !== 1 ? 'ar' : ''} sedan`;
-        return date.toLocaleDateString('sv-SE');
+        if (diffMins < 1) return t("time.justNow");
+        if (diffMins < 60) return t("time.minutesAgo", { count: diffMins });
+        if (diffHours < 24) return t("time.hoursAgo", { count: diffHours });
+        if (diffDays < 7) return t("time.daysAgo", { count: diffDays });
+        return date.toLocaleDateString();
     };
 
     return (
@@ -187,7 +188,7 @@ const ContactRequestCard = memo(({
                     />
                     <View style={styles.requestTextContainer}>
                         <Text style={styles.requestName}>
-                            {isOutgoing ? "Waiting for response" : request.sender_display_name || request.sender_email}
+                            {isOutgoing ? t("contacts.requests.waiting") : request.sender_display_name || request.sender_email}
                         </Text>
                         <Text style={styles.requestEmail}>
                             {isOutgoing ? request.receiver_user_id : request.sender_email}
@@ -211,7 +212,7 @@ const ContactRequestCard = memo(({
                     style={styles.cancelButton}
                 >
                     <Ionicons name="close-circle" size={18} color="#9CA3AF" />
-                    <Text style={styles.cancelButtonText}>Avbryt förfrågan</Text>
+                    <Text style={styles.cancelButtonText}>{t("contacts.buttons.cancelRequest")}</Text>
                 </TouchableOpacity>
             ) : (
                 <View style={styles.requestActions}>
@@ -220,14 +221,14 @@ const ContactRequestCard = memo(({
                         style={[styles.requestButton, styles.acceptButton]}
                     >
                         <Ionicons name="checkmark" size={18} color="#fff" />
-                        <Text style={styles.acceptButtonText}>Acceptera</Text>
+                        <Text style={styles.acceptButtonText}>{t("contacts.buttons.accept")}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={onReject}
                         style={[styles.requestButton, styles.rejectButton]}
                     >
                         <Ionicons name="close" size={18} color="#9CA3AF" />
-                        <Text style={styles.rejectButtonText}>Avböj</Text>
+                        <Text style={styles.rejectButtonText}>{t("contacts.buttons.reject")}</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -236,6 +237,7 @@ const ContactRequestCard = memo(({
 });
 
 export default function ContactsScreen() {
+    const { t } = useTranslation(); // ADD THIS
     const [existingContacts, setExistingContacts] = useState<ContactSlot[]>([]);
     const [newContacts, setNewContacts] = useState<ContactSlot[]>([]);
     const [incomingRequests, setIncomingRequests] = useState<ContactRequest[]>([]);
@@ -252,7 +254,6 @@ export default function ContactsScreen() {
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
 
-    // Mark requests as read when requests tab is active
     useEffect(() => {
         const markAsRead = async () => {
             if (activeSection === 'requests') {
@@ -269,7 +270,6 @@ export default function ContactsScreen() {
         checkUnreadRequests();
         cleanupContactData();
 
-        // Set up realtime subscriptions
         let contactRequestsSubscription: any = null;
         let contactsSubscription: any = null;
 
@@ -280,14 +280,11 @@ export default function ContactsScreen() {
 
         setupSubscriptions();
 
-        // Cleanup function
         return () => {
-            // Clear any pending timeout
             if (fetchAllDataTimeoutRef.current) {
                 clearTimeout(fetchAllDataTimeoutRef.current);
             }
 
-            // Unsubscribe from channels
             if (contactRequestsSubscription) {
                 contactRequestsSubscription.then((sub: any) => sub?.unsubscribe());
             }
@@ -298,12 +295,10 @@ export default function ContactsScreen() {
     }, []);
 
     const fetchAllData = async () => {
-        // Clear any pending timeout
         if (fetchAllDataTimeoutRef.current) {
             clearTimeout(fetchAllDataTimeoutRef.current);
         }
 
-        // Debounce the fetch by 300ms
         fetchAllDataTimeoutRef.current = setTimeout(async () => {
             setLoading(true);
             try {
@@ -348,11 +343,11 @@ export default function ContactsScreen() {
                 setOutgoingRequests(outgoingData || []);
             } catch (error) {
                 console.error("Fetch data error:", error);
-                Alert.alert("Error", "Failed to load data");
+                Alert.alert(t("errors.title"), t("contacts.errors.loadData"));
             } finally {
                 setLoading(false);
             }
-        }, 300); // 300ms debounce
+        }, 300);
     };
 
     const subscribeToContactRequests = async () => {
@@ -360,39 +355,31 @@ export default function ContactsScreen() {
         const user = userData.user;
         if (!user) return null;
 
-        console.log("Subscribing to contact requests for user:", user.id);
-
         const subscription = supabase
             .channel(`contact_requests:${user.id}`)
             .on(
                 'postgres_changes',
                 {
-                    event: '*', // Listen to ALL events (INSERT, UPDATE, DELETE)
+                    event: '*',
                     schema: 'public',
                     table: 'contact_requests',
-                    filter: `receiver_user_id=eq.${user.id}`, // Only requests where user is receiver
+                    filter: `receiver_user_id=eq.${user.id}`,
                 },
                 (payload) => {
-                    console.log("Incoming contact request change detected:", payload);
-
-                    // Refresh the data when any change happens
                     fetchAllData();
-
-                    // Also check for unread requests
                     checkUnreadRequests();
                 }
             )
             .on(
                 'postgres_changes',
                 {
-                    event: '*', // Listen to ALL events
+                    event: '*',
                     schema: 'public',
                     table: 'contact_requests',
-                    filter: `sender_user_id=eq.${user.id}`, // Also listen to requests user sent
+                    filter: `sender_user_id=eq.${user.id}`,
                 },
                 (payload) => {
-                    console.log("Outgoing request change detected:", payload);
-                    fetchAllData(); // Refresh outgoing requests too
+                    fetchAllData();
                 }
             )
             .subscribe((status) => {
@@ -407,8 +394,6 @@ export default function ContactsScreen() {
         const user = userData.user;
         if (!user) return null;
 
-        console.log("Subscribing to contacts for user:", user.id);
-
         const subscription = supabase
             .channel(`contacts:${user.id}`)
             .on(
@@ -417,11 +402,10 @@ export default function ContactsScreen() {
                     event: '*',
                     schema: 'public',
                     table: 'contacts',
-                    filter: `contact_user_id=eq.${user.id}`, // Also listen when user is the contact
+                    filter: `contact_user_id=eq.${user.id}`,
                 },
                 (payload) => {
-                    console.log("Contact change where user is contact:", payload);
-                    fetchAllData(); // Refresh contacts list
+                    fetchAllData();
                 }
             )
             .on(
@@ -433,8 +417,7 @@ export default function ContactsScreen() {
                     filter: `owner_user_id=eq.${user.id}`,
                 },
                 (payload) => {
-                    console.log("Contact change where user is owner:", payload);
-                    fetchAllData(); // Refresh contacts list
+                    fetchAllData();
                 }
             )
             .subscribe((status) => {
@@ -455,9 +438,8 @@ export default function ContactsScreen() {
                 .select("id, created_at")
                 .eq("receiver_user_id", user.id)
                 .eq("status", "pending")
-                .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()); // Last 7 days
+                .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
-            // Check if user has viewed requests tab recently
             const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
             const unreadCount = requests?.filter(request => {
                 if (!lastViewed) return true;
@@ -478,23 +460,18 @@ export default function ContactsScreen() {
     };
 
     const handleAddNewContact = () => {
-        // Check if we already have 3 contacts (existing + new)
         if (totalContactsCount >= 3) {
             Alert.alert(
-                "Gräns nådd",
-                "Du kan bara lägga till upp till 3 kontakter.",
-                [{ text: "OK" }]
+                t("contacts.alerts.limitReached.title"),
+                t("contacts.alerts.limitReached.message"),
+                [{ text: t("common.ok") }]
             );
             return;
         }
 
-        // Calculate the new contact's index
         const newContactIndex = totalContactsCount;
-
-        // Add a new empty contact slot
         setNewContacts(prev => [...prev, { email: "" }]);
 
-        // Focus on the new input after a short delay
         setTimeout(() => {
             const inputRef = inputRefs.current[newContactIndex];
             if (inputRef) {
@@ -514,22 +491,16 @@ export default function ContactsScreen() {
     const handleInputFocus = useCallback((index: number) => {
         setActiveInputIndex(index);
 
-        // Use requestAnimationFrame for smoother scrolling
         requestAnimationFrame(() => {
-            // Validate index
             if (index < 0 || index >= totalContactsCount) {
                 return;
             }
 
-            // Calculate scroll position
             let scrollY = index * 140;
-
-            // Extra scroll for last item
             if (index === totalContactsCount - 1) {
                 scrollY += 40;
             }
 
-            // Scroll to position
             if (Platform.OS === 'ios') {
                 setTimeout(() => {
                     scrollViewRef.current?.scrollTo({
@@ -549,11 +520,8 @@ export default function ContactsScreen() {
     const handleInputBlur = useCallback((index: number) => {
         setActiveInputIndex(null);
 
-        // Check if this is a new contact with empty email
         if (index >= existingContacts.length) {
             const newContactIndex = index - existingContacts.length;
-
-            // Remove empty new contact immediately on blur
             setNewContacts(prev => {
                 const contact = prev[newContactIndex];
                 if (contact && (!contact.email || contact.email.trim() === "")) {
@@ -572,12 +540,14 @@ export default function ContactsScreen() {
         const contact = existingContacts[index];
 
         Alert.alert(
-            "Ta bort kontakt",
-            `Är du säker på att du vill ta bort ${contact.display_name || contact.email}?`,
+            t("contacts.alerts.delete.title"),
+            t("contacts.alerts.delete.message", {
+                name: contact.display_name || contact.email
+            }),
             [
-                { text: "Avbryt", style: "cancel" },
+                { text: t("common.cancel"), style: "cancel" },
                 {
-                    text: "Ta bort",
+                    text: t("contacts.buttons.delete"),
                     style: "destructive",
                     onPress: async () => {
                         try {
@@ -585,9 +555,6 @@ export default function ContactsScreen() {
                             const user = userData.user;
                             if (!user || !contact.user_id) return;
 
-                            console.log("Removing relationship between:", user.id, "and", contact.user_id);
-
-                            // Use the robust function to delete EVERYTHING
                             const { data, error } = await supabase
                                 .rpc('completely_remove_relationship', {
                                     p_user1_id: user.id,
@@ -595,26 +562,23 @@ export default function ContactsScreen() {
                                 });
 
                             if (error) {
-                                console.error("Database function error:", error);
-                                // Fallback to direct deletion
                                 await deleteEverythingManually(user.id, contact.user_id);
                             } else if (data?.error) {
-                                console.error("Function returned error:", data.error);
                                 await deleteEverythingManually(user.id, contact.user_id);
                             } else {
                                 console.log("Relationship completely removed:", data);
                             }
 
-                            // Remove from local state
                             setExistingContacts(prev => prev.filter((_, i) => i !== index));
-
                             Alert.alert(
-                                "Kontakt borttagen",
-                                `${contact.display_name || contact.email} har tagits bort. Alla relationer har raderats.`
+                                t("contacts.success.deleted.title"),
+                                t("contacts.success.deleted.message", {
+                                    name: contact.display_name || contact.email
+                                })
                             );
                         } catch (error: any) {
                             console.error("Delete error:", error);
-                            Alert.alert("Error", "Misslyckades att ta bort kontakt");
+                            Alert.alert(t("errors.title"), t("contacts.errors.delete"));
                         }
                     }
                 }
@@ -622,20 +586,14 @@ export default function ContactsScreen() {
         );
     }, [existingContacts]);
 
-    // Robust fallback function
     const deleteEverythingManually = async (userId1: string, userId2: string) => {
-        console.log("Using manual deletion for:", userId1, userId2);
-
         try {
-            // Delete contacts in both directions
             const { error: contactsError } = await supabase
                 .from("contacts")
                 .delete()
                 .or(`and(owner_user_id.eq.${userId1},contact_user_id.eq.${userId2}),and(owner_user_id.eq.${userId2},contact_user_id.eq.${userId1})`);
 
             if (contactsError) {
-                console.error("Contacts deletion error:", contactsError);
-                // Try deleting just our own contact as last resort
                 await supabase
                     .from("contacts")
                     .delete()
@@ -643,7 +601,6 @@ export default function ContactsScreen() {
                     .eq("contact_user_id", userId2);
             }
 
-            // Delete ALL contact requests in both directions
             const { error: requestsError } = await supabase
                 .from("contact_requests")
                 .delete()
@@ -652,36 +609,8 @@ export default function ContactsScreen() {
             if (requestsError) {
                 console.error("Requests deletion error:", requestsError);
             }
-
-            console.log("Manual deletion completed");
         } catch (error) {
             console.error("Manual deletion failed:", error);
-            throw error;
-        }
-    };
-    // Helper function for manual deletion
-    const deleteContactsManually = async (userId: string, contactUserId: string) => {
-        try {
-            // Delete our contact
-            const { error: deleteError } = await supabase
-                .from("contacts")
-                .delete()
-                .eq("owner_user_id", userId)
-                .eq("contact_user_id", contactUserId);
-
-            if (deleteError) throw deleteError;
-
-            // Delete the contact request COMPLETELY (not just update status)
-            const { error: requestError } = await supabase
-                .from("contact_requests")
-                .delete()
-                .or(`and(sender_user_id.eq.${userId},receiver_user_id.eq.${contactUserId}),and(sender_user_id.eq.${contactUserId},receiver_user_id.eq.${userId})`);
-
-            if (requestError) {
-                console.warn("Could not delete request, but contact was removed:", requestError);
-            }
-        } catch (error) {
-            console.error("Manual delete error:", error);
             throw error;
         }
     };
@@ -692,9 +621,6 @@ export default function ContactsScreen() {
             const user = userData.user;
             if (!user || !contact.user_id) return;
 
-            console.log("Sending request from", user.id, "to", contact.user_id);
-
-            // 1. First, check if contact already exists
             const { data: existingContact } = await supabase
                 .from("contacts")
                 .select("*")
@@ -703,11 +629,15 @@ export default function ContactsScreen() {
                 .maybeSingle();
 
             if (existingContact) {
-                Alert.alert("Kontakt finns redan", `${contact.display_name || contact.email} är redan i dina kontakter`);
+                Alert.alert(
+                    t("contacts.alerts.contactExists.title"),
+                    t("contacts.alerts.contactExists.message", {
+                        name: contact.display_name || contact.email
+                    })
+                );
                 return;
             }
 
-            // 2. Check if there's ANY existing request
             const { data: existingRequest } = await supabase
                 .from("contact_requests")
                 .select("*")
@@ -715,43 +645,32 @@ export default function ContactsScreen() {
                 .maybeSingle();
 
             if (existingRequest) {
-                console.log("Found existing request:", existingRequest);
-
-                // If it's a pending request we sent
                 if (existingRequest.status === "pending" && existingRequest.sender_user_id === user.id) {
-                    Alert.alert("Förfrågan redan skickad", "Du har redan skickat en förfrågan till denna användare.");
+                    Alert.alert(
+                        t("contacts.alerts.requestExists.title"),
+                        t("contacts.alerts.requestExists.message")
+                    );
                     return;
                 }
 
-                // If it's a pending request they sent to us
                 if (existingRequest.status === "pending" && existingRequest.receiver_user_id === user.id) {
-                    Alert.alert("Förfrågan mottagen", `Du har redan en förfrågan från ${contact.email}. Kolla under "Förfrågningar".`);
+                    Alert.alert(
+                        t("contacts.alerts.requestReceived.title"),
+                        t("contacts.alerts.requestReceived.message", {
+                            email: contact.email
+                        })
+                    );
                     return;
                 }
 
-                // If it's an accepted request, delete it first then send new one
-                if (existingRequest.status === "accepted") {
-                    console.log("Deleting old accepted request before sending new one");
+                if (existingRequest.status === "accepted" || existingRequest.status === "rejected") {
                     await supabase
                         .from("contact_requests")
                         .delete()
                         .eq("id", existingRequest.id);
-
-                    // Continue to send new request
-                }
-
-                // If it's a rejected request, delete it first then send new one
-                if (existingRequest.status === "rejected") {
-                    await supabase
-                        .from("contact_requests")
-                        .delete()
-                        .eq("id", existingRequest.id);
-
-                    // Continue to send new request
                 }
             }
 
-            // 3. Send new contact request
             const { data, error } = await supabase
                 .from("contact_requests")
                 .insert({
@@ -765,9 +684,6 @@ export default function ContactsScreen() {
                 .single();
 
             if (error) {
-                console.error("Insert error:", error);
-
-                // If it's a duplicate key error, try to fetch and check
                 if (error.code === '23505') {
                     const { data: duplicateCheck } = await supabase
                         .from("contact_requests")
@@ -777,7 +693,10 @@ export default function ContactsScreen() {
                         .maybeSingle();
 
                     if (duplicateCheck) {
-                        Alert.alert("Förfrågan redan skickad", "Det finns redan en förfrågan mellan er.");
+                        Alert.alert(
+                            t("contacts.alerts.requestExists.title"),
+                            t("contacts.alerts.requestExists.message")
+                        );
                         return;
                     }
                 }
@@ -785,9 +704,6 @@ export default function ContactsScreen() {
                 throw error;
             }
 
-            console.log("Request sent successfully:", data.id);
-
-            // Send push notification
             await sendContactRequestNotification({
                 receiverUserId: contact.user_id,
                 senderUserId: user.id,
@@ -796,27 +712,31 @@ export default function ContactsScreen() {
                 requestId: data.id,
             });
 
-            // Add to outgoing requests
             setOutgoingRequests(prev => [data, ...prev]);
-            Alert.alert("Förfrågan skickad", `Kontaktförfrågan skickad till ${contact.display_name || contact.email}`);
+            Alert.alert(
+                t("contacts.success.requestSent.title"),
+                t("contacts.success.requestSent.message", {
+                    name: contact.display_name || contact.email
+                })
+            );
         } catch (error) {
             console.error("Send request error:", error);
-            Alert.alert("Error", "Misslyckades att skicka kontaktförfrågan");
+            Alert.alert(t("errors.title"), t("contacts.errors.sendRequest"));
         }
     };
 
     const saveNewContacts = async () => {
-        // Dismiss keyboard immediately
         inputRefs.current.forEach(ref => ref?.blur());
 
-        // Filter out any empty new contacts
         const validNewContacts = newContacts.filter(
             contact => contact.email && contact.email.trim() !== ""
         );
 
-        // Check if there are no valid new contacts to save
         if (validNewContacts.length === 0) {
-            Alert.alert("Inga ändringar", "Inga nya kontakter att spara.");
+            Alert.alert(
+                t("contacts.alerts.noChanges.title"),
+                t("contacts.alerts.noChanges.message")
+            );
             return;
         }
 
@@ -825,11 +745,10 @@ export default function ContactsScreen() {
         try {
             const { data: userData } = await supabase.auth.getUser();
             const user = userData.user;
-            if (!user) throw new Error("Not authenticated");
+            if (!user) throw new Error(t("errors.notAuthenticated"));
 
             const resolved: ContactSlot[] = [];
 
-            // Validate and resolve each new contact
             for (const c of validNewContacts) {
                 const emailToSearch = c.email.trim();
                 if (!emailToSearch) continue;
@@ -841,21 +760,26 @@ export default function ContactsScreen() {
                     .single() as { data: UserSearchResult | null; error: any };
 
                 if (error) {
-                    Alert.alert("Database error", "Could not search for user");
+                    Alert.alert(t("errors.title"), t("contacts.errors.search"));
                     return;
                 }
 
                 if (!userResult) {
-                    Alert.alert("Ogiltig email", `${emailToSearch} är inte registrerad eller inte verifierad`);
+                    Alert.alert(
+                        t("contacts.alerts.invalidEmail.title"),
+                        t("contacts.alerts.invalidEmail.message", { email: emailToSearch })
+                    );
                     return;
                 }
 
                 if (userResult.user_id === user.id) {
-                    Alert.alert("Ogiltig kontakt", "Du kan inte lägga till dig själv som kontakt");
+                    Alert.alert(
+                        t("contacts.alerts.selfContact.title"),
+                        t("contacts.alerts.selfContact.message")
+                    );
                     return;
                 }
 
-                // Check if contact already exists in database
                 const { data: existingContact } = await supabase
                     .from("contacts")
                     .select("*")
@@ -864,11 +788,13 @@ export default function ContactsScreen() {
                     .maybeSingle();
 
                 if (existingContact) {
-                    Alert.alert("Kontakt finns redan", `${emailToSearch} finns redan i dina kontakter`);
+                    Alert.alert(
+                        t("contacts.alerts.contactExists.title"),
+                        t("contacts.alerts.contactExists.message", { email: emailToSearch })
+                    );
                     return;
                 }
 
-                // Check if there's already a pending request
                 const { data: existingRequest } = await supabase
                     .from("contact_requests")
                     .select("*")
@@ -878,9 +804,15 @@ export default function ContactsScreen() {
 
                 if (existingRequest) {
                     if (existingRequest.sender_user_id === user.id) {
-                        Alert.alert("Förfrågan redan skickad", `Du har redan skickat en förfrågan till ${emailToSearch}`);
+                        Alert.alert(
+                            t("contacts.alerts.requestExists.title"),
+                            t("contacts.alerts.requestExists.message")
+                        );
                     } else {
-                        Alert.alert("Förfrågan mottagen", `Du har redan en förfrågan från ${emailToSearch}. Kolla under "Förfrågningar".`);
+                        Alert.alert(
+                            t("contacts.alerts.requestReceived.title"),
+                            t("contacts.alerts.requestReceived.message", { email: emailToSearch })
+                        );
                     }
                     return;
                 }
@@ -892,15 +824,13 @@ export default function ContactsScreen() {
                 });
             }
 
-            // Send contact request for each resolved contact
             for (const contact of resolved) {
                 await sendContactRequest(contact);
             }
 
-            // Clear new contacts
             setNewContacts([]);
         } catch (e: any) {
-            Alert.alert("Error", e.message || "Misslyckades att spara kontakter");
+            Alert.alert(t("errors.title"), e.message || t("contacts.errors.save"));
         } finally {
             setSaving(false);
         }
@@ -912,61 +842,59 @@ export default function ContactsScreen() {
             const user = userData.user;
             if (!user) return;
 
-            // First, get the request to verify it exists and user is receiver
             const { data: requestData, error: fetchError } = await supabase
                 .from("contact_requests")
                 .select("*")
                 .eq("id", requestId)
-                .eq("receiver_user_id", user.id)  // User must be the receiver
+                .eq("receiver_user_id", user.id)
                 .eq("status", "pending")
                 .maybeSingle();
 
             if (fetchError || !requestData) {
-                Alert.alert("Error", "Could not find contact request or it was already handled");
+                Alert.alert(t("errors.title"), t("contacts.errors.requestNotFound"));
                 setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
                 return;
             }
 
-            // Call the database function
             const { data, error } = await supabase
                 .rpc('accept_contact_request', { request_id: requestId });
 
             if (error) {
                 console.error("Database function error:", error);
-                throw new Error("Failed to accept request");
+                throw new Error(t("contacts.errors.accept"));
             }
 
             if (data?.error) {
-                Alert.alert("Error", data.error);
+                Alert.alert(t("errors.title"), data.error);
                 return;
             }
 
             if (data?.warning) {
-                // Contact already existed
                 setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
-                Alert.alert("Kontakt finns redan", "Denna användare är redan i dina kontakter");
+                Alert.alert(
+                    t("contacts.alerts.contactExists.title"),
+                    t("contacts.alerts.alreadyInContacts")
+                );
                 return;
             }
 
-            // Update local state
             setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
-
-            // Refresh contacts
             await fetchAllData();
 
             Alert.alert(
-                "Kontakt tillagd",
-                `${requestData.sender_display_name || requestData.sender_email} har lagts till i dina kontakter`
+                t("contacts.success.contactAdded.title"),
+                t("contacts.success.contactAdded.message", {
+                    name: requestData.sender_display_name || requestData.sender_email
+                })
             );
         } catch (error: any) {
             console.error("Accept request error:", error);
-            Alert.alert("Error", error.message || "Misslyckades att acceptera kontaktförfrågan");
+            Alert.alert(t("errors.title"), error.message || t("contacts.errors.accept"));
         }
     };
 
     const handleRejectRequest = async (requestId: string) => {
         try {
-            // First check if request still exists and is pending
             const { data: requestData } = await supabase
                 .from("contact_requests")
                 .select("*")
@@ -975,9 +903,11 @@ export default function ContactsScreen() {
                 .maybeSingle();
 
             if (!requestData) {
-                // Request already handled (maybe accepted by another device)
                 setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
-                Alert.alert("Förfrågan redan hanterad", "Denna förfrågan har redan hanterats");
+                Alert.alert(
+                    t("contacts.alerts.requestHandled.title"),
+                    t("contacts.alerts.requestHandled.message")
+                );
                 return;
             }
 
@@ -992,17 +922,21 @@ export default function ContactsScreen() {
             if (error) throw error;
 
             setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
-            Alert.alert("Förfrågan avböjd", "Kontaktförfrågan har avböjts");
+            Alert.alert(
+                t("contacts.success.requestRejected.title"),
+                t("contacts.success.requestRejected.message")
+            );
         } catch (error: any) {
             console.error("Reject request error:", error);
-
-            // Still remove from UI
             setIncomingRequests(prev => prev.filter(req => req.id !== requestId));
 
             if (error.code === '23505') {
-                Alert.alert("Förfrågan redan hanterad", "Denna förfrågan har redan hanterats");
+                Alert.alert(
+                    t("contacts.alerts.requestHandled.title"),
+                    t("contacts.alerts.requestHandled.message")
+                );
             } else {
-                Alert.alert("Error", "Misslyckades att avböja förfrågan");
+                Alert.alert(t("errors.title"), t("contacts.errors.reject"));
             }
         }
     };
@@ -1017,13 +951,15 @@ export default function ContactsScreen() {
             if (error) throw error;
 
             setOutgoingRequests(prev => prev.filter(req => req.id !== requestId));
-            Alert.alert("Förfrågan avbruten", "Kontaktförfrågan har avbrutits");
+            Alert.alert(
+                t("contacts.success.requestCancelled.title"),
+                t("contacts.success.requestCancelled.message")
+            );
         } catch (error) {
             console.error("Cancel request error:", error);
-            Alert.alert("Error", "Misslyckades att avbryta förfrågan");
+            Alert.alert(t("errors.title"), t("contacts.errors.cancel"));
         }
     };
-
 
     const cleanupContactData = async () => {
         try {
@@ -1031,9 +967,6 @@ export default function ContactsScreen() {
             const user = userData.user;
             if (!user) return;
 
-            console.log("Running contact data cleanup...");
-
-            // Find accepted requests where contact doesn't exist
             const { data: acceptedRequests } = await supabase
                 .from("contact_requests")
                 .select("*")
@@ -1046,7 +979,6 @@ export default function ContactsScreen() {
                         ? request.receiver_user_id
                         : request.sender_user_id;
 
-                    // Check if contact exists
                     const { data: contact } = await supabase
                         .from("contacts")
                         .select("*")
@@ -1054,9 +986,7 @@ export default function ContactsScreen() {
                         .eq("contact_user_id", otherUserId)
                         .maybeSingle();
 
-                    // If no contact exists but request is accepted, delete the request
                     if (!contact) {
-                        console.log("Deleting orphaned accepted request:", request.id);
                         await supabase
                             .from("contact_requests")
                             .delete()
@@ -1065,7 +995,6 @@ export default function ContactsScreen() {
                 }
             }
 
-            // Also clean up contacts without corresponding accepted requests
             const { data: allContacts } = await supabase
                 .from("contacts")
                 .select("*")
@@ -1073,7 +1002,6 @@ export default function ContactsScreen() {
 
             if (allContacts && allContacts.length > 0) {
                 for (const contact of allContacts) {
-                    // Check if there's an accepted request
                     const { data: acceptedRequest } = await supabase
                         .from("contact_requests")
                         .select("*")
@@ -1081,9 +1009,7 @@ export default function ContactsScreen() {
                         .eq("status", "accepted")
                         .maybeSingle();
 
-                    // If no accepted request exists, delete the contact
                     if (!acceptedRequest) {
-                        console.log("Deleting contact without accepted request:", contact.id);
                         await supabase
                             .from("contacts")
                             .delete()
@@ -1096,48 +1022,7 @@ export default function ContactsScreen() {
         }
     };
 
-
-
-
-    // Combine existing and new contacts for rendering
     const allContacts = [...existingContacts, ...newContacts];
-
-
-
-
-
-    const debugRelationship = async (otherUserId: string) => {
-        try {
-            const { data: userData } = await supabase.auth.getUser();
-            const user = userData.user;
-            if (!user) return;
-
-            console.log("=== DEBUG RELATIONSHIP ===");
-            console.log("Between:", user.id, "and", otherUserId);
-
-            // Check contacts
-            const { data: contacts } = await supabase
-                .from("contacts")
-                .select("*")
-                .or(`and(owner_user_id.eq.${user.id},contact_user_id.eq.${otherUserId}),and(owner_user_id.eq.${otherUserId},contact_user_id.eq.${user.id})`);
-
-            console.log("Contacts found:", contacts);
-
-            // Check requests
-            const { data: requests } = await supabase
-                .from("contact_requests")
-                .select("*")
-                .or(`and(sender_user_id.eq.${user.id},receiver_user_id.eq.${otherUserId}),and(sender_user_id.eq.${otherUserId},receiver_user_id.eq.${user.id})`);
-
-            console.log("Requests found:", requests);
-            console.log("=== END DEBUG ===");
-        } catch (error) {
-            console.error("Debug error:", error);
-        }
-    };
-
-    // Call this before trying to add a contact to see what's blocking it
-
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
@@ -1159,7 +1044,7 @@ export default function ContactsScreen() {
                                 color={activeSection === 'contacts' ? "#5FA893" : "#9CA3AF"}
                             />
                             <Text style={[styles.tabText, activeSection === 'contacts' && styles.activeTabText]}>
-                                Kontakter {totalContactsCount > 0 && `(${totalContactsCount})`}
+                                {t("contacts.tabs.contacts")} {totalContactsCount > 0 && `(${totalContactsCount})`}
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -1180,7 +1065,7 @@ export default function ContactsScreen() {
                                 )}
                             </View>
                             <Text style={[styles.tabText, activeSection === 'requests' && styles.activeTabText]}>
-                                Förfrågningar {totalRequestsCount > 0 && `(${totalRequestsCount})`}
+                                {t("contacts.tabs.requests")} {totalRequestsCount > 0 && `(${totalRequestsCount})`}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -1192,7 +1077,7 @@ export default function ContactsScreen() {
                         <View style={styles.contactsHeader}>
                             <View style={styles.headerRow}>
                                 <View style={styles.headerLeft}>
-                                    <Text style={styles.title}>Kontakter</Text>
+                                    <Text style={styles.title}>{t("contacts.title")}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <TouchableOpacity
@@ -1223,8 +1108,8 @@ export default function ContactsScreen() {
                             </View>
                             <Text style={styles.subtitle}>
                                 {totalContactsCount > 0
-                                    ? `Du har ${totalContactsCount} av 3 möjliga kontakter`
-                                    : "Lägg till kontakter för att dela med dig (max 3)"
+                                    ? t("contacts.subtitle.withContacts", { count: totalContactsCount })
+                                    : t("contacts.subtitle.noContacts")
                                 }
                             </Text>
                         </View>
@@ -1245,14 +1130,14 @@ export default function ContactsScreen() {
                                         color="#9CA3AF"
                                         style={styles.loadingIcon}
                                     />
-                                    <Text style={styles.loadingText}>Laddar kontakter...</Text>
+                                    <Text style={styles.loadingText}>{t("contacts.loading")}</Text>
                                 </View>
                             ) : allContacts.length === 0 ? (
                                 <View style={styles.emptyState}>
                                     <Ionicons name="people-outline" size={64} color="#D1D5DB" />
-                                    <Text style={styles.emptyStateTitle}>Inga kontakter</Text>
+                                    <Text style={styles.emptyStateTitle}>{t("contacts.emptyState.title")}</Text>
                                     <Text style={styles.emptyStateText}>
-                                        Tryck på + knappen för att lägga till din första kontakt
+                                        {t("contacts.emptyState.message")}
                                     </Text>
                                 </View>
                             ) : (
@@ -1283,7 +1168,7 @@ export default function ContactsScreen() {
                             )}
                         </ScrollView>
 
-                        {/* Save Button (only shown when there are new contacts) */}
+                        {/* Save Button */}
                         {newContacts.length > 0 && (
                             <View style={styles.footer}>
                                 <TouchableOpacity
@@ -1302,7 +1187,10 @@ export default function ContactsScreen() {
                                             <Ionicons name="send" size={18} color="#fff" style={styles.buttonIcon} />
                                         )}
                                         <Text style={styles.buttonText}>
-                                            {saving ? "Skickar..." : `Skicka förfrågan${newContacts.length > 1 ? 'ar' : ''}`}
+                                            {saving
+                                                ? t("contacts.buttons.sending")
+                                                : t("contacts.buttons.sendRequests", { count: newContacts.length })
+                                            }
                                         </Text>
                                     </View>
                                 </TouchableOpacity>
@@ -1323,21 +1211,21 @@ export default function ContactsScreen() {
                                     color="#9CA3AF"
                                     style={styles.loadingIcon}
                                 />
-                                <Text style={styles.loadingText}>Laddar förfrågningar...</Text>
+                                <Text style={styles.loadingText}>{t("contacts.requests.loading")}</Text>
                             </View>
                         ) : totalRequestsCount === 0 ? (
                             <View style={styles.emptyState}>
                                 <Ionicons name="mail-open-outline" size={64} color="#D1D5DB" />
-                                <Text style={styles.emptyStateTitle}>Inga förfrågningar</Text>
+                                <Text style={styles.emptyStateTitle}>{t("contacts.requests.emptyState.title")}</Text>
                                 <Text style={styles.emptyStateText}>
-                                    När någon skickar en kontaktförfrågan till dig kommer den visas här
+                                    {t("contacts.requests.emptyState.message")}
                                 </Text>
                             </View>
                         ) : (
                             <>
                                 {incomingRequests.length > 0 && (
                                     <View style={styles.section}>
-                                        <Text style={styles.sectionTitle}>Mottagna förfrågningar</Text>
+                                        <Text style={styles.sectionTitle}>{t("contacts.requests.received")}</Text>
                                         {incomingRequests.map(request => (
                                             <ContactRequestCard
                                                 key={request.id}
@@ -1352,7 +1240,7 @@ export default function ContactsScreen() {
                                 )}
                                 {outgoingRequests.length > 0 && (
                                     <View style={styles.section}>
-                                        <Text style={styles.sectionTitle}>Skickade förfrågningar</Text>
+                                        <Text style={styles.sectionTitle}>{t("contacts.requests.sent")}</Text>
                                         {outgoingRequests.map(request => (
                                             <ContactRequestCard
                                                 key={request.id}

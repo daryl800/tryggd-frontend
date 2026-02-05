@@ -1,0 +1,328 @@
+{
+    "home": {
+        "title": "首页",
+        "welcome": "欢迎",
+        "greetings": {
+            "morning": "早上好",
+            "afternoon": "下午好",
+            "evening": "晚上好",
+            "night": "晚安"
+        },
+        "checkedInToday": "今日已签到！",
+        "dontForget": "别忘了今天签到！",
+        "checkIn": "签到",
+        "reset": "重置",
+        "timer": "计时器",
+        "timeLeftToday": "今日剩余时间",
+        "activity": "活动",
+        "history": "历史记录",
+        "streak": "连续天数",
+        "days_one": "{{count}} 天",
+        "days_other": "{{count}} 天",
+        "dateFormats": {
+            "weekdays": [
+                "星期日",
+                "星期一",
+                "星期二",
+                "星期三",
+                "星期四",
+                "星期五",
+                "星期六"
+            ],
+            "months": [
+                "一月",
+                "二月",
+                "三月",
+                "四月",
+                "五月",
+                "六月",
+                "七月",
+                "八月",
+                "九月",
+                "十月",
+                "十一月",
+                "十二月"
+            ],
+            "daySuffixes": {
+                "1": "一号",
+                "2": "二号",
+                "3": "三号",
+                "4": "四号",
+                "5": "五号",
+                "6": "六号",
+                "7": "七号",
+                "8": "八号",
+                "9": "九号",
+                "10": "十号",
+                "11": "十一号",
+                "12": "十二号",
+                "13": "十三号",
+                "14": "十四号",
+                "15": "十五号",
+                "16": "十六号",
+                "17": "十七号",
+                "18": "十八号",
+                "19": "十九号",
+                "20": "二十号",
+                "21": "二十一号",
+                "22": "二十二号",
+                "23": "二十三号",
+                "24": "二十四号",
+                "25": "二十五号",
+                "26": "二十六号",
+                "27": "二十七号",
+                "28": "二十八号",
+                "29": "二十九号",
+                "30": "三十号",
+                "31": "三十一号"
+            }
+        },
+        "errors": {
+            "fetchLastCheckin": "无法获取最后签到记录",
+            "noUser": "未找到用户",
+            "checkin": "签到失败",
+            "loadState": "无法加载状态"
+        }
+    },
+    "activity": {
+        "title": "活动",
+        "subtitle": "您和联系人的最新签到记录",
+        "you": "您",
+        "yourActivity": "您的活动",
+        "contacts": "联系人",
+        "loading": "加载活动中...",
+        "noCheckIn": "暂无签到",
+        "emptyState": {
+            "title": "暂无联系人",
+            "message": "添加联系人以查看他们的活动"
+        },
+        "priority": {
+            "failed": "失败",
+            "ongoing": "进行中",
+            "successful": "成功"
+        },
+        "time": {
+            "locale": "zh-CN"
+        },
+        "errors": {
+            "loadActivities": "无法加载活动",
+            "fetchContacts": "无法获取联系人",
+            "fetchOwnerActivity": "无法获取所有者活动"
+        }
+    },
+    "contacts": {
+        "title": "联系人",
+        "contact": "联系人",
+        "newContact": "新建联系人",
+        "displayingAs": "显示为",
+        "loading": "加载联系人...",
+        "subtitle": {
+            "withContacts": "您有 {{count}}/3 个联系人",
+            "noContacts": "添加联系人以共享（最多3个）"
+        },
+        "emptyState": {
+            "title": "暂无联系人",
+            "message": "点击 + 按钮添加第一个联系人"
+        },
+        "tabs": {
+            "contacts": "联系人",
+            "requests": "请求"
+        },
+        "requests": {
+            "received": "收到的请求",
+            "sent": "已发送的请求",
+            "waiting": "等待回复",
+            "loading": "加载请求...",
+            "emptyState": {
+                "title": "暂无请求",
+                "message": "当有人发送联系人请求时，将显示在此处"
+            }
+        },
+        "placeholders": {
+            "email": "输入邮箱地址"
+        },
+        "buttons": {
+            "accept": "接受",
+            "reject": "拒绝",
+            "delete": "删除",
+            "cancelRequest": "取消请求",
+            "sending": "发送中...",
+            "sendRequests": "发送请求{{count, plural, =1 {} other {}}"
+        },
+        "alerts": {
+            "limitReached": {
+                "title": "已达上限",
+                "message": "最多只能添加3个联系人。"
+            },
+            "delete": {
+                "title": "删除联系人",
+                "message": "确定要删除 {{name}} 吗？"
+            },
+            "contactExists": {
+                "title": "联系人已存在",
+                "message": "{{name}} 已在您的联系人中"
+            },
+            "requestExists": {
+                "title": "请求已发送",
+                "message": "您已向该用户发送过请求。"
+            },
+            "requestReceived": {
+                "title": "收到请求",
+                "message": "您已收到来自 {{email}} 的请求。请在\"请求\"中查看。"
+            },
+            "invalidEmail": {
+                "title": "无效邮箱",
+                "message": "{{email}} 未注册或未验证"
+            },
+            "selfContact": {
+                "title": "无效联系人",
+                "message": "不能添加自己为联系人"
+            },
+            "noChanges": {
+                "title": "无变化",
+                "message": "没有新联系人可保存。"
+            },
+            "alreadyInContacts": "该用户已在您的联系人中",
+            "requestHandled": {
+                "title": "请求已处理",
+                "message": "此请求已被处理"
+            }
+        },
+        "success": {
+            "requestSent": {
+                "title": "请求已发送",
+                "message": "联系人请求已发送至 {{name}}"
+            },
+            "contactAdded": {
+                "title": "联系人已添加",
+                "message": "{{name}} 已添加到您的联系人"
+            },
+            "deleted": {
+                "title": "联系人已移除",
+                "message": "{{name}} 已被移除。所有关联已删除。"
+            },
+            "requestRejected": {
+                "title": "请求已拒绝",
+                "message": "联系人请求已被拒绝"
+            },
+            "requestCancelled": {
+                "title": "请求已取消",
+                "message": "联系人请求已被取消"
+            }
+        },
+        "errors": {
+            "loadData": "无法加载数据",
+            "save": "无法保存联系人",
+            "delete": "无法删除联系人",
+            "sendRequest": "无法发送联系人请求",
+            "search": "无法搜索用户",
+            "requestNotFound": "找不到联系人请求或已被处理",
+            "accept": "无法接受联系人请求",
+            "reject": "无法拒绝请求",
+            "cancel": "无法取消请求"
+        }
+    },
+    "profile": {
+        "title": "个人资料",
+        "defaultName": "用户",
+        "loading": "加载个人资料...",
+        "buttons": {
+            "edit": "编辑",
+            "save": "保存",
+            "saving": "保存中...",
+            "logout": "退出登录"
+        },
+        "fields": {
+            "name": "姓名",
+            "email": "邮箱",
+            "phone": "电话号码",
+            "notSpecified": "未指定"
+        },
+        "settings": {
+            "title": "设置",
+            "subtitle": "应用设置和通知"
+        },
+        "avatarModal": {
+            "title": "更改个人资料图片",
+            "takePhoto": "拍照",
+            "chooseFromLibrary": "从相册选择"
+        },
+        "logout": {
+            "title": "退出登录",
+            "confirm": "确定吗？",
+            "button": "退出登录"
+        },
+        "permissions": {
+            "camera": "需要相机权限"
+        },
+        "notices": {
+            "title": "注意",
+            "emailConfirmation": "个人资料已保存，但邮箱更改需要确认"
+        },
+        "success": {
+            "title": "已保存",
+            "saved": "您的个人资料已更新。"
+        },
+        "errors": {
+            "loadProfile": "无法加载个人资料",
+            "notLoggedIn": "您未登录",
+            "updateProfile": "无法更新个人资料",
+            "saveProfile": "无法保存个人资料"
+        }
+    },
+    "settings": {
+        "title": "设置",
+        "account": "账户",
+        "information": "信息",
+        "language": "语言",
+        "theme": "主题",
+        "notifications": "通知",
+        "notificationsDesc": "启用签到通知",
+        "about": "关于",
+        "privacy": "隐私政策",
+        "terms": "服务条款",
+        "logout": "退出登录",
+        "resetData": "重置数据",
+        "light": "浅色",
+        "dark": "深色",
+        "systemDefault": "使用系统设置",
+        "english": "英语",
+        "swedish": "瑞典语",
+        "norwegian": "挪威语",
+        "danish": "丹麦语",
+        "finnish": "芬兰语",
+        "chineseSimplified": "简体中文",
+        "chineseTraditional": "繁体中文",
+        "resetWarning": "确定吗？所有数据将被删除。",
+        "logoutConfirm": "确定要退出登录吗？",
+        "confirmReset": "重置",
+        "cancel": "取消",
+        "ok": "确定"
+    },
+    "common": {
+        "ok": "确定",
+        "cancel": "取消",
+        "save": "保存",
+        "delete": "删除",
+        "edit": "编辑",
+        "loading": "加载中...",
+        "back": "返回",
+        "next": "下一步",
+        "submit": "提交",
+        "yes": "是",
+        "no": "否"
+    },
+    "time": {
+        "justNow": "刚刚",
+        "minutesAgo": "{{count}} 分钟前",
+        "hoursAgo": "{{count}} 小时前",
+        "daysAgo": "{{count}} 天前"
+    },
+    "errors": {
+        "title": "错误",
+        "notAuthenticated": "未认证"
+    },
+    "permissions": {
+        "title": "权限"
+    }
+}

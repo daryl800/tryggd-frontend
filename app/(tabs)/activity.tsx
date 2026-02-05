@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next"; // ADD THIS
 import {
   Animated,
   RefreshControl,
@@ -11,8 +12,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
-
-// ==================== TYPES ====================
 
 type Activity = {
   user_id: string;
@@ -26,21 +25,18 @@ type Activity = {
   checkin_timezone?: string | null;
 };
 
-// ==================== COLORS ====================
-
 const colors = {
   primary: "#5FA893",
   primaryLight: "#F0F9F6",
   textDark: "#1F2937",
   textLight: "#9CA3AF",
   background: "#FAFAFA",
-  highlight: "#EF4444", // Red color for updates
+  highlight: "#EF4444",
   highlightLight: "#E0E7FF",
 };
 
-// ==================== MAIN COMPONENT ====================
-
 export default function ActivityScreen() {
+  const { t } = useTranslation(); // ADD THIS
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,7 +53,6 @@ export default function ActivityScreen() {
   const isFocused = useRef(false);
   const contactMapRef = useRef<Map<string, { email: string; display_name: string }>>(new Map());
 
-  // ==================== ANIMATION ====================
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -65,8 +60,6 @@ export default function ActivityScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
-
-  // ==================== DATA FETCHING ====================
 
   const fetchContacts = async (): Promise<{ ids: string[]; map: Map<string, { email: string; display_name: string }> }> => {
     try {
@@ -97,7 +90,7 @@ export default function ActivityScreen() {
         return { ids, map };
       }
     } catch (err) {
-      console.error("Failed to fetch contacts:", err);
+      console.error(t("activity.errors.fetchContacts"), err);
     }
     return { ids: [], map: new Map() };
   };
@@ -115,7 +108,7 @@ export default function ActivityScreen() {
         .single();
 
       if (error && error.code !== "PGRST116") {
-        console.error("Failed to fetch owner activity:", error);
+        console.error(t("activity.errors.fetchOwnerActivity"), error);
         return;
       }
 
@@ -127,7 +120,7 @@ export default function ActivityScreen() {
 
         setOwnerActivity({
           ...data,
-          display_name: "Du",
+          display_name: t("activity.you"),
           is_owner: true,
           hasNewUpdate: isNew,
           checkin_timezone: data.checkin_timezone,
@@ -135,7 +128,7 @@ export default function ActivityScreen() {
       } else {
         setOwnerActivity({
           user_id: user.id,
-          display_name: "Du",
+          display_name: t("activity.you"),
           last_checked_in_utc: null,
           priority: 0,
           is_owner: true,
@@ -144,7 +137,7 @@ export default function ActivityScreen() {
         });
       }
     } catch (err) {
-      console.error("Failed to fetch owner activity:", err);
+      console.error(t("activity.errors.fetchOwnerActivity"), err);
     }
   };
 
@@ -194,14 +187,12 @@ export default function ActivityScreen() {
 
       setActivities(sorted);
     } catch (err) {
-      console.error("Failed to load activities:", err);
+      console.error(t("activity.errors.loadActivities"), err);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
-
-  // ==================== REALTIME ====================
 
   const setupOwnerCheckinsSubscription = () => {
     if (ownerCheckinsChannelRef.current) {
@@ -228,7 +219,7 @@ export default function ActivityScreen() {
               lastCheckinTimes.current.delete(user.id);
               setOwnerActivity({
                 user_id: user.id,
-                display_name: "Du",
+                display_name: t("activity.you"),
                 last_checked_in_utc: null,
                 priority: 0,
                 is_owner: true,
@@ -250,7 +241,7 @@ export default function ActivityScreen() {
                 user_id: payload.new.user_id,
                 last_checked_in_utc: payload.new.last_checked_in_utc,
                 priority: payload.new.priority,
-                display_name: "Du",
+                display_name: t("activity.you"),
                 is_owner: true,
                 hasNewUpdate: isNew,
                 checkin_timezone: payload.new.checkin_timezone,
@@ -423,15 +414,15 @@ export default function ActivityScreen() {
           <View style={styles.header}>
             <View style={styles.headerRow}>
               <Ionicons name="pulse" size={28} color={colors.primary} />
-              <Text style={styles.title}>Aktivitet</Text>
+              <Text style={styles.title}>{t("activity.title")}</Text>
             </View>
-            <Text style={styles.subtitle}>Din och dina kontakters senaste check-ins</Text>
+            <Text style={styles.subtitle}>{t("activity.subtitle")}</Text>
           </View>
 
           {loading ? (
             <View style={styles.loadingContainer}>
               <Ionicons name="refresh" size={36} color={colors.textLight} style={styles.loadingIcon} />
-              <Text style={styles.loadingText}>Laddar aktiviteter...</Text>
+              <Text style={styles.loadingText}>{t("activity.loading")}</Text>
             </View>
           ) : (
             <>
@@ -440,7 +431,7 @@ export default function ActivityScreen() {
                 <View style={styles.ownerCard}>
                   <View style={styles.cardHeader}>
                     <Ionicons name="person-circle" size={20} color={colors.primary} />
-                    <Text style={styles.cardTitle}>Din aktivitet</Text>
+                    <Text style={styles.cardTitle}>{t("activity.yourActivity")}</Text>
                   </View>
                   <ActivityItem
                     name={ownerActivity.display_name}
@@ -458,7 +449,7 @@ export default function ActivityScreen() {
               <View style={styles.contactsCard}>
                 <View style={styles.cardHeader}>
                   <Ionicons name="people" size={20} color={colors.primary} />
-                  <Text style={styles.cardTitle}>Kontakter</Text>
+                  <Text style={styles.cardTitle}>{t("activity.contacts")}</Text>
                   {activities.length > 0 && (
                     <View style={styles.contactCount}>
                       <Text style={styles.contactCountText}>{activities.length}</Text>
@@ -484,8 +475,8 @@ export default function ActivityScreen() {
                 ) : (
                   <View style={styles.emptyState}>
                     <Ionicons name="people-outline" size={40} color="#D1D5DB" />
-                    <Text style={styles.emptyTitle}>Inga kontakter</Text>
-                    <Text style={styles.emptyText}>Lägg till kontakter för att se deras aktiviteter</Text>
+                    <Text style={styles.emptyTitle}>{t("activity.emptyState.title")}</Text>
+                    <Text style={styles.emptyText}>{t("activity.emptyState.message")}</Text>
                   </View>
                 )}
               </View>
@@ -521,6 +512,8 @@ function ActivityItem({
   isLast?: boolean;
   checkin_timezone?: string | null;
 }) {
+  const { t } = useTranslation(); // ADD THIS
+
   const timeScaleAnim = useRef(new Animated.Value(1)).current;
   const timeColorAnim = useRef(new Animated.Value(0)).current;
 
@@ -560,7 +553,7 @@ function ActivityItem({
       const timezone = checkin_timezone || "UTC";
 
       // Format time (HH:mm)
-      timeText = d.toLocaleTimeString("sv-SE", {
+      timeText = d.toLocaleTimeString(t("activity.time.locale"), {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit",
@@ -568,16 +561,16 @@ function ActivityItem({
       });
 
       // Format weekday (short)
-      const weekday = d.toLocaleDateString("sv-SE", {
+      const weekday = d.toLocaleDateString(t("activity.time.locale"), {
         weekday: "short",
         timeZone: timezone
-      }).replace('.', ''); // Remove dot if present
+      }).replace('.', '');
 
       // Format day of month
       const dayOfMonth = d.getDate();
 
       // Format month name (full)
-      const monthName = d.toLocaleDateString("sv-SE", {
+      const monthName = d.toLocaleDateString(t("activity.time.locale"), {
         month: "long",
         timeZone: timezone
       });
@@ -593,24 +586,39 @@ function ActivityItem({
       console.error("Error formatting time:", error);
       // Fallback without timezone
       const d = new Date(timestamp);
-      timeText = d.toLocaleTimeString("sv-SE", {
+      timeText = d.toLocaleTimeString(t("activity.time.locale"), {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit"
       });
 
-      const weekday = d.toLocaleDateString("sv-SE", { weekday: "short" }).replace('.', '');
+      const weekday = d.toLocaleDateString(t("activity.time.locale"), { weekday: "short" }).replace('.', '');
       const dayOfMonth = d.getDate();
-      const monthName = d.toLocaleDateString("sv-SE", { month: "long" });
+      const monthName = d.toLocaleDateString(t("activity.time.locale"), { month: "long" });
       dateText = `${weekday} ${dayOfMonth} ${monthName}`;
       timezoneText = checkin_timezone || "UTC";
     }
   }
 
   const getPriorityInfo = () => {
-    if (priority === 2) return { color: "#EF4444", icon: "alert-circle", label: "Misslyckad", bgColor: "#FEF2F2" };
-    if (priority === 1) return { color: "#F59E0B", icon: "time", label: "Pågående", bgColor: "#FEF3C7" };
-    return { color: "#10B981", icon: "checkmark-circle", label: "Lyckad", bgColor: "#ECFDF5" };
+    if (priority === 2) return {
+      color: "#EF4444",
+      icon: "alert-circle",
+      label: t("activity.priority.failed"),
+      bgColor: "#FEF2F2"
+    };
+    if (priority === 1) return {
+      color: "#F59E0B",
+      icon: "time",
+      label: t("activity.priority.ongoing"),
+      bgColor: "#FEF3C7"
+    };
+    return {
+      color: "#10B981",
+      icon: "checkmark-circle",
+      label: t("activity.priority.successful"),
+      bgColor: "#ECFDF5"
+    };
   };
   const priorityInfo = getPriorityInfo();
 
@@ -620,9 +628,9 @@ function ActivityItem({
         {/* Left icon */}
         <Ionicons
           name={isOwner ? "person-circle" : "person"}
-          size={20} // Changed from 28 to 24
+          size={20}
           color={colors.primary}
-          style={{ marginRight: 10 }} // Also reduced from 12
+          style={{ marginRight: 10 }}
         />
 
         {/* Main content */}
@@ -640,7 +648,6 @@ function ActivityItem({
           {/* Time row with timezone and date on right */}
           {isValidTimestamp ? (
             <View style={styles.timeRow}>
-              {/* <View style={styles.timeDot} /> */}
               <Animated.Text
                 style={[
                   styles.activityTime,
@@ -662,9 +669,8 @@ function ActivityItem({
             </View>
           ) : (
             <View style={styles.timeRow}>
-              {/* <View style={styrles.timeDot} /> */}
               <Text style={[styles.activityTime, { color: colors.textLight }]}>
-                Ingen check-in ännu
+                {t("activity.noCheckIn")}
               </Text>
             </View>
           )}
@@ -679,9 +685,6 @@ function ActivityItem({
     </View>
   );
 }
-
-
-// ==================== STYLES ====================
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
@@ -734,7 +737,7 @@ const styles = StyleSheet.create({
   contactCount: {
     backgroundColor: colors.primaryLight,
     paddingHorizontal: 4,
-    paddingVertical: 0,  // No vertical padding
+    paddingVertical: 0,
     borderRadius: 6,
     minWidth: 18,
     height: 16,
@@ -764,9 +767,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center'
   },
-
-  // ==================== STYLES: activityItem ====================
-
   activityItem: {
     paddingVertical: 0,
     borderBottomWidth: 1,
@@ -801,13 +801,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // timeDot: {
-  //   width: 6,
-  //   height: 6,
-  //   borderRadius: 3,
-  //   backgroundColor: colors.primary,
-  //   marginRight: 8
-  // },
   activityTime: {
     fontSize: 16,
     fontWeight: "600",
@@ -817,7 +810,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     color: colors.textLight,
-    marginLeft: 'auto' // Push to rightmost
+    marginLeft: 'auto'
   },
   priorityBadge: {
     flexDirection: "row",

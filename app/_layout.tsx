@@ -1,13 +1,17 @@
 // app/_layout.tsx
 import { Slot, useRouter } from "expo-router";
 import React, { useEffect, useRef } from 'react';
+import { I18nextProvider } from 'react-i18next'; // ✅ Add this import
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
+import '../i18n'; // ✅ Import to initialize i18n
+import i18n from '../i18n'; // ✅ Import i18n instance (adjust path as needed)
 import {
   IS_EXPO_GO,
   registerForPushNotificationsAsync,
   savePushToken
 } from '../lib/notifications';
+
 
 function RootLayoutNav() {
   const { initialized, user } = useAuth();
@@ -78,8 +82,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <I18nextProvider i18n={i18n}>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </I18nextProvider>
   );
 }

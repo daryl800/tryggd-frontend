@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, Tabs } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next"; // Add this import
 import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
@@ -23,6 +24,7 @@ const NotificationBadge = ({ count }: { count: number }) => {
 export default function TabsLayout() {
   const { user, initialized } = useAuth();
   const [unreadRequests, setUnreadRequests] = useState(0);
+  const { t } = useTranslation(); // Initialize translation hook
 
   // Fetch unread contact requests
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function TabsLayout() {
     }}>
       {/* Home Tab */}
       <Tabs.Screen name="index" options={{
-        title: "Hem",
+        title: t("home.title"), // Translate using the correct key
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} />
         )
@@ -94,7 +96,7 @@ export default function TabsLayout() {
 
       {/* Activity Tab */}
       <Tabs.Screen name="activity" options={{
-        title: "Aktivitet",
+        title: t("activity.title"), // Translate using the correct key
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "pulse" : "pulse-outline"} color={color} size={size} />
         )
@@ -102,7 +104,7 @@ export default function TabsLayout() {
 
       {/* Contacts Tab with Badge */}
       <Tabs.Screen name="contacts" options={{
-        title: "Kontakter",
+        title: t("contacts.title"), // Translate using the correct key
         tabBarIcon: ({ color, size, focused }) => (
           <View style={styles.tabIconContainer}>
             <Ionicons name={focused ? "people" : "people-outline"} color={color} size={size} />
@@ -115,7 +117,7 @@ export default function TabsLayout() {
 
       {/* Profile Tab */}
       <Tabs.Screen name="profile" options={{
-        title: "Profil",
+        title: t("profile.title"), // Translate using the correct key
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} />
         )
