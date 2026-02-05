@@ -1,4 +1,5 @@
 // app/(tabs)/index.tsx
+import colors from "@/constants/colors";
 import { useStreak } from "@/hooks/useStreak";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,22 +25,6 @@ import { supabase } from "../../lib/supabase";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const colors = {
-  primary: "#5FA893",
-  primaryLight: "#F0F9F6",
-  primaryBorder: "#E0F2E9",
-  textDark: "#1F2937",
-  textMuted: "#5E7F74",
-  textLight: "#9CA3AF",
-  surface: "#FFFFFF",
-  border: "#E5E7EB",
-  error: "#EF4444",
-  errorLight: "#FEF2F2",
-  errorBorder: "#FECACA",
-  background: "#FAFAFA",
-  success: "#10B981",
-  successLight: "#ECFDF5",
-};
 
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 280);
 const STROKE_WIDTH = 14;
@@ -766,7 +751,7 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize: 32,
     fontWeight: "800",
-    color: colors.textDark,
+    color: colors.text.dark,
   },
   profileButton: {
     width: 44,
@@ -797,7 +782,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 36,
     fontWeight: "700",
-    color: colors.textDark,
+    color: colors.text.dark,
     textAlign: "center",
   },
   dateText: {
@@ -877,7 +862,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   timeLeftText: {
-    color: colors.textLight,
+    color: colors.text.light,
     fontSize: 12,
     fontWeight: "700",
     textAlign: "center",
@@ -962,7 +947,7 @@ const styles = StyleSheet.create({
     borderColor: colors.errorBorder,
   },
   cardLabel: {
-    color: colors.textDark,
+    color: colors.text.dark,
     fontSize: 16,
     fontWeight: "600",
     textAlign: 'center',

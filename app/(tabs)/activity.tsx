@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -23,16 +24,6 @@ type Activity = {
   is_owner?: boolean;
   hasNewUpdate?: boolean;
   checkin_timezone?: string | null;
-};
-
-const colors = {
-  primary: "#5FA893",
-  primaryLight: "#F0F9F6",
-  textDark: "#1F2937",
-  textLight: "#9CA3AF",
-  background: "#FAFAFA",
-  highlight: "#EF4444",
-  highlightLight: "#E0E7FF",
 };
 
 export default function ActivityScreen() {
@@ -421,7 +412,7 @@ export default function ActivityScreen() {
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <Ionicons name="refresh" size={36} color={colors.textLight} style={styles.loadingIcon} />
+              <Ionicons name="refresh" size={36} color={colors.text.light} style={styles.loadingIcon} />
               <Text style={styles.loadingText}>{t("activity.loading")}</Text>
             </View>
           ) : (
@@ -654,7 +645,7 @@ function ActivityItem({
                   {
                     color: timeColorAnim.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [colors.textDark, colors.highlight]
+                      outputRange: [colors.text.dark, colors.highlight],
                     })
                   },
                   hasNewUpdate && {
@@ -669,7 +660,7 @@ function ActivityItem({
             </View>
           ) : (
             <View style={styles.timeRow}>
-              <Text style={[styles.activityTime, { color: colors.textLight }]}>
+              <Text style={[styles.activityTime, { color: colors.text.light }]}>
                 {t("activity.noCheckIn")}
               </Text>
             </View>
@@ -693,11 +684,11 @@ const styles = StyleSheet.create({
   scrollContent: { padding: 16 },
   header: { marginBottom: 16 },
   headerRow: { flexDirection: "row", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "600", marginLeft: 8, color: colors.textDark },
-  subtitle: { fontSize: 14, color: colors.textLight, marginLeft: 28 },
+  title: { fontSize: 22, fontWeight: "600", marginLeft: 8, color: colors.text.dark },
+  subtitle: { fontSize: 14, color: colors.text.light, marginLeft: 28 },
   loadingContainer: { justifyContent: "center", alignItems: "center", padding: 40 },
   loadingIcon: { marginBottom: 12 },
-  loadingText: { color: colors.textLight },
+  loadingText: { color: colors.text.light },
   ownerCard: {
     padding: 16,
     marginBottom: 16,
@@ -732,7 +723,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 6,
     flex: 1,
-    color: colors.textDark
+    color: colors.text.dark
   },
   contactCount: {
     backgroundColor: colors.primaryLight,
@@ -758,12 +749,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: "500",
-    color: colors.textDark,
+    color: colors.text.dark,
     marginTop: 12
   },
   emptyText: {
     fontSize: 14,
-    color: colors.textLight,
+    color: colors.text.light,
     marginTop: 4,
     textAlign: 'center'
   },
@@ -787,7 +778,7 @@ const styles = StyleSheet.create({
   activityName: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.textDark,
+    color: colors.text.dark,
     flex: 1,
     marginRight: 8
   },
@@ -804,12 +795,12 @@ const styles = StyleSheet.create({
   activityTime: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.textDark,
+    color: colors.text.dark,
   },
   activityDate: {
     fontSize: 14,
     fontWeight: "500",
-    color: colors.textLight,
+    color: colors.text.light,
     marginLeft: 'auto'
   },
   priorityBadge: {

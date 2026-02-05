@@ -1,41 +1,91 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Theme configuration for the app
+ * Uses colors from colors.ts to build light/dark themes
  */
 
 import { Platform } from 'react-native';
+import { BaseColors } from './colors';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
+// Build themes using BaseColors
+export const Themes = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    // Text
+    text: BaseColors.text.dark,
+    textSecondary: BaseColors.text.muted,
+    textTertiary: BaseColors.text.light,
+
+    // Backgrounds
+    background: BaseColors.surface,
+    backgroundSecondary: BaseColors.background,
+    backgroundTertiary: BaseColors.neutral[100],
+
+    // Surfaces
+    surface: BaseColors.surface,
+    surfaceSecondary: BaseColors.neutral[50],
+    surfaceTertiary: BaseColors.neutral[100],
+
+    // Borders
+    border: BaseColors.border,
+    borderSecondary: BaseColors.neutral[200],
+
+    // Tints
+    tint: BaseColors.primary,
+    icon: BaseColors.icon,
+    tabIconDefault: BaseColors.tabIconDefault,
+    tabIconSelected: BaseColors.tabIconSelected,
+
+    // Components
+    card: BaseColors.surface,
+    cardActive: BaseColors.neutral[100],
+    inputBackground: BaseColors.surface,
+    buttonPrimary: BaseColors.primary,
+    buttonPrimaryText: BaseColors.text.white,
   },
+
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    // Text
+    text: BaseColors.text.white,
+    textSecondary: BaseColors.neutral[300],
+    textTertiary: BaseColors.neutral[400],
+
+    // Backgrounds
+    background: BaseColors.text.black,
+    backgroundSecondary: BaseColors.neutral[900],
+    backgroundTertiary: BaseColors.neutral[800],
+
+    // Surfaces
+    surface: BaseColors.neutral[900],
+    surfaceSecondary: BaseColors.neutral[800],
+    surfaceTertiary: BaseColors.neutral[700],
+
+    // Borders
+    border: BaseColors.neutral[700],
+    borderSecondary: BaseColors.neutral[600],
+
+    // Tints
+    tint: BaseColors.text.white,
+    icon: BaseColors.neutral[400],
+    tabIconDefault: BaseColors.neutral[400],
+    tabIconSelected: BaseColors.text.white,
+
+    // Components
+    card: BaseColors.neutral[800],
+    cardActive: BaseColors.neutral[700],
+    inputBackground: BaseColors.neutral[800],
+    buttonPrimary: BaseColors.primary,
+    buttonPrimaryText: BaseColors.text.white,
   },
 };
 
+// Export for backward compatibility
+export const Colors = Themes;
+
+// Fonts (separate from colors)
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {
@@ -51,3 +101,15 @@ export const Fonts = Platform.select({
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+// Helper function to get theme
+export const getThemeColors = (mode: 'light' | 'dark' = 'light') => {
+  return Themes[mode];
+};
+
+// Type exports
+export type ThemeType = typeof Themes.light;
+export type ThemeMode = keyof typeof Themes;
+
+// You can also export BaseColors if needed elsewhere
+export { BaseColors };

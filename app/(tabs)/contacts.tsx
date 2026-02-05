@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import { sendContactRequestNotification } from "@/lib/notifications";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -1031,8 +1032,50 @@ export default function ContactsScreen() {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 keyboardVerticalOffset={getKeyboardVerticalOffset()}
             >
-                {/* Header with Tabs */}
-                <View style={styles.header}>
+                {/* Contacts Header - Always on top */}
+                <View style={styles.contactsHeader}>
+                    <View style={styles.headerRow}>
+                        <View style={styles.headerLeft}>
+                            <Ionicons name="people" size={28} color={colors.primary} />
+                            <Text style={styles.title}>{t("contacts.title")}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <TouchableOpacity
+                                onPress={handleManualRefresh}
+                                style={styles.refreshButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                disabled={loading}
+                            >
+                                <Ionicons
+                                    name="refresh"
+                                    size={24}
+                                    color={loading ? "#9CA3AF" : "#5FA893"}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleAddNewContact}
+                                style={styles.addButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                disabled={totalContactsCount >= 3}
+                            >
+                                <Ionicons
+                                    name="add-circle"
+                                    size={36}
+                                    color={totalContactsCount >= 3 ? "#D1D5DB" : "#5FA893"}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <Text style={styles.subtitle}>
+                        {totalContactsCount > 0
+                            ? t("contacts.subtitle.withContacts", { count: totalContactsCount })
+                            : t("contacts.subtitle.noContacts")
+                        }
+                    </Text>
+                </View>
+
+                {/* Tabs Container - Now comes second */}
+                <View style={styles.tabheader}>
                     <View style={styles.tabContainer}>
                         <TouchableOpacity
                             style={[styles.tab, activeSection === 'contacts' && styles.activeTab]}
@@ -1073,47 +1116,6 @@ export default function ContactsScreen() {
 
                 {activeSection === 'contacts' ? (
                     <>
-                        {/* Contacts Header */}
-                        <View style={styles.contactsHeader}>
-                            <View style={styles.headerRow}>
-                                <View style={styles.headerLeft}>
-                                    <Text style={styles.title}>{t("contacts.title")}</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <TouchableOpacity
-                                        onPress={handleManualRefresh}
-                                        style={styles.refreshButton}
-                                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                        disabled={loading}
-                                    >
-                                        <Ionicons
-                                            name="refresh"
-                                            size={24}
-                                            color={loading ? "#9CA3AF" : "#5FA893"}
-                                        />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={handleAddNewContact}
-                                        style={styles.addButton}
-                                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                        disabled={totalContactsCount >= 3}
-                                    >
-                                        <Ionicons
-                                            name="add-circle"
-                                            size={36}
-                                            color={totalContactsCount >= 3 ? "#D1D5DB" : "#5FA893"}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                            <Text style={styles.subtitle}>
-                                {totalContactsCount > 0
-                                    ? t("contacts.subtitle.withContacts", { count: totalContactsCount })
-                                    : t("contacts.subtitle.noContacts")
-                                }
-                            </Text>
-                        </View>
-
                         {/* Contact Cards */}
                         <ScrollView
                             ref={scrollViewRef}
@@ -1265,12 +1267,12 @@ export default function ContactsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.background,
     },
     keyboardAvoidingView: {
         flex: 1,
     },
-    header: {
+    tabheader: {
         paddingHorizontal: 20,
         paddingTop: 12,
     },
@@ -1290,8 +1292,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     activeTab: {
-        backgroundColor: '#fff',
-        shadowColor: '#000',
+        backgroundColor: colors.background,
+        shadowColor: colors.shadowColor,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -1300,22 +1302,23 @@ const styles = StyleSheet.create({
     tabText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#9CA3AF',
+        color: colors.text.light,
         marginLeft: 6,
     },
     activeTabText: {
-        color: '#1F2937',
+        color: colors.text.dark,
     },
     unreadBadge: {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#EF4444',
+        backgroundColor: colors.highlight,
         marginLeft: 4,
         marginTop: -8,
     },
     contactsHeader: {
         paddingHorizontal: 20,
+        paddingTop: 16,
         marginBottom: 16,
     },
     headerRow: {
@@ -1329,9 +1332,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 28,
-        fontWeight: "800",
-        color: "#1F2937",
+        fontSize: 22,
+        fontWeight: "600",
+        marginLeft: 8,
+        color: colors.text.dark
     },
     refreshButton: {
         padding: 4,
@@ -1342,8 +1346,8 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 14,
-        color: "#6B7280",
-        lineHeight: 20,
+        color: colors.text.light,
+        lineHeight: 16,
     },
     scrollView: {
         flex: 1,
@@ -1365,7 +1369,7 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         fontSize: 14,
-        color: "#6B7280",
+        color: colors.text.light,
     },
     emptyState: {
         alignItems: "center",
@@ -1382,12 +1386,12 @@ const styles = StyleSheet.create({
     },
     emptyStateText: {
         fontSize: 14,
-        color: "#6B7280",
+        color: colors.text.light,
         textAlign: "center",
         lineHeight: 20,
     },
     card: {
-        backgroundColor: "#F9FAFB",
+        backgroundColor: colors.background,
         borderRadius: 16,
         padding: 16,
         marginBottom: 12,
@@ -1406,8 +1410,8 @@ const styles = StyleSheet.create({
         }),
     },
     cardActive: {
-        backgroundColor: "#F3F4F6",
-        borderColor: "#5FA893",
+        backgroundColor: colors.background,
+        borderColor: colors.primary,
     },
     cardHeader: {
         flexDirection: "row",
@@ -1442,7 +1446,7 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     input: {
-        backgroundColor: "#fff",
+        backgroundColor: colors.surface,
         borderRadius: 12,
         padding: 12,
         fontSize: 15,
@@ -1642,4 +1646,4 @@ const styles = StyleSheet.create({
         color: '#1F2937',
         marginBottom: 12,
     },
-});
+}); 

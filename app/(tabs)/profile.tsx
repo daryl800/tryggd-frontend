@@ -1,3 +1,4 @@
+import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
@@ -458,10 +459,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 28,
-        fontWeight: "800",
-        marginLeft: 12,
-        color: "#1F2937",
+        fontSize: 22,
+        fontWeight: "600",
+        marginLeft: 8,
+        color: colors.text.dark
     },
     editButton: {
         flexDirection: "row",

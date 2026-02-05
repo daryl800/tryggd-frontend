@@ -1,3 +1,4 @@
+import HeaderWithBack from "@/components/HeaderWithBack";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -16,7 +17,6 @@ import {
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -152,15 +152,20 @@ export default function SettingsScreen() {
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
                 {/* Header */}
-                <View style={styles.header}>
+                {/* <View style={styles.header}>
                     <View style={styles.headerRow}>
                         <Ionicons name="settings" size={28} color="#5FA893" />
                         <Text style={styles.title}>{t("settings.title")}</Text>
                     </View>
-                </View>
+                </View> */}
+
+                <HeaderWithBack
+                    title={t("settings.title")}
+                    iconName="settings"
+                    onBackPress={() => router.push("/profile")}
+                />
 
                 {/* 5. Refactored Multi-Language Section */}
-                {/* Language Settings */}
                 {/* Language Settings */}
                 <SettingSection
                     title={t("settings.language")}
