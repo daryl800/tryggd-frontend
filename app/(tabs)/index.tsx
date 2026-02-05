@@ -410,29 +410,31 @@ export default function HomeScreen() {
       <Animated.View
         style={[styles.content, { opacity: fadeAnim }]}
       >
-        {/* ========== HEADER ========== */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <View style={styles.headerRow}>
-              <Ionicons name={greetingInfo.iconName as any} size={24} color="#5FA893" />
-              <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
+        {/* ========== GROUP 1: HEADER ========== */}
+        <View style={[styles.headerGroup, styles.groupContainer]}>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <View style={styles.headerRow}>
+                <Ionicons name={greetingInfo.iconName as any} size={24} color="#5FA893" />
+                <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
+              </View>
+              <Text style={styles.displayName} numberOfLines={1}>
+                {profile?.display_name || "Välkommen"}
+              </Text>
             </View>
-            <Text style={styles.displayName} numberOfLines={1}>
-              {profile?.display_name || "Välkommen"}
-            </Text>
-          </View>
 
-          <TouchableOpacity
-            onPress={() => router.push("/(tabs)/profile")}
-            style={styles.profileButton}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="person" size={24} color="#5FA893" />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/profile")}
+              style={styles.profileButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="person" size={24} color="#5FA893" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* ========== DATE & TIME CARD ========== */}
-        <View style={styles.dateTimeContainer}>
+        {/* ========== GROUP 2: DATE & TIME ========== */}
+        <View style={[styles.dateTimeGroup, styles.groupContainer]}>
           <Text style={styles.timeText}>
             {formatTime24h(now)}
           </Text>
@@ -441,8 +443,8 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* ========== MAIN CHECK-IN AREA ========== */}
-        <View style={styles.mainArea}>
+        {/* ========== GROUP 3: MAIN CHECK-IN ========== */}
+        <View style={[styles.checkInGroup, styles.groupContainer]}>
           <View style={styles.checkInContainer}>
             <Animated.View
               style={{
@@ -454,6 +456,18 @@ export default function HomeScreen() {
                 activeOpacity={0.9}
                 style={[styles.checkInButton, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
               >
+                {/* Outer Circle Border - ADD THIS */}
+                <View
+                  style={{
+                    position: 'absolute',
+                    width: CIRCLE_SIZE + 4,
+                    height: CIRCLE_SIZE + 4,
+                    borderRadius: (CIRCLE_SIZE + 4) / 2,
+                    borderWidth: 2,
+                    borderColor: colors.primaryBorder,
+                  }}
+                />
+
                 {/* Progress Ring */}
                 <Svg
                   width={CIRCLE_SIZE}
@@ -472,7 +486,7 @@ export default function HomeScreen() {
                     cx={CIRCLE_SIZE / 2}
                     cy={CIRCLE_SIZE / 2}
                     r={CIRCLE_RADIUS}
-                    stroke="#F3F4F6"
+                    stroke="#7DC4B0"
                     strokeWidth={STROKE_WIDTH}
                     fill="none"
                   />
@@ -483,12 +497,12 @@ export default function HomeScreen() {
                       cx={CIRCLE_SIZE / 2}
                       cy={CIRCLE_SIZE / 2}
                       r={CIRCLE_RADIUS}
-                      stroke="url(#gradient)"
+                      stroke="#F3F4F6"
                       strokeWidth={STROKE_WIDTH}
                       fill="none"
                       strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
                       strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
-                      strokeLinecap="round"
+                      strokeLinecap="butt"
                     />
                   ) : (
                     <Circle
@@ -540,7 +554,7 @@ export default function HomeScreen() {
                         </Animated.View>
                         <Text style={styles.checkInTime}>
                           {lastCheckinUtc
-                            ? formatTime24h(new Date(lastCheckinUtc))
+                            ? "@ " + formatTime24h(new Date(lastCheckinUtc))
                             : ""}
                         </Text>
                       </>
@@ -550,6 +564,9 @@ export default function HomeScreen() {
                         <Text style={styles.countdownText}>
                           {formatTimeLeft(remainingMs)}
                         </Text>
+                        <Text style={styles.timeLeftText}>
+                          Time left idag
+                        </Text>
                       </>
                     )}
                   </View>
@@ -557,9 +574,11 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </Animated.View>
           </View>
+        </View>
 
-          {/* Warning message */}
-          {!checkedInToday && (
+        {/* ========== GROUP 4: WARNING MESSAGE ========== */}
+        {!checkedInToday && (
+          <View style={[styles.warningGroup, styles.groupContainer]}>
             <View style={styles.warningContainer}>
               <View style={styles.warningIconContainer}>
                 <Ionicons name="alert-circle" size={18} color={colors.error} />
@@ -568,56 +587,58 @@ export default function HomeScreen() {
                 Glöm inte att checka in idag!
               </Text>
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
-        {/* ========== ACTION CARDS ========== */}
-        <View style={styles.cardsContainer}>
-          {showResetButton ? (
-            <TouchableOpacity
-              onPress={resetAllState}
-              style={[styles.card, styles.resetCard]}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardIcon}>
-                <View style={styles.resetIconContainer}>
-                  <Ionicons name="refresh" size={24} color={colors.error} />
+        {/* ========== GROUP 5: ACTION CARDS ========== */}
+        <View style={[styles.cardsGroup, styles.groupContainer]}>
+          <View style={styles.cardsContainer}>
+            {showResetButton ? (
+              <TouchableOpacity
+                onPress={resetAllState}
+                style={[styles.card, styles.resetCard]}
+                activeOpacity={0.8}
+              >
+                <View style={styles.cardIcon}>
+                  <View style={styles.resetIconContainer}>
+                    <Ionicons name="refresh" size={24} color={colors.error} />
+                  </View>
                 </View>
-              </View>
-              <Text style={styles.resetText}>Återställ</Text>
-              <Text style={styles.cardSubtext}>Timer</Text>
-            </TouchableOpacity>
-          ) : (
+                <Text style={styles.resetText}>Återställ</Text>
+                <Text style={styles.cardSubtext}>Timer</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/activity")}
+                style={styles.card}
+                activeOpacity={0.8}
+              >
+                <View style={styles.cardIcon}>
+                  <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
+                    <Ionicons name="pulse" size={24} color={colors.primary} />
+                  </View>
+                </View>
+                <Text style={styles.cardLabel}>Aktivitet</Text>
+                <Text style={styles.cardSubtext}>Historik</Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
-              onPress={() => router.push("/(tabs)/activity")}
+              onPress={() => router.push("/(tabs)/statistics")}
               style={styles.card}
               activeOpacity={0.8}
             >
               <View style={styles.cardIcon}>
-                <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                  <Ionicons name="pulse" size={24} color={colors.primary} />
+                <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
+                  <Ionicons name="flame" size={24} color={colors.primary} />
                 </View>
               </View>
-              <Text style={styles.cardLabel}>Aktivitet</Text>
-              <Text style={styles.cardSubtext}>Historik</Text>
+              <Text style={styles.cardLabel}>Streak</Text>
+              <Text style={styles.streakValue}>
+                {streak} {streak === 1 ? "dag" : "dagar"}
+              </Text>
             </TouchableOpacity>
-          )}
-
-          <TouchableOpacity
-            onPress={() => router.push("/(tabs)/statistics")}
-            style={styles.card}
-            activeOpacity={0.8}
-          >
-            <View style={styles.cardIcon}>
-              <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                <Ionicons name="flame" size={24} color={colors.primary} />
-              </View>
-            </View>
-            <Text style={styles.cardLabel}>Streak</Text>
-            <Text style={styles.streakValue}>
-              {streak} {streak === 1 ? "dag" : "dagar"}
-            </Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     </SafeAreaView>
@@ -625,6 +646,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
+const GROUP_GAP = 24; // Constant spacing between all groups
 
 const styles = StyleSheet.create({
   container: {
@@ -649,12 +671,19 @@ const styles = StyleSheet.create({
     paddingBottom: BOTTOM_BUTTON_MARGIN,
   },
 
-  // Header
+  // Group container styles
+  groupContainer: {
+    marginBottom: GROUP_GAP, // Use constant here
+  },
+
+  // Header Group
+  headerGroup: {
+    // REMOVE marginBottom: 16, - let groupContainer handle it
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
   headerLeft: {
     flex: 1,
@@ -699,14 +728,13 @@ const styles = StyleSheet.create({
     }),
   },
 
-  // Date & Time (centered, no card)
-  dateTimeContainer: {
+  // Date & Time Group
+  dateTimeGroup: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 30, // Adjust this spacing as needed
   },
   timeText: {
-    fontSize: 26, // Slightly larger for emphasis
+    fontSize: 36,
     fontWeight: "700",
     color: colors.textDark,
     textAlign: "center",
@@ -714,23 +742,21 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     color: "#6B7280",
-    marginTop: 6, // Spacing between time and date
+    marginTop: 6,
     textTransform: "capitalize",
     textAlign: "center",
   },
 
-  // Main Check-in Area
-  mainArea: {
-    flex: 1,
+  // Main Check-in Group
+  checkInGroup: {
     alignItems: "center",
-    justifyContent: "flex-start",
-    minHeight: 370, // Ensure enough space for the circle
+    justifyContent: "center",
+    // REMOVE minHeight: 370,
   },
   checkInContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 5, // Space from date card
-    marginBottom: 30,
+    // REMOVE marginBottom: 16,
   },
   checkInButton: {
     alignItems: "center",
@@ -793,8 +819,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
   },
+  timeLeftText: {
+    color: colors.textLight,
+    fontSize: 12,
+    fontWeight: "700",
+    textAlign: "center",
+    marginTop: 2,
+  },
 
-  // Warning
+  // Warning Group
+  warningGroup: {
+    // REMOVE marginBottom: 16,
+  },
   warningContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -805,8 +841,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.errorBorder,
     alignSelf: 'center',
-    marginTop: 0, // Space from check-in button
-    marginBottom: 32, // Space before cards
   },
   warningIconContainer: {
     marginRight: 10,
@@ -818,11 +852,13 @@ const styles = StyleSheet.create({
     color: colors.error,
   },
 
-  // Action Cards
+  // Action Cards Group
+  cardsGroup: {
+    // REMOVE marginBottom: 16,
+  },
   cardsContainer: {
     flexDirection: "row",
     gap: 16,
-    paddingHorizontal: 4,
   },
   card: {
     flex: 1,

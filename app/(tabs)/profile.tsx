@@ -284,37 +284,7 @@ export default function ProfileScreen() {
                         <Ionicons name="person-circle" size={28} color="#5FA893" />
                         <Text style={styles.title}>Profil</Text>
                     </View>
-                    {!isEditing ? (
-                        <TouchableOpacity
-                            onPress={() => setIsEditing(true)}
-                            style={styles.editButton}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons name="create-outline" size={20} color="#5FA893" />
-                            <Text style={styles.editButtonText}>Redigera</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <View style={styles.editActions}>
-                            <TouchableOpacity
-                                onPress={cancelEdit}
-                                style={[styles.actionButton, styles.cancelButton]}
-                                activeOpacity={0.7}
-                            >
-                                <Text style={styles.cancelButtonText}>Avbryt</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={saveProfile}
-                                disabled={saving}
-                                style={[styles.actionButton, styles.saveButton, saving && styles.saveButtonDisabled]}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons name="save-outline" size={18} color="#fff" />
-                                <Text style={styles.saveButtonText}>
-                                    {saving ? "Sparar..." : "Spara"}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+
                 </View>
 
                 {/* Avatar Section */}
@@ -341,23 +311,45 @@ export default function ProfileScreen() {
                             </View>
                         )}
                     </TouchableOpacity>
-
-                    <Text style={styles.displayName}>
-                        {profile.display_name || "Användare"}
-                    </Text>
-                    <Text style={styles.emailText}>{profile.email}</Text>
+                    {!isEditing ? (
+                        <TouchableOpacity
+                            onPress={() => setIsEditing(true)}
+                            style={styles.editButton}
+                            activeOpacity={0.7}
+                        >
+                            <Ionicons name="create-outline" size={20} color="#5FA893" />
+                            <Text style={styles.editButtonText}>Edit</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={styles.editActions}>
+                            <TouchableOpacity
+                                onPress={cancelEdit}
+                                style={[styles.actionButton, styles.cancelButton]}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={styles.cancelButtonText}>Avbryt</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={saveProfile}
+                                disabled={saving}
+                                style={[styles.actionButton, styles.saveButton, saving && styles.saveButtonDisabled]}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons name="save-outline" size={18} color="#fff" />
+                                <Text style={styles.saveButtonText}>
+                                    {saving ? "Sparar..." : "Spara"}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
 
                 {/* Profile Info Card */}
                 <View style={styles.infoCard}>
-                    <View style={styles.infoCardHeader}>
-                        <Ionicons name="information-circle" size={22} color="#5FA893" />
-                        <Text style={styles.infoCardTitle}>Profilinformation</Text>
-                    </View>
 
-                    {renderField("Visningsnamn", profile.display_name || "", "display_name")}
-                    {renderField("E-postadress", profile.email || "", "email", false)}
-                    {renderField("Telefonnummer", profile.phone || "", "phone")}
+                    {renderField("Name", profile.display_name || "", "display_name")}
+                    {renderField("E-mail", profile.email || "", "email", false)}
+                    {renderField("Phone number", profile.phone || "", "phone")}
                 </View>
 
                 {/* Settings Card */}
@@ -427,6 +419,8 @@ export default function ProfileScreen() {
     );
 }
 
+// ==================== STYLES ====================
+const GAP = 16;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -454,7 +448,7 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 20,
         paddingTop: 16,
-        marginBottom: 8,
+        marginBottom: 0,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -528,7 +522,7 @@ const styles = StyleSheet.create({
     },
     avatarSection: {
         alignItems: "center",
-        marginVertical: 24,
+        marginVertical: GAP,
         paddingHorizontal: 20,
     },
     avatarTouchable: {
@@ -578,7 +572,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         marginHorizontal: 20,
-        marginBottom: 20,
+        marginBottom: GAP,
         borderWidth: 1,
         borderColor: "#F3F4F6",
         ...Platform.select({
@@ -605,7 +599,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     fieldContainer: {
-        marginBottom: 20,
+        marginBottom: GAP,
     },
     fieldLabel: {
         fontSize: 14,
@@ -640,7 +634,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         marginHorizontal: 20,
-        marginBottom: 20,
+        marginBottom: GAP,
         borderWidth: 1,
         borderColor: "#F3F4F6",
         ...Platform.select({
