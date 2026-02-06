@@ -1,4 +1,5 @@
 import HeaderWithBack from "@/components/HeaderWithBack";
+import colors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -27,11 +28,11 @@ type Theme = "light" | "dark";
 
 // 2. Define our 7 supported languages
 const SUPPORTED_LANGUAGES = [
-    { code: "en", label: "English", flag: "🇺🇸" },
-    { code: "sv", label: "Svenska", flag: "🇸🇪" },
-    { code: "no", label: "Norsk", flag: "🇳🇴" },
     { code: "da", label: "Dansk", flag: "🇩🇰" },
+    { code: "en", label: "English", flag: "🇺🇸" },
     { code: "fi", label: "Suomi", flag: "🇫🇮" },
+    { code: "no", label: "Norsk", flag: "🇳🇴" },
+    { code: "sv", label: "Svenska", flag: "🇸🇪" },
     // { code: "zh-Hans", label: "简体中文", flag: "🇨🇳" },
     // { code: "zh-Hant", label: "繁體中文", flag: "🇭🇰" },
 ];
@@ -290,7 +291,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.background,
     },
     scrollView: {
         flex: 1,
@@ -310,14 +311,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
-    title: {
+    mainTitle: {
         fontSize: 28,
         fontWeight: "800",
         marginLeft: 12,
         color: "#1F2937",
     },
-
-
 
     collapsibleHeader: {
         flexDirection: "row",

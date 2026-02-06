@@ -284,7 +284,7 @@ export default function ProfileScreen() {
                 {/* Header */}
                 <View style={styles.header}>
                     <View style={styles.headerRow}>
-                        <Ionicons name="person-circle" size={28} color="#5FA893" />
+                        <Ionicons name="person-circle" size={28} color={colors.primary} />
                         <Text style={styles.title}>{t("profile.title")}</Text>
                     </View>
                 </View>
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 22,
-        fontWeight: "600",
+        fontWeight: "800",
         marginLeft: 8,
         color: colors.text.dark
     },

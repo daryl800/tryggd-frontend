@@ -1,4 +1,5 @@
 import colors from "@/constants/colors";
+import { ICON_SIZES } from "@/constants/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -420,10 +421,10 @@ export default function ActivityScreen() {
               {/* Owner */}
               {ownerActivity && (
                 <View style={styles.ownerCard}>
-                  <View style={styles.cardHeader}>
+                  {/* <View style={styles.cardHeader}>
                     <Ionicons name="person-circle" size={20} color={colors.primary} />
                     <Text style={styles.cardTitle}>{t("activity.yourActivity")}</Text>
-                  </View>
+                  </View> */}
                   <ActivityItem
                     name={ownerActivity.display_name}
                     timestamp={ownerActivity.last_checked_in_utc}
@@ -439,7 +440,7 @@ export default function ActivityScreen() {
               {/* Contacts */}
               <View style={styles.contactsCard}>
                 <View style={styles.cardHeader}>
-                  <Ionicons name="people" size={20} color={colors.primary} />
+                  <Ionicons name="people" size={ICON_SIZES.SM} color={colors.primary} />
                   <Text style={styles.cardTitle}>{t("activity.contacts")}</Text>
                   {activities.length > 0 && (
                     <View style={styles.contactCount}>
@@ -684,8 +685,8 @@ const styles = StyleSheet.create({
   scrollContent: { padding: 16 },
   header: { marginBottom: 16 },
   headerRow: { flexDirection: "row", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "600", marginLeft: 8, color: colors.text.dark },
-  subtitle: { fontSize: 14, color: colors.text.light, marginLeft: 28 },
+  title: { fontSize: 22, fontWeight: "800", marginLeft: 8, color: colors.text.dark },
+  subtitle: { fontSize: 14, color: colors.text.light, marginLeft: 4 },
   loadingContainer: { justifyContent: "center", alignItems: "center", padding: 40 },
   loadingIcon: { marginBottom: 12 },
   loadingText: { color: colors.text.light },

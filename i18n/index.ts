@@ -4,11 +4,11 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 const resources = {
-    en: { translation: require('./locales/en.json') },
-    sv: { translation: require('./locales/sv.json') },
-    no: { translation: require('./locales/no.json') },
     da: { translation: require('./locales/da.json') },
+    en: { translation: require('./locales/en.json') },
     fi: { translation: require('./locales/fi.json') },
+    no: { translation: require('./locales/no.json') },
+    sv: { translation: require('./locales/sv.json') },
     'zh-Hans': { translation: require('./locales/zh-Hans.json') },
     'zh-Hant': { translation: require('./locales/zh-Hant.json') },
 };

@@ -1,4 +1,5 @@
 import colors from "@/constants/colors";
+import { ICON_SIZES } from "@/constants/ui";
 import { sendContactRequestNotification } from "@/lib/notifications";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -286,11 +287,12 @@ export default function ContactsScreen() {
                 clearTimeout(fetchAllDataTimeoutRef.current);
             }
 
+            // Remove .then() - these are subscription objects, not promises
             if (contactRequestsSubscription) {
-                contactRequestsSubscription.then((sub: any) => sub?.unsubscribe());
+                contactRequestsSubscription.unsubscribe();
             }
             if (contactsSubscription) {
-                contactsSubscription.then((sub: any) => sub?.unsubscribe());
+                contactsSubscription.unsubscribe();
             }
         };
     }, []);
@@ -1033,35 +1035,33 @@ export default function ContactsScreen() {
                 keyboardVerticalOffset={getKeyboardVerticalOffset()}
             >
                 {/* Contacts Header - Always on top */}
-                <View style={styles.contactsHeader}>
+                <View style={styles.mainHeader}>
                     <View style={styles.headerRow}>
                         <View style={styles.headerLeft}>
-                            <Ionicons name="people" size={28} color={colors.primary} />
+                            <Ionicons name="people" size={ICON_SIZES.LG} color={colors.primary} />
                             <Text style={styles.title}>{t("contacts.title")}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                // hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 disabled={loading}
                             >
                                 <Ionicons
                                     name="refresh"
-                                    size={24}
+                                    size={ICON_SIZES.MD}
                                     color={loading ? "#9CA3AF" : "#5FA893"}
                                 />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}
-                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                // hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                                 disabled={totalContactsCount >= 3}
                             >
                                 <Ionicons
-                                    name="add-circle"
-                                    size={36}
-                                    color={totalContactsCount >= 3 ? "#D1D5DB" : "#5FA893"}
+                                    name="add-circle" size={ICON_SIZES.LG} color={totalContactsCount >= 3 ? "#D1D5DB" : "#5FA893"}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -1083,7 +1083,7 @@ export default function ContactsScreen() {
                         >
                             <Ionicons
                                 name="people"
-                                size={20}
+                                size={ICON_SIZES.SM}
                                 color={activeSection === 'contacts' ? "#5FA893" : "#9CA3AF"}
                             />
                             <Text style={[styles.tabText, activeSection === 'contacts' && styles.activeTabText]}>
@@ -1100,7 +1100,7 @@ export default function ContactsScreen() {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <Ionicons
                                     name="mail"
-                                    size={20}
+                                    size={ICON_SIZES.SM}
                                     color={activeSection === 'requests' ? "#5FA893" : "#9CA3AF"}
                                 />
                                 {hasUnreadRequests && activeSection !== 'requests' && (
@@ -1128,7 +1128,7 @@ export default function ContactsScreen() {
                                 <View style={styles.loadingContainer}>
                                     <Ionicons
                                         name="refresh"
-                                        size={36}
+                                        size={ICON_SIZES.SM}
                                         color="#9CA3AF"
                                         style={styles.loadingIcon}
                                     />
@@ -1264,6 +1264,8 @@ export default function ContactsScreen() {
     );
 }
 
+// ==================== STYLES ====================
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -1301,7 +1303,7 @@ const styles = StyleSheet.create({
     },
     tabText: {
         fontSize: 14,
-        fontWeight: '600',
+        fontWeight: '800',
         color: colors.text.light,
         marginLeft: 6,
     },
@@ -1316,16 +1318,16 @@ const styles = StyleSheet.create({
         marginLeft: 4,
         marginTop: -8,
     },
-    contactsHeader: {
+    mainHeader: {
         paddingHorizontal: 20,
         paddingTop: 16,
-        marginBottom: 16,
+        marginBottom: 0,
     },
     headerRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 6,
+        marginBottom: 0,
     },
     headerLeft: {
         flexDirection: "row",
@@ -1333,7 +1335,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 22,
-        fontWeight: "600",
+        fontWeight: "800",
         marginLeft: 8,
         color: colors.text.dark
     },
@@ -1344,11 +1346,12 @@ const styles = StyleSheet.create({
     addButton: {
         padding: 4,
     },
-    subtitle: {
-        fontSize: 14,
-        color: colors.text.light,
-        lineHeight: 16,
-    },
+    // subtitle: {
+    //     fontSize: 14,
+    //     color: colors.text.light,
+    //     lineHeight: 16,
+    // },
+    subtitle: { fontSize: 14, color: colors.text.light, marginLeft: 4, marginBottom: 8 },
     scrollView: {
         flex: 1,
     },

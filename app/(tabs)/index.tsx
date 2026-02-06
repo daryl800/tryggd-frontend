@@ -1,5 +1,6 @@
 // app/(tabs)/index.tsx
 import colors from "@/constants/colors";
+import { ICON_SIZES } from "@/constants/ui";
 import { useStreak } from "@/hooks/useStreak";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -469,7 +470,7 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <View style={styles.headerRow}>
-                <Ionicons name={greetingInfo.iconName as any} size={24} color="#5FA893" />
+                <Ionicons name={greetingInfo.iconName as any} size={ICON_SIZES.MD} color={colors.primary} />
                 <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
               </View>
               <Text style={styles.displayName} numberOfLines={1}>
@@ -482,7 +483,7 @@ export default function HomeScreen() {
               style={styles.profileButton}
               activeOpacity={0.7}
             >
-              <Ionicons name="person" size={24} color="#5FA893" />
+              <Ionicons name="person" size={ICON_SIZES.MD} color={colors.primary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -582,13 +583,13 @@ export default function HomeScreen() {
                     {checkedInToday ? (
                       <Ionicons
                         name="checkmark-circle"
-                        size={60}
+                        size={ICON_SIZES.SUPER_HUGE}
                         color="#fff"
                       />
                     ) : (
                       <Ionicons
                         name="heart"
-                        size={60}
+                        size={ICON_SIZES.SUPER_HUGE}
                         color={colors.primary}
                       />
                     )}
@@ -635,7 +636,7 @@ export default function HomeScreen() {
           <View style={[styles.warningGroup, styles.groupContainer]}>
             <View style={styles.warningContainer}>
               <View style={styles.warningIconContainer}>
-                <Ionicons name="alert-circle" size={18} color={colors.error} />
+                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={colors.error} />
               </View>
               <Text style={styles.warningText}>
                 {t("home.dontForget")}
@@ -655,7 +656,7 @@ export default function HomeScreen() {
               >
                 <View style={styles.cardIcon}>
                   <View style={styles.resetIconContainer}>
-                    <Ionicons name="refresh" size={24} color={colors.error} />
+                    <Ionicons name="refresh" size={ICON_SIZES.MD} color={colors.error} />
                   </View>
                 </View>
                 <Text style={styles.resetText}>{t("home.reset")}</Text>
@@ -684,7 +685,7 @@ export default function HomeScreen() {
             >
               <View style={styles.cardIcon}>
                 <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                  <Ionicons name="flame" size={24} color={colors.primary} />
+                  <Ionicons name="flame" size={ICON_SIZES.SM} color={colors.primary} />
                 </View>
               </View>
               <Text style={styles.cardLabel}>{t("home.streak")}</Text>
@@ -754,8 +755,8 @@ const styles = StyleSheet.create({
     color: colors.text.dark,
   },
   profileButton: {
-    width: 44,
-    height: 44,
+    width: 34,
+    height: 34,
     borderRadius: 22,
     backgroundColor: colors.surface,
     alignItems: "center",
