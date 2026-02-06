@@ -10,7 +10,6 @@ import {
     Platform,
     ScrollView,
     StyleSheet,
-    Switch,
     Text,
     TouchableOpacity,
     UIManager,
@@ -224,7 +223,7 @@ export default function SettingsScreen() {
                 </SettingSection>
 
                 {/* Theme Settings */}
-                <SettingSection title={t("settings.theme")} iconName="color-palette">
+                {/* <SettingSection title={t("settings.theme")} iconName="color-palette">
                     <View style={styles.switchContainer}>
                         <Text style={styles.switchLabel}>{t("settings.systemDefault")}</Text>
                         <Switch
@@ -248,10 +247,10 @@ export default function SettingsScreen() {
                             </TouchableOpacity>
                         </>
                     )}
-                </SettingSection>
+                </SettingSection> */}
 
                 {/* Notifications */}
-                <SettingSection title={t("settings.notifications")} iconName="notifications">
+                {/* <SettingSection title={t("settings.notifications")} iconName="notifications">
                     <View style={styles.switchContainer}>
                         <View style={styles.notificationContent}>
                             <Text style={styles.switchLabel}>{t("settings.notifications")}</Text>
@@ -264,7 +263,7 @@ export default function SettingsScreen() {
                             thumbColor="#fff"
                         />
                     </View>
-                </SettingSection>
+                </SettingSection> */}
 
                 {/* Information */}
                 <SettingSection title={t("settings.information")} iconName="information-circle">
@@ -276,9 +275,9 @@ export default function SettingsScreen() {
                 </SettingSection>
 
                 {/* Account */}
-                <SettingSection title={t("settings.account")} iconName="person-circle">
+                {/* <SettingSection title={t("settings.account")} iconName="person-circle">
                     <SettingItem label={t("settings.resetData")} iconName="refresh" onPress={handleResetData} />
-                </SettingSection>
+                </SettingSection> */}
 
                 <View style={styles.bottomSpacing} />
             </ScrollView>
