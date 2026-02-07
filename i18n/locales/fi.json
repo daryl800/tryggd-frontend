@@ -291,5 +291,35 @@
     },
     "permissions": {
         "title": "Käyttöoikeus"
+    },
+    "auth": {
+        "signup": {
+            "title": "Luo tili",
+            "create": "Luo tili",
+            "creating": "Luodaan tiliä...",
+            "success": {
+                "title": "Tili luotu 🎉",
+                "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
+            },
+            "error": "Rekisteröinti epäonnistui"
+        },
+        "login": {
+            "title": "Kirjaudu sisään",
+            "signIn": "Kirjaudu sisään",
+            "loggingIn": "Kirjaudutaan sisään...",
+            "error": "Kirjautuminen epäonnistui"
+        },
+        "email": "Sähköposti",
+        "displayName": "Nimi",
+        "password": {
+            "placeholder": "Salasana (vähintään 6 merkkiä)"
+        },
+        "confirmPassword": "Vahvista salasana",
+        "passwordsMatch": "✔ Salasanat täsmäävät",
+        "passwordsNoMatch": "✖ Salasanat eivät täsmää",
+        "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
+        "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
+        "forgotPassword": "Unohditko salasanan?",
+        "unknownError": "Tuntematon virhe"
     }
 }

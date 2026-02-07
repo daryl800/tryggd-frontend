@@ -1,12 +1,12 @@
-import HeaderWithBack from "@/components/HeaderWithBack";
-import colors from "@/constants/colors";
+import HeaderWithBack from '@/components/common/HeaderWithBack';
+import { BaseColors } from '@/constants/colors';
+import { SCREEN_PADDING } from '@/constants/spacing';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next"; // 1. Import hook
+import { useTranslation } from "react-i18next";
 import {
-    Alert,
     LayoutAnimation,
     Platform,
     ScrollView,
@@ -23,345 +23,218 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// Types
-type Theme = "light" | "dark";
-
-// 2. Define our 7 supported languages
+// Define our 5 supported languages
 const SUPPORTED_LANGUAGES = [
     { code: "da", label: "Dansk", flag: "🇩🇰" },
     { code: "en", label: "English", flag: "🇺🇸" },
     { code: "fi", label: "Suomi", flag: "🇫🇮" },
     { code: "no", label: "Norsk", flag: "🇳🇴" },
     { code: "sv", label: "Svenska", flag: "🇸🇪" },
-    // { code: "zh-Hans", label: "简体中文", flag: "🇨🇳" },
-    // { code: "zh-Hant", label: "繁體中文", flag: "🇭🇰" },
 ];
 
 const STORAGE_KEYS = {
-    LANGUAGE: "@app_language", // Keep consistent with your i18n.js
+    LANGUAGE: "@app_language",
     THEME: "@settings_theme",
     NOTIFICATIONS: "@settings_notifications",
 };
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const { t, i18n } = useTranslation(); // Initialize i18next
-    const [isLanguageExpanded, setIsLanguageExpanded] = useState(false); // Language Expansion
-
-    const [theme, setTheme] = useState<Theme>("light");
-    const [useSystemTheme, setUseSystemTheme] = useState(true);
-    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const { t, i18n } = useTranslation();
+    const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
 
     useEffect(() => {
         loadSettings();
     }, []);
 
-    useEffect(() => {
-        saveThemeSetting();
-    }, [theme, useSystemTheme]);
-
     const loadSettings = async () => {
         try {
-            const savedTheme = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
-            if (savedTheme === "light" || savedTheme === "dark") {
-                setTheme(savedTheme);
-                setUseSystemTheme(false);
-            }
-
-            const savedNotifications = await AsyncStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
-            if (savedNotifications !== null) {
-                setNotificationsEnabled(savedNotifications === "true");
-            }
+            // Load any saved settings if needed
         } catch (error) {
             console.error("Failed to load settings:", error);
         }
     };
 
-    // 4. Scalable Language Switcher
     const changeLanguage = async (langCode: string) => {
-        await i18n.changeLanguage(langCode); // Changes language across whole app
+        await i18n.changeLanguage(langCode);
         await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, langCode);
+        setIsLanguageExpanded(false);
     };
-
-    const saveThemeSetting = async () => {
-        try {
-            if (useSystemTheme) {
-                await AsyncStorage.removeItem(STORAGE_KEYS.THEME);
-            } else {
-                await AsyncStorage.setItem(STORAGE_KEYS.THEME, theme);
-            }
-        } catch (error) {
-            console.error("Failed to save theme:", error);
-        }
-    };
-
-    const saveNotifications = async (enabled: boolean) => {
-        setNotificationsEnabled(enabled);
-        await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, enabled.toString());
-    };
-
-    const handleResetData = () => {
-        Alert.alert(t("resetData"), t("resetWarning"), [
-            { text: t("cancel"), style: "cancel" },
-            {
-                text: t("confirmReset"),
-                style: "destructive",
-                onPress: () => {
-                    Alert.alert(t("ok"), "Data Reset Completed.");
-                },
-            },
-        ]);
-    };
-
-    // Reusable UI Components
-    const SettingSection = ({ title, children, iconName }: any) => (
-        <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-                {iconName && <Ionicons name={iconName} size={20} color="#5FA893" />}
-                <Text style={styles.sectionTitle}>{title}</Text>
-            </View>
-            <View style={styles.sectionCard}>{children}</View>
-        </View>
-    );
-
-    const SettingItem = ({ label, description, rightElement, onPress, isDestructive, iconName }: any) => (
-        <TouchableOpacity style={styles.settingItem} onPress={onPress} activeOpacity={0.7}>
-            <View style={styles.settingItemContent}>
-                {iconName && (
-                    <View style={[styles.iconContainer, isDestructive && styles.destructiveIconContainer]}>
-                        <Ionicons name={iconName} size={20} color={isDestructive ? "#EF4444" : "#5FA893"} />
-                    </View>
-                )}
-                <View style={styles.settingTextContainer}>
-                    <Text style={[styles.settingItemLabel, isDestructive && styles.destructiveText]}>{label}</Text>
-                    {description && <Text style={styles.settingItemDescription}>{description}</Text>}
-                </View>
-                {rightElement}
-            </View>
-        </TouchableOpacity>
-    );
 
     const toggleExpand = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setIsLanguageExpanded(!isLanguageExpanded);
     };
 
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
-                {/* Header */}
-                {/* <View style={styles.header}>
-                    <View style={styles.headerRow}>
-                        <Ionicons name="settings" size={28} color="#5FA893" />
-                        <Text style={styles.title}>{t("settings.title")}</Text>
-                    </View>
-                </View> */}
-
-                <HeaderWithBack
-                    title={t("settings.title")}
-                    iconName="settings"
-                    onBackPress={() => router.push("/profile")}
-                />
-
-                {/* 5. Refactored Multi-Language Section */}
-                {/* Language Settings */}
-                <SettingSection
-                    title={t("settings.language")}
-                    iconName="language"
-                >
-                    {/* 1. Header Row (Current Selection + Toggle) */}
-                    <TouchableOpacity
-                        style={styles.collapsibleHeader}
-                        onPress={() => setIsLanguageExpanded(!isLanguageExpanded)}
-                        activeOpacity={0.7}
-                    >
-                        <View style={styles.languageLabelContainer}>
-                            {/* Find the current language object to show the active flag/label in the header */}
-                            <Text style={styles.flagText}>
-                                {SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.flag || "🌐"}
-                            </Text>
-                            <Text style={styles.optionText}>
-                                {SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.label}
-                            </Text>
-                        </View>
-                        <Ionicons
-                            name={isLanguageExpanded ? "chevron-up" : "chevron-down"}
-                            size={20}
-                            color="#9CA3AF"
-                        />
-                    </TouchableOpacity>
-
-                    {/* 2. Collapsible Content */}
-                    {isLanguageExpanded && (
-                        <View style={styles.expandedContent}>
-                            <View style={styles.divider} />
-                            {SUPPORTED_LANGUAGES.map((lang, index) => (
-                                <View key={lang.code}>
-                                    <TouchableOpacity
-                                        style={styles.settingOption}
-                                        onPress={() => {
-                                            changeLanguage(lang.code);
-                                            setIsLanguageExpanded(false); // Auto-close after selection
-                                        }}
-                                    >
-                                        <View style={styles.languageLabelContainer}>
-                                            <Text style={styles.flagText}>{lang.flag}</Text>
-                                            <Text style={styles.optionText}>{lang.label}</Text>
-                                        </View>
-                                        {i18n.language === lang.code && (
-                                            <View style={styles.selectedIndicator}>
-                                                <Ionicons name="checkmark" size={18} color="#fff" />
-                                            </View>
-                                        )}
-                                    </TouchableOpacity>
-                                    {index < SUPPORTED_LANGUAGES.length - 1 && <View style={styles.divider} />}
+            <HeaderWithBack
+                title={t("settings.title")}
+                iconName="settings"
+                onBackPress={() => router.push("/profile")}
+            />
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
+                {/* Language Settings Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionLabel}>{t("settings.language")}</Text>
+                    <View style={styles.card}>
+                        {/* Current Language Header */}
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={toggleExpand}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="language" size={22} color={BaseColors.primary} />
                                 </View>
-                            ))}
-                        </View>
-                    )}
-                </SettingSection>
+                                <View style={styles.settingText}>
+                                    <Text style={styles.settingTitle}>
+                                        {SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.label}
+                                    </Text>
+                                    <Text style={styles.settingSubtitle}>
+                                        {SUPPORTED_LANGUAGES.find(l => l.code === i18n.language)?.flag}
+                                    </Text>
+                                </View>
+                            </View>
+                            <Ionicons
+                                name={isLanguageExpanded ? "chevron-up" : "chevron-down"}
+                                size={22}
+                                color={BaseColors.neutral[400]}
+                            />
+                        </TouchableOpacity>
 
-                {/* Theme Settings */}
-                {/* <SettingSection title={t("settings.theme")} iconName="color-palette">
-                    <View style={styles.switchContainer}>
-                        <Text style={styles.switchLabel}>{t("settings.systemDefault")}</Text>
-                        <Switch
-                            value={useSystemTheme}
-                            onValueChange={setUseSystemTheme}
-                            trackColor={{ false: "#D1D5DB", true: "#5FA893" }}
-                            thumbColor="#fff"
-                        />
+                        {/* Language Options */}
+                        {isLanguageExpanded && (
+                            <View style={styles.expandedSection}>
+                                {SUPPORTED_LANGUAGES.map((lang, index) => (
+                                    <View key={lang.code}>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.languageOption,
+                                                i18n.language === lang.code && styles.selectedOption
+                                            ]}
+                                            onPress={() => changeLanguage(lang.code)}
+                                            activeOpacity={0.7}
+                                        >
+                                            <View style={styles.languageContent}>
+                                                <Text style={styles.languageFlag}>{lang.flag}</Text>
+                                                <Text style={styles.languageName}>{lang.label}</Text>
+                                            </View>
+                                            {i18n.language === lang.code && (
+                                                <View style={styles.selectedIndicator}>
+                                                    <Ionicons name="checkmark" size={18} color="#fff" />
+                                                </View>
+                                            )}
+                                        </TouchableOpacity>
+                                        {index < SUPPORTED_LANGUAGES.length - 1 && (
+                                            <View style={styles.divider} />
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        )}
                     </View>
-                    {!useSystemTheme && (
-                        <>
-                            <View style={styles.divider} />
-                            <TouchableOpacity style={styles.settingOption} onPress={() => setTheme("settings.light")}>
-                                <Text style={styles.optionText}>{t("settings.light")}</Text>
-                                {theme === "light" && <View style={styles.selectedIndicator}><Ionicons name="checkmark" size={18} color="#fff" /></View>}
-                            </TouchableOpacity>
-                            <View style={styles.divider} />
-                            <TouchableOpacity style={styles.settingOption} onPress={() => setTheme("settings.dark")}>
-                                <Text style={styles.optionText}>{t("settings.dark")}</Text>
-                                {theme === "settings.dark" && <View style={styles.selectedIndicator}><Ionicons name="settings.checkmark" size={18} color="#fff" /></View>}
-                            </TouchableOpacity>
-                        </>
-                    )}
-                </SettingSection> */}
+                </View>
 
-                {/* Notifications */}
-                {/* <SettingSection title={t("settings.notifications")} iconName="notifications">
-                    <View style={styles.switchContainer}>
-                        <View style={styles.notificationContent}>
-                            <Text style={styles.switchLabel}>{t("settings.notifications")}</Text>
-                            <Text style={styles.notificationDescription}>{t("settings.notificationsDesc")}</Text>
-                        </View>
-                        <Switch
-                            value={notificationsEnabled}
-                            onValueChange={saveNotifications}
-                            trackColor={{ false: "#D1D5DB", true: "#5FA893" }}
-                            thumbColor="#fff"
-                        />
+                {/* Information Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionLabel}>{t("settings.information")}</Text>
+                    <View style={styles.card}>
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={() => router.push("/about")}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="document-text" size={22} color={BaseColors.primary} />
+                                </View>
+                                <Text style={styles.settingTitle}>{t("settings.about")}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={() => router.push("/privacy")}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="shield-checkmark" size={22} color={BaseColors.primary} />
+                                </View>
+                                <Text style={styles.settingTitle}>{t("settings.privacy")}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
+                        </TouchableOpacity>
+
+                        <View style={styles.divider} />
+
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={() => router.push("/terms")}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="document-lock" size={22} color={BaseColors.primary} />
+                                </View>
+                                <Text style={styles.settingTitle}>{t("settings.terms")}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
+                        </TouchableOpacity>
                     </View>
-                </SettingSection> */}
+                </View>
 
-                {/* Information */}
-                <SettingSection title={t("settings.information")} iconName="information-circle">
-                    <SettingItem label={t("settings.about")} iconName="document-text" onPress={() => router.push("/about")} />
-                    <View style={styles.divider} />
-                    <SettingItem label={t("settings.privacy")} iconName="shield-checkmark" onPress={() => router.push("/privacy")} />
-                    <View style={styles.divider} />
-                    <SettingItem label={t("settings.terms")} iconName="document-lock" onPress={() => router.push("/terms")} />
-                </SettingSection>
-
-                {/* Account */}
-                {/* <SettingSection title={t("settings.account")} iconName="person-circle">
-                    <SettingItem label={t("settings.resetData")} iconName="refresh" onPress={handleResetData} />
-                </SettingSection> */}
-
+                {/* Bottom Spacing */}
                 <View style={styles.bottomSpacing} />
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 
 // ==================== STYLES ====================
 
+const GAP = 16;
+
 const styles = StyleSheet.create({
-    container: {
+    fullContainer: {
         flex: 1,
-        backgroundColor: colors.background,
+        backgroundColor: BaseColors.background,
+        marginBottom: 24,
     },
-    scrollView: {
+    container: {
         flex: 1,
     },
     scrollContent: {
+        paddingHorizontal: SCREEN_PADDING.horizontal,
         paddingBottom: 40,
     },
-    header: {
-        paddingHorizontal: 20,
-        paddingTop: 16,
-        marginBottom: 8,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    mainTitle: {
-        fontSize: 28,
-        fontWeight: "800",
-        marginLeft: 12,
-        color: "#1F2937",
-    },
-
-    collapsibleHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: 16,
-    },
-    expandedContent: {
-        // You can add a slight background color here if you want to distinguish the list
-        marginTop: 0,
-    },
-    languageLabelContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    flagText: {
-        fontSize: 20,
-        marginRight: 12,
-    },
-
-
     section: {
         marginBottom: 24,
-        paddingHorizontal: 20,
     },
-    sectionHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 12,
-    },
-    sectionTitle: {
+    sectionLabel: {
         fontSize: 18,
-        fontWeight: "600",
-        color: "#1F2937",
-        marginLeft: 10,
+        fontWeight: '600',
+        color: BaseColors.text.dark,
+        marginBottom: 12,
+        marginLeft: 4,
     },
-    sectionCard: {
-        backgroundColor: "#F9FAFB",
+    card: {
+        backgroundColor: BaseColors.surface,
         borderRadius: 20,
-        paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: "#F3F4F6",
+        borderColor: BaseColors.neutral[200],
+        overflow: 'hidden',
         ...Platform.select({
             ios: {
-                shadowColor: '#000',
+                shadowColor: BaseColors.shadowColor,
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
                 shadowRadius: 4,
@@ -371,33 +244,77 @@ const styles = StyleSheet.create({
             },
         }),
     },
-    settingOption: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: 16,
+    settingItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 18,
+        paddingHorizontal: 16,
     },
-    disabledOption: {
-        opacity: 0.5,
+    settingContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
     },
-    optionText: {
+    settingIcon: {
+        width: 36,
+        height: 36,
+        borderRadius: 10,
+        backgroundColor: BaseColors.primaryLight,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    settingText: {
+        flex: 1,
+    },
+    settingTitle: {
         fontSize: 16,
-        color: "#1F2937",
-        fontWeight: "500",
+        fontWeight: '500',
+        color: BaseColors.text.dark,
     },
-    disabledText: {
-        color: "#9CA3AF",
+    settingSubtitle: {
+        fontSize: 14,
+        color: BaseColors.neutral[500],
+        marginTop: 2,
+    },
+    expandedSection: {
+        marginTop: 8,
+    },
+    languageOption: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+    },
+    selectedOption: {
+        backgroundColor: BaseColors.primaryLight + '20', // 20% opacity
+    },
+    languageContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    languageFlag: {
+        fontSize: 20,
+        marginRight: 12,
+    },
+    languageName: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: BaseColors.text.dark,
     },
     selectedIndicator: {
         width: 24,
         height: 24,
         borderRadius: 12,
-        backgroundColor: "#5FA893",
-        alignItems: "center",
-        justifyContent: "center",
+        backgroundColor: BaseColors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
         ...Platform.select({
             ios: {
-                shadowColor: '#5FA893',
+                shadowColor: BaseColors.primary,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 3,
@@ -407,67 +324,10 @@ const styles = StyleSheet.create({
             },
         }),
     },
-    switchContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        paddingVertical: 16,
-    },
-    switchLabel: {
-        fontSize: 16,
-        color: "#1F2937",
-        fontWeight: "500",
-    },
-    notificationContent: {
-        flex: 1,
-        marginRight: 16,
-    },
-    notificationDescription: {
-        fontSize: 14,
-        color: "#6B7280",
-        marginTop: 4,
-        lineHeight: 20,
-    },
-    settingItem: {
-        paddingVertical: 16,
-    },
-    settingItemContent: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    iconContainer: {
-        width: 36,
-        height: 36,
-        borderRadius: 10,
-        backgroundColor: "#EDF7F4",
-        alignItems: "center",
-        justifyContent: "center",
-        marginRight: 12,
-    },
-    destructiveIconContainer: {
-        backgroundColor: "#FEF2F2",
-    },
-    settingTextContainer: {
-        flex: 1,
-    },
-    settingItemLabel: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: "#1F2937",
-    },
-    settingItemDescription: {
-        fontSize: 14,
-        color: "#6B7280",
-        marginTop: 2,
-    },
-    destructiveText: {
-        color: "#EF4444",
-    },
     divider: {
         height: 1,
-        backgroundColor: "#F3F4F6",
-        marginHorizontal: -16,
+        backgroundColor: BaseColors.neutral[200],
+        marginHorizontal: 16,
     },
     bottomSpacing: {
         height: 20,

@@ -291,5 +291,35 @@
     },
     "permissions": {
         "title": "Tillatelse"
+    },
+    "auth": {
+        "signup": {
+            "title": "Opret konto",
+            "create": "Opret konto",
+            "creating": "Opretter konto...",
+            "success": {
+                "title": "Konto oprettet 🎉",
+                "message": "Din konto er klar. Du kan nu logge ind."
+            },
+            "error": "Registrering mislykkedes"
+        },
+        "login": {
+            "title": "Log ind",
+            "signIn": "Log ind",
+            "loggingIn": "Logger ind...",
+            "error": "Login mislykkedes"
+        },
+        "email": "E-mail",
+        "displayName": "Navn",
+        "password": {
+            "placeholder": "Adgangskode (mindst 6 tegn)"
+        },
+        "confirmPassword": "Bekræft adgangskode",
+        "passwordsMatch": "✔ Adgangskoderne matcher",
+        "passwordsNoMatch": "✖ Adgangskoderne matcher ikke",
+        "alreadyHaveAccount": "Har du allerede en konto? Log ind",
+        "noAccount": "Har du ikke en konto? Opret en",
+        "forgotPassword": "Glemt adgangskode?",
+        "unknownError": "Ukendt fejl"
     }
 }

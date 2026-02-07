@@ -1,28 +1,72 @@
 // components/common/Card.tsx
-import { commonStyles } from '@/styles/common';
+import { BaseColors } from '@/constants/colors';
 import React from 'react';
-import { View, ViewProps } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
-interface CardProps extends ViewProps {
+interface CardProps extends TouchableOpacityProps {
+    variant?: 'default' | 'error' | 'primary';
     children: React.ReactNode;
-    variant?: 'default' | 'primary' | 'secondary';
 }
 
 export const Card: React.FC<CardProps> = ({
-    children,
     variant = 'default',
+    children,
     style,
     ...props
 }) => {
-    const variantStyle = {
-        default: {},
-        primary: { backgroundColor: '#EDF7F4', borderColor: '#5FA893' },
-        secondary: { backgroundColor: '#FFF7ED', borderColor: '#F59E0B' },
-    }[variant];
+    const getVariantStyle = () => {
+        switch (variant) {
+            case 'error':
+                return styles.errorCard;
+            case 'primary':
+                return styles.primaryCard;
+            default:
+                return styles.defaultCard;
+        }
+    };
 
     return (
-        <View style={[commonStyles.card, variantStyle, style]} {...props}>
+        <TouchableOpacity
+            style={[styles.card, getVariantStyle(), style]}
+            activeOpacity={0.8}
+            {...props}
+        >
             {children}
-        </View>
+        </TouchableOpacity>
     );
 };
+
+const styles = StyleSheet.create({
+    card: {
+        flex: 1,
+        borderRadius: 20,
+        padding: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        minHeight: 100,
+        justifyContent: 'space-between',
+        ...Platform.select({
+            ios: {
+                shadowColor: BaseColors.shadowColor,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 3,
+            },
+        }),
+    },
+    defaultCard: {
+        backgroundColor: BaseColors.surface,
+        borderColor: BaseColors.neutral[200],
+    },
+    errorCard: {
+        backgroundColor: BaseColors.errorLight,
+        borderColor: BaseColors.errorBorder,
+    },
+    primaryCard: {
+        backgroundColor: BaseColors.primaryLight,
+        borderColor: BaseColors.primaryBorder,
+    },
+});

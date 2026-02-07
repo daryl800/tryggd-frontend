@@ -1,14 +1,16 @@
 // app/(tabs)/index.tsx
-import colors from "@/constants/colors";
-import { ICON_SIZES } from "@/constants/ui";
-import { useStreak } from "@/hooks/useStreak";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Haptics from "expo-haptics";
+import { ScreenHeader } from '@/components/screens/ScreenHeader';
+import { BaseColors } from '@/constants/colors';
+import { SCREEN_PADDING } from '@/constants/spacing';
+import { ICON_SIZES } from '@/constants/ui';
+import { useStreak } from '@/hooks/useStreak';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
-import { useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Animated,
   AppState,
@@ -18,21 +20,20 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Circle, Defs, Stop, Svg, LinearGradient as SvgGradient } from "react-native-svg";
-import { useAuth } from "../../contexts/AuthContext";
-import { supabase } from "../../lib/supabase";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Circle, Defs, Stop, Svg, LinearGradient as SvgGradient } from 'react-native-svg';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
 
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 280);
 const STROKE_WIDTH = 14;
 const CIRCLE_RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
 const CIRCLE_GAP = 8;
 
-const STORAGE_KEY = "@checkin_state";
+const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
@@ -42,32 +43,35 @@ const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 16;
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
 
-  if (hour >= 5 && hour < 12) return {
-    greeting: t("home.greetings.morning"),
-    iconName: "sunny"
-  };
+  if (hour >= 5 && hour < 12)
+    return {
+      greeting: t('home.greetings.morning'),
+      iconName: 'sunny',
+    };
 
-  if (hour >= 12 && hour < 18) return {
-    greeting: t("home.greetings.afternoon"),
-    iconName: "partly-sunny"
-  };
+  if (hour >= 12 && hour < 18)
+    return {
+      greeting: t('home.greetings.afternoon'),
+      iconName: 'partly-sunny',
+    };
 
-  if (hour >= 18 && hour < 22) return {
-    greeting: t("home.greetings.evening"),
-    iconName: "moon"
-  };
+  if (hour >= 18 && hour < 22)
+    return {
+      greeting: t('home.greetings.evening'),
+      iconName: 'moon',
+    };
 
   return {
-    greeting: t("home.greetings.night"),
-    iconName: "moon"
+    greeting: t('home.greetings.night'),
+    iconName: 'moon',
   };
 };
 
 const formatTimeLeft = (ms: number): string => {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
-  const s = String(totalSeconds % 60).padStart(2, "0");
+  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+  const s = String(totalSeconds % 60).padStart(2, '0');
   return `${h}:${m}:${s}`;
 };
 
@@ -77,9 +81,6 @@ const isNearMidnight = (date: Date): boolean => {
   return (hours === 0 && minutes === 0) || (hours === 23 && minutes === 59);
 };
 
-// Manual date formatting using translations
-// Fixed date formatting function with safer language checking
-// Fixed date formatting function with safer language checking
 // Helper function to convert numbers to Chinese numerals
 const numberToChinese = (num: number): string => {
   const chineseNumbers = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
@@ -140,8 +141,29 @@ const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
   }
 
   // Fallback to English
-  const englishWeekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const englishMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const englishWeekdays = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  const englishMonths = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   const weekday = englishWeekdays[weekdayIndex];
   const month = englishMonths[monthIndex];
@@ -160,28 +182,28 @@ const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
 // Time formatting with locale
 const formatTime24h = (date: Date, language: string) => {
   const localeMap: Record<string, string> = {
-    'en': 'en-US',
-    'sv': 'sv-SE',
-    'no': 'nb-NO',
-    'da': 'da-DK',
-    'fi': 'fi-FI',
+    en: 'en-US',
+    sv: 'sv-SE',
+    no: 'nb-NO',
+    da: 'da-DK',
+    fi: 'fi-FI',
     'zh-Hans': 'zh_Hans',
     'zh-Hant': 'zh-Hant',
-    'zh': 'zh-CN',
+    zh: 'zh-CN',
   };
 
   const locale = localeMap[language] || 'en-US';
 
   try {
     return date.toLocaleTimeString(locale, {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
     });
   } catch (error) {
     return date.toLocaleTimeString('en-US', {
-      hour: "2-digit",
-      minute: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
     });
   }
@@ -325,13 +347,13 @@ export default function HomeScreen() {
     if (!user) return;
 
     const { data, error } = await supabase
-      .from("users_latest_checkin")
-      .select("last_checked_in_utc")
-      .eq("user_id", user.id)
+      .from('users_latest_checkin')
+      .select('last_checked_in_utc')
+      .eq('user_id', user.id)
       .maybeSingle();
 
     if (error) {
-      console.error(t("home.errors.fetchLastCheckin"), error);
+      console.error(t('home.errors.fetchLastCheckin'), error);
       return;
     }
 
@@ -344,20 +366,20 @@ export default function HomeScreen() {
 
   const handleCheckIn = useCallback(async () => {
     try {
-      if (!user) throw new Error(t("home.errors.noUser"));
+      if (!user) throw new Error(t('home.errors.noUser'));
 
       triggerCheckInAnimation();
 
-      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-      console.log("Device timezone:", tz);
+      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      console.log('Device timezone:', tz);
 
       const { data, error } = await supabase
-        .from("checkins")
+        .from('checkins')
         .insert({
           user_id: user.id,
           checkin_timezone: tz,
         })
-        .select("id, checked_in_at_utc")
+        .select('id, checked_in_at_utc')
         .single();
 
       if (error) throw error;
@@ -376,9 +398,8 @@ export default function HomeScreen() {
           checkinTimezone: tz,
         })
       );
-
     } catch (err) {
-      console.error(t("home.errors.checkin"), err);
+      console.error(t('home.errors.checkin'), err);
     }
   }, [user, t]);
 
@@ -392,7 +413,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.replace("/(auth)/login");
+      router.replace('/(auth)/login');
     }
   }, [loading, user]);
 
@@ -402,8 +423,8 @@ export default function HomeScreen() {
       checkAndResetIfPastMidnight();
     }, 1000);
 
-    const subscription = AppState.addEventListener("change", (next) => {
-      if (next === "active") {
+    const subscription = AppState.addEventListener('change', (next) => {
+      if (next === 'active') {
         checkAndResetIfPastMidnight();
       }
     });
@@ -425,7 +446,7 @@ export default function HomeScreen() {
         setShowResetButton(parsed.checkedInToday ?? false);
         setLastCheckinUtc(parsed.lastCheckinUtc ?? null);
       } catch (err) {
-        console.error(t("home.errors.loadState"), err);
+        console.error(t('home.errors.loadState'), err);
       } finally {
         setIsInitialLoad(false);
       }
@@ -462,40 +483,28 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Animated.View
-        style={[styles.content, { opacity: fadeAnim }]}
-      >
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         {/* ========== GROUP 1: HEADER ========== */}
-        <View style={[styles.headerGroup, styles.groupContainer]}>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <View style={styles.headerRow}>
-                <Ionicons name={greetingInfo.iconName as any} size={ICON_SIZES.MD} color={colors.primary} />
-                <Text style={styles.greeting}>{greetingInfo.greeting}</Text>
-              </View>
-              <Text style={styles.displayName} numberOfLines={1}>
-                {profile?.display_name || t("home.welcome")}
-              </Text>
-            </View>
-
+        <ScreenHeader
+          title={profile?.display_name || t('home.welcome')}
+          subtitle={greetingInfo.greeting}
+          iconName={greetingInfo.iconName as any}
+          showGreetingInLine={true}
+          rightElement={
             <TouchableOpacity
-              onPress={() => router.push("/(tabs)/profile")}
+              onPress={() => router.push('/(tabs)/profile')}
               style={styles.profileButton}
               activeOpacity={0.7}
             >
-              <Ionicons name="person" size={ICON_SIZES.MD} color={colors.primary} />
+              <Ionicons name="person" size={ICON_SIZES.MD} color={BaseColors.primary} />
             </TouchableOpacity>
-          </View>
-        </View>
+          }
+        />
 
         {/* ========== GROUP 2: DATE & TIME ========== */}
         <View style={[styles.dateTimeGroup, styles.groupContainer]}>
-          <Text style={styles.timeText}>
-            {formatTime24h(now, i18n.language)}
-          </Text>
-          <Text style={styles.dateText}>
-            {formatDateWithTranslation(now, t, i18n.language)}
-          </Text>
+          <Text style={styles.timeText}>{formatTime24h(now, i18n.language)}</Text>
+          <Text style={styles.dateText}>{formatDateWithTranslation(now, t, i18n.language)}</Text>
         </View>
 
         {/* ========== GROUP 3: MAIN CHECK-IN ========== */}
@@ -519,7 +528,7 @@ export default function HomeScreen() {
                     height: CIRCLE_SIZE + 4,
                     borderRadius: (CIRCLE_SIZE + 4) / 2,
                     borderWidth: 2,
-                    borderColor: colors.primaryBorder,
+                    borderColor: BaseColors.primaryBorder,
                   }}
                 />
 
@@ -527,11 +536,11 @@ export default function HomeScreen() {
                 <Svg
                   width={CIRCLE_SIZE}
                   height={CIRCLE_SIZE}
-                  style={[styles.svg, { transform: [{ rotate: "-90deg" }] }]}
+                  style={[styles.svg, { transform: [{ rotate: '-90deg' }] }]}
                 >
                   <Defs>
                     <SvgGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <Stop offset="0%" stopColor={colors.primary} />
+                      <Stop offset="0%" stopColor={BaseColors.primary} />
                       <Stop offset="100%" stopColor="#7DC4B0" />
                     </SvgGradient>
                   </Defs>
@@ -564,7 +573,7 @@ export default function HomeScreen() {
                       cx={CIRCLE_SIZE / 2}
                       cy={CIRCLE_SIZE / 2}
                       r={CIRCLE_RADIUS}
-                      stroke={colors.primary}
+                      stroke={BaseColors.primary}
                       strokeWidth={STROKE_WIDTH}
                       fill="none"
                     />
@@ -575,23 +584,15 @@ export default function HomeScreen() {
                 <View
                   style={[
                     styles.innerButton,
-                    checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked
+                    checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
                   ]}
                 >
                   {/* Icon */}
                   <View style={styles.iconContainer}>
                     {checkedInToday ? (
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={ICON_SIZES.SUPER_HUGE}
-                        color="#fff"
-                      />
+                      <Ionicons name="checkmark-circle" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
                     ) : (
-                      <Ionicons
-                        name="heart"
-                        size={ICON_SIZES.SUPER_HUGE}
-                        color={colors.primary}
-                      />
+                      <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
                     )}
                   </View>
 
@@ -605,23 +606,19 @@ export default function HomeScreen() {
                             { transform: [{ scale: successScaleAnim }] },
                           ]}
                         >
-                          <Text style={styles.checkedInText}>{t("home.checkedInToday")}</Text>
+                          <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
                         </Animated.View>
                         <Text style={styles.checkInTime}>
                           {lastCheckinUtc
-                            ? "@ " + formatTime24h(new Date(lastCheckinUtc), i18n.language)
-                            : ""}
+                            ? '@ ' + formatTime24h(new Date(lastCheckinUtc), i18n.language)
+                            : ''}
                         </Text>
                       </>
                     ) : (
                       <>
-                        <Text style={styles.ctaText}>{t("home.checkIn")}</Text>
-                        <Text style={styles.countdownText}>
-                          {formatTimeLeft(remainingMs)}
-                        </Text>
-                        <Text style={styles.timeLeftText}>
-                          {t("home.timeLeftToday")}
-                        </Text>
+                        <Text style={styles.ctaText}>{t('home.checkIn')}</Text>
+                        <Text style={styles.countdownText}>{formatTimeLeft(remainingMs)}</Text>
+                        <Text style={styles.timeLeftText}>{t('home.timeLeftToday')}</Text>
                       </>
                     )}
                   </View>
@@ -636,11 +633,9 @@ export default function HomeScreen() {
           <View style={[styles.warningGroup, styles.groupContainer]}>
             <View style={styles.warningContainer}>
               <View style={styles.warningIconContainer}>
-                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={colors.error} />
+                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
               </View>
-              <Text style={styles.warningText}>
-                {t("home.dontForget")}
-              </Text>
+              <Text style={styles.warningText}>{t('home.dontForget')}</Text>
             </View>
           </View>
         )}
@@ -656,42 +651,40 @@ export default function HomeScreen() {
               >
                 <View style={styles.cardIcon}>
                   <View style={styles.resetIconContainer}>
-                    <Ionicons name="refresh" size={ICON_SIZES.MD} color={colors.error} />
+                    <Ionicons name="refresh" size={ICON_SIZES.MD} color={BaseColors.error} />
                   </View>
                 </View>
-                <Text style={styles.resetText}>{t("home.reset")}</Text>
-                <Text style={styles.cardSubtext}>{t("home.timer")}</Text>
+                <Text style={styles.resetText}>{t('home.reset')}</Text>
+                <Text style={styles.cardSubtext}>{t('home.timer')}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
-                onPress={() => router.push("/(tabs)/activity")}
+                onPress={() => router.push('/(tabs)/activity')}
                 style={styles.card}
                 activeOpacity={0.8}
               >
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                    <Ionicons name="pulse" size={24} color={colors.primary} />
+                    <Ionicons name="pulse" size={24} color={BaseColors.primary} />
                   </View>
                 </View>
-                <Text style={styles.cardLabel}>{t("home.activity")}</Text>
-                <Text style={styles.cardSubtext}>{t("home.history")}</Text>
+                <Text style={styles.cardLabel}>{t('home.activity')}</Text>
+                <Text style={styles.cardSubtext}>{t('home.history')}</Text>
               </TouchableOpacity>
             )}
 
             <TouchableOpacity
-              onPress={() => router.push("/(tabs)/statistics")}
+              onPress={() => router.push('/(tabs)/statistics')}
               style={styles.card}
               activeOpacity={0.8}
             >
               <View style={styles.cardIcon}>
                 <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                  <Ionicons name="flame" size={ICON_SIZES.SM} color={colors.primary} />
+                  <Ionicons name="flame" size={ICON_SIZES.SM} color={BaseColors.primary} />
                 </View>
               </View>
-              <Text style={styles.cardLabel}>{t("home.streak")}</Text>
-              <Text style={styles.streakValue}>
-                {t("home.days", { count: streak })}
-              </Text>
+              <Text style={styles.cardLabel}>{t('home.streak')}</Text>
+              <Text style={styles.streakValue}>{t('home.days', { count: streak })}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -706,67 +699,20 @@ const GROUP_GAP = 24;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loadingPulse: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.primaryLight,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: BOTTOM_BUTTON_MARGIN,
-  },
-  groupContainer: {
-    marginBottom: GROUP_GAP,
-  },
-  headerGroup: {},
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  greeting: {
-    fontSize: 16,
-    color: "#6B7280",
-    fontWeight: "500",
-    textTransform: "capitalize",
-    marginLeft: 8,
-  },
-  displayName: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: colors.text.dark,
+    backgroundColor: BaseColors.background,
   },
   profileButton: {
     width: 34,
     height: 34,
     borderRadius: 22,
-    backgroundColor: colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: BaseColors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
-    borderColor: "#F3F4F6",
-    marginLeft: 12,
+    borderColor: BaseColors.neutral[200],
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: BaseColors.shadowColor,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
@@ -776,138 +722,181 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingPulse: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: BaseColors.primaryLight,
+  },
+  groupContainer: {
+    marginBottom: GROUP_GAP,
+  },
+  headerGroup: {},
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  greeting: {
+    fontSize: 16,
+    color: BaseColors.neutral[500],
+    fontWeight: '500',
+    textTransform: 'capitalize',
+    marginLeft: 8,
+  },
+  displayName: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: BaseColors.text.dark,
+  },
   dateTimeGroup: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   timeText: {
     fontSize: 36,
-    fontWeight: "700",
-    color: colors.text.dark,
-    textAlign: "center",
+    fontWeight: '700',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
   },
   dateText: {
     fontSize: 16,
-    color: "#6B7280",
+    color: BaseColors.neutral[500],
     marginTop: 6,
-    textTransform: "capitalize",
-    textAlign: "center",
+    textTransform: 'capitalize',
+    textAlign: 'center',
   },
   checkInGroup: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkInContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkInButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   svg: {
-    position: "absolute",
+    position: 'absolute',
   },
   innerButton: {
     width: CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2,
     height: CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2,
     borderRadius: (CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2) / 2,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 3,
   },
   innerButtonUnchecked: {
-    backgroundColor: colors.primaryLight,
-    borderColor: colors.primary,
+    backgroundColor: BaseColors.primaryLight,
+    borderColor: BaseColors.primary,
   },
   innerButtonChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: BaseColors.primary,
+    borderColor: BaseColors.primary,
   },
   iconContainer: {
     marginBottom: 12,
   },
   textContainer: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   checkedInTextContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkedInText: {
-    color: colors.surface,
+    color: BaseColors.surface,
     fontSize: 24,
-    fontWeight: "800",
-    textAlign: "center",
+    fontWeight: '800',
+    textAlign: 'center',
   },
   checkInTime: {
-    color: colors.surface,
+    color: BaseColors.surface,
     fontSize: 22,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
     marginTop: 8,
   },
   ctaText: {
-    color: colors.primary,
+    color: BaseColors.primary,
     fontSize: 22,
-    fontWeight: "800",
-    textAlign: "center",
+    fontWeight: '800',
+    textAlign: 'center',
     letterSpacing: 1,
   },
   countdownText: {
-    color: colors.primary,
+    color: BaseColors.primary,
     fontSize: 22,
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: '700',
+    textAlign: 'center',
     marginTop: 8,
   },
   timeLeftText: {
-    color: colors.text.light,
+    color: BaseColors.text.light,
     fontSize: 12,
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: '700',
+    textAlign: 'center',
     marginTop: 2,
   },
   warningGroup: {},
   warningContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.errorLight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.errorLight,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.errorBorder,
+    borderColor: BaseColors.errorBorder,
     alignSelf: 'center',
   },
   warningIconContainer: {
     marginRight: 10,
   },
   warningText: {
-    textAlign: "center",
-    fontWeight: "600",
+    textAlign: 'center',
+    fontWeight: '600',
     fontSize: 15,
-    color: colors.error,
+    color: BaseColors.error,
   },
-  cardsGroup: {},
+  cardsGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginBottom: 24,
+  },
   cardsContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 16,
   },
   card: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: BaseColors.surface,
     borderRadius: 20,
     padding: 8,
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
-    borderColor: "#F3F4F6",
+    borderColor: BaseColors.neutral[200],
     minHeight: 100,
     justifyContent: 'space-between',
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: BaseColors.shadowColor,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 8,
@@ -918,8 +907,8 @@ const styles = StyleSheet.create({
     }),
   },
   resetCard: {
-    backgroundColor: colors.errorLight,
-    borderColor: colors.errorBorder,
+    backgroundColor: BaseColors.errorLight,
+    borderColor: BaseColors.errorBorder,
   },
   cardIcon: {
     marginBottom: 12,
@@ -928,48 +917,48 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   activityIconContainer: {
-    backgroundColor: "#EDF7F4",
+    backgroundColor: '#EDF7F4',
   },
   streakIconContainer: {
-    backgroundColor: "#FFF7ED",
+    backgroundColor: '#FFF7ED',
   },
   resetIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: colors.errorLight,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: BaseColors.errorLight,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.errorBorder,
+    borderColor: BaseColors.errorBorder,
   },
   cardLabel: {
-    color: colors.text.dark,
+    color: BaseColors.text.dark,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     textAlign: 'center',
   },
   cardSubtext: {
-    color: "#6B7280",
+    color: BaseColors.neutral[500],
     fontSize: 13,
     marginTop: 2,
     textAlign: 'center',
   },
   resetText: {
-    color: colors.error,
-    fontWeight: "700",
+    color: BaseColors.error,
+    fontWeight: '700',
     fontSize: 16,
     textAlign: 'center',
   },
   streakValue: {
     fontSize: 24,
-    fontWeight: "800",
+    fontWeight: '800',
     marginTop: 4,
-    color: colors.primary,
+    color: BaseColors.primary,
     textAlign: 'center',
   },
 });

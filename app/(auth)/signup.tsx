@@ -1,6 +1,8 @@
+// app/(auth)/signup.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Alert,
     Text,
@@ -12,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
 export default function SignupScreen() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [password, setPassword] = useState("");
@@ -50,7 +53,7 @@ export default function SignupScreen() {
             });
 
             if (error) throw error;
-            if (!data.user) throw new Error("Signup failed");
+            if (!data.user) throw new Error(t("auth.signup.error"));
 
             await supabase.from("profiles").insert({
                 id: data.user.id,
@@ -59,11 +62,11 @@ export default function SignupScreen() {
             });
 
             Alert.alert(
-                "Konto skapat 🎉",
-                "Ditt konto är klart. Du kan nu logga in."
+                t("auth.signup.success.title"),
+                t("auth.signup.success.message")
             );
         } catch (err: any) {
-            Alert.alert("Fel", err.message || "Okänt fel");
+            Alert.alert(t("auth.signup.error"), err.message || t("auth.unknownError"));
         } finally {
             setLoading(false);
         }
@@ -72,12 +75,12 @@ export default function SignupScreen() {
     return (
         <SafeAreaView style={{ flex: 1, padding: 24 }}>
             <Text style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}>
-                Skapa konto
+                {t("auth.signup.title")}
             </Text>
 
             {/* Name */}
             <TextInput
-                placeholder="Namn"
+                placeholder={t("auth.displayName")}
                 value={displayName}
                 onChangeText={setDisplayName}
                 style={inputStyle}
@@ -85,7 +88,7 @@ export default function SignupScreen() {
 
             {/* Email */}
             <TextInput
-                placeholder="Email"
+                placeholder={t("auth.email")}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 value={email}
@@ -96,7 +99,7 @@ export default function SignupScreen() {
             {/* Password */}
             <View style={passwordWrapper}>
                 <TextInput
-                    placeholder="Lösenord (minst 6 tecken)"
+                    placeholder={t("auth.password.placeholder")}
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
@@ -118,7 +121,7 @@ export default function SignupScreen() {
             <View style={passwordWrapper}>
                 <TextInput
                     ref={confirmRef}
-                    placeholder="Bekräfta lösenord"
+                    placeholder={t("auth.confirmPassword")}
                     secureTextEntry={!showConfirmPassword}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
@@ -152,8 +155,8 @@ export default function SignupScreen() {
                     }}
                 >
                     {passwordsMatch
-                        ? "✔ Lösenorden matchar"
-                        : "✖ Lösenorden matchar inte"}
+                        ? t("auth.passwordsMatch")
+                        : t("auth.passwordsNoMatch")}
                 </Text>
             )}
 
@@ -174,14 +177,14 @@ export default function SignupScreen() {
                         fontSize: 16,
                     }}
                 >
-                    {loading ? "Skapar konto..." : "Skapa konto"}
+                    {loading ? t("auth.signup.creating") : t("auth.signup.create")}
                 </Text>
             </TouchableOpacity>
 
             {/* Back to login */}
             <Link href="/(auth)/login" style={{ marginTop: 16 }}>
                 <Text style={{ textAlign: "center", color: "#5FA893" }}>
-                    Har du redan ett konto? Logga in
+                    {t("auth.alreadyHaveAccount")}
                 </Text>
             </Link>
         </SafeAreaView>

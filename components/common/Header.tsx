@@ -1,17 +1,16 @@
 // components/common/Header.tsx
-import colors from '@/constants/colors';
+import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
-import { commonStyles } from '@/styles/common';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface HeaderProps {
     title: string;
     showBack?: boolean;
     onBackPress?: () => void;
     rightButton?: React.ReactNode;
-    iconName?: string;
+    iconName?: keyof typeof Ionicons.glyphMap;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,26 +21,45 @@ export const Header: React.FC<HeaderProps> = ({
     iconName = 'people',
 }) => {
     return (
-        <View style={commonStyles.header}>
-            <View style={commonStyles.headerRow}>
+        <View style={styles.header}>
+            <View style={styles.headerRow}>
                 {showBack ? (
-                    <TouchableOpacity onPress={onBackPress} style={{ marginRight: 8 }}>
-                        <Ionicons
-                            name="arrow-back"
-                            size={ICON_SIZES.LG}
-                            color={colors.primary}
-                        />
+                    <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={ICON_SIZES.LG} color={BaseColors.primary} />
                     </TouchableOpacity>
                 ) : (
-                    <Ionicons
-                        name={iconName as any}
-                        size={ICON_SIZES.LG}
-                        color={colors.primary}
-                    />
+                    <Ionicons name={iconName} size={ICON_SIZES.LG} color={BaseColors.primary} />
                 )}
-                <Text style={commonStyles.headerTitle}>{title}</Text>
+                <Text style={styles.headerTitle}>{title}</Text>
             </View>
             {rightButton}
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+        backgroundColor: BaseColors.surface,
+        borderBottomWidth: 1,
+        borderBottomColor: BaseColors.border,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    backButton: {
+        marginRight: 8,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: BaseColors.text.dark,
+        marginLeft: 12,
+    },
+});

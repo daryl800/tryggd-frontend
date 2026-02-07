@@ -1,10 +1,12 @@
-import colors from "@/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next"; // ADD THIS
+// screens/ProfileScreen.tsx
+import { ScreenHeader } from '@/components/screens/ScreenHeader';
+import { BaseColors } from '@/constants/colors';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Alert,
     Dimensions,
@@ -18,9 +20,9 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { supabase } from "../../lib/supabase";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../../lib/supabase';
 
 type UserProfile = {
     id: string;
@@ -34,18 +36,18 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ProfileScreen() {
     const router = useRouter();
-    const { t } = useTranslation(); // ADD THIS
+    const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     const [profile, setProfile] = useState<UserProfile>({
-        id: "",
-        display_name: "",
-        email: "",
-        phone: "",
-        avatar_url: "",
+        id: '',
+        display_name: '',
+        email: '',
+        phone: '',
+        avatar_url: '',
     });
 
     useEffect(() => {
@@ -56,21 +58,23 @@ export default function ProfileScreen() {
         try {
             setLoading(true);
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
 
             if (!user) {
-                router.replace("/(auth)/login");
+                router.replace('/(auth)/login');
                 return;
             }
 
             const { data, error } = await supabase
-                .from("profiles")
-                .select("*")
-                .eq("id", user.id)
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
                 .single();
 
             if (error) {
-                console.error("Error fetching profile:", error);
+                console.error('Error fetching profile:', error);
                 await createProfile(user);
                 return;
             }
@@ -78,21 +82,24 @@ export default function ProfileScreen() {
             if (data) {
                 setProfile({
                     id: data.id,
-                    display_name: data.display_name || "",
-                    email: user.email || "",
-                    phone: data.phone || "",
-                    avatar_url: data.avatar_url || "",
+                    display_name: data.display_name || '',
+                    email: user.email || '',
+                    phone: data.phone || '',
+                    avatar_url: data.avatar_url || '',
                 });
 
-                await AsyncStorage.setItem("@user_profile", JSON.stringify({
-                    display_name: data.display_name || "",
-                    email: user.email || "",
-                    phone: data.phone || "",
-                }));
+                await AsyncStorage.setItem(
+                    '@user_profile',
+                    JSON.stringify({
+                        display_name: data.display_name || '',
+                        email: user.email || '',
+                        phone: data.phone || '',
+                    })
+                );
             }
         } catch (error) {
-            console.error("Error loading profile:", error);
-            Alert.alert(t("errors.title"), t("profile.errors.loadProfile"));
+            console.error('Error loading profile:', error);
+            Alert.alert(t('errors.title'), t('profile.errors.loadProfile'));
         } finally {
             setLoading(false);
         }
@@ -100,23 +107,24 @@ export default function ProfileScreen() {
 
     const createProfile = async (user: any) => {
         try {
-            const { error } = await supabase
-                .from("profiles")
-                .insert({
-                    id: user.id,
-                    display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || t("profile.defaultName"),
-                    email: user.email || "",
-                    avatar_url: "",
-                });
+            const { error } = await supabase.from('profiles').insert({
+                id: user.id,
+                display_name:
+                    user.user_metadata?.display_name ||
+                    user.email?.split('@')[0] ||
+                    t('profile.defaultName'),
+                email: user.email || '',
+                avatar_url: '',
+            });
 
             if (error) {
-                console.error("Error creating profile:", error);
+                console.error('Error creating profile:', error);
                 return;
             }
 
             loadProfile();
         } catch (error) {
-            console.error("Error creating profile:", error);
+            console.error('Error creating profile:', error);
         }
     };
 
@@ -124,25 +132,27 @@ export default function ProfileScreen() {
         try {
             setSaving(true);
 
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
 
             if (!user) {
-                Alert.alert(t("errors.title"), t("profile.errors.notLoggedIn"));
+                Alert.alert(t('errors.title'), t('profile.errors.notLoggedIn'));
                 return;
             }
 
             const { error } = await supabase
-                .from("profiles")
+                .from('profiles')
                 .update({
                     display_name: profile.display_name.trim(),
-                    phone: profile.phone?.trim() || "",
+                    phone: profile.phone?.trim() || '',
                     updated_at: new Date().toISOString(),
                 })
-                .eq("id", user.id);
+                .eq('id', user.id);
 
             if (error) {
-                console.error("Error updating profile:", error);
-                Alert.alert(t("errors.title"), t("profile.errors.updateProfile"));
+                console.error('Error updating profile:', error);
+                Alert.alert(t('errors.title'), t('profile.errors.updateProfile'));
                 return;
             }
 
@@ -152,22 +162,28 @@ export default function ProfileScreen() {
                 });
 
                 if (emailError) {
-                    console.error("Error updating email:", emailError);
-                    Alert.alert(t("profile.notices.title"), t("profile.notices.emailConfirmation"));
+                    console.error('Error updating email:', emailError);
+                    Alert.alert(
+                        t('profile.notices.title'),
+                        t('profile.notices.emailConfirmation')
+                    );
                 }
             }
 
-            await AsyncStorage.setItem("@user_profile", JSON.stringify({
-                display_name: profile.display_name,
-                email: profile.email,
-                phone: profile.phone,
-            }));
+            await AsyncStorage.setItem(
+                '@user_profile',
+                JSON.stringify({
+                    display_name: profile.display_name,
+                    email: profile.email,
+                    phone: profile.phone,
+                })
+            );
 
             setIsEditing(false);
-            Alert.alert(t("profile.success.title"), t("profile.success.saved"));
+            Alert.alert(t('profile.success.title'), t('profile.success.saved'));
         } catch (error) {
-            console.error("Error saving profile:", error);
-            Alert.alert(t("errors.title"), t("profile.errors.saveProfile"));
+            console.error('Error saving profile:', error);
+            Alert.alert(t('errors.title'), t('profile.errors.saveProfile'));
         } finally {
             setSaving(false);
         }
@@ -187,15 +203,15 @@ export default function ProfileScreen() {
                 // TODO: Upload to Supabase Storage
             }
         } catch (error) {
-            console.error("Error picking avatar:", error);
+            console.error('Error picking avatar:', error);
         }
     };
 
     const takePhoto = async () => {
         try {
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
-            if (status !== "granted") {
-                Alert.alert(t("permissions.title"), t("profile.permissions.camera"));
+            if (status !== 'granted') {
+                Alert.alert(t('permissions.title'), t('profile.permissions.camera'));
                 return;
             }
 
@@ -211,23 +227,23 @@ export default function ProfileScreen() {
                 // TODO: Upload to Supabase Storage
             }
         } catch (error) {
-            console.error("Error taking photo:", error);
+            console.error('Error taking photo:', error);
         }
     };
 
     const handleLogout = async () => {
-        Alert.alert(t("profile.logout.title"), t("profile.logout.confirm"), [
+        Alert.alert(t('profile.logout.title'), t('profile.logout.confirm'), [
             {
-                text: t("common.cancel"),
-                style: "cancel",
+                text: t('common.cancel'),
+                style: 'cancel',
             },
             {
-                text: t("profile.logout.button"),
-                style: "destructive",
+                text: t('profile.logout.button'),
+                style: 'destructive',
                 onPress: async () => {
                     await supabase.auth.signOut();
-                    await AsyncStorage.removeItem("@user_profile");
-                    router.replace("/(auth)/login");
+                    await AsyncStorage.removeItem('@user_profile');
+                    router.replace('/(auth)/login');
                 },
             },
         ]);
@@ -250,16 +266,17 @@ export default function ProfileScreen() {
                 <TextInput
                     value={value}
                     onChangeText={(t) => setProfile({ ...profile, [field]: t })}
-                    style={[
-                        styles.input,
-                        !editable && styles.inputDisabled
-                    ]}
+                    style={[styles.input, !editable && styles.inputDisabled]}
                     editable={editable}
-                    placeholderTextColor="#9CA3AF"
+                    placeholderTextColor={BaseColors.neutral[400]}
                 />
             ) : (
                 <Text style={styles.fieldValue}>
-                    {value || <Text style={styles.placeholderText}>{t("profile.fields.notSpecified")}</Text>}
+                    {value || (
+                        <Text style={styles.placeholderText}>
+                            {t('profile.fields.notSpecified')}
+                        </Text>
+                    )}
                 </Text>
             )}
         </View>
@@ -268,27 +285,30 @@ export default function ProfileScreen() {
     if (loading) {
         return (
             <SafeAreaView style={styles.loadingContainer}>
-                <Ionicons name="refresh" size={40} color="#9CA3AF" style={styles.loadingIcon} />
-                <Text style={styles.loadingText}>{t("profile.loading")}</Text>
+                <Ionicons
+                    name="refresh"
+                    size={40}
+                    color={BaseColors.neutral[400]}
+                    style={styles.loadingIcon}
+                />
+                <Text style={styles.loadingText}>{t('profile.loading')}</Text>
             </SafeAreaView>
         );
     }
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                {/* Header */}
-                <View style={styles.header}>
-                    <View style={styles.headerRow}>
-                        <Ionicons name="person-circle" size={28} color={colors.primary} />
-                        <Text style={styles.title}>{t("profile.title")}</Text>
-                    </View>
-                </View>
+            {/* Screen Header */}
+            <ScreenHeader
+                title={t('profile.title')}
+                // subtitle={t('profile.subtitle')}
+                iconName="person"
+            />
 
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
                 {/* Avatar Section */}
                 <View style={styles.avatarSection}>
                     <TouchableOpacity
@@ -304,7 +324,11 @@ export default function ProfileScreen() {
                             />
                         ) : (
                             <View style={styles.avatarPlaceholder}>
-                                <Ionicons name="person" size={52} color="#9CA3AF" />
+                                <Ionicons
+                                    name="person"
+                                    size={52}
+                                    color={BaseColors.neutral[400]}
+                                />
                             </View>
                         )}
                         {isEditing && (
@@ -319,8 +343,14 @@ export default function ProfileScreen() {
                             style={styles.editButton}
                             activeOpacity={0.7}
                         >
-                            <Ionicons name="create-outline" size={20} color="#5FA893" />
-                            <Text style={styles.editButtonText}>{t("profile.buttons.edit")}</Text>
+                            <Ionicons
+                                name="create-outline"
+                                size={20}
+                                color={BaseColors.primary}
+                            />
+                            <Text style={styles.editButtonText}>
+                                {t('profile.buttons.edit')}
+                            </Text>
                         </TouchableOpacity>
                     ) : (
                         <View style={styles.editActions}>
@@ -329,17 +359,25 @@ export default function ProfileScreen() {
                                 style={[styles.actionButton, styles.cancelButton]}
                                 activeOpacity={0.7}
                             >
-                                <Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
+                                <Text style={styles.cancelButtonText}>
+                                    {t('common.cancel')}
+                                </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={saveProfile}
                                 disabled={saving}
-                                style={[styles.actionButton, styles.saveButton, saving && styles.saveButtonDisabled]}
+                                style={[
+                                    styles.actionButton,
+                                    styles.saveButton,
+                                    saving && styles.saveButtonDisabled,
+                                ]}
                                 activeOpacity={0.7}
                             >
                                 <Ionicons name="save-outline" size={18} color="#fff" />
                                 <Text style={styles.saveButtonText}>
-                                    {saving ? t("profile.buttons.saving") : t("profile.buttons.save")}
+                                    {saving
+                                        ? t('profile.buttons.saving')
+                                        : t('profile.buttons.save')}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -348,26 +386,51 @@ export default function ProfileScreen() {
 
                 {/* Profile Info Card */}
                 <View style={styles.infoCard}>
-                    {renderField(t("profile.fields.name"), profile.display_name || "", "display_name")}
-                    {renderField(t("profile.fields.email"), profile.email || "", "email", false)}
-                    {renderField(t("profile.fields.phone"), profile.phone || "", "phone")}
+                    {renderField(
+                        t('profile.fields.name'),
+                        profile.display_name || '',
+                        'display_name'
+                    )}
+                    {renderField(
+                        t('profile.fields.email'),
+                        profile.email || '',
+                        'email',
+                        false
+                    )}
+                    {renderField(
+                        t('profile.fields.phone'),
+                        profile.phone || '',
+                        'phone'
+                    )}
                 </View>
 
                 {/* Settings Card */}
                 <TouchableOpacity
                     style={styles.settingsCard}
-                    onPress={() => router.push("../settings")}
+                    onPress={() => router.push('../settings')}
                     activeOpacity={0.7}
                 >
                     <View style={styles.settingsContent}>
                         <View style={styles.settingsIconContainer}>
-                            <Ionicons name="settings-outline" size={22} color="#5FA893" />
+                            <Ionicons
+                                name="settings-outline"
+                                size={22}
+                                color={BaseColors.primary}
+                            />
                         </View>
                         <View style={styles.settingsTextContainer}>
-                            <Text style={styles.settingsTitle}>{t("profile.settings.title")}</Text>
-                            <Text style={styles.settingsSubtitle}>{t("profile.settings.subtitle")}</Text>
+                            <Text style={styles.settingsTitle}>
+                                {t('profile.settings.title')}
+                            </Text>
+                            <Text style={styles.settingsSubtitle}>
+                                {t('profile.settings.subtitle')}
+                            </Text>
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                        <Ionicons
+                            name="chevron-forward"
+                            size={20}
+                            color={BaseColors.neutral[400]}
+                        />
                     </View>
                 </TouchableOpacity>
 
@@ -377,8 +440,12 @@ export default function ProfileScreen() {
                     onPress={handleLogout}
                     activeOpacity={0.7}
                 >
-                    <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-                    <Text style={styles.logoutText}>{t("profile.buttons.logout")}</Text>
+                    <Ionicons
+                        name="log-out-outline"
+                        size={20}
+                        color={BaseColors.error}
+                    />
+                    <Text style={styles.logoutText}>{t('profile.buttons.logout')}</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -390,9 +457,15 @@ export default function ProfileScreen() {
                 >
                     <Pressable style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>{t("profile.avatarModal.title")}</Text>
+                            <Text style={styles.modalTitle}>
+                                {t('profile.avatarModal.title')}
+                            </Text>
                             <TouchableOpacity onPress={() => setShowAvatarModal(false)}>
-                                <Ionicons name="close" size={24} color="#6B7280" />
+                                <Ionicons
+                                    name="close"
+                                    size={24}
+                                    color={BaseColors.neutral[500]}
+                                />
                             </TouchableOpacity>
                         </View>
 
@@ -401,8 +474,14 @@ export default function ProfileScreen() {
                             style={styles.modalOption}
                             activeOpacity={0.7}
                         >
-                            <Ionicons name="images-outline" size={24} color="#5FA893" />
-                            <Text style={styles.modalOptionText}>{t("profile.avatarModal.chooseFromLibrary")}</Text>
+                            <Ionicons
+                                name="images-outline"
+                                size={24}
+                                color={BaseColors.primary}
+                            />
+                            <Text style={styles.modalOptionText}>
+                                {t('profile.avatarModal.chooseFromLibrary')}
+                            </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -410,8 +489,14 @@ export default function ProfileScreen() {
                             style={styles.modalOption}
                             activeOpacity={0.7}
                         >
-                            <Ionicons name="camera-outline" size={24} color="#5FA893" />
-                            <Text style={styles.modalOptionText}>{t("profile.avatarModal.takePhoto")}</Text>
+                            <Ionicons
+                                name="camera-outline"
+                                size={24}
+                                color={BaseColors.primary}
+                            />
+                            <Text style={styles.modalOptionText}>
+                                {t('profile.avatarModal.takePhoto')}
+                            </Text>
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
@@ -422,87 +507,104 @@ export default function ProfileScreen() {
 
 // ==================== STYLES ====================
 const GAP = 16;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: BaseColors.background,
     },
     loadingContainer: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#fff",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: BaseColors.background,
     },
     loadingIcon: {
         marginBottom: 12,
     },
     loadingText: {
         fontSize: 16,
-        color: "#6B7280",
-    },
-    scrollView: {
-        flex: 1,
+        color: BaseColors.neutral[500],
     },
     scrollContent: {
         paddingBottom: 40,
     },
-    header: {
+    avatarSection: {
+        alignItems: 'center',
+        marginVertical: GAP,
         paddingHorizontal: 20,
-        paddingTop: 16,
-        marginBottom: 0,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
     },
-    headerRow: {
-        flexDirection: "row",
-        alignItems: "center",
+    avatarTouchable: {
+        position: 'relative',
+        marginBottom: 16,
     },
-    title: {
-        fontSize: 22,
-        fontWeight: "800",
-        marginLeft: 8,
-        color: colors.text.dark
+    avatarImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: BaseColors.primary,
+    },
+    avatarPlaceholder: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: BaseColors.neutral[100],
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 3,
+        borderColor: BaseColors.neutral[200],
+    },
+    editOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     editButton: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 12,
         paddingVertical: 8,
-        backgroundColor: "#EDF7F4",
+        backgroundColor: BaseColors.primaryLight,
         borderRadius: 12,
     },
     editButtonText: {
         marginLeft: 6,
-        color: "#5FA893",
-        fontWeight: "600",
+        color: BaseColors.primary,
+        fontWeight: '600',
         fontSize: 14,
     },
     editActions: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 12,
     },
     actionButton: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 12,
     },
     cancelButton: {
-        backgroundColor: "#F3F4F6",
+        backgroundColor: BaseColors.neutral[100],
     },
     cancelButtonText: {
-        color: "#6B7280",
-        fontWeight: "600",
+        color: BaseColors.neutral[600],
+        fontWeight: '600',
         fontSize: 14,
     },
     saveButton: {
-        backgroundColor: "#5FA893",
+        backgroundColor: BaseColors.primary,
         ...Platform.select({
             ios: {
-                shadowColor: '#5FA893',
+                shadowColor: BaseColors.primary,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.2,
                 shadowRadius: 4,
@@ -513,72 +615,25 @@ const styles = StyleSheet.create({
         }),
     },
     saveButtonDisabled: {
-        backgroundColor: "#9CA3AF",
+        backgroundColor: BaseColors.neutral[400],
     },
     saveButtonText: {
         marginLeft: 6,
-        color: "#fff",
-        fontWeight: "600",
+        color: BaseColors.surface,
+        fontWeight: '600',
         fontSize: 14,
     },
-    avatarSection: {
-        alignItems: "center",
-        marginVertical: GAP,
-        paddingHorizontal: 20,
-    },
-    avatarTouchable: {
-        position: "relative",
-        marginBottom: 16,
-    },
-    avatarImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        borderWidth: 3,
-        borderColor: "#5FA893",
-    },
-    avatarPlaceholder: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        backgroundColor: "#F3F4F6",
-        alignItems: "center",
-        justifyContent: "center",
-        borderWidth: 3,
-        borderColor: "#E5E7EB",
-    },
-    editOverlay: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        borderRadius: 60,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    displayName: {
-        fontSize: 24,
-        fontWeight: "700",
-        color: "#1F2937",
-        marginBottom: 4,
-    },
-    emailText: {
-        fontSize: 15,
-        color: "#6B7280",
-    },
     infoCard: {
-        backgroundColor: "#F9FAFB",
+        backgroundColor: BaseColors.surface,
         borderRadius: 20,
         padding: 20,
         marginHorizontal: 20,
         marginBottom: GAP,
         borderWidth: 1,
-        borderColor: "#F3F4F6",
+        borderColor: BaseColors.neutral[200],
         ...Platform.select({
             ios: {
-                shadowColor: '#000',
+                shadowColor: BaseColors.shadowColor,
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
                 shadowRadius: 4,
@@ -593,43 +648,43 @@ const styles = StyleSheet.create({
     },
     fieldLabel: {
         fontSize: 14,
-        color: "#6B7280",
+        color: BaseColors.neutral[500],
         marginBottom: 8,
-        fontWeight: "500",
+        fontWeight: '500',
     },
     fieldValue: {
         fontSize: 16,
-        fontWeight: "500",
-        color: "#1F2937",
+        fontWeight: '500',
+        color: BaseColors.text.dark,
     },
     placeholderText: {
-        color: "#9CA3AF",
-        fontStyle: "italic",
+        color: BaseColors.neutral[400],
+        fontStyle: 'italic',
     },
     input: {
-        backgroundColor: "#fff",
+        backgroundColor: BaseColors.surface,
         borderRadius: 12,
         padding: 14,
         fontSize: 16,
-        color: "#1F2937",
+        color: BaseColors.text.dark,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: BaseColors.neutral[200],
     },
     inputDisabled: {
-        backgroundColor: "#F9FAFB",
-        color: "#6B7280",
+        backgroundColor: BaseColors.neutral[50],
+        color: BaseColors.neutral[500],
     },
     settingsCard: {
-        backgroundColor: "#fff",
+        backgroundColor: BaseColors.surface,
         borderRadius: 20,
         padding: 20,
         marginHorizontal: 20,
         marginBottom: GAP,
         borderWidth: 1,
-        borderColor: "#F3F4F6",
+        borderColor: BaseColors.neutral[200],
         ...Platform.select({
             ios: {
-                shadowColor: '#000',
+                shadowColor: BaseColors.shadowColor,
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
                 shadowRadius: 4,
@@ -640,16 +695,16 @@ const styles = StyleSheet.create({
         }),
     },
     settingsContent: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     settingsIconContainer: {
         width: 44,
         height: 44,
         borderRadius: 12,
-        backgroundColor: "#EDF7F4",
-        alignItems: "center",
-        justifyContent: "center",
+        backgroundColor: BaseColors.primaryLight,
+        alignItems: 'center',
+        justifyContent: 'center',
         marginRight: 16,
     },
     settingsTextContainer: {
@@ -657,65 +712,65 @@ const styles = StyleSheet.create({
     },
     settingsTitle: {
         fontSize: 16,
-        fontWeight: "600",
-        color: "#1F2937",
+        fontWeight: '600',
+        color: BaseColors.text.dark,
         marginBottom: 2,
     },
     settingsSubtitle: {
         fontSize: 14,
-        color: "#6B7280",
+        color: BaseColors.neutral[500],
     },
     logoutButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#FEF2F2",
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.errorLight,
         borderRadius: 16,
         padding: 18,
         marginHorizontal: 20,
         borderWidth: 1,
-        borderColor: "#FEE2E2",
+        borderColor: BaseColors.errorBorder,
         gap: 10,
     },
     logoutText: {
         fontSize: 16,
-        fontWeight: "600",
-        color: "#EF4444",
+        fontWeight: '600',
+        color: BaseColors.error,
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "flex-end",
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: "#fff",
+        backgroundColor: BaseColors.surface,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         paddingBottom: Platform.OS === 'ios' ? 40 : 20,
     },
     modalHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 16,
         borderBottomWidth: 1,
-        borderBottomColor: "#F3F4F6",
+        borderBottomColor: BaseColors.neutral[200],
     },
     modalTitle: {
         fontSize: 18,
-        fontWeight: "600",
-        color: "#1F2937",
+        fontWeight: '600',
+        color: BaseColors.text.dark,
     },
     modalOption: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: 'row',
+        alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 18,
         gap: 16,
     },
     modalOptionText: {
         fontSize: 16,
-        color: "#1F2937",
+        color: BaseColors.text.dark,
     },
 });

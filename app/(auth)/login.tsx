@@ -1,50 +1,43 @@
+// app/(auth)/login.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+    Alert,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginScreen() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { user, initialized } = useAuth();
+    const passwordRef = useRef<TextInput>(null);
 
-    // Optional: Redirect if already logged in (handled by RootLayout)
-    useEffect(() => {
-        if (initialized && user) {
-            console.log("[LoginScreen] User already logged in");
-        }
-    }, [user, initialized]);
+    const canSubmit = email && password.length >= 6 && !loading;
 
     const signIn = async () => {
-        if (!email || !password) {
-            alert("Fyll i email och lösenord!");
-            return;
-        }
+        if (!canSubmit) return;
 
         setLoading(true);
 
         try {
-            console.log("[DEBUG] Starting login:", email);
-
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
             if (error) throw error;
-
-            console.log("[DEBUG] Login successful:", data.user?.email);
-            // RootLayout will redirect automatically
-
         } catch (err: any) {
-            console.error("Login error:", err);
-            alert(err.message || "Okänt fel vid inloggning");
+            Alert.alert(t("auth.login.error"), err.message || t("auth.unknownError"));
         } finally {
             setLoading(false);
         }
@@ -53,53 +46,32 @@ export default function LoginScreen() {
     return (
         <SafeAreaView style={{ flex: 1, padding: 24 }}>
             <Text style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}>
-                Tryggd
+                {t("auth.login.title")}
             </Text>
 
             {/* Email */}
             <TextInput
-                placeholder="Email"
+                placeholder={t("auth.email")}
                 autoCapitalize="none"
+                keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
-                keyboardType="email-address"
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                }}
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                style={inputStyle}
             />
 
-            {/* Password with eye toggle */}
-            <View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    borderRadius: 8,
-                    paddingHorizontal: 12,
-                    marginBottom: 24,
-                }}
-            >
+            {/* Password */}
+            <View style={passwordWrapper}>
                 <TextInput
-                    placeholder="Password"
+                    ref={passwordRef}
+                    placeholder={t("auth.password.placeholder")}
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
-                    style={{
-                        flex: 1,
-                        paddingVertical: 12,
-                    }}
+                    style={passwordInput}
                 />
-
                 {password.length > 0 && (
-                    <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         <Ionicons
                             name={showPassword ? "eye-off-outline" : "eye-outline"}
                             size={22}
@@ -112,47 +84,62 @@ export default function LoginScreen() {
             {/* Login button */}
             <TouchableOpacity
                 onPress={signIn}
-                disabled={loading}
+                disabled={!canSubmit}
                 style={{
-                    backgroundColor: loading ? "#9CA3AF" : "#5FA893",
+                    backgroundColor: canSubmit ? "#5FA893" : "#9CA3AF",
                     padding: 16,
                     borderRadius: 8,
                 }}
             >
-                <Text style={{ color: "white", textAlign: "center", fontSize: 16 }}>
-                    {loading ? "Logging in..." : "Logga in"}
+                <Text
+                    style={{
+                        color: "white",
+                        textAlign: "center",
+                        fontSize: 16,
+                    }}
+                >
+                    {loading ? t("auth.login.loggingIn") : t("auth.login.signIn")}
                 </Text>
             </TouchableOpacity>
 
-            {/* Signup link */}
-            <Link href="/(auth)/signup" style={{ marginTop: 16 }}>
+            {/* Forgot password */}
+            <Link href="/(auth)/forgot-password" style={{ marginTop: 16 }}>
                 <Text style={{ textAlign: "center", color: "#5FA893" }}>
-                    Har du inget konto? Skapa ett
+                    {t("auth.forgotPassword")}
                 </Text>
             </Link>
 
-            {/* Debug button */}
-            <TouchableOpacity
-                onPress={async () => {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    console.log("[DEBUG] Session check:", session?.user?.email);
-                    console.log("[DEBUG] Auth context user:", user?.email);
-                    console.log(
-                        "[DEBUG] Current segments:",
-                        require("expo-router").useSegments()
-                    );
-                }}
-                style={{
-                    backgroundColor: "gray",
-                    padding: 10,
-                    borderRadius: 8,
-                    marginTop: 20,
-                }}
-            >
-                <Text style={{ color: "white", textAlign: "center" }}>
-                    Debug State
+            {/* Sign up link */}
+            <Link href="/(auth)/signup" style={{ marginTop: 16 }}>
+                <Text style={{ textAlign: "center", color: "#5FA893" }}>
+                    {t("auth.noAccount")}
                 </Text>
-            </TouchableOpacity>
+            </Link>
         </SafeAreaView>
     );
 }
+
+/* ---------- styles ---------- */
+
+const inputStyle = {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+};
+
+const passwordWrapper = {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+};
+
+const passwordInput = {
+    flex: 1,
+    paddingVertical: 12,
+};

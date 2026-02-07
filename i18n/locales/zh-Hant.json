@@ -324,5 +324,35 @@
     },
     "permissions": {
         "title": "權限"
+    },
+    "auth": {
+        "signup": {
+            "title": "建立帳戶",
+            "create": "建立帳戶",
+            "creating": "建立帳戶中...",
+            "success": {
+                "title": "帳戶建立成功 🎉",
+                "message": "您的帳戶已準備好。現在可以登入了。"
+            },
+            "error": "註冊失敗"
+        },
+        "login": {
+            "title": "登入",
+            "signIn": "登入",
+            "loggingIn": "登入中...",
+            "error": "登入失敗"
+        },
+        "email": "電子郵件",
+        "displayName": "姓名",
+        "password": {
+            "placeholder": "密碼 (至少6個字元)"
+        },
+        "confirmPassword": "確認密碼",
+        "passwordsMatch": "✔ 密碼匹配",
+        "passwordsNoMatch": "✖ 密碼不匹配",
+        "alreadyHaveAccount": "已有帳戶？登入",
+        "noAccount": "沒有帳戶？註冊",
+        "forgotPassword": "忘記密碼？",
+        "unknownError": "未知錯誤"
     }
 }

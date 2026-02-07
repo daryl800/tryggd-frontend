@@ -1,19 +1,20 @@
-import colors from "@/constants/colors";
-import { ICON_SIZES } from "@/constants/ui";
-import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next"; // ADD THIS
+// screens/ActivityScreen.tsx
+import { ScreenHeader } from '@/components/screens/ScreenHeader';
+import { BaseColors } from '@/constants/colors';
+import { ICON_SIZES } from '@/constants/ui';
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Animated,
-  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { supabase } from "../../lib/supabase";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../../lib/supabase';
 
 type Activity = {
   user_id: string;
@@ -28,12 +29,14 @@ type Activity = {
 };
 
 export default function ActivityScreen() {
-  const { t } = useTranslation(); // ADD THIS
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [contactMap, setContactMap] = useState<Map<string, { email: string; display_name: string }>>(new Map());
+  const [contactMap, setContactMap] = useState<
+    Map<string, { email: string; display_name: string }>
+  >(new Map());
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
@@ -43,7 +46,9 @@ export default function ActivityScreen() {
   const ownerCheckinsChannelRef = useRef<any>(null);
   const isInitialized = useRef(false);
   const isFocused = useRef(false);
-  const contactMapRef = useRef<Map<string, { email: string; display_name: string }>>(new Map());
+  const contactMapRef = useRef<
+    Map<string, { email: string; display_name: string }>
+  >(new Map());
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -53,16 +58,19 @@ export default function ActivityScreen() {
     }).start();
   }, []);
 
-  const fetchContacts = async (): Promise<{ ids: string[]; map: Map<string, { email: string; display_name: string }> }> => {
+  const fetchContacts = async (): Promise<{
+    ids: string[];
+    map: Map<string, { email: string; display_name: string }>;
+  }> => {
     try {
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (!user) return { ids: [], map: new Map() };
 
       const { data: contactsData } = await supabase
-        .from("contacts")
-        .select("contact_user_id, contact_email, contact_display_name")
-        .eq("owner_user_id", user.id);
+        .from('contacts')
+        .select('contact_user_id, contact_email, contact_display_name')
+        .eq('owner_user_id', user.id);
 
       if (contactsData) {
         const map = new Map<string, { email: string; display_name: string }>();
@@ -70,8 +78,8 @@ export default function ActivityScreen() {
 
         contactsData.forEach((c) => {
           map.set(c.contact_user_id, {
-            email: c.contact_email || "",
-            display_name: c.contact_display_name || "",
+            email: c.contact_email || '',
+            display_name: c.contact_display_name || '',
           });
           ids.push(c.contact_user_id);
         });
@@ -82,7 +90,7 @@ export default function ActivityScreen() {
         return { ids, map };
       }
     } catch (err) {
-      console.error(t("activity.errors.fetchContacts"), err);
+      console.error(t('activity.errors.fetchContacts'), err);
     }
     return { ids: [], map: new Map() };
   };
@@ -94,25 +102,26 @@ export default function ActivityScreen() {
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("users_latest_checkin")
-        .select("*")
-        .eq("user_id", user.id)
+        .from('users_latest_checkin')
+        .select('*')
+        .eq('user_id', user.id)
         .single();
 
-      if (error && error.code !== "PGRST116") {
-        console.error(t("activity.errors.fetchOwnerActivity"), error);
+      if (error && error.code !== 'PGRST116') {
+        console.error(t('activity.errors.fetchOwnerActivity'), error);
         return;
       }
 
       if (data) {
-        const isNew = !lastCheckinTimes.current.has(user.id) ||
+        const isNew =
+          !lastCheckinTimes.current.has(user.id) ||
           lastCheckinTimes.current.get(user.id) !== data.last_checked_in_utc;
 
         lastCheckinTimes.current.set(user.id, data.last_checked_in_utc);
 
         setOwnerActivity({
           ...data,
-          display_name: t("activity.you"),
+          display_name: t('activity.you'),
           is_owner: true,
           hasNewUpdate: isNew,
           checkin_timezone: data.checkin_timezone,
@@ -120,7 +129,7 @@ export default function ActivityScreen() {
       } else {
         setOwnerActivity({
           user_id: user.id,
-          display_name: t("activity.you"),
+          display_name: t('activity.you'),
           last_checked_in_utc: null,
           priority: 0,
           is_owner: true,
@@ -129,7 +138,7 @@ export default function ActivityScreen() {
         });
       }
     } catch (err) {
-      console.error(t("activity.errors.fetchOwnerActivity"), err);
+      console.error(t('activity.errors.fetchOwnerActivity'), err);
     }
   };
 
@@ -145,21 +154,26 @@ export default function ActivityScreen() {
       }
 
       const { data, error } = await supabase
-        .from("users_latest_checkin")
-        .select("*")
-        .in("user_id", contactIds)
-        .order("last_checked_in_utc", { ascending: false });
+        .from('users_latest_checkin')
+        .select('*')
+        .in('user_id', contactIds)
+        .order('last_checked_in_utc', { ascending: false });
 
       if (error) throw error;
 
       const enriched = (data || []).map((activity) => {
         const contactInfo = freshContactMap.get(activity.user_id);
 
-        const isNew = !lastCheckinTimes.current.has(activity.user_id) ||
-          lastCheckinTimes.current.get(activity.user_id) !== activity.last_checked_in_utc;
+        const isNew =
+          !lastCheckinTimes.current.has(activity.user_id) ||
+          lastCheckinTimes.current.get(activity.user_id) !==
+          activity.last_checked_in_utc;
 
         if (activity.last_checked_in_utc) {
-          lastCheckinTimes.current.set(activity.user_id, activity.last_checked_in_utc);
+          lastCheckinTimes.current.set(
+            activity.user_id,
+            activity.last_checked_in_utc
+          );
         }
 
         return {
@@ -174,12 +188,14 @@ export default function ActivityScreen() {
 
       const sorted = enriched.sort((a, b) => {
         if (b.priority !== a.priority) return b.priority - a.priority;
-        return (b.last_checked_in_utc ?? "").localeCompare(a.last_checked_in_utc ?? "");
+        return (b.last_checked_in_utc ?? '').localeCompare(
+          a.last_checked_in_utc ?? ''
+        );
       });
 
       setActivities(sorted);
     } catch (err) {
-      console.error(t("activity.errors.loadActivities"), err);
+      console.error(t('activity.errors.loadActivities'), err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -197,21 +213,21 @@ export default function ActivityScreen() {
       if (!user) return;
 
       const channel = supabase
-        .channel("owner-checkins-realtime")
+        .channel('owner-checkins-realtime')
         .on(
-          "postgres_changes",
+          'postgres_changes',
           {
-            event: "*",
-            schema: "public",
-            table: "users_latest_checkin",
+            event: '*',
+            schema: 'public',
+            table: 'users_latest_checkin',
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
-            if (payload.eventType === "DELETE") {
+            if (payload.eventType === 'DELETE') {
               lastCheckinTimes.current.delete(user.id);
               setOwnerActivity({
                 user_id: user.id,
-                display_name: t("activity.you"),
+                display_name: t('activity.you'),
                 last_checked_in_utc: null,
                 priority: 0,
                 is_owner: true,
@@ -222,18 +238,23 @@ export default function ActivityScreen() {
             }
 
             if (payload.new) {
-              const isNew = !lastCheckinTimes.current.has(user.id) ||
-                lastCheckinTimes.current.get(user.id) !== payload.new.last_checked_in_utc;
+              const isNew =
+                !lastCheckinTimes.current.has(user.id) ||
+                lastCheckinTimes.current.get(user.id) !==
+                payload.new.last_checked_in_utc;
 
               if (payload.new.last_checked_in_utc) {
-                lastCheckinTimes.current.set(user.id, payload.new.last_checked_in_utc);
+                lastCheckinTimes.current.set(
+                  user.id,
+                  payload.new.last_checked_in_utc
+                );
               }
 
               setOwnerActivity({
                 user_id: payload.new.user_id,
                 last_checked_in_utc: payload.new.last_checked_in_utc,
                 priority: payload.new.priority,
-                display_name: t("activity.you"),
+                display_name: t('activity.you'),
                 is_owner: true,
                 hasNewUpdate: isNew,
                 checkin_timezone: payload.new.checkin_timezone,
@@ -257,33 +278,40 @@ export default function ActivityScreen() {
     if (contactIds.length === 0) return;
 
     const channel = supabase
-      .channel("latest-checkins-realtime")
+      .channel('latest-checkins-realtime')
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "users_latest_checkin",
-          filter: `user_id=in.(${contactIds.join(",")})`,
+          event: '*',
+          schema: 'public',
+          table: 'users_latest_checkin',
+          filter: `user_id=in.(${contactIds.join(',')})`,
         },
         (payload) => {
           if (!payload.new) return;
 
           const updated: any = payload.new;
 
-          if (payload.eventType === "DELETE") {
+          if (payload.eventType === 'DELETE') {
             lastCheckinTimes.current.delete(payload.old.user_id);
-            setActivities((prev) => prev.filter((a) => a.user_id !== payload.old.user_id));
+            setActivities((prev) =>
+              prev.filter((a) => a.user_id !== payload.old.user_id)
+            );
             return;
           }
 
           const contactInfo = contactMapRef.current.get(updated.user_id);
 
-          const isNew = !lastCheckinTimes.current.has(updated.user_id) ||
-            lastCheckinTimes.current.get(updated.user_id) !== updated.last_checked_in_utc;
+          const isNew =
+            !lastCheckinTimes.current.has(updated.user_id) ||
+            lastCheckinTimes.current.get(updated.user_id) !==
+            updated.last_checked_in_utc;
 
           if (updated.last_checked_in_utc) {
-            lastCheckinTimes.current.set(updated.user_id, updated.last_checked_in_utc);
+            lastCheckinTimes.current.set(
+              updated.user_id,
+              updated.last_checked_in_utc
+            );
           }
 
           const enriched = {
@@ -307,7 +335,9 @@ export default function ActivityScreen() {
 
             return newArray.sort((a, b) => {
               if (b.priority !== a.priority) return b.priority - a.priority;
-              return (b.last_checked_in_utc ?? "").localeCompare(a.last_checked_in_utc ?? "");
+              return (b.last_checked_in_utc ?? '').localeCompare(
+                a.last_checked_in_utc ?? ''
+              );
             });
           });
         }
@@ -328,13 +358,13 @@ export default function ActivityScreen() {
       if (!user) return;
 
       const channel = supabase
-        .channel("contacts-realtime")
+        .channel('contacts-realtime')
         .on(
-          "postgres_changes",
+          'postgres_changes',
           {
-            event: "*",
-            schema: "public",
-            table: "contacts",
+            event: '*',
+            schema: 'public',
+            table: 'contacts',
             filter: `owner_user_id=eq.${user.id}`,
           },
           async () => {
@@ -385,46 +415,228 @@ export default function ActivityScreen() {
   useEffect(() => {
     initialize();
     return () => {
-      if (checkinsChannelRef.current) supabase.removeChannel(checkinsChannelRef.current);
-      if (contactsChannelRef.current) supabase.removeChannel(contactsChannelRef.current);
-      if (ownerCheckinsChannelRef.current) supabase.removeChannel(ownerCheckinsChannelRef.current);
+      if (checkinsChannelRef.current)
+        supabase.removeChannel(checkinsChannelRef.current);
+      if (contactsChannelRef.current)
+        supabase.removeChannel(contactsChannelRef.current);
+      if (ownerCheckinsChannelRef.current)
+        supabase.removeChannel(ownerCheckinsChannelRef.current);
       isInitialized.current = false;
       lastCheckinTimes.current.clear();
     };
   }, []);
 
-  return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerRow}>
-              <Ionicons name="pulse" size={28} color={colors.primary} />
-              <Text style={styles.title}>{t("activity.title")}</Text>
-            </View>
-            <Text style={styles.subtitle}>{t("activity.subtitle")}</Text>
-          </View>
+  // ActivityItem Component (reusable within this file)
+  const ActivityItem = ({
+    name,
+    email,
+    timestamp,
+    priority,
+    isOwner = false,
+    hasNewUpdate = false,
+    userId,
+    isLast = false,
+    checkin_timezone,
+  }: {
+    name: string;
+    email?: string | null;
+    timestamp: string | null;
+    priority: number;
+    isOwner?: boolean;
+    hasNewUpdate?: boolean;
+    userId: string;
+    isLast?: boolean;
+    checkin_timezone?: string | null;
+  }) => {
+    const { t } = useTranslation();
+    const timeScaleAnim = useRef(new Animated.Value(1)).current;
+    const timeColorAnim = useRef(new Animated.Value(0)).current;
 
+    useEffect(() => {
+      if (hasNewUpdate && timestamp) {
+        timeScaleAnim.setValue(1);
+        timeColorAnim.setValue(0);
+
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(timeScaleAnim, { toValue: 1.25, duration: 200, useNativeDriver: true }),
+            Animated.timing(timeScaleAnim, { toValue: 1.15, duration: 1800, useNativeDriver: true }),
+            Animated.spring(timeScaleAnim, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
+          ]),
+          Animated.sequence([
+            Animated.timing(timeColorAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
+            Animated.delay(1800),
+            Animated.timing(timeColorAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+          ]),
+        ]).start();
+      }
+    }, [hasNewUpdate, timestamp]);
+
+    // Format time
+    const formatActivityTime = (timestamp: string | null, timezone?: string | null) => {
+      let timeText = '';
+      let dateText = '';
+      let timezoneText = '';
+      const isValidTimestamp = timestamp && !isNaN(new Date(timestamp).getTime());
+
+      if (isValidTimestamp) {
+        try {
+          const d = new Date(timestamp!);
+          const tz = timezone || 'UTC';
+
+          timeText = d.toLocaleTimeString(t('activity.time.locale'), {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: tz,
+          });
+
+          const weekday = d
+            .toLocaleDateString(t('activity.time.locale'), {
+              weekday: 'short',
+              timeZone: tz,
+            })
+            .replace('.', '');
+
+          const dayOfMonth = d.getDate();
+          const monthName = d.toLocaleDateString(t('activity.time.locale'), {
+            month: 'long',
+            timeZone: tz,
+          });
+
+          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
+
+          const parts = tz.split('/');
+          timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
+        } catch (error) {
+          console.error('Error formatting time:', error);
+          const d = new Date(timestamp!);
+          timeText = d.toLocaleTimeString(t('activity.time.locale'), {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+
+          const weekday = d
+            .toLocaleDateString(t('activity.time.locale'), { weekday: 'short' })
+            .replace('.', '');
+          const dayOfMonth = d.getDate();
+          const monthName = d.toLocaleDateString(t('activity.time.locale'), { month: 'long' });
+          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
+          timezoneText = timezone || 'UTC';
+        }
+      }
+
+      return { timeText, dateText, timezoneText, isValidTimestamp };
+    };
+
+    // Get priority info
+    const getPriorityInfo = (priority: number) => {
+      if (priority === 2)
+        return {
+          color: BaseColors.error,
+          icon: 'alert-circle' as const,
+          label: t('activity.priority.failed'),
+          bgColor: BaseColors.errorLight,
+        };
+      if (priority === 1)
+        return {
+          color: BaseColors.warning,
+          icon: 'time' as const,
+          label: t('activity.priority.ongoing'),
+          bgColor: BaseColors.warningLight,
+        };
+      return {
+        color: BaseColors.success,
+        icon: 'checkmark-circle' as const,
+        label: t('activity.priority.successful'),
+        bgColor: BaseColors.successLight,
+      };
+    };
+
+    const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(timestamp, checkin_timezone);
+    const priorityInfo = getPriorityInfo(priority);
+
+    return (
+      <View style={[styles.activityItem, isLast && styles.lastItem]}>
+        <View style={styles.activityRow}>
+          <Ionicons
+            name={isOwner ? 'person-circle' : 'person'}
+            size={20}
+            color={BaseColors.primary}
+            style={styles.icon}
+          />
+
+          <View style={styles.contentContainer}>
+            <View style={styles.nameEmailRow}>
+              <Text>
+                <Text style={styles.name}>{name}</Text>
+                {email && <Text style={styles.email}> {email}</Text>}
+              </Text>
+            </View>
+
+            {isValidTimestamp ? (
+              <View style={styles.timeRow}>
+                <Animated.Text
+                  style={[
+                    styles.time,
+                    {
+                      color: timeColorAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [BaseColors.text.dark, BaseColors.highlight],
+                      }),
+                    },
+                    hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
+                  ]}
+                >
+                  {timeText} ({timezoneText})
+                </Animated.Text>
+                <View style={styles.spacer} />
+                <Text style={styles.date}>{dateText}</Text>
+              </View>
+            ) : (
+              <View style={styles.timeRow}>
+                <Text style={[styles.time, styles.noCheckIn]}>
+                  {t('activity.noCheckIn')}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
+          <Ionicons name={priorityInfo.icon} size={14} color={priorityInfo.color} />
+          <Text style={[styles.priorityLabel, { color: priorityInfo.color }]}>
+            {priorityInfo.label}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
+        {/* Screen Header - Handles its own top padding */}
+        <ScreenHeader
+          title={t('activity.title')}
+          subtitle={t('activity.subtitle')}
+          iconName="pulse"
+        />
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
           {loading ? (
             <View style={styles.loadingContainer}>
-              <Ionicons name="refresh" size={36} color={colors.text.light} style={styles.loadingIcon} />
-              <Text style={styles.loadingText}>{t("activity.loading")}</Text>
+              {/* ... loading state ... */}
             </View>
           ) : (
             <>
-              {/* Owner */}
+              {/* Owner Card - Add horizontal padding */}
               {ownerActivity && (
                 <View style={styles.ownerCard}>
-                  {/* <View style={styles.cardHeader}>
-                    <Ionicons name="person-circle" size={20} color={colors.primary} />
-                    <Text style={styles.cardTitle}>{t("activity.yourActivity")}</Text>
-                  </View> */}
                   <ActivityItem
                     name={ownerActivity.display_name}
                     timestamp={ownerActivity.last_checked_in_utc}
@@ -437,11 +649,12 @@ export default function ActivityScreen() {
                 </View>
               )}
 
-              {/* Contacts */}
+              {/* Contacts Card - Add horizontal padding */}
               <View style={styles.contactsCard}>
+                {/* Card Header - This should have proper alignment */}
                 <View style={styles.cardHeader}>
-                  <Ionicons name="people" size={ICON_SIZES.SM} color={colors.primary} />
-                  <Text style={styles.cardTitle}>{t("activity.contacts")}</Text>
+                  <Ionicons name="people" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                  <Text style={styles.cardTitle}>{t('activity.contacts')}</Text>
                   {activities.length > 0 && (
                     <View style={styles.contactCount}>
                       <Text style={styles.contactCountText}>{activities.length}</Text>
@@ -466,13 +679,12 @@ export default function ActivityScreen() {
                   ))
                 ) : (
                   <View style={styles.emptyState}>
-                    <Ionicons name="people-outline" size={40} color="#D1D5DB" />
-                    <Text style={styles.emptyTitle}>{t("activity.emptyState.title")}</Text>
-                    <Text style={styles.emptyText}>{t("activity.emptyState.message")}</Text>
+                    {/* ... empty state ... */}
                   </View>
                 )}
               </View>
 
+              {/* Bottom spacing */}
               <View style={styles.bottomSpacing} />
             </>
           )}
@@ -482,340 +694,156 @@ export default function ActivityScreen() {
   );
 }
 
-// ==================== ACTIVITY ITEM ====================
-function ActivityItem({
-  name,
-  email,
-  timestamp,
-  priority,
-  isOwner = false,
-  hasNewUpdate = false,
-  userId,
-  isLast = false,
-  checkin_timezone,
-}: {
-  name: string;
-  email?: string | null;
-  timestamp: string | null;
-  priority: number;
-  isOwner?: boolean;
-  hasNewUpdate?: boolean;
-  userId: string;
-  isLast?: boolean;
-  checkin_timezone?: string | null;
-}) {
-  const { t } = useTranslation(); // ADD THIS
-
-  const timeScaleAnim = useRef(new Animated.Value(1)).current;
-  const timeColorAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (hasNewUpdate && timestamp) {
-      timeScaleAnim.setValue(1);
-      timeColorAnim.setValue(0);
-
-      Animated.parallel([
-        Animated.sequence([
-          Animated.timing(timeScaleAnim, { toValue: 1.25, duration: 200, useNativeDriver: true }),
-          Animated.timing(timeScaleAnim, { toValue: 1.15, duration: 1800, useNativeDriver: true }),
-          Animated.spring(timeScaleAnim, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
-        ]),
-        Animated.sequence([
-          Animated.timing(timeColorAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-          Animated.delay(1800),
-          Animated.timing(timeColorAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
-        ]),
-      ]).start();
-    }
-  }, [hasNewUpdate, timestamp]);
-
-  // ======= TIME FORMATTING =======
-  let timeText = "";
-  let dateText = "";
-  let timezoneText = "";
-
-  // Check if we have a valid timestamp
-  const isValidTimestamp = timestamp && !isNaN(new Date(timestamp).getTime());
-
-  if (isValidTimestamp) {
-    try {
-      const d = new Date(timestamp);
-
-      // Use the provided timezone or default to UTC
-      const timezone = checkin_timezone || "UTC";
-
-      // Format time (HH:mm)
-      timeText = d.toLocaleTimeString(t("activity.time.locale"), {
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: timezone
-      });
-
-      // Format weekday (short)
-      const weekday = d.toLocaleDateString(t("activity.time.locale"), {
-        weekday: "short",
-        timeZone: timezone
-      }).replace('.', '');
-
-      // Format day of month
-      const dayOfMonth = d.getDate();
-
-      // Format month name (full)
-      const monthName = d.toLocaleDateString(t("activity.time.locale"), {
-        month: "long",
-        timeZone: timezone
-      });
-
-      // Combine: weekday + day + month
-      dateText = `${weekday} ${dayOfMonth} ${monthName}`;
-
-      // Extract city name from timezone (e.g., "Europe/Stockholm" -> "Stockholm")
-      const parts = timezone.split('/');
-      timezoneText = parts.length > 1 ? parts[parts.length - 1] : timezone;
-
-    } catch (error) {
-      console.error("Error formatting time:", error);
-      // Fallback without timezone
-      const d = new Date(timestamp);
-      timeText = d.toLocaleTimeString(t("activity.time.locale"), {
-        hour12: false,
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-      const weekday = d.toLocaleDateString(t("activity.time.locale"), { weekday: "short" }).replace('.', '');
-      const dayOfMonth = d.getDate();
-      const monthName = d.toLocaleDateString(t("activity.time.locale"), { month: "long" });
-      dateText = `${weekday} ${dayOfMonth} ${monthName}`;
-      timezoneText = checkin_timezone || "UTC";
-    }
-  }
-
-  const getPriorityInfo = () => {
-    if (priority === 2) return {
-      color: "#EF4444",
-      icon: "alert-circle",
-      label: t("activity.priority.failed"),
-      bgColor: "#FEF2F2"
-    };
-    if (priority === 1) return {
-      color: "#F59E0B",
-      icon: "time",
-      label: t("activity.priority.ongoing"),
-      bgColor: "#FEF3C7"
-    };
-    return {
-      color: "#10B981",
-      icon: "checkmark-circle",
-      label: t("activity.priority.successful"),
-      bgColor: "#ECFDF5"
-    };
-  };
-  const priorityInfo = getPriorityInfo();
-
-  return (
-    <View style={[styles.activityItem, isLast && { marginBottom: 0, borderBottomWidth: 0 }]}>
-      <View style={styles.activityRow}>
-        {/* Left icon */}
-        <Ionicons
-          name={isOwner ? "person-circle" : "person"}
-          size={20}
-          color={colors.primary}
-          style={{ marginRight: 10 }}
-        />
-
-        {/* Main content */}
-        <View style={{ flex: 1 }}>
-          {/* Name and Email row */}
-          <View style={styles.nameEmailRow}>
-            <Text>
-              <Text style={styles.activityName}>{name}</Text>
-              {email && (
-                <Text style={styles.activityEmail}>  {email}</Text>
-              )}
-            </Text>
-          </View>
-
-          {/* Time row with timezone and date on right */}
-          {isValidTimestamp ? (
-            <View style={styles.timeRow}>
-              <Animated.Text
-                style={[
-                  styles.activityTime,
-                  {
-                    color: timeColorAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [colors.text.dark, colors.highlight],
-                    })
-                  },
-                  hasNewUpdate && {
-                    transform: [{ scale: timeScaleAnim }],
-                  }
-                ]}
-              >
-                {timeText} ({timezoneText})
-              </Animated.Text>
-              <View style={{ flex: 1 }} />
-              <Text style={styles.activityDate}>{dateText}</Text>
-            </View>
-          ) : (
-            <View style={styles.timeRow}>
-              <Text style={[styles.activityTime, { color: colors.text.light }]}>
-                {t("activity.noCheckIn")}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* Priority badge */}
-      <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
-        <Ionicons name={priorityInfo.icon as any} size={14} color={priorityInfo.color} />
-        <Text style={[styles.priorityLabel, { color: priorityInfo.color }]}>{priorityInfo.label}</Text>
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { flex: 1 },
-  scrollView: { flex: 1 },
-  scrollContent: { padding: 16 },
-  header: { marginBottom: 16 },
-  headerRow: { flexDirection: "row", alignItems: "center" },
-  title: { fontSize: 22, fontWeight: "800", marginLeft: 8, color: colors.text.dark },
-  subtitle: { fontSize: 14, color: colors.text.light, marginLeft: 4 },
-  loadingContainer: { justifyContent: "center", alignItems: "center", padding: 40 },
-  loadingIcon: { marginBottom: 12 },
-  loadingText: { color: colors.text.light },
+  container: {
+    flex: 1,
+    backgroundColor: BaseColors.background,
+  },
+  contentWrapper: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20, // Only bottom padding needed
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  // Cards - ADD HORIZONTAL PADDING HERE
   ownerCard: {
-    padding: 16,
+    marginHorizontal: 20, // ← Match ScreenHeader padding
     marginBottom: 16,
-    backgroundColor: "#FFF",
+    padding: 16,
+    backgroundColor: BaseColors.surface,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: BaseColors.shadowColor,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 4,
-    elevation: 2
+    elevation: 2,
   },
   contactsCard: {
+    marginHorizontal: 20, // ← Match ScreenHeader padding
     padding: 16,
-    backgroundColor: "#FFF",
+    backgroundColor: BaseColors.surface,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: BaseColors.shadowColor,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 4,
-    elevation: 2
+    elevation: 2,
   },
   cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6"
+    borderBottomColor: BaseColors.neutral[200],
   },
   cardTitle: {
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: 16,
     marginLeft: 6,
     flex: 1,
-    color: colors.text.dark
+    color: BaseColors.text.dark,
   },
   contactCount: {
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: 4,
-    paddingVertical: 0,
-    borderRadius: 6,
-    minWidth: 18,
-    height: 16,
+    backgroundColor: BaseColors.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    minWidth: 22,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   contactCountText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '600',
-    color: colors.primary
+    color: BaseColors.primary,
   },
-  bottomSpacing: { height: 80 },
+  bottomSpacing: {
+    height: 20,
+  },
   emptyState: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 40
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
   },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: colors.text.dark,
-    marginTop: 12
-  },
-  emptyText: {
-    fontSize: 14,
-    color: colors.text.light,
-    marginTop: 4,
-    textAlign: 'center'
-  },
+  // ActivityItem styles (make sure they align properly)
   activityItem: {
-    paddingVertical: 0,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6"
+    borderBottomColor: BaseColors.neutral[200],
+  },
+  lastItem: {
+    marginBottom: 0,
+    borderBottomWidth: 0,
+    paddingBottom: 0,
   },
   activityRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  icon: {
+    marginRight: 10,
+  },
+  contentContainer: {
+    flex: 1,
   },
   nameEmailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8
+    marginBottom: 8,
   },
-  activityName: {
+  name: {
     fontSize: 16,
-    fontWeight: "600",
-    color: colors.text.dark,
+    fontWeight: '600',
+    color: BaseColors.text.dark,
     flex: 1,
-    marginRight: 8
+    marginRight: 8,
   },
-  activityEmail: {
+  email: {
     fontSize: 12,
-    color: "#9CA3AF",
+    color: BaseColors.neutral[400],
     flexShrink: 1,
-    maxWidth: '40%'
+    maxWidth: '40%',
   },
   timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  activityTime: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text.dark,
+  spacer: {
+    flex: 1,
   },
-  activityDate: {
+  time: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+  },
+  date: {
     fontSize: 14,
-    fontWeight: "500",
-    color: colors.text.light,
-    marginLeft: 'auto'
+    fontWeight: '500',
+    color: BaseColors.text.light,
+  },
+  noCheckIn: {
+    color: BaseColors.text.light,
   },
   priorityBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    alignSelf: "flex-start",
-    marginTop: 8
+    alignSelf: 'flex-start',
+    marginTop: 8,
   },
   priorityLabel: {
     fontSize: 11,
     fontWeight: '600',
-    marginLeft: 4
+    marginLeft: 4,
   },
 });

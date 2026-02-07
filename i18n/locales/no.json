@@ -291,5 +291,35 @@
     },
     "permissions": {
         "title": "Tillatelse"
+    },
+    "auth": {
+        "signup": {
+            "title": "Opprett konto",
+            "create": "Opprett konto",
+            "creating": "Oppretter konto...",
+            "success": {
+                "title": "Konto opprettet 🎉",
+                "message": "Kontoen din er klar. Du kan nå logge inn."
+            },
+            "error": "Registrering mislyktes"
+        },
+        "login": {
+            "title": "Logg inn",
+            "signIn": "Logg inn",
+            "loggingIn": "Logger inn...",
+            "error": "Innlogging mislyktes"
+        },
+        "email": "E-post",
+        "displayName": "Navn",
+        "password": {
+            "placeholder": "Passord (minst 6 tegn)"
+        },
+        "confirmPassword": "Bekreft passord",
+        "passwordsMatch": "✔ Passordene samsvarer",
+        "passwordsNoMatch": "✖ Passordene samsvarer ikke",
+        "alreadyHaveAccount": "Har du allerede en konto? Logg inn",
+        "noAccount": "Har du ikke en konto? Registrer deg",
+        "forgotPassword": "Glemt passord?",
+        "unknownError": "Ukjent feil"
     }
 }

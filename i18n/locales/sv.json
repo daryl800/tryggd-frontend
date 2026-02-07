@@ -291,5 +291,35 @@
     },
     "permissions": {
         "title": "Behörighet"
+    },
+    "auth": {
+        "signup": {
+            "title": "Skapa konto",
+            "create": "Skapa konto",
+            "creating": "Skapar konto...",
+            "success": {
+                "title": "Konto skapat 🎉",
+                "message": "Ditt konto är klart. Du kan nu logga in."
+            },
+            "error": "Registrering misslyckades"
+        },
+        "login": {
+            "title": "Logga in",
+            "signIn": "Logga in",
+            "loggingIn": "Loggar in...",
+            "error": "Inloggning misslyckades"
+        },
+        "email": "E-post",
+        "displayName": "Namn",
+        "password": {
+            "placeholder": "Lösenord (minst 6 tecken)"
+        },
+        "confirmPassword": "Bekräfta lösenord",
+        "passwordsMatch": "✔ Lösenorden matchar",
+        "passwordsNoMatch": "✖ Lösenorden matchar inte",
+        "alreadyHaveAccount": "Har du redan ett konto? Logga in",
+        "noAccount": "Har du inget konto? Registrera dig",
+        "forgotPassword": "Glömt lösenord?",
+        "unknownError": "Okänt fel"
     }
 }

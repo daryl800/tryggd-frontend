@@ -291,5 +291,35 @@
   },
   "permissions": {
     "title": "Permission"
+  },
+  "auth": {
+    "signup": {
+      "title": "Create Account",
+      "create": "Create Account",
+      "creating": "Creating account...",
+      "success": {
+        "title": "Account Created 🎉",
+        "message": "Your account is ready. You can now log in."
+      },
+      "error": "Signup failed"
+    },
+    "login": {
+      "title": "Log In",
+      "signIn": "Log In",
+      "loggingIn": "Logging in...",
+      "error": "Login failed"
+    },
+    "email": "Email",
+    "displayName": "Name",
+    "password": {
+      "placeholder": "Password (at least 6 characters)"
+    },
+    "confirmPassword": "Confirm Password",
+    "passwordsMatch": "✔ Passwords match",
+    "passwordsNoMatch": "✖ Passwords do not match",
+    "alreadyHaveAccount": "Already have an account? Log in",
+    "noAccount": "Don't have an account? Sign up",
+    "forgotPassword": "Forgot password?",
+    "unknownError": "Unknown error"
   }
 }

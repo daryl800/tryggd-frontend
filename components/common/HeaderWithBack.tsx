@@ -1,4 +1,6 @@
 // app/components/HeaderWithBack.tsx
+import BaseColors from "@/constants/colors";
+import { ICON_SIZES } from "@/constants/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { ReactNode } from "react";
@@ -46,7 +48,7 @@ export default function HeaderWithBack({
 
                 {/* Icon and Title */}
                 <View style={styles.headerContent}>
-                    {iconName && <Ionicons name={iconName} size={28} color="#5FA893" />}
+                    {iconName && <Ionicons name={iconName} size={ICON_SIZES.LG} color={BaseColors.primary} />}
                     <Text style={styles.title}>{title}</Text>
                 </View>
 
@@ -70,20 +72,22 @@ const styles = StyleSheet.create({
     },
     backButton: {
         padding: 0,
-        marginRight: 6,
+        marginRight: 5, // Increased gap between < and icon
     },
     headerContent: {
         flexDirection: "row",
         alignItems: "center",
         flex: 1,
+        marginLeft: -4, // Adjusted to compensate
     },
     headerRightSpacer: {
         width: 36,
     },
     title: {
-        fontSize: 22,
-        fontWeight: "600",
-        marginLeft: 10,
-        color: "#1F2937",
+        fontSize: 32,
+        fontWeight: '800',
+        color: BaseColors.text.dark,
+        marginLeft: 8, // Increased gap between icon and title
+        flex: 1,
     },
 });

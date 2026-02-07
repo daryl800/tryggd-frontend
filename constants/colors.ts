@@ -1,3 +1,4 @@
+// constants/colors.ts
 /**
  * Consolidated color palette - single source of truth
  * Contains ONLY color definitions, no theme logic
@@ -38,7 +39,7 @@ export const BaseColors = {
     info: '#3B82F6',
     infoLight: '#EFF6FF',
 
-    // Neutral scale
+    // Neutral scale (for consistent grays)
     neutral: {
         50: '#F9FAFB',
         100: '#F3F4F6',
@@ -52,10 +53,32 @@ export const BaseColors = {
         900: '#111827',
     },
 
+    // Additional UI colors from your screens
+    cardShadow: '#000',
+    cardShadowOpacity: 0.05,
+    emptyStateIcon: '#D1D5DB',
+
     // Legacy colors (for backward compatibility)
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: '#5FA893',
+
+    // Home screen specific colors
+    progressRingBackground: '#7DC4B0',
+    progressRingGradientEnd: '#7DC4B0',
+    cardIconBackground: {
+        activity: '#EDF7F4',
+        streak: '#FFF7ED',
+        reset: '#FEF2F2',
+    },
+
+    // Text variants
+    textMuted: '#6B7280',
+    textSuccess: '#10B981',
+
+    // Border colors
+    borderLight: '#F3F4F6',
+
 };
 
 // For direct access if needed
