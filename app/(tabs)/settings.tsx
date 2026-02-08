@@ -146,7 +146,8 @@ export default function SettingsScreen() {
                     <View style={styles.card}>
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("/about")}
+                            // onPress={() => router.push("/about")}
+                            onPress={() => router.push("http://tryggd.se/about")} // Open about page in browser
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -162,7 +163,8 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("/privacy")}
+                            // onPress={() => router.push("/privacy")}
+                            onPress={() => router.push("http://tryggd.se/privacy")} // Open privacy page in browser
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -178,7 +180,8 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("/terms")}
+                            // onPress={() => router.push("/terms")}
+                            onPress={() => router.push("http://tryggd.se/terms")} // Open terms page in browser
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
