@@ -1,4 +1,4 @@
-// app/(tabs)/index.tsx
+// app/(tabs)/index.tsx - LOGIC PART ONLY (from imports to return statement)
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
@@ -75,10 +75,13 @@ const formatTimeLeft = (ms: number): string => {
   return `${h}:${m}:${s}`;
 };
 
-const isNearMidnight = (date: Date): boolean => {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return (hours === 0 && minutes === 0) || (hours === 23 && minutes === 59);
+// Date comparison helper
+const isSameDay = (date1: Date, date2: Date): boolean => {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
 };
 
 // Helper function to convert numbers to Chinese numerals
@@ -188,7 +191,7 @@ const formatTime24h = (date: Date, language: string) => {
     da: 'da-DK',
     fi: 'fi-FI',
     'zh-Hans': 'zh_Hans',
-    'zh-Hant': 'zh-Hant',
+    'zh-Hant': 'zh_Hant',
     zh: 'zh-CN',
   };
 
@@ -337,11 +340,17 @@ export default function HomeScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
-  const checkAndResetIfPastMidnight = useCallback(() => {
-    if (isNearMidnight(new Date())) {
+  const checkDateAndReset = useCallback(() => {
+    if (!lastCheckinUtc) return;
+
+    const lastCheckinDate = new Date(lastCheckinUtc);
+    const today = new Date();
+
+    // If last check-in was NOT today, reset
+    if (!isSameDay(lastCheckinDate, today)) {
       resetAllState();
     }
-  }, [resetAllState]);
+  }, [lastCheckinUtc, resetAllState]);
 
   const fetchLastCheckin = useCallback(async () => {
     if (!user) return;
@@ -358,9 +367,30 @@ export default function HomeScreen() {
     }
 
     if (data?.last_checked_in_utc) {
+      const lastCheckinDate = new Date(data.last_checked_in_utc);
+      const today = new Date();
+
+      // Check if the check-in was today
+      const isFromToday = isSameDay(lastCheckinDate, today);
+
       setLastCheckinUtc(data.last_checked_in_utc);
-      setCheckedInToday(true);
-      setShowResetButton(true);
+      setCheckedInToday(isFromToday);
+      setShowResetButton(isFromToday);
+
+      // Save to AsyncStorage with correct "today" status
+      await AsyncStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          checkedInToday: isFromToday,
+          lastCheckinUtc: data.last_checked_in_utc,
+        })
+      );
+    } else {
+      // No check-in found
+      setCheckedInToday(false);
+      setShowResetButton(false);
+      setLastCheckinUtc(null);
+      await AsyncStorage.removeItem(STORAGE_KEY);
     }
   }, [user, t]);
 
@@ -371,7 +401,6 @@ export default function HomeScreen() {
       triggerCheckInAnimation();
 
       const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-      console.log('Device timezone:', tz);
 
       const { data, error } = await supabase
         .from('checkins')
@@ -385,11 +414,13 @@ export default function HomeScreen() {
       if (error) throw error;
       if (!data) return;
 
+      // Update state - this check-in is definitely from today
       setCheckedInToday(true);
       setShowResetButton(true);
       setLastCheckinUtc(data.checked_in_at_utc);
       setLastCheckinId(data.id);
 
+      // Save to AsyncStorage
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
@@ -401,7 +432,7 @@ export default function HomeScreen() {
     } catch (err) {
       console.error(t('home.errors.checkin'), err);
     }
-  }, [user, t]);
+  }, [user, t, triggerCheckInAnimation]);
 
   // Lifecycle effects
   useEffect(() => {
@@ -418,33 +449,33 @@ export default function HomeScreen() {
   }, [loading, user]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(new Date());
-      checkAndResetIfPastMidnight();
-    }, 1000);
-
-    const subscription = AppState.addEventListener('change', (next) => {
-      if (next === 'active') {
-        checkAndResetIfPastMidnight();
-      }
-    });
-
-    return () => {
-      clearInterval(interval);
-      subscription.remove();
-    };
-  }, [checkAndResetIfPastMidnight]);
-
-  useEffect(() => {
     const loadState = async () => {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!saved) return;
+        if (!saved) {
+          setIsInitialLoad(false);
+          return;
+        }
 
         const parsed = JSON.parse(saved);
-        setCheckedInToday(parsed.checkedInToday ?? false);
-        setShowResetButton(parsed.checkedInToday ?? false);
-        setLastCheckinUtc(parsed.lastCheckinUtc ?? null);
+        const savedLastCheckinUtc = parsed.lastCheckinUtc ?? null;
+
+        // If we have a saved check-in, check if it's from today
+        if (savedLastCheckinUtc) {
+          const lastCheckinDate = new Date(savedLastCheckinUtc);
+          const today = new Date();
+
+          // Only set as checked in if it was today
+          const isFromToday = isSameDay(lastCheckinDate, today);
+
+          setCheckedInToday(isFromToday);
+          setShowResetButton(isFromToday);
+          setLastCheckinUtc(savedLastCheckinUtc);
+        } else {
+          setCheckedInToday(false);
+          setShowResetButton(false);
+          setLastCheckinUtc(null);
+        }
       } catch (err) {
         console.error(t('home.errors.loadState'), err);
       } finally {
@@ -454,6 +485,38 @@ export default function HomeScreen() {
 
     loadState();
   }, [t]);
+
+  useEffect(() => {
+    const updateTimeAndCheckReset = () => {
+      const newNow = new Date();
+      setNow(newNow);
+      checkDateAndReset(); // Check if we need to reset based on date
+    };
+
+    // Initial check
+    updateTimeAndCheckReset();
+
+    // Update time every second for the timer display
+    const timeInterval = setInterval(() => {
+      const newNow = new Date();
+      setNow(newNow);
+    }, 1000);
+
+    // Check for reset every 30 seconds
+    const resetCheckInterval = setInterval(checkDateAndReset, 30000);
+
+    const subscription = AppState.addEventListener('change', (next) => {
+      if (next === 'active') {
+        updateTimeAndCheckReset();
+      }
+    });
+
+    return () => {
+      clearInterval(timeInterval);
+      clearInterval(resetCheckInterval);
+      subscription.remove();
+    };
+  }, [checkDateAndReset]);
 
   // Calculations
   const startOfDay = new Date();
@@ -480,6 +543,9 @@ export default function HomeScreen() {
   }
 
   const greetingInfo = getGreetingInfo(now, t);
+
+  // RETURN STATEMENT AND JSX REMAINS THE SAME AS YOUR ORIGINAL CODE
+  // ... (your existing return JSX code goes here)
 
   return (
     <SafeAreaView style={styles.container}>
