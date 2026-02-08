@@ -1,85 +1,78 @@
 // hooks/useStreak.ts
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { useCallback, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { AppState } from 'react-native';
 
 export const useStreak = () => {
+    const { user } = useAuth();
     const [streak, setStreak] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const fetchStreak = useCallback(async () => {
+        if (!user) {
+            setStreak(0);
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
 
-            const { data: { user } } = await supabase.auth.getUser();
+            // Call your PostgreSQL function using rpc()
+            const { data, error: supabaseError } = await supabase
+                .rpc('calculate_user_streak', { user_uuid: user.id });
 
-            if (!user) {
+            if (supabaseError) {
+                console.error('Error fetching streak:', supabaseError);
+                setError(supabaseError.message);
                 setStreak(0);
                 return;
             }
 
-            // Call PostgreSQL function (server-side calculation)
-            const { data, error: rpcError } = await supabase.rpc('calculate_user_streak', {
-                user_uuid: user.id
-            });
-
-            if (rpcError) {
-                console.error('RPC Error:', rpcError);
-                throw rpcError;
-            }
-
+            // The function returns a single value (the streak count)
             setStreak(data || 0);
+
         } catch (err: any) {
-            console.error('Error fetching streak:', err);
+            console.error('Error in useStreak:', err);
             setError(err.message);
             setStreak(0);
         } finally {
             setLoading(false);
         }
-    }, []);
-
-    // Real-time subscription for check-ins
-    useEffect(() => {
-        let channel: any;
-
-        const setupSubscription = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            channel = supabase
-                .channel(`streak-updates-${user.id}`)
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'INSERT',
-                        schema: 'public',
-                        table: 'checkins',
-                        filter: `user_id=eq.${user.id}`
-                    },
-                    () => {
-                        fetchStreak(); // Refresh when user checks in
-                    }
-                )
-                .subscribe();
-        };
-
-        setupSubscription();
-
-        return () => {
-            if (channel) supabase.removeChannel(channel);
-        };
-    }, [fetchStreak]);
+    }, [user]);
 
     // Initial fetch
     useEffect(() => {
         fetchStreak();
     }, [fetchStreak]);
 
+    // Refresh streak when app becomes active
+    useEffect(() => {
+        const handleAppStateChange = (nextAppState: string) => {
+            if (nextAppState === 'active') {
+                fetchStreak();
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+        return () => {
+            subscription.remove();
+        };
+    }, [fetchStreak]);
+
+    // Refresh streak periodically (every hour)
+    useEffect(() => {
+        const interval = setInterval(fetchStreak, 60 * 60 * 1000); // Every hour
+        return () => clearInterval(interval);
+    }, [fetchStreak]);
+
     return {
         streak,
         loading,
         error,
-        refreshStreak: fetchStreak
+        refetch: fetchStreak // This will now work correctly
     };
 };

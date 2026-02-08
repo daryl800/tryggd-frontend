@@ -1,4 +1,4 @@
-// app/(tabs)/index.tsx - LOGIC PART ONLY (from imports to return statement)
+// app/(tabs)/index.tsx - COMPLETE LOGIC PART
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
@@ -222,7 +222,7 @@ export default function HomeScreen() {
   const [checkedInToday, setCheckedInToday] = useState(false);
   const [lastCheckinUtc, setLastCheckinUtc] = useState<string | null>(null);
   const [lastCheckinId, setLastCheckinId] = useState<string | null>(null);
-  const { streak, loading: streakLoading } = useStreak();
+  const { streak, loading: streakLoading, refetch: refetchStreak } = useStreak();
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -346,11 +346,13 @@ export default function HomeScreen() {
     const lastCheckinDate = new Date(lastCheckinUtc);
     const today = new Date();
 
-    // If last check-in was NOT today, reset
+    // If last check-in was NOT today, reset AND refresh streak
     if (!isSameDay(lastCheckinDate, today)) {
       resetAllState();
+      // Refresh streak since date changed
+      refetchStreak();
     }
-  }, [lastCheckinUtc, resetAllState]);
+  }, [lastCheckinUtc, resetAllState, refetchStreak]);
 
   const fetchLastCheckin = useCallback(async () => {
     if (!user) return;
@@ -429,10 +431,14 @@ export default function HomeScreen() {
           checkinTimezone: tz,
         })
       );
+
+      // Refresh streak after successful check-in
+      refetchStreak();
+
     } catch (err) {
       console.error(t('home.errors.checkin'), err);
     }
-  }, [user, t, triggerCheckInAnimation]);
+  }, [user, t, triggerCheckInAnimation, refetchStreak]);
 
   // Lifecycle effects
   useEffect(() => {
@@ -486,6 +492,7 @@ export default function HomeScreen() {
     loadState();
   }, [t]);
 
+  // Main timer and reset interval
   useEffect(() => {
     const updateTimeAndCheckReset = () => {
       const newNow = new Date();
@@ -517,6 +524,29 @@ export default function HomeScreen() {
       subscription.remove();
     };
   }, [checkDateAndReset]);
+
+  // Refresh streak periodically (every hour) to catch date changes
+  useEffect(() => {
+    const streakRefreshInterval = setInterval(() => {
+      refetchStreak();
+    }, 60 * 60 * 1000); // Every hour
+
+    return () => clearInterval(streakRefreshInterval);
+  }, [refetchStreak]);
+
+  // Refresh streak when app becomes active
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        refetchStreak();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      subscription.remove();
+    };
+  }, [refetchStreak]);
 
   // Calculations
   const startOfDay = new Date();
