@@ -648,14 +648,15 @@ const styles = StyleSheet.create({
     },
     fieldLabel: {
         fontSize: 14,
-        color: BaseColors.neutral[500],
+        color: BaseColors.text.dark,
         marginBottom: 8,
         fontWeight: '500',
     },
     fieldValue: {
         fontSize: 16,
         fontWeight: '500',
-        color: BaseColors.text.dark,
+        color: BaseColors.text.light,
+        marginLeft: 10,
     },
     placeholderText: {
         color: BaseColors.neutral[400],
