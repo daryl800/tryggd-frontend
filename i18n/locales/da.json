@@ -301,6 +301,10 @@
                 "title": "Konto oprettet 🎉",
                 "message": "Din konto er klar. Du kan nu logge ind."
             },
+            "verifyEmail": {
+                "title": "Bekræft din e-mail",
+                "message": "Vi har sendt en bekræftelsesmail. Når du har bekræftet, kan du logge ind."
+            },
             "error": "Registrering mislykkedes"
         },
         "login": {

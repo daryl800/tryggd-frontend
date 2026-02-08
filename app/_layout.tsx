@@ -1,4 +1,5 @@
 // app/_layout.tsx
+import * as Linking from "expo-linking";
 import { Slot, useRouter } from "expo-router";
 import React, { useEffect, useRef } from 'react';
 import { I18nextProvider } from 'react-i18next'; // ✅ Add this import
@@ -17,6 +18,29 @@ function RootLayoutNav() {
   const { initialized, user } = useAuth();
   const router = useRouter();
   const notificationResponseListener = useRef<any>(null);
+
+
+  useEffect(() => {
+    const handleUrl = (url: string | null) => {
+      if (!url) return;
+
+      if (url.includes("auth/callback")) {
+        alert("Email confirmed. Please login.");
+        router.replace("/(auth)/login");
+      }
+    };
+
+    // When app already open
+    const sub = Linking.addEventListener("url", ({ url }) => {
+      handleUrl(url);
+    });
+
+    // When app opened from closed state
+    Linking.getInitialURL().then(handleUrl);
+
+    return () => sub.remove();
+  }, []);
+
 
   // Setup push notifications for development builds
   useEffect(() => {

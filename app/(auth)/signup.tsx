@@ -48,7 +48,7 @@ export default function SignupScreen() {
                 email,
                 password,
                 options: {
-                    emailRedirectTo: "http://localhost:3000",
+                    emailRedirectTo: "tryggd://auth/callback",
                 },
             });
 
@@ -62,9 +62,10 @@ export default function SignupScreen() {
             });
 
             Alert.alert(
-                t("auth.signup.success.title"),
-                t("auth.signup.success.message")
+                t("auth.verifyEmail.title"),
+                t("auth.verifyEmail.message")
             );
+
         } catch (err: any) {
             Alert.alert(t("auth.signup.error"), err.message || t("auth.unknownError"));
         } finally {

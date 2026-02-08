@@ -301,6 +301,10 @@
         "title": "Account Created 🎉",
         "message": "Your account is ready. You can now log in."
       },
+      "verifyEmail": {
+        "title": "Verify your email",
+        "message": "We sent a confirmation email. After confirming, please log in."
+      },
       "error": "Signup failed"
     },
     "login": {

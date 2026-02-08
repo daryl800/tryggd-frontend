@@ -1,10 +1,10 @@
-// components/screens/ScreenHeader.tsx - FIXED VERSION
+// components/screens/ScreenHeader.tsx - UPDATED VERSION
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View, ViewProps } from 'react-native';
+import { Platform, StyleSheet, Text, View, ViewProps } from 'react-native';
 
 interface ScreenHeaderProps extends ViewProps {
     title: string;
@@ -12,6 +12,10 @@ interface ScreenHeaderProps extends ViewProps {
     iconName?: keyof typeof Ionicons.glyphMap;
     rightElement?: React.ReactNode;
     showGreetingInLine?: boolean;
+    // New optional props for title scaling
+    titleNumberOfLines?: number;
+    titleAdjustsFontSizeToFit?: boolean;
+    titleMinimumFontScale?: number;
 }
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
@@ -20,6 +24,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     iconName = 'pulse',
     rightElement,
     showGreetingInLine = false,
+    titleNumberOfLines = 1,
+    titleAdjustsFontSizeToFit = true,
+    titleMinimumFontScale = 0.7,
     style,
     ...props
 }) => {
@@ -35,14 +42,30 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                         </View>
                         {rightElement}
                     </View>
-                    <Text style={styles.titleLarge}>{title}</Text>
+                    <Text
+                        style={styles.titleLarge}
+                        numberOfLines={titleNumberOfLines}
+                        adjustsFontSizeToFit={titleAdjustsFontSizeToFit}
+                        minimumFontScale={titleMinimumFontScale}
+                        maxFontSizeMultiplier={1.2}
+                    >
+                        {title}
+                    </Text>
                 </>
             ) : (
                 // Layout for other screens: Title with icon, optional subtitle
                 <>
                     <View style={styles.headerRow}>
                         <Ionicons name={iconName} size={28} color={BaseColors.primary} />
-                        <Text style={styles.title}>{title}</Text>
+                        <Text
+                            style={styles.title}
+                            numberOfLines={titleNumberOfLines}
+                            adjustsFontSizeToFit={titleAdjustsFontSizeToFit}
+                            minimumFontScale={titleMinimumFontScale}
+                            maxFontSizeMultiplier={1.2}
+                        >
+                            {title}
+                        </Text>
                         {rightElement}
                     </View>
                     {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -70,6 +93,16 @@ const styles = StyleSheet.create({
         color: BaseColors.text.dark,
         marginLeft: 12,
         flex: 1,
+        // Platform-specific optimizations
+        ...Platform.select({
+            ios: {
+                includeFontPadding: false,
+            },
+            android: {
+                includeFontPadding: false,
+                textAlignVertical: 'center',
+            },
+        }),
     },
     subtitle: {
         fontSize: 16,
@@ -101,5 +134,15 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: '800',
         color: BaseColors.text.dark,
+        // Platform-specific optimizations
+        ...Platform.select({
+            ios: {
+                includeFontPadding: false,
+            },
+            android: {
+                includeFontPadding: false,
+                textAlignVertical: 'center',
+            },
+        }),
     },
 });

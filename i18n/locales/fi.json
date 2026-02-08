@@ -301,6 +301,10 @@
                 "title": "Tili luotu 🎉",
                 "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
             },
+            "verifyEmail": {
+                "title": "Vahvista sähköpostisi",
+                "message": "Lähetimme vahvistussähköpostin. Kun olet vahvistanut, voit kirjautua sisään."
+            },
             "error": "Rekisteröinti epäonnistui"
         },
         "login": {
