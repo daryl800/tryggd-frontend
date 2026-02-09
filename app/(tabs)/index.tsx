@@ -696,14 +696,16 @@ export default function HomeScreen() {
                   <View style={styles.textContainer}>
                     {checkedInToday ? (
                       <>
-                        <Animated.View
+                        {/* Removed the scale animation on the "Checked in" text to avoid it looking too jumpy. The heart icon animation is enough to draw attention to the new state. */}
+                        {/* <Animated.View
                           style={[
                             styles.checkedInTextContainer,
                             { transform: [{ scale: successScaleAnim }] },
                           ]}
                         >
                           <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
-                        </Animated.View>
+                        </Animated.View> */}
+                        <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
                         <Text style={styles.checkInTime}>
                           {lastCheckinUtc
                             ? '@ ' + formatTime24h(new Date(lastCheckinUtc), i18n.language)

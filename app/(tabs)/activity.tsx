@@ -112,6 +112,8 @@ export default function ActivityScreen() {
         return;
       }
 
+      console.log('Raw data from users_latest_checkin:', data); // Add this
+
       if (data) {
         const isNew =
           !lastCheckinTimes.current.has(user.id) ||
@@ -500,11 +502,11 @@ export default function ActivityScreen() {
 
           const dayOfMonth = d.getDate();
           const monthName = d.toLocaleDateString(t('activity.time.locale'), {
-            month: 'long',
+            month: 'short',
             timeZone: tz,
           });
 
-          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
+          dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
 
           const parts = tz.split('/');
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
@@ -530,32 +532,33 @@ export default function ActivityScreen() {
       return { timeText, dateText, timezoneText, isValidTimestamp };
     };
 
-    // Get priority info
-    const getPriorityInfo = (priority: number) => {
-      if (priority === 2)
-        return {
-          color: BaseColors.error,
-          icon: 'alert-circle' as const,
-          label: t('activity.priority.failed'),
-          bgColor: BaseColors.errorLight,
-        };
-      if (priority === 1)
-        return {
-          color: BaseColors.warning,
-          icon: 'time' as const,
-          label: t('activity.priority.ongoing'),
-          bgColor: BaseColors.warningLight,
-        };
-      return {
-        color: BaseColors.success,
-        icon: 'checkmark-circle' as const,
-        label: t('activity.priority.successful'),
-        bgColor: BaseColors.successLight,
-      };
-    };
+    {/* TODO: Keep this part in case we want to re-add priority badges later */ }
+    // // Get priority info
+    // const getPriorityInfo = (priority: number) => {
+    //   if (priority === 2)
+    //     return {
+    //       color: BaseColors.error,
+    //       icon: 'alert-circle' as const,
+    //       label: t('activity.priority.failed'),
+    //       bgColor: BaseColors.errorLight,
+    //     };
+    //   if (priority === 1)
+    //     return {
+    //       color: BaseColors.warning,
+    //       icon: 'time' as const,
+    //       label: t('activity.priority.ongoing'),
+    //       bgColor: BaseColors.warningLight,
+    //     };
+    //   return {
+    //     color: BaseColors.success,
+    //     icon: 'checkmark-circle' as const,
+    //     label: t('activity.priority.successful'),
+    //     bgColor: BaseColors.successLight,
+    //   };
+    // };
 
     const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(timestamp, checkin_timezone);
-    const priorityInfo = getPriorityInfo(priority);
+    // const priorityInfo = getPriorityInfo(priority);
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -586,7 +589,8 @@ export default function ActivityScreen() {
                         outputRange: [BaseColors.text.dark, BaseColors.highlight],
                       }),
                     },
-                    hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
+                    // No need to scale the text (just change color is enough to draw attention)
+                    // hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
                   ]}
                 >
                   {timeText} ({timezoneText})
@@ -603,13 +607,13 @@ export default function ActivityScreen() {
             )}
           </View>
         </View>
-
-        <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
+        {/* TODO: Keep this part in case we want to re-add priority badges later */}
+        {/* <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
           <Ionicons name={priorityInfo.icon} size={14} color={priorityInfo.color} />
           <Text style={[styles.priorityLabel, { color: priorityInfo.color }]}>
             {priorityInfo.label}
           </Text>
-        </View>
+        </View> */}
       </View>
     );
   };
@@ -694,6 +698,7 @@ export default function ActivityScreen() {
   );
 }
 
+// ==================== STYLES ====================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
