@@ -105,7 +105,7 @@ export default function LoginScreen() {
             {/* Forgot password */}
             <Link href="/(auth)/forgot-password" style={{ marginTop: 16 }}>
                 <Text style={{ textAlign: "center", color: "#5FA893" }}>
-                    {t("auth.forgotPassword")}
+                    {t("auth.forgotPassword.title")}
                 </Text>
             </Link>
 

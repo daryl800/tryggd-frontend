@@ -323,7 +323,24 @@
         "passwordsNoMatch": "✖ Passordene samsvarer ikke",
         "alreadyHaveAccount": "Har du allerede en konto? Logg inn",
         "noAccount": "Har du ikke en konto? Registrer deg",
-        "forgotPassword": "Glemt passord?",
-        "unknownError": "Ukjent feil"
+        "unknownError": "Ukjent feil",
+        "forgotPassword": {
+            "title": "Glemt passord",
+            "send": "Send tilbakestillingsmail",
+            "sending": "Sender...",
+            "sentTitle": "Sjekk e-posten din",
+            "sentMessage": "Vi har sendt en lenke for tilbakestilling av passord til e-posten din.",
+            "error": "Feil ved sending av tilbakestillingsmail"
+        },
+        "resetPassword": {
+            "title": "Tilbakestill passord",
+            "save": "Lagre nytt passord",
+            "saving": "Lagrer...",
+            "successTitle": "Passord tilbakestilt!",
+            "successMessage": "Du kan nå logge inn med ditt nye passord.",
+            "login": "Gå til innlogging",
+            "error": "Feil ved tilbakestilling av passord",
+            "passwordPlaceholder": "Nytt passord"
+        }
     }
 }

@@ -323,7 +323,24 @@
         "passwordsNoMatch": "✖ Lösenorden matchar inte",
         "alreadyHaveAccount": "Har du redan ett konto? Logga in",
         "noAccount": "Har du inget konto? Registrera dig",
-        "forgotPassword": "Glömt lösenord?",
-        "unknownError": "Okänt fel"
+        "unknownError": "Okänt fel",
+        "forgotPassword": {
+            "title": "Glömt lösenord",
+            "send": "Skicka återställningsmail",
+            "sending": "Skickar...",
+            "sentTitle": "Kolla din e-post",
+            "sentMessage": "Vi har skickat en länk för att återställa lösenordet till din e-post.",
+            "error": "Fel vid skickande av återställningsmail"
+        },
+        "resetPassword": {
+            "title": "Återställ lösenord",
+            "save": "Spara nytt lösenord",
+            "saving": "Sparar...",
+            "successTitle": "Lösenord återställt!",
+            "successMessage": "Du kan nu logga in med ditt nya lösenord.",
+            "login": "Gå till inloggning",
+            "error": "Fel vid återställning av lösenord",
+            "passwordPlaceholder": "Nytt lösenord"
+        }
     }
 }

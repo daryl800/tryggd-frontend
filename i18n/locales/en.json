@@ -323,7 +323,24 @@
     "passwordsNoMatch": "✖ Passwords do not match",
     "alreadyHaveAccount": "Already have an account? Log in",
     "noAccount": "Don't have an account? Sign up",
-    "forgotPassword": "Forgot password?",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "send": "Send reset email",
+      "sending": "Sending...",
+      "sentTitle": "Check your email",
+      "sentMessage": "We sent a password reset link to your email.",
+      "error": "Error sending reset email"
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "save": "Save new password",
+      "saving": "Saving...",
+      "successTitle": "Password reset!",
+      "successMessage": "You can now log in with your new password.",
+      "login": "Go to Login",
+      "error": "Error resetting password",
+      "passwordPlaceholder": "New password"
+    }
   }
 }

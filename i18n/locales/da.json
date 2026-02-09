@@ -323,7 +323,24 @@
         "passwordsNoMatch": "✖ Adgangskoderne matcher ikke",
         "alreadyHaveAccount": "Har du allerede en konto? Log ind",
         "noAccount": "Har du ikke en konto? Opret en",
-        "forgotPassword": "Glemt adgangskode?",
-        "unknownError": "Ukendt fejl"
+        "unknownError": "Ukendt fejl",
+        "forgotPassword": {
+            "title": "Glemt adgangskode",
+            "send": "Send nulstillingsmail",
+            "sending": "Sender...",
+            "sentTitle": "Tjek din e-mail",
+            "sentMessage": "Vi har sendt et link til nulstilling af adgangskode til din e-mail.",
+            "error": "Fejl ved afsendelse af nulstillingsmail"
+        },
+        "resetPassword": {
+            "title": "Nulstil adgangskode",
+            "save": "Gem ny adgangskode",
+            "saving": "Gemmer...",
+            "successTitle": "Adgangskode nulstillet!",
+            "successMessage": "Du kan nu logge ind med din nye adgangskode.",
+            "login": "Gå til login",
+            "error": "Fejl ved nulstilling af adgangskode",
+            "passwordPlaceholder": "Ny adgangskode"
+        }
     }
 }

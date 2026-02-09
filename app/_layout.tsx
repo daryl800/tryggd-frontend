@@ -18,27 +18,39 @@ function RootLayoutNav() {
   const { initialized, user } = useAuth();
   const router = useRouter();
   const notificationResponseListener = useRef<any>(null);
+  const urlListenerRef = useRef<any>(null);
 
 
   useEffect(() => {
     const handleUrl = (url: string | null) => {
       if (!url) return;
 
-      if (url.includes("auth/callback")) {
+      const parsed = Linking.parse(url);
+
+      // Email confirmation
+      if (parsed.path === "auth/callback") {
         alert("Email confirmed. Please login.");
         router.replace("/(auth)/login");
+        return;
+      }
+
+      // Password reset
+      if (parsed.queryParams?.type === "recovery" && parsed.queryParams.access_token) {
+        const token = parsed.queryParams.access_token;
+        router.replace(`/(auth)/reset-password?access_token=${token}`);
+        return;
       }
     };
 
-    // When app already open
-    const sub = Linking.addEventListener("url", ({ url }) => {
-      handleUrl(url);
-    });
-
-    // When app opened from closed state
+    // App opened from background/closed
     Linking.getInitialURL().then(handleUrl);
 
-    return () => sub.remove();
+    // App already open
+    const subscription = Linking.addEventListener("url", ({ url }) => handleUrl(url));
+
+    return () => {
+      subscription.remove(); // ✅ modern cleanup
+    };
   }, []);
 
 

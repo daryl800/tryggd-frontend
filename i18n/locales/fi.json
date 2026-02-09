@@ -323,7 +323,24 @@
         "passwordsNoMatch": "✖ Salasanat eivät täsmää",
         "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
         "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
-        "forgotPassword": "Unohditko salasanan?",
-        "unknownError": "Tuntematon virhe"
+        "unknownError": "Tuntematon virhe",
+        "forgotPassword": {
+            "title": "Unohtunut salasana",
+            "send": "Lähetä salasanan palautus",
+            "sending": "Lähetetään...",
+            "sentTitle": "Tarkista sähköpostisi",
+            "sentMessage": "Lähetimme salasanan palautuslinkin sähköpostiisi.",
+            "error": "Virhe salasanan palautusviestin lähetyksessä"
+        },
+        "resetPassword": {
+            "title": "Palauta salasana",
+            "save": "Tallenna uusi salasana",
+            "saving": "Tallennetaan...",
+            "successTitle": "Salasana palautettu!",
+            "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
+            "login": "Siirry kirjautumiseen",
+            "error": "Virhe salasanan palautuksessa",
+            "passwordPlaceholder": "Uusi salasana"
+        }
     }
 }
