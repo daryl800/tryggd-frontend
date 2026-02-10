@@ -1,83 +1,94 @@
-// lib/notifications/handler.ts
+// lib/notifications/handlers.ts
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
+import { Platform } from 'react-native';
 
-// Configure how notifications are presented
-export function setupNotificationHandler() {
-    // Step 1: Configure notification presentation
+export async function setupNotificationHandler() {
+    // ✅ Configure how notifications appear
     Notifications.setNotificationHandler({
-        handleNotification: async (notification) => {
-            console.log('📱 Notification received in foreground:', notification.request.content.title);
-
-            return {
-                shouldShowAlert: true,
-                shouldPlaySound: true,
-                shouldSetBadge: true,
-            };
-        },
+        handleNotification: async () => ({
+            shouldShowAlert: true,      // Shows banners/alerts (critical for banners)
+            shouldPlaySound: true,      // Plays sound
+            shouldSetBadge: true,
+            shouldShowBanner: true,     // Shows banner (iOS specific)
+            shouldShowList: true,       // Shows in notification center
+        }),
     });
 
-    // Step 2: Handle notification when app is in foreground
-    // This doesn't affect sending, just handles display
+    if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notifications.AndroidImportance.HIGH, // IMPORTANT
+            lockscreenVisibility:
+                Notifications.AndroidNotificationVisibility.PUBLIC,
+        });
+    }
+
+    // Handle notification when app is in foreground
     Notifications.addNotificationReceivedListener(notification => {
         const data = notification.request.content.data;
-        console.log('🔔 Notification received:', {
-            type: data?.type,
+        console.log('📱 Notification received in foreground:', {
             title: notification.request.content.title,
-            fromForeground: true,
+            type: data?.type,
+            data: data
         });
-
-        // You can trigger local state updates here if needed
-        // For example, refresh contacts or check-ins
     });
 
-    // Step 3: Handle notification taps (when user taps notification)
-    Notifications.addNotificationResponseReceivedListener(response => {
+    // ✅ Handle notification tap - SINGLE SOURCE OF TRUTH
+    const subscription = Notifications.addNotificationResponseReceivedListener(async (response) => {
         const data = response.notification.request.content.data;
-        console.log('👆 User tapped notification:', data?.type);
+        console.log('👆 Notification tapped:', data?.type);
 
-        // Navigate based on notification type
+        try {
+            // ✅ Clear badge when user taps any notification
+            await Notifications.setBadgeCountAsync(0);
+            console.log('✅ Badge cleared after tap');
+        } catch (error) {
+            console.log('ℹ️ Could not clear badge:', error);
+        }
+
+        // Handle navigation based on notification type
         handleNotificationNavigation(data);
     });
+
+    // Store subscription for cleanup (optional, but good practice)
+    return subscription;
 }
 
-// Navigation handler
+// Helper function for clean navigation logic
 function handleNotificationNavigation(data: any) {
-    if (!data) return;
+    if (!data) {
+        console.log('⚠️ No data in notification, defaulting to activity');
+        router.push('/(tabs)/activity');
+        return;
+    }
 
-    const { type, screen, tab, requestId, senderUserId } = data;
-
-    switch (type) {
+    switch (data.type) {
         case 'contact_request':
-            // Navigate to contact requests tab
-            router.push({
-                pathname: '/(tabs)/contacts',
-                params: { tab: 'requests' }
-            });
+            router.push('/(tabs)/contacts?tab=requests');
+            console.log('→ Navigated to contact requests');
             break;
 
         case 'contact_accepted':
-            // Navigate to contacts list
-            router.push({
-                pathname: '/(tabs)/contacts',
-                params: { tab: 'contacts' }
-            });
+            router.push('/(tabs)/contacts?tab=contacts');
+            console.log('→ Navigated to contacts list');
             break;
 
         case 'contact_checkin':
-            // Navigate to activity tab
             router.push('/(tabs)/activity');
+            console.log('→ Navigated to activity');
             break;
 
         case 'self_reminder':
         case 'target_reminder':
-            // Navigate to check-in screen
             router.push('/(tabs)/checkin');
+            console.log('→ Navigated to checkin');
             break;
 
         default:
-            // Default to activity screen
+            // Default fallback for any other notification type
             router.push('/(tabs)/activity');
+            console.log('→ Default navigation to activity');
             break;
     }
 }

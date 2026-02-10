@@ -2,9 +2,9 @@
   "expo": {
     "name": "tryggd",
     "slug": "tryggd-frontend",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/notification-icon.png",
     "scheme": "tryggd",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -20,9 +20,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/notification-icon.png",
+        "backgroundImage": "./assets/images/notification-icon.png",
+        "monochromeImage": "./assets/images/notification-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -43,7 +43,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/notification-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -58,10 +58,7 @@
         {
           "icon": "./assets/images/notification-icon.png",
           "color": "#5FA893",
-          "defaultChannel": "default",
-          "sounds": [
-            "./assets/sounds/notification.wav"
-          ]
+          "defaultChannel": "default"
         }
       ],
       [

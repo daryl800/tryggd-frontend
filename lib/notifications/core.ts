@@ -47,6 +47,7 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
                 importance: Notifications.AndroidImportance.MAX,
                 vibrationPattern: [0, 250, 250, 250],
                 lightColor: '#5FA893',
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
             });
         }
 
@@ -95,6 +96,101 @@ export async function getUserNotifications(userId: string, limit = 20) {
     } catch (error) {
         console.error('❌ Error getting notifications:', error);
         return [];
+    }
+}
+
+// Add to lib/notifications/core.ts
+export async function sendContactRequestNotification({
+    receiverUserId,
+    senderUserId,
+    senderName,
+    senderEmail,
+    requestId,
+}: {
+    receiverUserId: string;
+    senderUserId: string;
+    senderName: string;
+    senderEmail: string;
+    requestId: string;
+}): Promise<boolean> {
+    try {
+        console.log('📤 Sending contact request notification...');
+
+        // 1. Get receiver's push token from Supabase
+        const { data: tokenData, error: tokenError } = await supabase
+            .from('user_push_tokens')
+            .select('expo_push_token')
+            .eq('user_id', receiverUserId)
+            .single();
+
+        if (tokenError || !tokenData?.expo_push_token) {
+            console.log('❌ No push token found for receiver:', receiverUserId);
+            return false;
+        }
+
+        // 2. Save notification to database for history
+        const { error: dbError } = await supabase
+            .from('notifications')
+            .insert({
+                user_id: receiverUserId,
+                type: 'contact_request',
+                title: '📩 Contact Request',
+                body: `${senderName} wants to add you as a contact`,
+                data: {
+                    requestId,
+                    senderUserId,
+                    senderName,
+                    senderEmail,
+                    screen: 'contacts',
+                    tab: 'requests'
+                },
+                sender_user_id: senderUserId,
+                read: false
+            });
+
+        if (dbError) {
+            console.error('❌ Error saving notification to DB:', dbError);
+            // Continue anyway - try to send push
+        }
+
+        // 3. Send push notification via Expo
+        const message = {
+            to: tokenData.expo_push_token,
+            sound: 'default',
+            title: '📩 Contact Request',
+            body: `${senderName} wants to add you as a contact`,
+            data: {
+                type: 'contact_request',
+                requestId,
+                senderUserId,
+                senderName,
+                senderEmail,
+                screen: 'contacts',
+                tab: 'requests'
+            }
+        };
+
+        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error('❌ Expo push failed:', result);
+            return false;
+        }
+
+        console.log('✅ Contact request notification sent successfully');
+        return true;
+
+    } catch (error) {
+        console.error('❌ Error sending contact request notification:', error);
+        return false;
     }
 }
 
