@@ -1,3 +1,4 @@
+// app.json
 {
   "expo": {
     "name": "tryggd",
@@ -12,9 +13,11 @@
       "supportsTablet": true,
       "infoPlist": {
         "UIBackgroundModes": [
+          "remote-notification",
           "remote-notification"
         ]
-      }
+      },
+      "bundleIdentifier": "com.dreamworks.tryggd"
     },
     "android": {
       "adaptiveIcon": {

@@ -1,17 +1,22 @@
+// eas.json
 {
     "build": {
         "preview": {
             "android": {
-                "buildType": "apk"
+                "buildType": "apk",
+                "gradleCommand": ":app:assembleRelease",
+                "googleServicesFile": "./google-services.json"
+            },
+            "env": {
+                "EXPO_PUBLIC_USE_FCM": "true"
             }
         },
         "production": {
             "android": {
-                "buildType": "apk"
+                "buildType": "app-bundle",
+                "gradleCommand": ":app:bundleRelease",
+                "googleServicesFile": "./google-services.json"
             }
         }
-    },
-    "submit": {
-        "production": {}
     }
 }

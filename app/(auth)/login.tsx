@@ -1,4 +1,5 @@
 // app/(auth)/login.tsx
+import { registerAndSavePushToken } from "@/lib/notifications/core";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useRef, useState } from "react";
@@ -13,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
+
 export default function LoginScreen() {
     const { t } = useTranslation();
     const [email, setEmail] = useState("");
@@ -24,24 +26,34 @@ export default function LoginScreen() {
 
     const canSubmit = email && password.length >= 6 && !loading;
 
+    // app/(auth)/login.tsx
+    // In your signIn function:
     const signIn = async () => {
         if (!canSubmit) return;
 
         setLoading(true);
 
         try {
-            const { error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
             if (error) throw error;
+
+            const user = data.user;
+            if (!user) return;
+
+            // ✅ ONLY register push token, NO sending from client
+            await registerAndSavePushToken(user.id);
+
         } catch (err: any) {
             Alert.alert(t("auth.login.error"), err.message || t("auth.unknownError"));
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <SafeAreaView style={{ flex: 1, padding: 24 }}>

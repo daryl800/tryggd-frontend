@@ -1,25 +1,22 @@
 // app/_layout.tsx
+import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import { Slot, useRouter } from "expo-router";
 import React, { useEffect, useRef } from 'react';
-import { I18nextProvider } from 'react-i18next'; // ✅ Add this import
+import { I18nextProvider } from 'react-i18next';
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
-import '../i18n'; // ✅ Import to initialize i18n
-import i18n from '../i18n'; // ✅ Import i18n instance (adjust path as needed)
-import {
-  IS_EXPO_GO,
-  registerForPushNotificationsAsync,
-  savePushToken
-} from '../lib/notifications';
+import '../i18n';
+import i18n from '../i18n';
 
+// ✅ Check if we're in Expo Go
+const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
 function RootLayoutNav() {
   const { initialized, user } = useAuth();
   const router = useRouter();
   const notificationResponseListener = useRef<any>(null);
   const urlListenerRef = useRef<any>(null);
-
 
   useEffect(() => {
     const handleUrl = (url: string | null) => {
@@ -49,46 +46,77 @@ function RootLayoutNav() {
     const subscription = Linking.addEventListener("url", ({ url }) => handleUrl(url));
 
     return () => {
-      subscription.remove(); // ✅ modern cleanup
+      subscription.remove();
     };
-  }, []);
-
+  }, [router]);
 
   // Setup push notifications for development builds
   useEffect(() => {
     const setupPushNotifications = async () => {
-      if (!user || IS_EXPO_GO) return;
+      // ✅ Skip in Expo Go
+      if (!user || IS_EXPO_GO) {
+        console.log('📱 Expo Go: Skipping push notification setup');
+        return;
+      }
 
       try {
+        // ✅ Use regular import instead of dynamic import
+        const { registerForPushNotificationsAsync, savePushToken } = await import('../lib/notifications/core');
+
         const token = await registerForPushNotificationsAsync();
         if (token) {
           await savePushToken(user.id, token);
+          console.log('✅ Push token saved for user:', user.id);
         }
       } catch (error) {
-        console.error('Error setting up push notifications:', error);
+        console.error('⚠️ Error setting up push notifications:', error);
+        // Don't crash the app - this is expected in some environments
       }
     };
 
     // Handle notification taps (for development builds)
     const setupNotificationResponse = async () => {
-      if (IS_EXPO_GO) return;
+      // ✅ Skip in Expo Go
+      if (IS_EXPO_GO) {
+        console.log('📱 Expo Go: Skipping notification response handler');
+        return;
+      }
 
       try {
-        const { default: Notifications } = await import('expo-notifications');
+        // ✅ Try to import, but don't crash if it fails
+        const Notifications = await import('expo-notifications');
 
+        // Configure notification presentation
+        Notifications.setNotificationHandler({
+          handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: true,
+          }),
+        });
+
+        // Add listener for notification taps
         notificationResponseListener.current =
           Notifications.addNotificationResponseReceivedListener(response => {
             const data = response.notification.request.content.data;
+            console.log('👆 Notification tapped:', data?.type);
 
-            // Handle contact request notifications
-            if (data.type === 'contact_request') {
-              router.push('/(tabs)/contacts');
-            } else if (data.type === 'contact_accepted') {
-              router.push('/(tabs)/contacts');
+            // Handle different notification types
+            if (data?.type === 'contact_request') {
+              router.push('/(tabs)/contacts?tab=requests');
+            } else if (data?.type === 'contact_accepted') {
+              router.push('/(tabs)/contacts?tab=contacts');
+            } else if (data?.type === 'contact_checkin') {
+              router.push('/(tabs)/activity');
+            } else if (data?.type === 'self_reminder' || data?.type === 'target_reminder') {
+              router.push('/(tabs)/checkin');
             }
           });
+
+        console.log('✅ Notification response handler setup complete');
       } catch (error) {
-        console.log('Notification response handler not available in this environment');
+        console.log('ℹ️ Notification response handler not available:', error.message);
+        // This is expected in some environments like Expo Go
       }
     };
 
@@ -99,7 +127,12 @@ function RootLayoutNav() {
 
     return () => {
       if (notificationResponseListener.current) {
-        notificationResponseListener.current.remove();
+        // Try to remove listener if it exists
+        try {
+          notificationResponseListener.current.remove();
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
       }
     };
   }, [user, router]);

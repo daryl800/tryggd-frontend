@@ -1,16 +1,15 @@
 // lib/notifications/index.ts
-export {
-    CAN_USE_PUSH_NOTIFICATIONS,
-    // Database functions
-    getUserNotifications, hasPushToken,
-    // Environment detection
-    IS_EXPO_GO, markNotificationAsRead,
-    // Push token functions
-    registerForPushNotificationsAsync,
-    savePushToken, sendContactAcceptedNotification, sendContactRequestNotification,
-    // Main functions
-    sendNotification
-} from './core';
+// Re-export everything from core
+export * from './core';
+
+// Or if you want to be more selective:
+// export { 
+//   registerForPushNotificationsAsync,
+//   savePushToken,
+//   getUserNotifications,
+//   markNotificationAsRead,
+//   IS_EXPO_GO 
+// } from './core';
 
 export type {
     NotificationData,

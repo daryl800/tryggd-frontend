@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "771703784741",
+    "project_id": "tryggd",
+    "storage_bucket": "tryggd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:771703784741:android:c52f2800528485108cc6cc",
+        "android_client_info": {
+          "package_name": "com.dreamworks.tryggd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF8et6BgOKyC3G4kfD-Mq4_RKAWkXoCJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
