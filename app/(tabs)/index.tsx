@@ -1,4 +1,4 @@
-// app/(tabs)/index.tsx - COMPLETE LOGIC PART
+// app/(tabs)/index.tsx 
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
@@ -531,11 +531,15 @@ export default function HomeScreen() {
     // Check for reset every 30 seconds
     const resetCheckInterval = setInterval(checkDateAndReset, 30000);
 
+    // ✅ FIXED: Add fetchLastCheckin() when app becomes active
     const subscription = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
+        console.log('📱 Home screen - app foregrounded - fetching fresh check-in status');
         updateTimeAndCheckReset();
+        fetchLastCheckin(); // ✅ CRITICAL: Fetch fresh data from Supabase
       }
     });
+
 
     return () => {
       clearInterval(timeInterval);

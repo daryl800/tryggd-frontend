@@ -1,10 +1,9 @@
-// app/(tabs)/_layout.tsx
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, Tabs } from "expo-router";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next"; // Add this import
-import { StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { AppState, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 
@@ -24,58 +23,81 @@ const NotificationBadge = ({ count }: { count: number }) => {
 export default function TabsLayout() {
   const { user, initialized } = useAuth();
   const [unreadRequests, setUnreadRequests] = useState(0);
-  const { t } = useTranslation(); // Initialize translation hook
+  const { t } = useTranslation();
 
-  // Fetch unread contact requests
+  // ✅ 1. Define fetch function with useCallback so it can be reused
+  const fetchUnreadRequests = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      const { data: requests } = await supabase
+        .from("contact_requests")
+        .select("id, created_at")
+        .eq("receiver_user_id", user.id)
+        .eq("status", "pending");
+
+      // Check last viewed time
+      const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
+      const unreadCount = requests?.filter(request => {
+        if (!lastViewed) return true;
+        return new Date(request.created_at) > new Date(lastViewed);
+      }).length || 0;
+
+      setUnreadRequests(unreadCount);
+    } catch (error) {
+      console.error("Error fetching unread requests:", error);
+    }
+  }, [user]);
+
+  // ✅ 2. Initial fetch
   useEffect(() => {
-    const fetchUnreadRequests = async () => {
-      if (!user) return;
+    if (user) {
+      fetchUnreadRequests();
+    }
+  }, [user, fetchUnreadRequests]);
 
-      try {
-        const { data: requests } = await supabase
-          .from("contact_requests")
-          .select("id, created_at")
-          .eq("receiver_user_id", user.id)
-          .eq("status", "pending");
+  // ✅ 3. Realtime subscription (updates while app is open)
+  useEffect(() => {
+    if (!user) return;
 
-        // Check last viewed time
-        const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
-        const unreadCount = requests?.filter(request => {
-          if (!lastViewed) return true;
-          return new Date(request.created_at) > new Date(lastViewed);
-        }).length || 0;
+    const subscription = supabase
+      .channel(`contact_requests_badge:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contact_requests',
+          filter: `receiver_user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchUnreadRequests(); // Re-fetch on any change
+        }
+      )
+      .subscribe();
 
-        setUnreadRequests(unreadCount);
-      } catch (error) {
-        console.error("Error fetching unread requests:", error);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, fetchUnreadRequests]);
+
+  // ✅ 4. CRITICAL: Fetch on app wakeup (MISSING IN YOUR CODE)
+  useEffect(() => {
+    if (!user) return;
+
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        console.log('📱 App foregrounded - refreshing badge count');
+        fetchUnreadRequests();
       }
     };
 
-    if (user) {
-      fetchUnreadRequests();
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
 
-      // Subscribe to real-time updates
-      const subscription = supabase
-        .channel(`contact_requests_badge:${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'contact_requests',
-            filter: `receiver_user_id=eq.${user.id}`,
-          },
-          () => {
-            fetchUnreadRequests();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-  }, [user]);
+    return () => {
+      subscription.remove();
+    };
+  }, [user, fetchUnreadRequests]);
 
   if (!initialized) return null;
   if (!user) return <Redirect href="/(auth)/login" />;
@@ -88,7 +110,7 @@ export default function TabsLayout() {
     }}>
       {/* Home Tab */}
       <Tabs.Screen name="index" options={{
-        title: t("home.title"), // Translate using the correct key
+        title: t("home.title"),
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "home" : "home-outline"} color={color} size={size} />
         )
@@ -96,7 +118,7 @@ export default function TabsLayout() {
 
       {/* Activity Tab */}
       <Tabs.Screen name="activity" options={{
-        title: t("activity.title"), // Translate using the correct key
+        title: t("activity.title"),
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "pulse" : "pulse-outline"} color={color} size={size} />
         )
@@ -104,7 +126,7 @@ export default function TabsLayout() {
 
       {/* Contacts Tab with Badge */}
       <Tabs.Screen name="contacts" options={{
-        title: t("contacts.title"), // Translate using the correct key
+        title: t("contacts.title"),
         tabBarIcon: ({ color, size, focused }) => (
           <View style={styles.tabIconContainer}>
             <Ionicons name={focused ? "people" : "people-outline"} color={color} size={size} />
@@ -117,7 +139,7 @@ export default function TabsLayout() {
 
       {/* Profile Tab */}
       <Tabs.Screen name="profile" options={{
-        title: t("profile.title"), // Translate using the correct key
+        title: t("profile.title"),
         tabBarIcon: ({ color, size, focused }) => (
           <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} />
         )
