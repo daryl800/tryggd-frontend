@@ -392,11 +392,6 @@ export default function ActivityScreen() {
     setupOwnerCheckinsSubscription();
   };
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchActivities();
-  };
-
   const handleScreenFocus = useCallback(() => {
     isFocused.current = true;
     if (isInitialized.current) fetchActivities();
@@ -563,20 +558,27 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          <Ionicons
-            name={isOwner ? 'person-circle' : 'person'}
-            size={20}
-            color={BaseColors.primary}
-            style={styles.icon}
-          />
+          {isOwner ? (
+            <View style={styles.iconPlaceholder} />
+          ) : (
+            <Ionicons
+              name="person"
+              size={20}
+              color={BaseColors.primary}
+              style={styles.icon}
+            />
+          )}
 
           <View style={styles.contentContainer}>
-            <View style={styles.nameEmailRow}>
-              <Text>
-                <Text style={styles.name}>{name}</Text>
-                {email && <Text style={styles.email}> {email}</Text>}
-              </Text>
-            </View>
+            {!isOwner && (
+              <View style={styles.nameEmailRow}>
+                <Text>
+                  <Text style={styles.name}>{name}</Text>
+                  {email && <Text style={styles.email}> {email}</Text>}
+                </Text>
+              </View>
+            )}
+
 
             {isValidTimestamp ? (
               <View style={styles.timeRow}>
@@ -641,6 +643,16 @@ export default function ActivityScreen() {
               {/* Owner Card - Add horizontal padding */}
               {ownerActivity && (
                 <View style={styles.ownerCard}>
+                  {/* Owner Header */}
+                  <View style={styles.cardHeader}>
+                    <Ionicons
+                      name="person-circle"
+                      size={ICON_SIZES.SM}
+                      color={BaseColors.primary}
+                    />
+                    <Text style={styles.cardTitle}>{t('activity.you')}</Text>
+                  </View>
+
                   <ActivityItem
                     name={ownerActivity.display_name}
                     timestamp={ownerActivity.last_checked_in_utc}
@@ -649,6 +661,7 @@ export default function ActivityScreen() {
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
                     checkin_timezone={ownerActivity.checkin_timezone}
+                    isLast
                   />
                 </View>
               )}
@@ -778,9 +791,9 @@ const styles = StyleSheet.create({
   },
   // ActivityItem styles (make sure they align properly)
   activityItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: BaseColors.neutral[200],
+    paddingVertical: 6,  // Gap between items
+    // borderBottomWidth: 1,
+    // borderBottomColor: BaseColors.neutral[200],
   },
   lastItem: {
     marginBottom: 0,
@@ -850,5 +863,9 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  iconPlaceholder: {
+    width: 20,
+    marginRight: 10,
   },
 });

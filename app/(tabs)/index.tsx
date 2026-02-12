@@ -4,6 +4,11 @@ import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
+import {
+  cancelTodayReminderAfterCheckin,
+  scheduleDailyReminder
+} from '@/lib/notifications/reminderManager';
+import { testReminderInOneMinute } from '@/test/testReminderNotification';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -25,6 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Defs, Stop, Svg, LinearGradient as SvgGradient } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -377,6 +383,16 @@ export default function HomeScreen() {
 
       setLastCheckinUtc(data.last_checked_in_utc);
       setCheckedInToday(isFromToday);
+
+      // ⭐ Sync reminder state
+      if (isFromToday) {
+        await cancelTodayReminderAfterCheckin();
+      } else {
+        await scheduleDailyReminder();
+      }
+
+
+
       setShowResetButton(isFromToday);
 
       // Save to AsyncStorage with correct "today" status
@@ -431,6 +447,9 @@ export default function HomeScreen() {
           checkinTimezone: tz,
         })
       );
+
+      // ⭐ cancel reminder because user checked in
+      await cancelTodayReminderAfterCheckin();
 
       // Refresh streak after successful check-in
       refetchStreak();
@@ -772,7 +791,8 @@ export default function HomeScreen() {
             )}
 
             <TouchableOpacity
-              onPress={() => router.push('/(tabs)/statistics')}
+              // onPress={() => router.push('/(tabs)/statistics')}
+              onPress={() => testReminderInOneMinute()}
               style={styles.card}
               activeOpacity={0.8}
             >

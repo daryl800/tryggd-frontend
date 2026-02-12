@@ -1,6 +1,11 @@
 import HeaderWithBack from '@/components/common/HeaderWithBack';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
+import { updateContactCheckInPreference } from '@/lib/notifications/core';
+import {
+    disableSelfReminder,
+    enableSelfReminder
+} from '@/lib/notifications/reminderManager';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -11,12 +16,14 @@ import {
     Platform,
     ScrollView,
     StyleSheet,
+    Switch,
     Text,
     TouchableOpacity,
     UIManager,
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -36,12 +43,17 @@ const STORAGE_KEYS = {
     LANGUAGE: "@app_language",
     THEME: "@settings_theme",
     NOTIFICATIONS: "@settings_notifications",
+    CHECK_IN_REMINDER: "@settings_check_in_reminder",
+    CONTACT_CHECK_IN: "@settings_contact_check_in",
 };
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { t, i18n } = useTranslation();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
+    const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
+    const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
+    const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
 
     useEffect(() => {
         loadSettings();
@@ -49,7 +61,16 @@ export default function SettingsScreen() {
 
     const loadSettings = async () => {
         try {
-            // Load any saved settings if needed
+            // Load notification settings
+            const savedCheckInReminder = await AsyncStorage.getItem(STORAGE_KEYS.CHECK_IN_REMINDER);
+            const savedContactCheckIn = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
+
+            if (savedCheckInReminder !== null) {
+                setCheckInReminderEnabled(savedCheckInReminder === 'true');
+            }
+            if (savedContactCheckIn !== null) {
+                setContactCheckInEnabled(savedContactCheckIn === 'true');
+            }
         } catch (error) {
             console.error("Failed to load settings:", error);
         }
@@ -61,9 +82,40 @@ export default function SettingsScreen() {
         setIsLanguageExpanded(false);
     };
 
-    const toggleExpand = () => {
+    const toggleLanguageExpand = () => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setIsLanguageExpanded(!isLanguageExpanded);
+    };
+
+    const toggleNotificationsExpand = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsNotificationsExpanded(!isNotificationsExpanded);
+    };
+
+    const saveCheckInReminder = async (enabled: boolean) => {
+        setCheckInReminderEnabled(enabled);
+
+        await AsyncStorage.setItem(
+            STORAGE_KEYS.CHECK_IN_REMINDER,
+            enabled.toString()
+        );
+
+        // ⭐ IMPORTANT: trigger scheduling logic
+        if (enabled) {
+            await enableSelfReminder();
+        } else {
+            await disableSelfReminder();
+        }
+    };
+
+
+    const saveContactCheckIn = async (enabled: boolean) => {
+        setContactCheckInEnabled(enabled);
+        await updateContactCheckInPreference(enabled); // Now syncs to Supabase
+        await AsyncStorage.setItem(
+            STORAGE_KEYS.CONTACT_CHECK_IN,
+            enabled.toString()
+        );
     };
 
     return (
@@ -84,7 +136,7 @@ export default function SettingsScreen() {
                         {/* Current Language Header */}
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={toggleExpand}
+                            onPress={toggleLanguageExpand}
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -140,14 +192,86 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
+                {/* Notifications */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionLabel}>{t("settings.notifications")}</Text>
+                    <View style={styles.card}>
+                        {/* Notifications Header */}
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={toggleNotificationsExpand}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="notifications" size={22} color={BaseColors.primary} />
+                                </View>
+                                <View style={styles.settingText}>
+                                    <Text style={styles.settingTitle}>Notification preferences</Text>
+                                    <Text style={styles.settingSubtitle}>
+                                        {checkInReminderEnabled || contactCheckInEnabled
+                                            ? `${checkInReminderEnabled ? 'Reminders' : ''}${checkInReminderEnabled && contactCheckInEnabled ? ' & ' : ''}${contactCheckInEnabled ? 'Activity' : ''}`
+                                            : 'All notifications off'}
+                                    </Text>
+                                </View>
+                            </View>
+                            <Ionicons
+                                name={isNotificationsExpanded ? "chevron-up" : "chevron-down"}
+                                size={22}
+                                color={BaseColors.neutral[400]}
+                            />
+                        </TouchableOpacity>
+
+                        {/* Notification Options */}
+                        {isNotificationsExpanded && (
+                            <View style={styles.expandedSection}>
+                                {/* Check-in Reminder Switch */}
+                                <View style={styles.notificationSwitchItem}>
+                                    <View style={styles.notificationContent}>
+                                        <Text style={styles.switchLabel}>Stay on track</Text>
+                                        <Text style={styles.notificationDescription}>
+                                            Remind me to complete my personal safety daily check-ins
+                                        </Text>
+                                    </View>
+                                    <Switch
+                                        value={checkInReminderEnabled}
+                                        onValueChange={saveCheckInReminder}
+                                        trackColor={{ false: "#D1D5DB", true: "#5FA893" }}
+                                        thumbColor="#fff"
+                                        ios_backgroundColor="#D1D5DB"
+                                    />
+                                </View>
+
+                                <View style={styles.divider} />
+
+                                {/* Contact Check-in Switch */}
+                                <View style={styles.notificationSwitchItem}>
+                                    <View style={styles.notificationContent}>
+                                        <Text style={styles.switchLabel}>Contact activity</Text>
+                                        <Text style={styles.notificationDescription}>
+                                            Notify me when my contacts complete their check-ins
+                                        </Text>
+                                    </View>
+                                    <Switch
+                                        value={contactCheckInEnabled}
+                                        onValueChange={saveContactCheckIn}
+                                        trackColor={{ false: "#D1D5DB", true: "#5FA893" }}
+                                        thumbColor="#fff"
+                                        ios_backgroundColor="#D1D5DB"
+                                    />
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+
                 {/* Information Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionLabel}>{t("settings.information")}</Text>
                     <View style={styles.card}>
                         <TouchableOpacity
                             style={styles.settingItem}
-                            // onPress={() => router.push("/about")}
-                            onPress={() => router.push("http://tryggd.se/about")} // Open about page in browser
+                            onPress={() => router.push("http://tryggd.se/about")}
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -163,8 +287,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            // onPress={() => router.push("/privacy")}
-                            onPress={() => router.push("http://tryggd.se/privacy")} // Open privacy page in browser
+                            onPress={() => router.push("http://tryggd.se/privacy")}
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -180,8 +303,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            // onPress={() => router.push("/terms")}
-                            onPress={() => router.push("http://tryggd.se/terms")} // Open terms page in browser
+                            onPress={() => router.push("http://tryggd.se/terms")}
                             activeOpacity={0.7}
                         >
                             <View style={styles.settingContent}>
@@ -198,7 +320,7 @@ export default function SettingsScreen() {
                 {/* Bottom Spacing */}
                 <View style={styles.bottomSpacing} />
             </ScrollView>
-        </SafeAreaView >
+        </SafeAreaView>
     );
 }
 
@@ -292,7 +414,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     selectedOption: {
-        backgroundColor: BaseColors.primaryLight + '20', // 20% opacity
+        backgroundColor: BaseColors.primaryLight + '20',
     },
     languageContent: {
         flexDirection: 'row',
@@ -334,5 +456,27 @@ const styles = StyleSheet.create({
     },
     bottomSpacing: {
         height: 20,
+    },
+    notificationSwitchItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+    },
+    switchLabel: {
+        fontSize: 16,
+        color: "#1F2937",
+        fontWeight: "500",
+    },
+    notificationContent: {
+        flex: 1,
+        marginRight: 16,
+    },
+    notificationDescription: {
+        fontSize: 14,
+        color: "#6B7280",
+        marginTop: 4,
+        lineHeight: 20,
     },
 });

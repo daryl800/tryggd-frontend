@@ -1,5 +1,6 @@
 // app/_layout.tsx
 import { setupNotificationHandler } from '@/lib/notifications/handlers'; // ✅ Fixed import path
+import { isSelfReminderEnabled, scheduleDailyReminder } from '@/lib/notifications/reminderManager';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import * as Notifications from 'expo-notifications';
@@ -23,7 +24,16 @@ function RootLayoutNav() {
     let subscription: Notifications.Subscription | undefined;
 
     const init = async () => {
+
       subscription = await setupNotificationHandler();
+      const initReminder = async () => {
+        const enabled = await isSelfReminderEnabled();
+        if (enabled) {
+          await scheduleDailyReminder();
+        }
+      };
+      initReminder();
+
     };
 
     init();
