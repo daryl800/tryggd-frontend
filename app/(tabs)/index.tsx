@@ -8,7 +8,6 @@ import {
   cancelTodayReminderAfterCheckin,
   scheduleDailyReminder
 } from '@/lib/notifications/reminderManager';
-import { testReminderInOneMinute } from '@/test/testReminderNotification';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -796,7 +795,6 @@ export default function HomeScreen() {
 
             <TouchableOpacity
               // onPress={() => router.push('/(tabs)/statistics')}
-              onPress={() => testReminderInOneMinute()}
               style={styles.card}
               activeOpacity={0.8}
             >

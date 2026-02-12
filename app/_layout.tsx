@@ -1,6 +1,6 @@
 // app/_layout.tsx
 import { setupNotificationHandler } from '@/lib/notifications/handlers'; // ✅ Fixed import path
-import { isSelfReminderEnabled, scheduleDailyReminder } from '@/lib/notifications/reminderManager';
+import { isSelfReminderEnabled, refreshReminderSchedule, scheduleDailyReminder } from '@/lib/notifications/reminderManager';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import * as Notifications from 'expo-notifications';
@@ -49,8 +49,15 @@ function RootLayoutNav() {
       if (state === "active") {
         await Notifications.dismissAllNotificationsAsync();
         await Notifications.setBadgeCountAsync(0);
+        await refreshReminderSchedule();
       }
     });
+
+    // Also refresh on initial mount
+    (async () => {
+      await refreshReminderSchedule();
+    })();
+
 
     return () => {
       subscription?.remove();
