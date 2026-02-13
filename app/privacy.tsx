@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 
 const content = `# Privacy Policy
 
-**Effective date:** [INSERT DATE]
+**Effective date:** 2026-02-01
 
 Tryggd ("we", "our", "us") respects your privacy and processes personal data in accordance with the **General Data Protection Regulation (GDPR)**.
 
@@ -67,7 +67,7 @@ Under GDPR, you have the right to:
 - Data portability
 - Withdraw consent at any time
 
-Requests may be sent to: **[CONTACT EMAIL]**
+Requests may be sent to: **support@tryggd.com**
 
 ---
 

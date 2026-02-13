@@ -5,10 +5,12 @@ import { ICON_SIZES } from '@/constants/ui';
 import { sendContactRequestNotification } from '@/lib/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from 'expo-router';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Alert,
+    AppState,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
@@ -284,59 +286,20 @@ export default function ContactsScreen() {
     const scrollViewRef = useRef<ScrollView>(null);
     const inputRefs = useRef<(TextInput | null)[]>([]);
     const fetchAllDataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const isMountedRef = useRef(true);
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
 
-    useEffect(() => {
-        const markAsRead = async () => {
-            if (activeSection === 'requests') {
-                await AsyncStorage.setItem(
-                    'last_viewed_requests',
-                    new Date().toISOString()
-                );
-                setHasUnreadRequests(false);
-            }
-        };
-
-        markAsRead();
-    }, [activeSection]);
-
-    useEffect(() => {
-        fetchAllData();
-        checkUnreadRequests();
-        cleanupContactData();
-
-        let contactRequestsSubscription: any = null;
-        let contactsSubscription: any = null;
-
-        const setupSubscriptions = async () => {
-            contactRequestsSubscription = await subscribeToContactRequests();
-            contactsSubscription = await subscribeToContacts();
-        };
-
-        setupSubscriptions();
-
-        return () => {
-            if (fetchAllDataTimeoutRef.current) {
-                clearTimeout(fetchAllDataTimeoutRef.current);
-            }
-
-            if (contactRequestsSubscription) {
-                contactRequestsSubscription.unsubscribe();
-            }
-            if (contactsSubscription) {
-                contactsSubscription.unsubscribe();
-            }
-        };
-    }, []);
-
-    const fetchAllData = async () => {
+    // ✅ 1. Define fetch function with useCallback
+    const fetchAllData = useCallback(async () => {
         if (fetchAllDataTimeoutRef.current) {
             clearTimeout(fetchAllDataTimeoutRef.current);
         }
 
         fetchAllDataTimeoutRef.current = setTimeout(async () => {
+            if (!isMountedRef.current) return;
+
             setLoading(true);
             try {
                 const { data: userData } = await supabase.auth.getUser();
@@ -383,10 +346,108 @@ export default function ContactsScreen() {
                 console.error('Fetch data error:', error);
                 Alert.alert(t('errors.title'), t('contacts.errors.loadData'));
             } finally {
-                setLoading(false);
+                if (isMountedRef.current) {
+                    setLoading(false);
+                }
             }
         }, 300);
-    };
+    }, [t]);
+
+    const checkUnreadRequests = useCallback(async () => {
+        try {
+            const { data: userData } = await supabase.auth.getUser();
+            const user = userData.user;
+            if (!user) return;
+
+            const { data: requests } = await supabase
+                .from('contact_requests')
+                .select('id, created_at')
+                .eq('receiver_user_id', user.id)
+                .eq('status', 'pending')
+                .gte(
+                    'created_at',
+                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                );
+
+            const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
+            const unreadCount =
+                requests?.filter((request) => {
+                    if (!lastViewed) return true;
+                    return new Date(request.created_at) > new Date(lastViewed);
+                }).length || 0;
+
+            setHasUnreadRequests(unreadCount > 0);
+        } catch (error) {
+            console.error('Check unread requests error:', error);
+        }
+    }, []);
+
+    // ✅ 2. Initial fetch
+    useEffect(() => {
+        isMountedRef.current = true;
+
+        fetchAllData();
+        checkUnreadRequests();
+        cleanupContactData();
+
+        return () => {
+            isMountedRef.current = false;
+            if (fetchAllDataTimeoutRef.current) {
+                clearTimeout(fetchAllDataTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // ✅ 3. FOCUS EFFECT - triggers on tab switch and initial mount
+    useFocusEffect(
+        useCallback(() => {
+            console.log('🎯 Contacts screen focused - fetching fresh data');
+            fetchAllData();
+            checkUnreadRequests();
+        }, [fetchAllData, checkUnreadRequests])
+    );
+
+    // ✅ 4. APP STATE EFFECT - triggers on lock/unlock and background/foreground
+    useEffect(() => {
+        let isActive = true;
+
+        const handleAppStateChange = (nextAppState: string) => {
+            if (nextAppState === 'active' && isActive) {
+                console.log('📱 App became active - refreshing contacts data');
+                fetchAllData();
+                checkUnreadRequests();
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        return () => {
+            isActive = false;
+            subscription.remove();
+        };
+    }, [fetchAllData, checkUnreadRequests]);
+
+    // ✅ 5. Realtime subscriptions (keep your existing ones)
+    useEffect(() => {
+        let contactRequestsSubscription: any = null;
+        let contactsSubscription: any = null;
+
+        const setupSubscriptions = async () => {
+            contactRequestsSubscription = await subscribeToContactRequests();
+            contactsSubscription = await subscribeToContacts();
+        };
+
+        setupSubscriptions();
+
+        return () => {
+            if (contactRequestsSubscription) {
+                contactRequestsSubscription.unsubscribe();
+            }
+            if (contactsSubscription) {
+                contactsSubscription.unsubscribe();
+            }
+        };
+    }, []);
 
     const subscribeToContactRequests = async () => {
         const { data: userData } = await supabase.auth.getUser();
@@ -463,42 +524,6 @@ export default function ContactsScreen() {
             });
 
         return subscription;
-    };
-
-    const checkUnreadRequests = async () => {
-        try {
-            const { data: userData } = await supabase.auth.getUser();
-            const user = userData.user;
-            if (!user) return;
-
-            const { data: requests } = await supabase
-                .from('contact_requests')
-                .select('id, created_at')
-                .eq('receiver_user_id', user.id)
-                .eq('status', 'pending')
-                .gte(
-                    'created_at',
-                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-                );
-
-            const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
-            const unreadCount =
-                requests?.filter((request) => {
-                    if (!lastViewed) return true;
-                    return new Date(request.created_at) > new Date(lastViewed);
-                }).length || 0;
-
-            setHasUnreadRequests(unreadCount > 0);
-        } catch (error) {
-            console.error('Check unread requests error:', error);
-        }
-    };
-
-    const handleManualRefresh = async () => {
-        setLoading(true);
-        await fetchAllData();
-        await checkUnreadRequests();
-        setLoading(false);
     };
 
     const handleAddNewContact = () => {
@@ -1106,6 +1131,31 @@ export default function ContactsScreen() {
             console.error('Cleanup error:', error);
         }
     };
+
+    // ✅ Update handleManualRefresh to use the new fetch
+    const handleManualRefresh = useCallback(async () => {
+        setLoading(true);
+        await fetchAllData();
+        await checkUnreadRequests();
+        setLoading(false);
+    }, [fetchAllData, checkUnreadRequests]);
+
+    // ✅ Update mark as read effect
+    useEffect(() => {
+        const markAsRead = async () => {
+            if (activeSection === 'requests') {
+                await AsyncStorage.setItem(
+                    'last_viewed_requests',
+                    new Date().toISOString()
+                );
+                setHasUnreadRequests(false);
+            }
+        };
+
+        markAsRead();
+    }, [activeSection]);
+
+
 
     const allContacts = [...existingContacts, ...newContacts];
 

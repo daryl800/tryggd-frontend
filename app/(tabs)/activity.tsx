@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
+  AppState,
   ScrollView,
   StyleSheet,
   Text,
@@ -49,6 +50,45 @@ export default function ActivityScreen() {
   const contactMapRef = useRef<
     Map<string, { email: string; display_name: string }>
   >(new Map());
+
+
+
+
+
+  // Add a ref to track if this is first mount
+  const isFirstMount = useRef(true);
+
+  // ✅ Add AppState logging to see what's happening
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      console.log('📱 AppState changed to:', state, 'at:', new Date().toLocaleTimeString());
+    });
+    return () => subscription.remove();
+  }, []);
+
+  // ✅ Log when useFocusEffect fires
+  useFocusEffect(
+    useCallback(() => {
+      console.log('🎯 useFocusEffect FIRED at:', new Date().toLocaleTimeString());
+      console.log('📊 Current AppState:', AppState.currentState);
+
+      if (isFirstMount.current) {
+        console.log('📝 This is initial mount');
+        isFirstMount.current = false;
+      } else {
+        console.log('🔄 This is a re-focus (tab switch or unlock?)');
+      }
+
+      fetchActivities(); // Your fetch function
+    }, [])
+  );
+
+
+
+
+
+
+
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -203,6 +243,25 @@ export default function ActivityScreen() {
       setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        console.log('📱 App became active - refreshing activity data');
+        if (isMounted) {
+          fetchActivities(); // Your activity fetch function
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, [fetchActivities]); // Add dependencies
 
   const setupOwnerCheckinsSubscription = () => {
     if (ownerCheckinsChannelRef.current) {

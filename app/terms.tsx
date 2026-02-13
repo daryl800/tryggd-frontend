@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 
 const content = `# Terms of Service
 
-**Effective date:** [INSERT DATE]
+**Effective date:** 2026-02-01
 
 ---
 
@@ -58,7 +58,7 @@ Users may delete their accounts at any time. We reserve the right to suspend acc
 
 ## Governing Law
 
-These terms are governed by the laws of **[INSERT COUNTRY OF REGISTRATION]**.
+These terms are governed by the laws of **Sweden**.
 `;
 
 export default function Terms() {

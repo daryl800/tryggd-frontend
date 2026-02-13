@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, Tabs } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AppState, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 
@@ -78,24 +78,6 @@ export default function TabsLayout() {
 
     return () => {
       subscription.unsubscribe();
-    };
-  }, [user, fetchUnreadRequests]);
-
-  // ✅ 4. CRITICAL: Fetch on app wakeup (MISSING IN YOUR CODE)
-  useEffect(() => {
-    if (!user) return;
-
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        console.log('📱 App foregrounded - refreshing badge count');
-        fetchUnreadRequests();
-      }
-    };
-
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-
-    return () => {
-      subscription.remove();
     };
   }, [user, fetchUnreadRequests]);
 

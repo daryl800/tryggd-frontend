@@ -4,11 +4,12 @@ import { BaseColors } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Alert,
+    AppState,
     Dimensions,
     Image,
     Modal,
@@ -41,6 +42,7 @@ export default function ProfileScreen() {
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const isMountedRef = useRef(true);
 
     const [profile, setProfile] = useState<UserProfile>({
         id: '',
@@ -50,11 +52,10 @@ export default function ProfileScreen() {
         avatar_url: '',
     });
 
-    useEffect(() => {
-        loadProfile();
-    }, []);
+    // ✅ 1. Define loadProfile with useCallback
+    const loadProfile = useCallback(async () => {
+        if (!isMountedRef.current) return;
 
-    const loadProfile = async () => {
         try {
             setLoading(true);
 
@@ -79,7 +80,7 @@ export default function ProfileScreen() {
                 return;
             }
 
-            if (data) {
+            if (data && isMountedRef.current) {
                 setProfile({
                     id: data.id,
                     display_name: data.display_name || '',
@@ -101,10 +102,50 @@ export default function ProfileScreen() {
             console.error('Error loading profile:', error);
             Alert.alert(t('errors.title'), t('profile.errors.loadProfile'));
         } finally {
-            setLoading(false);
+            if (isMountedRef.current) {
+                setLoading(false);
+            }
         }
-    };
+    }, [router, t]);
 
+    // ✅ 2. Initial fetch
+    useEffect(() => {
+        isMountedRef.current = true;
+        loadProfile();
+
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, [loadProfile]);
+
+    // ✅ 3. FOCUS EFFECT - triggers when switching to this tab
+    useFocusEffect(
+        useCallback(() => {
+            console.log('🎯 Profile screen focused - fetching fresh profile data');
+            loadProfile();
+        }, [loadProfile])
+    );
+
+    // ✅ 4. APP STATE EFFECT - triggers on lock/unlock and background/foreground
+    useEffect(() => {
+        let isActive = true;
+
+        const handleAppStateChange = (nextAppState: string) => {
+            if (nextAppState === 'active' && isActive) {
+                console.log('📱 App became active - refreshing profile data');
+                loadProfile();
+            }
+        };
+
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+        return () => {
+            isActive = false;
+            subscription.remove();
+        };
+    }, [loadProfile]);
+
+    // ✅ 5. Keep createProfile as is
     const createProfile = async (user: any) => {
         try {
             const { error } = await supabase.from('profiles').insert({
@@ -128,6 +169,7 @@ export default function ProfileScreen() {
         }
     };
 
+    // ✅ 6. Keep saveProfile as is
     const saveProfile = async () => {
         try {
             setSaving(true);
@@ -189,6 +231,18 @@ export default function ProfileScreen() {
         }
     };
 
+    // ✅ 7. Update cancelEdit to use loadProfile
+    const cancelEdit = () => {
+        setIsEditing(false);
+        loadProfile(); // Reload original data
+    };
+
+    // Keep all other functions exactly as they are:
+    // - pickAvatar
+    // - takePhoto
+    // - handleLogout
+    // - renderField
+
     const pickAvatar = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -247,11 +301,6 @@ export default function ProfileScreen() {
                 },
             },
         ]);
-    };
-
-    const cancelEdit = () => {
-        setIsEditing(false);
-        loadProfile(); // Reload original data
     };
 
     const renderField = (
@@ -407,7 +456,7 @@ export default function ProfileScreen() {
                 {/* Settings Card */}
                 <TouchableOpacity
                     style={styles.settingsCard}
-                    onPress={() => router.push('../settings')}
+                    onPress={() => router.push('/(tabs)/settings')}
                     activeOpacity={0.7}
                 >
                     <View style={styles.settingsContent}>
@@ -505,6 +554,7 @@ export default function ProfileScreen() {
     );
 }
 
+// ... (keep all your styles exactly as they are)
 // ==================== STYLES ====================
 const GAP = 16;
 

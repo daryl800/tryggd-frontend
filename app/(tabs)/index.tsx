@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -238,6 +238,8 @@ export default function HomeScreen() {
   const successScaleAnim = useRef(new Animated.Value(0)).current;
   const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
+
+
   // Fade in on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -411,6 +413,15 @@ export default function HomeScreen() {
     }
   }, [user, t]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        console.log('📱 Home screen focused - fetching fresh check-in status');
+        fetchLastCheckin();
+      }
+    }, [user, fetchLastCheckin])
+  );
+
   const handleCheckIn = useCallback(async () => {
     try {
       if (!user) throw new Error(t('home.errors.noUser'));
@@ -535,10 +546,8 @@ export default function HomeScreen() {
       if (next === 'active') {
         console.log('📱 Home screen - app foregrounded - fetching fresh check-in status');
         updateTimeAndCheckReset();
-        fetchLastCheckin(); // ✅ CRITICAL: Fetch fresh data from Supabase
       }
     });
-
 
     return () => {
       clearInterval(timeInterval);
@@ -546,6 +555,32 @@ export default function HomeScreen() {
       subscription.remove();
     };
   }, [checkDateAndReset]);
+
+  // ========== CONTACT REQUESTS BADGE LOGIC ==========
+  // Add this useEffect alongside your existing ones
+  useEffect(() => {
+    let isMounted = true;
+
+    const handleAppStateChange = (nextAppState: string) => {
+      // When app comes to foreground AND this screen is likely visible
+      if (nextAppState === 'active') {
+        console.log('📱 App became active - refreshing home data');
+        if (isMounted) {
+          fetchLastCheckin(); // Refresh check-in status
+          refetchStreak();    // Refresh streak
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      isMounted = false;
+      subscription.remove();
+    };
+  }, [fetchLastCheckin, refetchStreak]); // Add dependencies
+
+
 
   // Refresh streak periodically (every hour) to catch date changes
   useEffect(() => {
