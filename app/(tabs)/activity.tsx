@@ -515,14 +515,30 @@ export default function ActivityScreen() {
 
         Animated.parallel([
           Animated.sequence([
-            Animated.timing(timeScaleAnim, { toValue: 1.25, duration: 200, useNativeDriver: true }),
-            Animated.timing(timeScaleAnim, { toValue: 1.15, duration: 1800, useNativeDriver: true }),
-            Animated.spring(timeScaleAnim, { toValue: 1, friction: 5, tension: 100, useNativeDriver: true }),
+            Animated.timing(timeScaleAnim, {
+              toValue: 1.1,        // Enlarge to 110%
+              duration: 150,        // Quick grow (0.15 sec)
+              useNativeDriver: true
+            }),
+            Animated.delay(700),    // Stay enlarged for 0.7 sec
+            Animated.timing(timeScaleAnim, {
+              toValue: 1,           // Back to normal
+              duration: 150,        // Quick shrink (0.15 sec)
+              useNativeDriver: true
+            }),
           ]),
           Animated.sequence([
-            Animated.timing(timeColorAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-            Animated.delay(1800),
-            Animated.timing(timeColorAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+            Animated.timing(timeColorAnim, {
+              toValue: 1,
+              duration: 150,
+              useNativeDriver: true
+            }),
+            Animated.delay(700),
+            Animated.timing(timeColorAnim, {
+              toValue: 0,
+              duration: 150,
+              useNativeDriver: true
+            }),
           ]),
         ]).start();
       }
@@ -647,11 +663,11 @@ export default function ActivityScreen() {
                     {
                       color: timeColorAnim.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [BaseColors.text.dark, BaseColors.highlight],
+                        outputRange: [BaseColors.text.dark, BaseColors.primary],
                       }),
                     },
                     // No need to scale the text (just change color is enough to draw attention)
-                    // hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
+                    hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
                   ]}
                 >
                   {timeText} ({timezoneText})

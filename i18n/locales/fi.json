@@ -302,8 +302,8 @@
                 "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
             },
             "verifyEmail": {
-                "title": "Vahvista sähköpostisi",
-                "message": "Lähetimme vahvistussähköpostin. Kun olet vahvistanut, voit kirjautua sisään."
+                "title": "Vahvista sähköpostiosoitteesi!",
+                "message": "Olemme lähettäneet vahvistussähköpostin sähköpostiisi. Vahvistamisen jälkeen kirjaudu sisään."
             },
             "error": "Rekisteröinti epäonnistui"
         },

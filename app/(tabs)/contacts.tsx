@@ -1177,7 +1177,8 @@ export default function ContactsScreen() {
                     iconName="people"
                     rightElement={
                         <View style={styles.headerActions}>
-                            <TouchableOpacity
+                            {/* Temporarily hiding manual refresh button since we have realtime updates and it was causing confusion. Can re-enable if we want to give users a way to force refresh. */}
+                            {/* <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
                                 disabled={loading}
@@ -1187,7 +1188,7 @@ export default function ContactsScreen() {
                                     size={ICON_SIZES.MD}
                                     color={loading ? BaseColors.neutral[400] : BaseColors.primary}
                                 />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}

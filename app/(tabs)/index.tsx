@@ -26,7 +26,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Circle, Defs, Stop, Svg, LinearGradient as SvgGradient } from 'react-native-svg';
+import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -34,9 +34,14 @@ import { supabase } from '../../lib/supabase';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 280);
-const STROKE_WIDTH = 14;
+
+const STROKE_WIDTH = 40; // Change this to whatever you want (was 16)
+const CIRCLE_GAP = 0;
+
+// These calculations will automatically adjust
 const CIRCLE_RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
-const CIRCLE_GAP = 8;
+const INNER_BUTTON_SIZE = CIRCLE_SIZE - STROKE_WIDTH; // New calculation
+const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2; // New calculation
 
 const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -671,72 +676,101 @@ export default function HomeScreen() {
               <TouchableOpacity
                 onPress={handleCheckIn}
                 activeOpacity={0.9}
-                style={[styles.checkInButton, { width: CIRCLE_SIZE, height: CIRCLE_SIZE }]}
+                style={[
+                  styles.checkInButton,
+                  {
+                    width: CIRCLE_SIZE,
+                    height: CIRCLE_SIZE,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                  }
+                ]}
               >
-                {/* Outer Circle Border */}
+                {/* Outer border - perfectly centered */}
                 <View
                   style={{
                     position: 'absolute',
-                    width: CIRCLE_SIZE + 4,
-                    height: CIRCLE_SIZE + 4,
-                    borderRadius: (CIRCLE_SIZE + 4) / 2,
+                    width: CIRCLE_SIZE,
+                    height: CIRCLE_SIZE,
+                    borderRadius: CIRCLE_SIZE / 2,
                     borderWidth: 2,
                     borderColor: BaseColors.primaryBorder,
+                    // Ensure perfect centering
+                    left: 0,
+                    top: 0,
                   }}
                 />
 
-                {/* Progress Ring */}
-                <Svg
-                  width={CIRCLE_SIZE}
-                  height={CIRCLE_SIZE}
-                  style={[styles.svg, { transform: [{ rotate: '-90deg' }] }]}
-                >
-                  <Defs>
-                    <SvgGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <Stop offset="0%" stopColor={BaseColors.primary} />
-                      <Stop offset="100%" stopColor="#7DC4B0" />
-                    </SvgGradient>
-                  </Defs>
-
-                  {/* Background circle */}
-                  <Circle
-                    cx={CIRCLE_SIZE / 2}
-                    cy={CIRCLE_SIZE / 2}
-                    r={CIRCLE_RADIUS}
-                    stroke="#7DC4B0"
-                    strokeWidth={STROKE_WIDTH}
-                    fill="none"
-                  />
-
-                  {/* Progress/Complete circle */}
-                  {!checkedInToday ? (
+                {/* SVG Container - perfectly centered */}
+                <View style={{
+                  position: 'absolute',
+                  width: CIRCLE_SIZE,
+                  height: CIRCLE_SIZE,
+                  left: 0,
+                  top: 0,
+                }}>
+                  <Svg
+                    width={CIRCLE_SIZE}
+                    height={CIRCLE_SIZE}
+                    style={{ transform: [{ rotate: '-90deg' }] }}
+                    viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`} // Add viewBox for consistency
+                  >
+                    {/* Background circle - DARK GREEN (remaining / unprocessed) */}
                     <Circle
                       cx={CIRCLE_SIZE / 2}
                       cy={CIRCLE_SIZE / 2}
                       r={CIRCLE_RADIUS}
-                      stroke="#F3F4F6"
-                      strokeWidth={STROKE_WIDTH}
-                      fill="none"
-                      strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
-                      strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
-                      strokeLinecap="butt"
-                    />
-                  ) : (
-                    <Circle
-                      cx={CIRCLE_SIZE / 2}
-                      cy={CIRCLE_SIZE / 2}
-                      r={CIRCLE_RADIUS}
-                      stroke={BaseColors.primary}
+                      stroke={BaseColors.primary}   // dark green
                       strokeWidth={STROKE_WIDTH}
                       fill="none"
                     />
-                  )}
-                </Svg>
+
+                    {/* Progress circle - LIGHT GREEN (processed) */}
+                    {!checkedInToday ? (
+                      <Circle
+                        cx={CIRCLE_SIZE / 2}
+                        cy={CIRCLE_SIZE / 2}
+                        r={CIRCLE_RADIUS}
+                        stroke={BaseColors.primaryLight}     // light gradient
+                        strokeWidth={STROKE_WIDTH}
+                        fill="none"
+                        strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
+                        strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
+                        opacity={0.7}
+                        strokeLinecap="butt"
+                      />
+                    ) : (
+                      <Circle
+                        cx={CIRCLE_SIZE / 2}
+                        cy={CIRCLE_SIZE / 2}
+                        r={CIRCLE_RADIUS}
+                        stroke={BaseColors.primary}          // light green when completed
+                        strokeWidth={STROKE_WIDTH}
+                        fill="none"
+                        strokeLinecap="round"
+                      />
+                    )}
+
+                  </Svg>
+                </View>
 
                 {/* Inner Button */}
                 <View
                   style={[
                     styles.innerButton,
+                    {
+                      // Use exact calculations to ensure perfect centering
+                      width: INNER_BUTTON_SIZE,
+                      height: INNER_BUTTON_SIZE,
+                      borderRadius: INNER_BUTTON_SIZE / 2,
+                      position: 'absolute',
+                      left: INNER_BUTTON_OFFSET,
+                      top: INNER_BUTTON_OFFSET,
+                      // Remove any margin/padding that could affect positioning
+                      margin: 0,
+                      padding: 0,
+                    },
                     checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
                   ]}
                 >
@@ -762,16 +796,11 @@ export default function HomeScreen() {
                         >
                           <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
                         </Animated.View> */}
-                        <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
-                        <Text style={styles.checkInTime}>
-                          {lastCheckinUtc
-                            ? '@ ' + formatTime24h(new Date(lastCheckinUtc), i18n.language)
-                            : ''}
-                        </Text>
+                        <Text style={styles.checkedInText}>{t('home.everythingIsFine')}</Text>
                       </>
                     ) : (
                       <>
-                        <Text style={styles.ctaText}>{t('home.checkIn')}</Text>
+                        <Text style={styles.ctaText}>{t('home.pressMeToCheckIn')}</Text>
                         <Text style={styles.countdownText}>{formatTimeLeft(remainingMs)}</Text>
                         <Text style={styles.timeLeftText}>{t('home.timeLeftToday')}</Text>
                       </>
@@ -784,16 +813,24 @@ export default function HomeScreen() {
         </View>
 
         {/* ========== GROUP 4: WARNING MESSAGE ========== */}
-        {!checkedInToday && (
+        {checkedInToday ? (
           <View style={[styles.warningGroup, styles.groupContainer]}>
             <View style={styles.warningContainer}>
               <View style={styles.warningIconContainer}>
-                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
+                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
               </View>
-              <Text style={styles.warningText}>{t('home.dontForget')}</Text>
+              <Text style={styles.messageText}>{t('home.youCheckedInTodayAt', { time: formatTime24h(new Date(lastCheckinUtc), i18n.language) })}</Text>
             </View>
           </View>
-        )}
+        ) : (<View style={[styles.warningGroup, styles.groupContainer]}>
+          <View style={styles.warningContainer}>
+            <View style={styles.warningIconContainer}>
+              <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
+            </View>
+            <Text style={styles.warningText}>{t('home.dontForget')}</Text>
+          </View>
+        </View>)
+        }
 
         {/* ========== GROUP 5: ACTION CARDS ========== */}
         <View style={[styles.cardsGroup, styles.groupContainer]}>
@@ -951,9 +988,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   innerButton: {
-    width: CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2,
-    height: CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2,
-    borderRadius: (CIRCLE_SIZE - STROKE_WIDTH * 2 - CIRCLE_GAP * 2) / 2,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
@@ -990,8 +1024,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   ctaText: {
-    color: BaseColors.primary,
-    fontSize: 22,
+    color: BaseColors.text.dark,
+    fontSize: 14,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 1,
@@ -1024,6 +1058,12 @@ const styles = StyleSheet.create({
   },
   warningIconContainer: {
     marginRight: 10,
+  },
+  messageText: {
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 15,
+    color: BaseColors.primary,
   },
   warningText: {
     textAlign: 'center',

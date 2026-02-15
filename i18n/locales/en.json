@@ -8,9 +8,10 @@
       "evening": "Good evening",
       "night": "Good night"
     },
-    "checkedInToday": "Checked in today!",
+    "everythingIsFine": "Everything is fine!!",
     "dontForget": "Don't forget to check in today!",
-    "checkIn": "CHECK IN",
+    "youCheckedInTodayAt": "You checked in today @ {{time}}",
+    "pressMeToCheckIn": "Press me to check in",
     "reset": "Reset",
     "timer": "Timer",
     "timeLeftToday": "Time left today",
@@ -302,8 +303,8 @@
         "message": "Your account is ready. You can now log in."
       },
       "verifyEmail": {
-        "title": "Verify your email",
-        "message": "We sent a confirmation email. After confirming, please log in."
+        "title": "Please verify your email!",
+        "message": "We sent a confirmation email to your email box. After confirming, please log in."
       },
       "error": "Signup failed"
     },

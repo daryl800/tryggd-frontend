@@ -302,8 +302,8 @@
                 "message": "Kontoen din er klar. Du kan nå logge inn."
             },
             "verifyEmail": {
-                "title": "Bekreft e-posten din",
-                "message": "Vi har sendt en bekreftelsesmail. Når du har bekreftet, kan du logge inn."
+                "title": "Vennligst bekreft e-posten din!",
+                "message": "Vi har sendt en bekreftelses-e-post til innboksen din. Etter at du har bekreftet, vennligst logg inn."
             },
             "error": "Registrering mislyktes"
         },

@@ -302,8 +302,8 @@
                 "message": "Ditt konto är klart. Du kan nu logga in."
             },
             "verifyEmail": {
-                "title": "Verifiera din e-post",
-                "message": "Vi har skickat ett bekräftelsemail. När du har verifierat kan du logga in."
+                "title": "Vänligen verifiera din e-post!",
+                "message": "Vi har skickat ett bekräftelsemejl till din inkorg. Efter att du har bekräftat, vänligen logga in."
             },
             "error": "Registrering misslyckades"
         },

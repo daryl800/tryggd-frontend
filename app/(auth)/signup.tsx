@@ -62,8 +62,8 @@ export default function SignupScreen() {
             });
 
             Alert.alert(
-                t("auth.verifyEmail.title"),
-                t("auth.verifyEmail.message")
+                t("auth.signup.verifyEmail.title"),
+                t("auth.signup.verifyEmail.message")
             );
 
         } catch (err: any) {
