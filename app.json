@@ -2,9 +2,9 @@
   "expo": {
     "name": "tryggd",
     "slug": "tryggd-frontend",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "orientation": "portrait",
-    "icon": "./assets/images/tryggd-app-icon-1024.png",
+    "icon": "./assets/images/tryggd-icon-small.png",
     "scheme": "tryggd",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/tryggd-icon-foreground.png",
+        "foregroundImage": "./assets/images/tryggd-icon-foreground-small.png",
         "backgroundImage": "./assets/images/tryggd-icon-background.png",
         "monochromeImage": "./assets/images/tryggd-icon-monochrome.png"
       },

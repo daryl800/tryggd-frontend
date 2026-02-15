@@ -8,9 +8,9 @@
             "evening": "God kveld",
             "night": "God natt"
         },
-        "checkedInToday": "Sjekket inn i dag!",
-        "dontForget": "Ikke glem å sjekke inn i dag!",
-        "checkIn": "SJEKK INN",
+        "everythingIsFine": "Alt er i orden!!",
+        "dontForget": "Glem ikke at tjekke ind i dag!",
+        "youCheckedInTodayAt": "Du tjekkede ind i dag kl. {{time}}",
         "reset": "Nullstill",
         "timer": "Tidsur",
         "timeLeftToday": "Tid igjen i dag",

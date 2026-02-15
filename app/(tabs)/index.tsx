@@ -33,13 +33,10 @@ import { supabase } from '../../lib/supabase';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 280);
-
+const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 250);
 const STROKE_WIDTH = 40; // Change this to whatever you want (was 16)
-const CIRCLE_GAP = 0;
-
-// These calculations will automatically adjust
-const CIRCLE_RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
+const MAX_STROKE = STROKE_WIDTH + 3; // The outer "fake" stroke that creates the border effect
+const CIRCLE_RADIUS = (CIRCLE_SIZE - MAX_STROKE) / 2;
 const INNER_BUTTON_SIZE = CIRCLE_SIZE - STROKE_WIDTH; // New calculation
 const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2; // New calculation
 
@@ -47,7 +44,6 @@ const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
-const BOTTOM_BUTTON_MARGIN = IS_IOS ? 20 : 16;
 
 // Helper function to get both greeting and icon name
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
@@ -654,7 +650,7 @@ export default function HomeScreen() {
               style={styles.profileButton}
               activeOpacity={0.7}
             >
-              <Ionicons name="person" size={ICON_SIZES.MD} color={BaseColors.primary} />
+              <Ionicons name="person-outline" size={ICON_SIZES.MD} color={BaseColors.primary} />
             </TouchableOpacity>
           }
         />
@@ -721,18 +717,19 @@ export default function HomeScreen() {
                       cx={CIRCLE_SIZE / 2}
                       cy={CIRCLE_SIZE / 2}
                       r={CIRCLE_RADIUS}
-                      stroke={BaseColors.primary}   // dark green
-                      strokeWidth={STROKE_WIDTH}
+                      stroke={BaseColors.primary}
+                      strokeWidth={STROKE_WIDTH + 3}
                       fill="none"
+
                     />
 
-                    {/* Progress circle - LIGHT GREEN (processed) */}
+                    {/* Progress circle - DARK GREEN (left to be processed) */}
                     {!checkedInToday ? (
                       <Circle
                         cx={CIRCLE_SIZE / 2}
                         cy={CIRCLE_SIZE / 2}
                         r={CIRCLE_RADIUS}
-                        stroke={BaseColors.primaryLight}     // light gradient
+                        stroke={BaseColors.primaryLight}
                         strokeWidth={STROKE_WIDTH}
                         fill="none"
                         strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
@@ -745,13 +742,12 @@ export default function HomeScreen() {
                         cx={CIRCLE_SIZE / 2}
                         cy={CIRCLE_SIZE / 2}
                         r={CIRCLE_RADIUS}
-                        stroke={BaseColors.primary}          // light green when completed
+                        stroke={BaseColors.primary}
                         strokeWidth={STROKE_WIDTH}
                         fill="none"
                         strokeLinecap="round"
                       />
                     )}
-
                   </Svg>
                 </View>
 
@@ -777,7 +773,7 @@ export default function HomeScreen() {
                   {/* Icon */}
                   <View style={styles.iconContainer}>
                     {checkedInToday ? (
-                      <Ionicons name="checkmark-circle" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
+                      <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
                     ) : (
                       <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
                     )}
@@ -815,8 +811,8 @@ export default function HomeScreen() {
         {/* ========== GROUP 4: WARNING MESSAGE ========== */}
         {checkedInToday ? (
           <View style={[styles.warningGroup, styles.groupContainer]}>
-            <View style={styles.warningContainer}>
-              <View style={styles.warningIconContainer}>
+            <View style={styles.messageContainer}>
+              <View style={styles.messageIconContainer}>
                 <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
               </View>
               <Text style={styles.messageText}>{t('home.youCheckedInTodayAt', { time: formatTime24h(new Date(lastCheckinUtc), i18n.language) })}</Text>
@@ -1045,6 +1041,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   warningGroup: {},
+  messageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.primaryLight,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignSelf: 'center',
+  },
   warningContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1055,6 +1062,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BaseColors.errorBorder,
     alignSelf: 'center',
+  },
+  messageIconContainer: {
+    marginRight: 10,
   },
   warningIconContainer: {
     marginRight: 10,
