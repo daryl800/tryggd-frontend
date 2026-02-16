@@ -30,7 +30,6 @@ import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 250);
@@ -239,6 +238,30 @@ export default function HomeScreen() {
   const successScaleAnim = useRef(new Animated.Value(0)).current;
   const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
+  const [contactsCount, setContactsCount] = useState(0);
+
+  const fetchContactsCount = useCallback(async () => {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData.user;
+    if (!user) return;
+
+    const { count, error } = await supabase
+      .from('contacts')
+      .select('*', { count: 'exact', head: true })
+      .eq('owner_user_id', user.id);
+
+    if (!error) {
+      setContactsCount(count || 0);
+    }
+  }, []);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchLastCheckin();
+      fetchContactsCount();   // add this
+    }, [fetchLastCheckin, fetchContactsCount])
+  );
 
 
   // Fade in on mount
@@ -831,7 +854,8 @@ export default function HomeScreen() {
         {/* ========== GROUP 5: ACTION CARDS ========== */}
         <View style={[styles.cardsGroup, styles.groupContainer]}>
           <View style={styles.cardsContainer}>
-            {showResetButton ? (
+            {/* TODO:  Left this code for debuging purposes, but the reset button is now hidden behind a dev flag and only shows when you check in, to avoid confusion for regular users. You can uncomment this block to see the reset button in action. */}
+            {/* {showResetButton ? (
               <TouchableOpacity
                 onPress={resetAllState}
                 style={[styles.card, styles.resetCard]}
@@ -857,9 +881,23 @@ export default function HomeScreen() {
                   </View>
                 </View>
                 <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-                <Text style={styles.cardSubtext}>{t('home.history')}</Text>
+                <Text style={styles.cardSubtext}>{contactsCount + " " + t('home.contacts')}</Text>
               </TouchableOpacity>
-            )}
+            )} */}
+
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/activity')}
+              style={styles.card}
+              activeOpacity={0.8}
+            >
+              <View style={styles.cardIcon}>
+                <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
+                  <Ionicons name="pulse" size={ICON_SIZES.LG} color={BaseColors.primary} />
+                </View>
+              </View>
+              <Text style={styles.cardLabel}>{t('home.activity')}</Text>
+              <Text style={styles.cardSubtext}>{contactsCount + " " + t('home.contacts')}</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               // onPress={() => router.push('/(tabs)/statistics')}
@@ -868,11 +906,11 @@ export default function HomeScreen() {
             >
               <View style={styles.cardIcon}>
                 <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                  <Ionicons name="flame" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                  <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
                 </View>
               </View>
               <Text style={styles.cardLabel}>{t('home.streak')}</Text>
-              <Text style={styles.streakValue}>{t('home.days', { count: streak })}</Text>
+              <Text style={styles.cardSubtext}>{t('home.days', { count: streak })}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1118,6 +1156,20 @@ const styles = StyleSheet.create({
   cardIcon: {
     marginBottom: 12,
   },
+  cardLabel: {
+    fontSize: 16,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 4,
+    color: BaseColors.text.dark,
+  },
+  cardSubtext: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 10,
+    color: BaseColors.primary,
+    textAlign: 'center',
+  },
   iconContainerBase: {
     width: 30,
     height: 30,
@@ -1140,30 +1192,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: BaseColors.errorBorder,
-  },
-  cardLabel: {
-    color: BaseColors.text.dark,
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  cardSubtext: {
-    color: BaseColors.neutral[500],
-    fontSize: 13,
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  resetText: {
-    color: BaseColors.error,
-    fontWeight: '700',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  streakValue: {
-    fontSize: 24,
-    fontWeight: '800',
-    marginTop: 4,
-    color: BaseColors.primary,
-    textAlign: 'center',
-  },
+  }
 });
