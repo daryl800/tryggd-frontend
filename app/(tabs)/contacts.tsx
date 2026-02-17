@@ -1160,7 +1160,7 @@ export default function ContactsScreen() {
     const allContacts = [...existingContacts, ...newContacts];
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView style={styles.mainContainer} edges={['top']}>
             <KeyboardAvoidingView
                 style={styles.keyboardAvoidingView}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -1451,7 +1451,7 @@ export default function ContactsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    mainContainer: {
         flex: 1,
         backgroundColor: BaseColors.background,
     },
@@ -1460,7 +1460,7 @@ const styles = StyleSheet.create({
     },
     tabsContainer: {
         paddingHorizontal: 20,
-        paddingTop: 12,
+        paddingTop: 14,
         paddingBottom: 8,
     },
     tabContainer: {

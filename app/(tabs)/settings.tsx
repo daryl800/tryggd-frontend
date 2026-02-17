@@ -1,4 +1,4 @@
-import HeaderWithBack from '@/components/common/HeaderWithBack';
+import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { updateContactCheckInPreference } from '@/lib/notifications/core';
@@ -6,12 +6,14 @@ import {
     disableSelfReminder,
     enableSelfReminder
 } from '@/lib/notifications/reminderManager';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+    Alert,
     LayoutAnimation,
     Platform,
     ScrollView,
@@ -118,12 +120,30 @@ export default function SettingsScreen() {
         );
     };
 
+    const handleLogout = async () => {
+        Alert.alert(t('profile.logout.title'), t('profile.logout.confirm'), [
+            {
+                text: t('common.cancel'),
+                style: 'cancel',
+            },
+            {
+                text: t('profile.logout.button'),
+                style: 'destructive',
+                onPress: async () => {
+                    await supabase.auth.signOut();
+                    await AsyncStorage.removeItem('@user_profile');
+                    router.replace('/(auth)/login');
+                },
+            },
+        ]);
+    };
+
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
-            <HeaderWithBack
-                title={t("settings.title")}
+        <SafeAreaView style={styles.mainContainer} edges={['top']}>
+            {/* Screen Header - Handles its own top padding */}
+            <ScreenHeader
+                title={t('settings.title')}
                 iconName="settings"
-                onBackPress={() => router.push("/profile")}
             />
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -284,8 +304,6 @@ export default function SettingsScreen() {
                             <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
                         </TouchableOpacity>
 
-                        <View style={styles.divider} />
-
                         <TouchableOpacity
                             style={styles.settingItem}
                             // onPress={() => router.push("http://tryggd.se/privacy")}
@@ -300,8 +318,6 @@ export default function SettingsScreen() {
                             </View>
                             <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
                         </TouchableOpacity>
-
-                        <View style={styles.divider} />
 
                         <TouchableOpacity
                             style={styles.settingItem}
@@ -320,6 +336,20 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
+                {/* Logout Button */}
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={handleLogout}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons
+                        name="log-out-outline"
+                        size={20}
+                        color={BaseColors.error}
+                    />
+                    <Text style={styles.logoutText}>{t('profile.buttons.logout')}</Text>
+                </TouchableOpacity>
+
                 {/* Bottom Spacing */}
                 <View style={styles.bottomSpacing} />
             </ScrollView>
@@ -332,26 +362,22 @@ export default function SettingsScreen() {
 const GAP = 16;
 
 const styles = StyleSheet.create({
-    fullContainer: {
+    mainContainer: {
         flex: 1,
         backgroundColor: BaseColors.background,
-        marginBottom: 24,
-    },
-    container: {
-        flex: 1,
     },
     scrollContent: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
-        paddingBottom: 40,
+        paddingTop: 14
     },
     section: {
-        marginBottom: 24,
+        marginBottom: GAP,
     },
     sectionLabel: {
         fontSize: 18,
         fontWeight: '600',
         color: BaseColors.text.dark,
-        marginBottom: 12,
+        marginBottom: 6,
         marginLeft: 4,
     },
     card: {
@@ -376,8 +402,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 18,
-        paddingHorizontal: 16,
+        paddingVertical: 14,
+        paddingHorizontal: GAP,
     },
     settingContent: {
         flexDirection: 'row',
@@ -452,11 +478,6 @@ const styles = StyleSheet.create({
             },
         }),
     },
-    divider: {
-        height: 1,
-        backgroundColor: BaseColors.neutral[200],
-        marginHorizontal: 16,
-    },
     bottomSpacing: {
         height: 20,
     },
@@ -481,5 +502,21 @@ const styles = StyleSheet.create({
         color: "#6B7280",
         marginTop: 4,
         lineHeight: 20,
+    },
+    logoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.errorLight,
+        borderRadius: 16,
+        padding: 18,
+        borderWidth: 1,
+        borderColor: BaseColors.errorBorder,
+        gap: 10,
+    },
+    logoutText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: BaseColors.error,
     },
 });

@@ -1,5 +1,5 @@
 // screens/ProfileScreen.tsx
-import { ScreenHeader } from '@/components/screens/ScreenHeader';
+import HeaderWithBack from '@/components/common/HeaderWithBack';
 import { BaseColors } from '@/constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -348,12 +348,11 @@ export default function ProfileScreen() {
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             {/* Screen Header */}
-            <ScreenHeader
-                title={t('profile.title')}
-                // subtitle={t('profile.subtitle')}
+            <HeaderWithBack
+                title={t("profile.title")}
                 iconName="person"
+                onBackPress={() => router.push("/")}
             />
-
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
@@ -452,50 +451,6 @@ export default function ProfileScreen() {
                         'phone'
                     )}
                 </View>
-
-                {/* Settings Card */}
-                <TouchableOpacity
-                    style={styles.settingsCard}
-                    onPress={() => router.push('/(tabs)/settings')}
-                    activeOpacity={0.7}
-                >
-                    <View style={styles.settingsContent}>
-                        <View style={styles.settingsIconContainer}>
-                            <Ionicons
-                                name="settings-outline"
-                                size={22}
-                                color={BaseColors.primary}
-                            />
-                        </View>
-                        <View style={styles.settingsTextContainer}>
-                            <Text style={styles.settingsTitle}>
-                                {t('profile.settings.title')}
-                            </Text>
-                            <Text style={styles.settingsSubtitle}>
-                                {t('profile.settings.subtitle')}
-                            </Text>
-                        </View>
-                        <Ionicons
-                            name="chevron-forward"
-                            size={20}
-                            color={BaseColors.neutral[400]}
-                        />
-                    </View>
-                </TouchableOpacity>
-
-                {/* Logout Button */}
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons
-                        name="log-out-outline"
-                        size={20}
-                        color={BaseColors.error}
-                    />
-                    <Text style={styles.logoutText}>{t('profile.buttons.logout')}</Text>
-                </TouchableOpacity>
             </ScrollView>
 
             {/* Avatar Selection Modal */}

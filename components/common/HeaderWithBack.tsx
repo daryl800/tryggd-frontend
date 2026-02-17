@@ -38,10 +38,10 @@ export default function HeaderWithBack({
                 {showBackButton && (
                     <TouchableOpacity
                         onPress={handleBackPress}
-                        style={styles.backButton}
+                        style={styles.backButtonPosition}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                        <Text style={styles.title}>{"く"}</Text>
+                        <Text style={styles.backButtonStyle}>{"く"}</Text>
                         {/* <Ionicons name="arrow-back" size={24} color="#5FA893" /> */}
                     </TouchableOpacity>
                 )}
@@ -70,9 +70,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
-    backButton: {
+    backButtonPosition: {
         padding: 0,
         marginRight: 5, // Increased gap between < and icon
+    },
+    backButtonStyle: {
+        fontSize: 26,
+        fontWeight: '800',
+        color: BaseColors.text.dark,
+        marginLeft: 8, // Increased gap between icon and title
+        flex: 1,
     },
     headerContent: {
         flexDirection: "row",
@@ -89,5 +96,5 @@ const styles = StyleSheet.create({
         color: BaseColors.text.dark,
         marginLeft: 8, // Increased gap between icon and title
         flex: 1,
-    },
+    }
 });

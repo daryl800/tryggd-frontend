@@ -696,7 +696,7 @@ export default function ActivityScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.mainContainer} edges={['top']}>
       <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
         {/* Screen Header - Handles its own top padding */}
         <ScreenHeader
@@ -788,7 +788,7 @@ export default function ActivityScreen() {
 
 // ==================== STYLES ====================
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: BaseColors.background,
   },

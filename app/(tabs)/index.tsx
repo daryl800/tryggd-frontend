@@ -638,7 +638,7 @@ export default function HomeScreen() {
 
   if (loading || isInitialLoad) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.mainContainer}>
         <View style={styles.loadingContainer}>
           <Animated.View
             style={[
@@ -659,7 +659,7 @@ export default function HomeScreen() {
   // ... (your existing return JSX code goes here)
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.mainContainer}>
       <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         {/* ========== GROUP 1: HEADER ========== */}
         <ScreenHeader
@@ -896,7 +896,7 @@ export default function HomeScreen() {
                 </View>
               </View>
               <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-              <Text style={styles.cardSubtext}>{contactsCount + " " + t('home.contacts')}</Text>
+              <Text style={styles.cardSubtext}>{t('home.contacts', { count: contactsCount })}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -923,7 +923,7 @@ export default function HomeScreen() {
 const GROUP_GAP = 24;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: BaseColors.background,
   },

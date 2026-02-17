@@ -119,17 +119,17 @@ export default function TabsLayout() {
         )
       }} />
 
-      {/* Profile Tab */}
-      <Tabs.Screen name="profile" options={{
-        title: t("profile.title"),
+      {/* Settings Tab */}
+      <Tabs.Screen name="settings" options={{
+        title: t("settings.title"),
         tabBarIcon: ({ color, size, focused }) => (
-          <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} />
+          <Ionicons name={focused ? "settings" : "settings-outline"} color={color} size={size} />
         )
       }} />
 
       {/* Settings hidden from tabs but accessible via router */}
       <Tabs.Screen
-        name="settings"
+        name="profile"
         options={{
           href: null,
         }}
