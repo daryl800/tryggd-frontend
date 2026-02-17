@@ -335,8 +335,10 @@ export default function SettingsScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
+            </ScrollView>
 
-                {/* Logout Button */}
+            {/* Fixed bottom logout */}
+            <View style={styles.footer}>
                 <TouchableOpacity
                     style={styles.logoutButton}
                     onPress={handleLogout}
@@ -347,12 +349,11 @@ export default function SettingsScreen() {
                         size={20}
                         color={BaseColors.error}
                     />
-                    <Text style={styles.logoutText}>{t('profile.buttons.logout')}</Text>
+                    <Text style={styles.logoutText}>
+                        {t('profile.buttons.logout')}
+                    </Text>
                 </TouchableOpacity>
-
-                {/* Bottom Spacing */}
-                <View style={styles.bottomSpacing} />
-            </ScrollView>
+            </View>
         </SafeAreaView>
     );
 }
@@ -502,6 +503,12 @@ const styles = StyleSheet.create({
         color: "#6B7280",
         marginTop: 4,
         lineHeight: 20,
+    },
+    footer: {
+        paddingHorizontal: SCREEN_PADDING.horizontal,
+        paddingBottom: 16,
+        paddingTop: 8,
+        backgroundColor: BaseColors.background,
     },
     logoutButton: {
         flexDirection: 'row',
