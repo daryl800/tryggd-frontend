@@ -15,8 +15,9 @@
         "timer": "Timer",
         "timeLeftToday": "Tid kvar idag",
         "activity": "Aktivitet",
-        "contacts": "kontakter",
-        "streak": "Räckning",
+        "contacts_one": "{{count}} kontakt",
+        "contacts_other": "{{count}} kontakter",
+        "streak": "Streak",
         "days_one": "{{count}} dag",
         "days_other": "{{count}} dagar",
         "dateFormats": {

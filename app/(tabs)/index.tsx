@@ -255,15 +255,6 @@ export default function HomeScreen() {
     }
   }, []);
 
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchLastCheckin();
-      fetchContactsCount();   // add this
-    }, [fetchLastCheckin, fetchContactsCount])
-  );
-
-
   // Fade in on mount
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -416,8 +407,6 @@ export default function HomeScreen() {
         await scheduleDailyReminder();
       }
 
-
-
       setShowResetButton(isFromToday);
 
       // Save to AsyncStorage with correct "today" status
@@ -439,11 +428,10 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (user) {
-        console.log('📱 Home screen focused - fetching fresh check-in status');
-        fetchLastCheckin();
-      }
-    }, [user, fetchLastCheckin])
+      console.log('📱 Home screen focused - fetching fresh data');
+      fetchLastCheckin();
+      fetchContactsCount();
+    }, [fetchLastCheckin, fetchContactsCount])
   );
 
   const handleCheckIn = useCallback(async () => {
@@ -603,7 +591,6 @@ export default function HomeScreen() {
       subscription.remove();
     };
   }, [fetchLastCheckin, refetchStreak]); // Add dependencies
-
 
 
   // Refresh streak periodically (every hour) to catch date changes

@@ -15,10 +15,11 @@
         "timer": "Tidsur",
         "timeLeftToday": "Tid igjen i dag",
         "activity": "Aktivitet",
-        "contacts": "kontakter",
-        "streak": "Rekke",
+        "contacts_one": "{{count}} kontakt",
+        "contacts_other": "{{count}} kontakter",
+        "streak": "Streak",
         "days_one": "{{count}} dag",
-        "days_other": "{{count}} dager",
+        "days_other": "{{count}} dage",
         "dateFormats": {
             "weekdays": [
                 "Søndag",

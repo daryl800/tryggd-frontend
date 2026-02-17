@@ -45,11 +45,14 @@ const initOptions = {
     interpolation: {
         escapeValue: false,
     },
-    compatibilityJSON: 'v3' as 'v3', // Type assertion
+    compatibilityJSON: 'v4' as 'v4', // Changed to v4 for better pluralization
     react: {
         useSuspense: false,
     },
     debug: process.env.NODE_ENV === 'development',
+    // Add these options for better pluralization
+    pluralSeparator: '_',
+    keySeparator: '.',
 };
 
 i18n
