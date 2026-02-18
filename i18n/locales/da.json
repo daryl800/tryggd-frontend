@@ -327,14 +327,16 @@
         "unknownError": "Ukendt fejl",
         "forgotPassword": {
             "title": "Glemt adgangskode",
+            "instructions": "Indtast din e-mailadresse",
             "send": "Send nulstillingsmail",
             "sending": "Sender...",
             "sentTitle": "Tjek din e-mail",
-            "sentMessage": "Vi har sendt et link til nulstilling af adgangskode til din e-mail.",
+            "sentMessage": "Vi har sendt et link til at nulstille din adgangskode til din e-mail.",
             "error": "Fejl ved afsendelse af nulstillingsmail"
         },
         "resetPassword": {
             "title": "Nulstil adgangskode",
+            "instructions": "Indtast din nye adgangskode nedenfor.",
             "save": "Gem ny adgangskode",
             "saving": "Gemmer...",
             "successTitle": "Adgangskode nulstillet!",

@@ -327,14 +327,16 @@
         "unknownError": "Ukjent feil",
         "forgotPassword": {
             "title": "Glemt passord",
-            "send": "Send tilbakestillingsmail",
+            "instructions": "Skriv inn e-postadressen din",
+            "send": "Send tilbakestillingse-post",
             "sending": "Sender...",
             "sentTitle": "Sjekk e-posten din",
-            "sentMessage": "Vi har sendt en lenke for tilbakestilling av passord til e-posten din.",
-            "error": "Feil ved sending av tilbakestillingsmail"
+            "sentMessage": "Vi sendte en lenke for å tilbakestille passordet til e-posten din.",
+            "error": "Feil ved sending av tilbakestillingse-post"
         },
         "resetPassword": {
             "title": "Tilbakestill passord",
+            "instructions": "Skriv inn ditt nye passord nedenfor.",
             "save": "Lagre nytt passord",
             "saving": "Lagrer...",
             "successTitle": "Passord tilbakestilt!",

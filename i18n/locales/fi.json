@@ -326,21 +326,23 @@
         "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
         "unknownError": "Tuntematon virhe",
         "forgotPassword": {
-            "title": "Unohtunut salasana",
-            "send": "Lähetä salasanan palautus",
+            "title": "Unohditko salasanan",
+            "instructions": "Syötä sähköpostiosoitteesi",
+            "send": "Lähetä nollaussähköposti",
             "sending": "Lähetetään...",
             "sentTitle": "Tarkista sähköpostisi",
-            "sentMessage": "Lähetimme salasanan palautuslinkin sähköpostiisi.",
-            "error": "Virhe salasanan palautusviestin lähetyksessä"
+            "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
+            "error": "Virhe lähetettäessä nollaussähköpostia"
         },
         "resetPassword": {
-            "title": "Palauta salasana",
+            "title": "Nollaa salasana",
+            "instructions": "Syötä uusi salasanasi alla.",
             "save": "Tallenna uusi salasana",
             "saving": "Tallennetaan...",
-            "successTitle": "Salasana palautettu!",
+            "successTitle": "Salasana nollattu!",
             "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
             "login": "Siirry kirjautumiseen",
-            "error": "Virhe salasanan palautuksessa",
+            "error": "Virhe salasanan nollauksessa",
             "passwordPlaceholder": "Uusi salasana"
         }
     }

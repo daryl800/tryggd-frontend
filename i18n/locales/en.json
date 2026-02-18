@@ -328,6 +328,7 @@
     "unknownError": "Unknown error",
     "forgotPassword": {
       "title": "Forgot Password",
+      "instructions": "Enter your email address",
       "send": "Send reset email",
       "sending": "Sending...",
       "sentTitle": "Check your email",
@@ -336,6 +337,7 @@
     },
     "resetPassword": {
       "title": "Reset Password",
+      "instructions": "Enter your new password below.",
       "save": "Save new password",
       "saving": "Saving...",
       "successTitle": "Password reset!",

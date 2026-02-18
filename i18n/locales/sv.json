@@ -327,14 +327,16 @@
         "unknownError": "Okänt fel",
         "forgotPassword": {
             "title": "Glömt lösenord",
-            "send": "Skicka återställningsmail",
+            "instructions": "Ange din e-postadress",
+            "send": "Skicka återställningsmejl",
             "sending": "Skickar...",
-            "sentTitle": "Kolla din e-post",
-            "sentMessage": "Vi har skickat en länk för att återställa lösenordet till din e-post.",
-            "error": "Fel vid skickande av återställningsmail"
+            "sentTitle": "Kontrollera din e-post",
+            "sentMessage": "Vi skickade en länk för att återställa ditt lösenord till din e-post.",
+            "error": "Fel vid skickande av återställningsmejl"
         },
         "resetPassword": {
             "title": "Återställ lösenord",
+            "instructions": "Ange ditt nya lösenord nedan.",
             "save": "Spara nytt lösenord",
             "saving": "Sparar...",
             "successTitle": "Lösenord återställt!",

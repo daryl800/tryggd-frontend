@@ -1,9 +1,18 @@
-// /auth/reset-password.tsx
+// app/(auth)/reset-password.tsx
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
@@ -39,7 +48,8 @@ export default function ResetPasswordScreen() {
         try {
             const { error } = await supabase.auth.updateUser({
                 password,
-            }, token); // token required for reset
+            }); // Note: token handling might be different - check your Supabase version
+
             if (error) throw error;
 
             Alert.alert(
@@ -60,52 +70,109 @@ export default function ResetPasswordScreen() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, padding: 24 }}>
-            <Text style={{ fontSize: 24, marginBottom: 16 }}>
-                {t("auth.resetPassword.title")}
-            </Text>
-
-            <TextInput
-                placeholder={t("auth.password.placeholder")}
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                }}
-            />
-
-            <TextInput
-                placeholder={t("auth.confirmPassword")}
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#E5E7EB",
-                    padding: 12,
-                    borderRadius: 8,
-                    marginBottom: 12,
-                }}
-            />
-
-            <TouchableOpacity
-                onPress={submit}
-                disabled={!passwordsMatch || loading}
-                style={{
-                    backgroundColor: passwordsMatch ? "#5FA893" : "#9CA3AF",
-                    padding: 16,
-                    borderRadius: 8,
-                }}
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
             >
-                <Text style={{ color: "white", textAlign: "center" }}>
-                    {loading ? t("auth.resetPassword.saving") : t("auth.resetPassword.save")}
-                </Text>
-            </TouchableOpacity>
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={{ padding: 24 }}>
+                        <Text
+                            style={{ fontSize: 28, fontWeight: "700", marginBottom: 12 }}
+                            allowFontScaling={false}
+                        >
+                            {t("auth.resetPassword.title")}
+                        </Text>
+
+                        <Text
+                            style={{
+                                fontSize: 15,
+                                color: "#6B7280",
+                                marginBottom: 24,
+                                lineHeight: 20
+                            }}
+                            allowFontScaling={false}
+                        >
+                            {t("auth.resetPassword.instructions")}
+                        </Text>
+
+                        <TextInput
+                            placeholder={t("auth.password.placeholder")}
+                            secureTextEntry
+                            value={password}
+                            onChangeText={setPassword}
+                            style={inputStyle}
+                            allowFontScaling={false}
+                            placeholderTextColor="#9CA3AF"
+                        />
+
+                        <TextInput
+                            placeholder={t("auth.confirmPassword")}
+                            secureTextEntry
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            style={inputStyle}
+                            allowFontScaling={false}
+                            placeholderTextColor="#9CA3AF"
+                        />
+
+                        {confirmPassword.length > 0 && (
+                            <Text
+                                style={{
+                                    marginBottom: 16,
+                                    color: passwordsMatch ? "#059669" : "#DC2626",
+                                    fontSize: 14,
+                                }}
+                                allowFontScaling={false}
+                            >
+                                {passwordsMatch
+                                    ? t("auth.passwordsMatch")
+                                    : t("auth.passwordsNoMatch")}
+                            </Text>
+                        )}
+
+                        <TouchableOpacity
+                            onPress={submit}
+                            disabled={!passwordsMatch || loading}
+                            style={{
+                                backgroundColor: passwordsMatch ? "#5FA893" : "#9CA3AF",
+                                padding: 16,
+                                borderRadius: 8,
+                                marginTop: 8,
+                                marginBottom: 20,
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: "white",
+                                    textAlign: "center",
+                                    fontSize: 16,
+                                    fontWeight: "600"
+                                }}
+                                allowFontScaling={false}
+                            >
+                                {loading ? t("auth.resetPassword.saving") : t("auth.resetPassword.save")}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
+
+/* ---------- styles ---------- */
+const inputStyle = {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 16,
+    color: "#1F2937",
+};
