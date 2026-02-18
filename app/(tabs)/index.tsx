@@ -19,12 +19,14 @@ import {
   Animated,
   AppState,
   Dimensions,
+  PixelRatio,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
@@ -33,18 +35,18 @@ import { supabase } from '../../lib/supabase';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 250);
-const STROKE_WIDTH = 40; // Change this to whatever you want (was 16)
-const MAX_STROKE = STROKE_WIDTH + 3; // The outer "fake" stroke that creates the border effect
+const STROKE_WIDTH = 40;
+const MAX_STROKE = STROKE_WIDTH + 3;
 const CIRCLE_RADIUS = (CIRCLE_SIZE - MAX_STROKE) / 2;
-const INNER_BUTTON_SIZE = CIRCLE_SIZE - STROKE_WIDTH; // New calculation
-const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2; // New calculation
+const INNER_BUTTON_SIZE = CIRCLE_SIZE - STROKE_WIDTH;
+const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2;
 
 const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
 
-// Helper function to get both greeting and icon name
+// Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
 
@@ -80,7 +82,6 @@ const formatTimeLeft = (ms: number): string => {
   return `${h}:${m}:${s}`;
 };
 
-// Date comparison helper
 const isSameDay = (date1: Date, date2: Date): boolean => {
   return (
     date1.getFullYear() === date2.getFullYear() &&
@@ -89,7 +90,6 @@ const isSameDay = (date1: Date, date2: Date): boolean => {
   );
 };
 
-// Helper function to convert numbers to Chinese numerals
 const numberToChinese = (num: number): string => {
   const chineseNumbers = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
 
@@ -104,43 +104,35 @@ const numberToChinese = (num: number): string => {
   } else if (num === 31) {
     return '三十一';
   } else {
-    return num.toString(); // fallback
+    return num.toString();
   }
 };
 
-// Updated date formatting function
 const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
   const weekdayIndex = date.getDay();
   const monthIndex = date.getMonth();
   const day = date.getDate();
 
-  // Default to English if no language provided
   const lang = language || 'en';
 
   try {
-    // Try to get translations
     const weekdayKey = `home.dateFormats.weekdays.${weekdayIndex}`;
     const monthKey = `home.dateFormats.months.${monthIndex}`;
 
     const weekday = t(weekdayKey, { lng: lang });
     const month = t(monthKey, { lng: lang });
 
-    // Check if we got valid translations
     const gotWeekday = weekday && typeof weekday === 'string' && !weekday.includes('home.dateFormats');
     const gotMonth = month && typeof month === 'string' && !month.includes('home.dateFormats');
 
     if (gotWeekday && gotMonth) {
-      // We have valid translations
       const isChinese = lang.startsWith('zh') || lang.includes('Chinese');
 
       if (isChinese) {
-        // Chinese format: "星期一, 二月五号" (with Chinese numeral)
         const chineseDay = numberToChinese(day);
-        // Make sure month doesn't already have "月"
         const cleanMonth = month.replace('月', '');
         return `${weekday}, ${cleanMonth}月${chineseDay}号`;
       } else {
-        // Western format: "Monday, 5 February"
         return `${weekday}, ${day} ${month}`;
       }
     }
@@ -148,7 +140,6 @@ const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
     console.log('Translation attempt failed:', error);
   }
 
-  // Fallback to English
   const englishWeekdays = [
     'Sunday',
     'Monday',
@@ -178,16 +169,13 @@ const formatDateWithTranslation = (date: Date, t: any, language?: string) => {
 
   const isChinese = lang.startsWith('zh') || lang.includes('Chinese');
   if (isChinese) {
-    // Chinese format with English month names (fallback)
     const chineseDay = numberToChinese(day);
     return `${weekday}, ${month}月${chineseDay}号`;
   } else {
-    // English format
     return `${weekday}, ${day} ${month}`;
   }
 };
 
-// Time formatting with locale
 const formatTime24h = (date: Date, language: string) => {
   const localeMap: Record<string, string> = {
     en: 'en-US',
@@ -230,6 +218,7 @@ export default function HomeScreen() {
   const { streak, loading: streakLoading, refetch: refetchStreak } = useStreak();
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [fontScale, setFontScale] = useState(1); // ✅ Moved INSIDE component
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -239,6 +228,11 @@ export default function HomeScreen() {
   const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
   const [contactsCount, setContactsCount] = useState(0);
+
+  // ✅ Moved INSIDE component
+  useEffect(() => {
+    setFontScale(PixelRatio.getFontScale());
+  }, []);
 
   const fetchContactsCount = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -368,10 +362,8 @@ export default function HomeScreen() {
     const lastCheckinDate = new Date(lastCheckinUtc);
     const today = new Date();
 
-    // If last check-in was NOT today, reset AND refresh streak
     if (!isSameDay(lastCheckinDate, today)) {
       resetAllState();
-      // Refresh streak since date changed
       refetchStreak();
     }
   }, [lastCheckinUtc, resetAllState, refetchStreak]);
@@ -393,14 +385,11 @@ export default function HomeScreen() {
     if (data?.last_checked_in_utc) {
       const lastCheckinDate = new Date(data.last_checked_in_utc);
       const today = new Date();
-
-      // Check if the check-in was today
       const isFromToday = isSameDay(lastCheckinDate, today);
 
       setLastCheckinUtc(data.last_checked_in_utc);
       setCheckedInToday(isFromToday);
 
-      // ⭐ Sync reminder state
       if (isFromToday) {
         await cancelTodayReminderAfterCheckin();
       } else {
@@ -409,7 +398,6 @@ export default function HomeScreen() {
 
       setShowResetButton(isFromToday);
 
-      // Save to AsyncStorage with correct "today" status
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
@@ -418,7 +406,6 @@ export default function HomeScreen() {
         })
       );
     } else {
-      // No check-in found
       setCheckedInToday(false);
       setShowResetButton(false);
       setLastCheckinUtc(null);
@@ -454,13 +441,11 @@ export default function HomeScreen() {
       if (error) throw error;
       if (!data) return;
 
-      // Update state - this check-in is definitely from today
       setCheckedInToday(true);
       setShowResetButton(true);
       setLastCheckinUtc(data.checked_in_at_utc);
       setLastCheckinId(data.id);
 
-      // Save to AsyncStorage
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
@@ -470,10 +455,7 @@ export default function HomeScreen() {
         })
       );
 
-      // ⭐ cancel reminder because user checked in
       await cancelTodayReminderAfterCheckin();
-
-      // Refresh streak after successful check-in
       refetchStreak();
 
     } catch (err) {
@@ -507,12 +489,9 @@ export default function HomeScreen() {
         const parsed = JSON.parse(saved);
         const savedLastCheckinUtc = parsed.lastCheckinUtc ?? null;
 
-        // If we have a saved check-in, check if it's from today
         if (savedLastCheckinUtc) {
           const lastCheckinDate = new Date(savedLastCheckinUtc);
           const today = new Date();
-
-          // Only set as checked in if it was today
           const isFromToday = isSameDay(lastCheckinDate, today);
 
           setCheckedInToday(isFromToday);
@@ -538,22 +517,18 @@ export default function HomeScreen() {
     const updateTimeAndCheckReset = () => {
       const newNow = new Date();
       setNow(newNow);
-      checkDateAndReset(); // Check if we need to reset based on date
+      checkDateAndReset();
     };
 
-    // Initial check
     updateTimeAndCheckReset();
 
-    // Update time every second for the timer display
     const timeInterval = setInterval(() => {
       const newNow = new Date();
       setNow(newNow);
     }, 1000);
 
-    // Check for reset every 30 seconds
     const resetCheckInterval = setInterval(checkDateAndReset, 30000);
 
-    // ✅ FIXED: Add fetchLastCheckin() when app becomes active
     const subscription = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         console.log('📱 Home screen - app foregrounded - fetching fresh check-in status');
@@ -568,18 +543,15 @@ export default function HomeScreen() {
     };
   }, [checkDateAndReset]);
 
-  // ========== CONTACT REQUESTS BADGE LOGIC ==========
-  // Add this useEffect alongside your existing ones
   useEffect(() => {
     let isMounted = true;
 
     const handleAppStateChange = (nextAppState: string) => {
-      // When app comes to foreground AND this screen is likely visible
       if (nextAppState === 'active') {
         console.log('📱 App became active - refreshing home data');
         if (isMounted) {
-          fetchLastCheckin(); // Refresh check-in status
-          refetchStreak();    // Refresh streak
+          fetchLastCheckin();
+          refetchStreak();
         }
       }
     };
@@ -590,19 +562,16 @@ export default function HomeScreen() {
       isMounted = false;
       subscription.remove();
     };
-  }, [fetchLastCheckin, refetchStreak]); // Add dependencies
+  }, [fetchLastCheckin, refetchStreak]);
 
-
-  // Refresh streak periodically (every hour) to catch date changes
   useEffect(() => {
     const streakRefreshInterval = setInterval(() => {
       refetchStreak();
-    }, 60 * 60 * 1000); // Every hour
+    }, 60 * 60 * 1000);
 
     return () => clearInterval(streakRefreshInterval);
   }, [refetchStreak]);
 
-  // Refresh streak when app becomes active
   useEffect(() => {
     const handleAppStateChange = (nextAppState: string) => {
       if (nextAppState === 'active') {
@@ -616,7 +585,6 @@ export default function HomeScreen() {
     };
   }, [refetchStreak]);
 
-  // Calculations
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const elapsedMs = now.getTime() - startOfDay.getTime();
@@ -642,221 +610,230 @@ export default function HomeScreen() {
 
   const greetingInfo = getGreetingInfo(now, t);
 
-  // RETURN STATEMENT AND JSX REMAINS THE SAME AS YOUR ORIGINAL CODE
-  // ... (your existing return JSX code goes here)
-
   return (
-    <SafeAreaView style={styles.mainContainer}>
-      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-        {/* ========== GROUP 1: HEADER ========== */}
-        <ScreenHeader
-          title={profile?.display_name || t('home.welcome')}
-          subtitle={greetingInfo.greeting}
-          iconName={greetingInfo.iconName as any}
-          showGreetingInLine={true}
-          rightElement={
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/profile')}
-              style={styles.profileButton}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="person-outline" size={ICON_SIZES.MD} color={BaseColors.primary} />
-            </TouchableOpacity>
-          }
-        />
+    <SafeAreaView style={styles.mainContainer} edges={['top']}>
+      {/* HEADER - OUTSIDE SCROLLVIEW (FIXED) */}
+      <ScreenHeader
+        title={profile?.display_name || t('home.welcome')}
+        subtitle={greetingInfo.greeting}
+        iconName={greetingInfo.iconName as any}
+        showGreetingInLine={true}
+        rightElement={
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/profile')}
+            style={styles.profileButton}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="person-outline" size={ICON_SIZES.MD} color={BaseColors.primary} />
+          </TouchableOpacity>
+        }
+      />
 
-        {/* ========== GROUP 2: DATE & TIME ========== */}
-        <View style={[styles.dateTimeGroup, styles.groupContainer]}>
-          <Text style={styles.timeText}>{formatTime24h(now, i18n.language)}</Text>
-          <Text style={styles.dateText}>{formatDateWithTranslation(now, t, i18n.language)}</Text>
-        </View>
+      {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={true}
+        pinchGestureEnabled={false}
+        maximumZoomScale={1}
+        minimumZoomScale={1}
+      >
+        <Animated.View style={{ opacity: fadeAnim }}>
+          {/* DATE & TIME */}
+          <View style={[styles.dateTimeGroup, styles.groupContainer]}>
+            <Text style={styles.timeText}>{formatTime24h(now, i18n.language)}</Text>
+            <Text style={styles.dateText}>{formatDateWithTranslation(now, t, i18n.language)}</Text>
+          </View>
 
-        {/* ========== GROUP 3: MAIN CHECK-IN ========== */}
-        <View style={[styles.checkInGroup, styles.groupContainer]}>
-          <View style={styles.checkInContainer}>
-            <Animated.View
-              style={{
-                transform: [{ scale: Animated.multiply(pulseAnim, scaleAnim) }],
-              }}
-            >
-              <TouchableOpacity
-                onPress={handleCheckIn}
-                activeOpacity={0.9}
-                style={[
-                  styles.checkInButton,
-                  {
-                    width: CIRCLE_SIZE,
-                    height: CIRCLE_SIZE,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative',
-                  }
-                ]}
+          {/* MAIN CHECK-IN */}
+          <View style={[styles.checkInGroup, styles.groupContainer]}>
+            <View style={styles.checkInContainer}>
+              <Animated.View
+                style={{
+                  transform: [{ scale: Animated.multiply(pulseAnim, scaleAnim) }],
+                }}
               >
-                {/* Outer border - perfectly centered */}
-                <View
-                  style={{
-                    position: 'absolute',
-                    width: CIRCLE_SIZE,
-                    height: CIRCLE_SIZE,
-                    borderRadius: CIRCLE_SIZE / 2,
-                    borderWidth: 2,
-                    borderColor: BaseColors.primaryBorder,
-                    // Ensure perfect centering
-                    left: 0,
-                    top: 0,
-                  }}
-                />
+                <TouchableOpacity
+                  onPress={handleCheckIn}
+                  activeOpacity={0.9}
+                  style={[
+                    styles.checkInButton,
+                    {
+                      width: CIRCLE_SIZE,
+                      height: CIRCLE_SIZE,
+                    }
+                  ]}
+                >
+                  {/* Outer border */}
+                  <View style={[
+                    styles.circleBorder,
+                    {
+                      width: CIRCLE_SIZE,
+                      height: CIRCLE_SIZE,
+                      borderRadius: CIRCLE_SIZE / 2,
+                    }
+                  ]} />
 
-                {/* SVG Container - perfectly centered */}
-                <View style={{
-                  position: 'absolute',
-                  width: CIRCLE_SIZE,
-                  height: CIRCLE_SIZE,
-                  left: 0,
-                  top: 0,
-                }}>
-                  <Svg
-                    width={CIRCLE_SIZE}
-                    height={CIRCLE_SIZE}
-                    style={{ transform: [{ rotate: '-90deg' }] }}
-                    viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`} // Add viewBox for consistency
-                  >
-                    {/* Background circle - DARK GREEN (remaining / unprocessed) */}
-                    <Circle
-                      cx={CIRCLE_SIZE / 2}
-                      cy={CIRCLE_SIZE / 2}
-                      r={CIRCLE_RADIUS}
-                      stroke={BaseColors.primary}
-                      strokeWidth={STROKE_WIDTH + 3}
-                      fill="none"
-
-                    />
-
-                    {/* Progress circle - DARK GREEN (left to be processed) */}
-                    {!checkedInToday ? (
-                      <Circle
-                        cx={CIRCLE_SIZE / 2}
-                        cy={CIRCLE_SIZE / 2}
-                        r={CIRCLE_RADIUS}
-                        stroke={BaseColors.primaryLight}
-                        strokeWidth={STROKE_WIDTH}
-                        fill="none"
-                        strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
-                        strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
-                        opacity={0.7}
-                        strokeLinecap="butt"
-                      />
-                    ) : (
+                  {/* SVG Container */}
+                  <View style={[
+                    styles.svgContainer,
+                    {
+                      width: CIRCLE_SIZE,
+                      height: CIRCLE_SIZE,
+                    }
+                  ]}>
+                    <Svg
+                      width={CIRCLE_SIZE}
+                      height={CIRCLE_SIZE}
+                      style={{ transform: [{ rotate: '-90deg' }] }}
+                      viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
+                    >
+                      {/* Background circle */}
                       <Circle
                         cx={CIRCLE_SIZE / 2}
                         cy={CIRCLE_SIZE / 2}
                         r={CIRCLE_RADIUS}
                         stroke={BaseColors.primary}
-                        strokeWidth={STROKE_WIDTH}
+                        strokeWidth={STROKE_WIDTH + 3}
                         fill="none"
-                        strokeLinecap="round"
                       />
-                    )}
-                  </Svg>
-                </View>
 
-                {/* Inner Button */}
-                <View
-                  style={[
-                    styles.innerButton,
-                    {
-                      // Use exact calculations to ensure perfect centering
-                      width: INNER_BUTTON_SIZE,
-                      height: INNER_BUTTON_SIZE,
-                      borderRadius: INNER_BUTTON_SIZE / 2,
-                      position: 'absolute',
-                      left: INNER_BUTTON_OFFSET,
-                      top: INNER_BUTTON_OFFSET,
-                      // Remove any margin/padding that could affect positioning
-                      margin: 0,
-                      padding: 0,
-                    },
-                    checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
-                  ]}
-                >
-                  {/* Icon */}
-                  <View style={styles.iconContainer}>
-                    {checkedInToday ? (
-                      <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
-                    ) : (
-                      <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
-                    )}
+                      {/* Progress circle */}
+                      {!checkedInToday ? (
+                        <Circle
+                          cx={CIRCLE_SIZE / 2}
+                          cy={CIRCLE_SIZE / 2}
+                          r={CIRCLE_RADIUS}
+                          stroke={BaseColors.primaryLight}
+                          strokeWidth={STROKE_WIDTH}
+                          fill="none"
+                          strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
+                          strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
+                          opacity={0.7}
+                          strokeLinecap="butt"
+                        />
+                      ) : (
+                        <Circle
+                          cx={CIRCLE_SIZE / 2}
+                          cy={CIRCLE_SIZE / 2}
+                          r={CIRCLE_RADIUS}
+                          stroke={BaseColors.primary}
+                          strokeWidth={STROKE_WIDTH}
+                          fill="none"
+                          strokeLinecap="round"
+                        />
+                      )}
+                    </Svg>
                   </View>
 
-                  {/* Text Content */}
-                  <View style={styles.textContainer}>
-                    {checkedInToday ? (
-                      <>
-                        {/* Removed the scale animation on the "Checked in" text to avoid it looking too jumpy. The heart icon animation is enough to draw attention to the new state. */}
-                        {/* <Animated.View
-                          style={[
-                            styles.checkedInTextContainer,
-                            { transform: [{ scale: successScaleAnim }] },
-                          ]}
+                  {/* Inner Button */}
+                  <View
+                    style={[
+                      styles.innerButton,
+                      {
+                        width: INNER_BUTTON_SIZE,
+                        height: INNER_BUTTON_SIZE,
+                        borderRadius: INNER_BUTTON_SIZE / 2,
+                        left: INNER_BUTTON_OFFSET,
+                        top: INNER_BUTTON_OFFSET,
+                      },
+                      checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
+                    ]}
+                  >
+                    {/* Icon */}
+                    <View style={styles.iconContainer}>
+                      {checkedInToday ? (
+                        <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
+                      ) : (
+                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
+                      )}
+                    </View>
+
+                    {/* Text Content */}
+                    <View style={styles.textContainer}>
+                      {checkedInToday ? (
+                        <Text
+                          style={styles.checkedInText}
+                          numberOfLines={2}
+                          adjustsFontSizeToFit
+                          minimumFontScale={0.6}
                         >
-                          <Text style={styles.checkedInText}>{t('home.checkedInToday')}</Text>
-                        </Animated.View> */}
-                        <Text style={styles.checkedInText}>{t('home.everythingIsFine')}</Text>
-                      </>
-                    ) : (
-                      <>
-                        <Text style={styles.ctaText}>{t('home.pressMeToCheckIn')}</Text>
-                        <Text style={styles.countdownText}>{formatTimeLeft(remainingMs)}</Text>
-                        <Text style={styles.timeLeftText}>{t('home.timeLeftToday')}</Text>
-                      </>
-                    )}
+                          {t('home.everythingIsFine')}
+                        </Text>
+                      ) : (
+                        <>
+                          <Text
+                            style={[
+                              styles.ctaText,
+                              fontScale > 1.2 && styles.compactCtaText
+                            ]}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.7}
+                          >
+                            {t('home.pressMeToCheckIn')}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.countdownText,
+                              fontScale > 1.2 && styles.compactCountdownText
+                            ]}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.7}
+                          >
+                            {formatTimeLeft(remainingMs)}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.timeLeftText,
+                              fontScale > 1.2 && styles.compactTimeLeftText
+                            ]}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.7}
+                          >
+                            {t('home.timeLeftToday')}
+                          </Text>
+                        </>
+                      )}
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
           </View>
-        </View>
 
-        {/* ========== GROUP 4: WARNING MESSAGE ========== */}
-        {checkedInToday ? (
+          {/* WARNING MESSAGE */}
           <View style={[styles.warningGroup, styles.groupContainer]}>
-            <View style={styles.messageContainer}>
-              <View style={styles.messageIconContainer}>
-                <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
-              </View>
-              <Text style={styles.messageText}>{t('home.youCheckedInTodayAt', { time: formatTime24h(new Date(lastCheckinUtc), i18n.language) })}</Text>
-            </View>
-          </View>
-        ) : (<View style={[styles.warningGroup, styles.groupContainer]}>
-          <View style={styles.warningContainer}>
-            <View style={styles.warningIconContainer}>
-              <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
-            </View>
-            <Text style={styles.warningText}>{t('home.dontForget')}</Text>
-          </View>
-        </View>)
-        }
-
-        {/* ========== GROUP 5: ACTION CARDS ========== */}
-        <View style={[styles.cardsGroup, styles.groupContainer]}>
-          <View style={styles.cardsContainer}>
-            {/* TODO:  Left this code for debuging purposes, but the reset button is now hidden behind a dev flag and only shows when you check in, to avoid confusion for regular users. You can uncomment this block to see the reset button in action. */}
-            {/* {showResetButton ? (
-              <TouchableOpacity
-                onPress={resetAllState}
-                style={[styles.card, styles.resetCard]}
-                activeOpacity={0.8}
-              >
-                <View style={styles.cardIcon}>
-                  <View style={styles.resetIconContainer}>
-                    <Ionicons name="refresh" size={ICON_SIZES.MD} color={BaseColors.error} />
-                  </View>
+            {checkedInToday ? (
+              <View style={styles.messageContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
                 </View>
-                <Text style={styles.resetText}>{t('home.reset')}</Text>
-                <Text style={styles.cardSubtext}>{t('home.timer')}</Text>
-              </TouchableOpacity>
+                <Text style={styles.messageText} numberOfLines={2}>
+                  {t('home.youCheckedInTodayAt', {
+                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
+                  })}
+                </Text>
+              </View>
             ) : (
+              <View style={styles.warningContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
+                </View>
+                <Text style={styles.warningText} numberOfLines={1}>
+                  {t('home.dontForget')}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* ACTION CARDS */}
+          <View style={[styles.cardsGroup, styles.groupContainer]}>
+            <View style={styles.cardsContainer}>
               <TouchableOpacity
                 onPress={() => router.push('/(tabs)/activity')}
                 style={styles.card}
@@ -864,49 +841,41 @@ export default function HomeScreen() {
               >
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                    <Ionicons name="pulse" size={24} color={BaseColors.primary} />
+                    <Ionicons name="pulse" size={ICON_SIZES.LG} color={BaseColors.primary} />
                   </View>
                 </View>
                 <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-                <Text style={styles.cardSubtext}>{contactsCount + " " + t('home.contacts')}</Text>
+                <Text style={styles.cardSubtext}>
+                  {t('home.contacts', { count: contactsCount })}
+                </Text>
               </TouchableOpacity>
-            )} */}
 
-            <TouchableOpacity
-              onPress={() => router.push('/(tabs)/activity')}
-              style={styles.card}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardIcon}>
-                <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                  <Ionicons name="pulse" size={ICON_SIZES.LG} color={BaseColors.primary} />
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/statistics')}
+                style={styles.card}
+                activeOpacity={0.8}
+              >
+                <View style={styles.cardIcon}>
+                  <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
+                    <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
+                  </View>
                 </View>
-              </View>
-              <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-              <Text style={styles.cardSubtext}>{t('home.contacts', { count: contactsCount })}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              // onPress={() => router.push('/(tabs)/statistics')}
-              style={styles.card}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardIcon}>
-                <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                  <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
-                </View>
-              </View>
-              <Text style={styles.cardLabel}>{t('home.streak')}</Text>
-              <Text style={styles.cardSubtext}>{t('home.days', { count: streak })}</Text>
-            </TouchableOpacity>
+                <Text style={styles.cardLabel}>{t('home.streak')}</Text>
+                <Text style={styles.cardSubtext}>
+                  {t('home.days', { count: streak })}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Animated.View>
+
+          {/* Bottom padding */}
+          <View style={styles.bottomPadding} />
+        </Animated.View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ==================== STYLES ====================
 const GROUP_GAP = 24;
 
 const styles = StyleSheet.create({
@@ -946,38 +915,16 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: BaseColors.primaryLight,
   },
+  scrollContent: {
+    paddingBottom: 20,
+  },
   groupContainer: {
     marginBottom: GROUP_GAP,
-  },
-  headerGroup: {},
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  greeting: {
-    fontSize: 16,
-    color: BaseColors.neutral[500],
-    fontWeight: '500',
-    textTransform: 'capitalize',
-    marginLeft: 8,
-  },
-  displayName: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: BaseColors.text.dark,
   },
   dateTimeGroup: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: SCREEN_PADDING.horizontal,
   },
   timeText: {
     fontSize: 36,
@@ -995,6 +942,7 @@ const styles = StyleSheet.create({
   checkInGroup: {
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: SCREEN_PADDING.horizontal,
   },
   checkInContainer: {
     alignItems: 'center',
@@ -1005,13 +953,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  svg: {
+  circleBorder: {
     position: 'absolute',
+    borderWidth: 2,
+    borderColor: BaseColors.primaryBorder,
+    left: 0,
+    top: 0,
+  },
+  svgContainer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
   },
   innerButton: {
+    position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 3,
+    margin: 0,
+    padding: 0,
   },
   innerButtonUnchecked: {
     backgroundColor: BaseColors.primaryLight,
@@ -1026,23 +986,14 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-  },
-  checkedInTextContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 8,
+    maxWidth: '100%',
   },
   checkedInText: {
     color: BaseColors.surface,
     fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
-  },
-  checkInTime: {
-    color: BaseColors.surface,
-    fontSize: 22,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: 8,
   },
   ctaText: {
     color: BaseColors.text.dark,
@@ -1065,7 +1016,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 2,
   },
-  warningGroup: {},
+  warningGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
   messageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1075,7 +1028,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
-    alignSelf: 'center',
+    width: '100%',
   },
   warningContainer: {
     flexDirection: 'row',
@@ -1086,21 +1039,20 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: BaseColors.errorBorder,
-    alignSelf: 'center',
-  },
-  messageIconContainer: {
-    marginRight: 10,
+    width: '100%',
   },
   warningIconContainer: {
     marginRight: 10,
   },
   messageText: {
+    flex: 1,
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 15,
     color: BaseColors.primary,
   },
   warningText: {
+    flex: 1,
     textAlign: 'center',
     fontWeight: '600',
     fontSize: 15,
@@ -1136,12 +1088,8 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  resetCard: {
-    backgroundColor: BaseColors.errorLight,
-    borderColor: BaseColors.errorBorder,
-  },
   cardIcon: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   cardLabel: {
     fontSize: 16,
@@ -1153,7 +1101,7 @@ const styles = StyleSheet.create({
   cardSubtext: {
     fontSize: 18,
     fontWeight: '600',
-    marginTop: 10,
+    marginTop: 6,
     color: BaseColors.primary,
     textAlign: 'center',
   },
@@ -1170,14 +1118,20 @@ const styles = StyleSheet.create({
   streakIconContainer: {
     backgroundColor: '#FFF7ED',
   },
-  resetIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: BaseColors.errorLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: BaseColors.errorBorder,
-  }
+  bottomPadding: {
+    height: 20,
+  },
+  compactCtaText: {
+    fontSize: 12,
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  compactCountdownText: {
+    fontSize: 18,
+    marginTop: 4,
+  },
+  compactTimeLeftText: {
+    fontSize: 10,
+    marginTop: 1,
+  },
 });

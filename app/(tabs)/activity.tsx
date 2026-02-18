@@ -7,6 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   Animated,
   AppState,
   ScrollView,
@@ -483,6 +484,7 @@ export default function ActivityScreen() {
   }, []);
 
   // ActivityItem Component (reusable within this file)
+  // ActivityItem Component
   const ActivityItem = ({
     name,
     email,
@@ -516,14 +518,14 @@ export default function ActivityScreen() {
         Animated.parallel([
           Animated.sequence([
             Animated.timing(timeScaleAnim, {
-              toValue: 1.1,        // Enlarge to 110%
-              duration: 150,        // Quick grow (0.15 sec)
+              toValue: 1.1,
+              duration: 150,
               useNativeDriver: true
             }),
-            Animated.delay(700),    // Stay enlarged for 0.7 sec
+            Animated.delay(700),
             Animated.timing(timeScaleAnim, {
-              toValue: 1,           // Back to normal
-              duration: 150,        // Quick shrink (0.15 sec)
+              toValue: 1,
+              duration: 150,
               useNativeDriver: true
             }),
           ]),
@@ -602,33 +604,7 @@ export default function ActivityScreen() {
       return { timeText, dateText, timezoneText, isValidTimestamp };
     };
 
-    {/* TODO: Keep this part in case we want to re-add priority badges later */ }
-    // // Get priority info
-    // const getPriorityInfo = (priority: number) => {
-    //   if (priority === 2)
-    //     return {
-    //       color: BaseColors.error,
-    //       icon: 'alert-circle' as const,
-    //       label: t('activity.priority.failed'),
-    //       bgColor: BaseColors.errorLight,
-    //     };
-    //   if (priority === 1)
-    //     return {
-    //       color: BaseColors.warning,
-    //       icon: 'time' as const,
-    //       label: t('activity.priority.ongoing'),
-    //       bgColor: BaseColors.warningLight,
-    //     };
-    //   return {
-    //     color: BaseColors.success,
-    //     icon: 'checkmark-circle' as const,
-    //     label: t('activity.priority.successful'),
-    //     bgColor: BaseColors.successLight,
-    //   };
-    // };
-
     const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(timestamp, checkin_timezone);
-    // const priorityInfo = getPriorityInfo(priority);
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -647,50 +623,49 @@ export default function ActivityScreen() {
           <View style={styles.contentContainer}>
             {!isOwner && (
               <View style={styles.nameEmailRow}>
-                <Text>
-                  <Text style={styles.name}>{name}</Text>
-                  {email && <Text style={styles.email}> {email}</Text>}
+                <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+                  {name}
                 </Text>
+                {email && (
+                  <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
+                    {email}
+                  </Text>
+                )}
               </View>
             )}
 
-
             {isValidTimestamp ? (
-              <View style={styles.timeRow}>
-                <Animated.Text
-                  style={[
-                    styles.time,
-                    {
-                      color: timeColorAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [BaseColors.text.dark, BaseColors.primary],
-                      }),
-                    },
-                    // No need to scale the text (just change color is enough to draw attention)
-                    hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
-                  ]}
-                >
-                  {timeText} ({timezoneText})
-                </Animated.Text>
-                <View style={styles.spacer} />
+              <View style={styles.timeContainer}>
+                <Animated.View style={styles.timeWithTimezone}>
+                  <Animated.Text
+                    style={[
+                      styles.time,
+                      {
+                        color: timeColorAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [BaseColors.text.dark, BaseColors.primary],
+                        }),
+                      },
+                      hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
+                    ]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {timeText}
+                  </Animated.Text>
+                  <Text style={styles.timezone} numberOfLines={1}>
+                    ({timezoneText})
+                  </Text>
+                </Animated.View>
                 <Text style={styles.date}>{dateText}</Text>
               </View>
             ) : (
-              <View style={styles.timeRow}>
-                <Text style={[styles.time, styles.noCheckIn]}>
-                  {t('activity.noCheckIn')}
-                </Text>
-              </View>
+              <Text style={[styles.time, styles.noCheckIn]}>
+                {t('activity.noCheckIn')}
+              </Text>
             )}
           </View>
         </View>
-        {/* TODO: Keep this part in case we want to re-add priority badges later */}
-        {/* <View style={[styles.priorityBadge, { backgroundColor: priorityInfo.bgColor }]}>
-          <Ionicons name={priorityInfo.icon} size={14} color={priorityInfo.color} />
-          <Text style={[styles.priorityLabel, { color: priorityInfo.color }]}>
-            {priorityInfo.label}
-          </Text>
-        </View> */}
       </View>
     );
   };
@@ -698,7 +673,7 @@ export default function ActivityScreen() {
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
       <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
-        {/* Screen Header - Handles its own top padding */}
+        {/* Screen Header - Fixed at top */}
         <ScreenHeader
           title={t('activity.title')}
           subtitle={t('activity.subtitle')}
@@ -711,21 +686,25 @@ export default function ActivityScreen() {
         >
           {loading ? (
             <View style={styles.loadingContainer}>
-              {/* ... loading state ... */}
+              <ActivityIndicator size="large" color={BaseColors.primary} />
+              <Text style={styles.loadingText}>
+                {t('activity.loading')}
+              </Text>
             </View>
           ) : (
             <>
-              {/* Owner Card - Add horizontal padding */}
+              {/* Owner Card */}
               {ownerActivity && (
                 <View style={styles.ownerCard}>
-                  {/* Owner Header */}
                   <View style={styles.cardHeader}>
                     <Ionicons
                       name="person-circle"
                       size={ICON_SIZES.SM}
                       color={BaseColors.primary}
                     />
-                    <Text style={styles.cardTitle}>{t('activity.you')}</Text>
+                    <Text style={styles.cardTitle}>
+                      {t('activity.you')}
+                    </Text>
                   </View>
 
                   <ActivityItem
@@ -741,15 +720,18 @@ export default function ActivityScreen() {
                 </View>
               )}
 
-              {/* Contacts Card - Add horizontal padding */}
+              {/* Contacts Card */}
               <View style={styles.contactsCard}>
-                {/* Card Header - This should have proper alignment */}
                 <View style={styles.cardHeader}>
                   <Ionicons name="people" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                  <Text style={styles.cardTitle}>{t('activity.contacts')}</Text>
+                  <Text style={styles.cardTitle}>
+                    {t('activity.contacts')}
+                  </Text>
                   {activities.length > 0 && (
                     <View style={styles.contactCount}>
-                      <Text style={styles.contactCountText}>{activities.length}</Text>
+                      <Text style={styles.contactCountText}>
+                        {activities.length}
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -771,7 +753,17 @@ export default function ActivityScreen() {
                   ))
                 ) : (
                   <View style={styles.emptyState}>
-                    {/* ... empty state ... */}
+                    <Ionicons
+                      name="people-outline"
+                      size={64}
+                      color={BaseColors.neutral[300]}
+                    />
+                    <Text style={styles.emptyStateTitle}>
+                      {t('activity.emptyState.title')}
+                    </Text>
+                    <Text style={styles.emptyStateText}>
+                      {t('activity.emptyState.message')}
+                    </Text>
                   </View>
                 )}
               </View>
@@ -796,16 +788,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 20, // Only bottom padding needed
+    paddingBottom: 20,
   },
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     padding: 40,
+    minHeight: 200,
   },
-  // Cards - ADD HORIZONTAL PADDING HERE
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: BaseColors.text.light,
+  },
   ownerCard: {
-    marginHorizontal: 20, // ← Match ScreenHeader padding
+    marginHorizontal: 20,
     marginBottom: 16,
     padding: 16,
     backgroundColor: BaseColors.surface,
@@ -817,7 +814,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   contactsCard: {
-    marginHorizontal: 20, // ← Match ScreenHeader padding
+    marginHorizontal: 20,
     padding: 16,
     backgroundColor: BaseColors.surface,
     borderRadius: 12,
@@ -860,37 +857,47 @@ const styles = StyleSheet.create({
     height: 20,
   },
   emptyState: {
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
   },
-  // ActivityItem styles (make sure they align properly)
+  emptyStateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    color: BaseColors.text.light,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   activityItem: {
-    paddingVertical: 6,  // Gap between items
-    // borderBottomWidth: 1,
-    // borderBottomColor: BaseColors.neutral[200],
+    paddingVertical: 8,
   },
   lastItem: {
     marginBottom: 0,
-    borderBottomWidth: 0,
     paddingBottom: 0,
   },
   activityRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
   icon: {
     marginRight: 10,
+    marginTop: 2,
   },
   contentContainer: {
     flex: 1,
   },
   nameEmailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    justifyContent: 'space-between',
+    marginBottom: 4,
   },
   name: {
     fontSize: 16,
@@ -903,41 +910,38 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: BaseColors.neutral[400],
     flexShrink: 1,
-    maxWidth: '40%',
   },
-  timeRow: {
+  timeContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: 2,
+  },
+  timeWithTimezone: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  spacer: {
-    flex: 1,
+    flexWrap: 'wrap',
+    gap: 4,
   },
   time: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: BaseColors.text.dark,
+    flexShrink: 1,
+  },
+  timezone: {
+    fontSize: 11,
+    color: BaseColors.text.light,
+    fontWeight: '500',
+    flexShrink: 1,
   },
   date: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: BaseColors.text.light,
   },
   noCheckIn: {
     color: BaseColors.text.light,
-  },
-  priorityBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  priorityLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginLeft: 4,
+    fontSize: 14,
   },
   iconPlaceholder: {
     width: 20,

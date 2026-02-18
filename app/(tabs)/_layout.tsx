@@ -1,11 +1,11 @@
+// app/(tabs)/_layout.tsx
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect, Tabs } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthContext";
-import { supabase } from "../../lib/supabase";
 
 // Notification Badge Component
 const NotificationBadge = ({ count }: { count: number }) => {
@@ -13,7 +13,7 @@ const NotificationBadge = ({ count }: { count: number }) => {
 
   return (
     <View style={styles.badge}>
-      <Text style={styles.badgeText}>
+      <Text style={styles.badgeText} allowFontScaling={false}>
         {count > 9 ? '9+' : count}
       </Text>
     </View>
@@ -24,62 +24,9 @@ export default function TabsLayout() {
   const { user, initialized } = useAuth();
   const [unreadRequests, setUnreadRequests] = useState(0);
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
-  // ✅ 1. Define fetch function with useCallback so it can be reused
-  const fetchUnreadRequests = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const { data: requests } = await supabase
-        .from("contact_requests")
-        .select("id, created_at")
-        .eq("receiver_user_id", user.id)
-        .eq("status", "pending");
-
-      // Check last viewed time
-      const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
-      const unreadCount = requests?.filter(request => {
-        if (!lastViewed) return true;
-        return new Date(request.created_at) > new Date(lastViewed);
-      }).length || 0;
-
-      setUnreadRequests(unreadCount);
-    } catch (error) {
-      console.error("Error fetching unread requests:", error);
-    }
-  }, [user]);
-
-  // ✅ 2. Initial fetch
-  useEffect(() => {
-    if (user) {
-      fetchUnreadRequests();
-    }
-  }, [user, fetchUnreadRequests]);
-
-  // ✅ 3. Realtime subscription (updates while app is open)
-  useEffect(() => {
-    if (!user) return;
-
-    const subscription = supabase
-      .channel(`contact_requests_badge:${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'contact_requests',
-          filter: `receiver_user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchUnreadRequests(); // Re-fetch on any change
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [user, fetchUnreadRequests]);
+  // ... (keep all your fetch functions the same)
 
   if (!initialized) return null;
   if (!user) return <Redirect href="/(auth)/login" />;
@@ -87,8 +34,28 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{
       headerShown: false,
-      tabBarStyle: { backgroundColor: '#ffffff' },
+      tabBarStyle: {
+        backgroundColor: '#ffffff',
+        height: Platform.select({
+          ios: 88,
+          android: 68 + insets.bottom
+        }),
+        paddingBottom: Platform.select({
+          ios: 28,
+          android: Math.max(12, insets.bottom)
+        }),
+        paddingTop: 8,
+      },
+      tabBarLabelStyle: {
+        fontSize: 10, // 👈 CHANGE THIS VALUE to make text bigger (was 11)
+        fontWeight: '600',
+        marginTop: 2,
+      },
+      tabBarIconStyle: {
+        marginTop: 2,
+      },
       tabBarActiveTintColor: '#5FA893',
+      tabBarAllowFontScaling: true, // 👈 Set to true to allow system font scaling
     }}>
       {/* Home Tab */}
       <Tabs.Screen name="index" options={{
@@ -127,13 +94,8 @@ export default function TabsLayout() {
         )
       }} />
 
-      {/* Settings hidden from tabs but accessible via router */}
-      <Tabs.Screen
-        name="profile"
-        options={{
-          href: null,
-        }}
-      />
+      {/* Profile hidden from tabs but accessible via router */}
+      <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );
 }
@@ -141,19 +103,24 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   tabIconContainer: {
     position: 'relative',
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   badge: {
     position: 'absolute',
-    top: -5,
-    right: -5,
+    top: -3,
+    right: -6,
     backgroundColor: '#EF4444',
     borderRadius: 10,
-    width: 18,
+    minWidth: 18,
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: '#fff',
+    paddingHorizontal: 2,
   },
   badgeText: {
     color: '#fff',

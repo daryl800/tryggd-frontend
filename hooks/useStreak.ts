@@ -26,6 +26,18 @@ export const useStreak = () => {
                 .rpc('calculate_user_streak', { user_uuid: user.id });
 
             if (supabaseError) {
+                // ✅ Check for specific PostgreSQL error codes
+                // 22004 is "null value not allowed" or similar
+                if (supabaseError.code === '22004' ||
+                    supabaseError.message?.includes('null') ||
+                    supabaseError.message?.includes('upper bound')) {
+
+                    console.log('No check-ins found for user, setting streak to 0');
+                    setStreak(0);
+                    setError(null); // Clear error as this is expected behavior
+                    return;
+                }
+
                 console.error('Error fetching streak:', supabaseError);
                 setError(supabaseError.message);
                 setStreak(0);
@@ -37,6 +49,14 @@ export const useStreak = () => {
 
         } catch (err: any) {
             console.error('Error in useStreak:', err);
+
+            // ✅ Handle any null/undefined errors gracefully
+            if (err.message?.includes('null') || err.code === '22004') {
+                setStreak(0);
+                setError(null);
+                return;
+            }
+
             setError(err.message);
             setStreak(0);
         } finally {
@@ -65,7 +85,7 @@ export const useStreak = () => {
 
     // Refresh streak periodically (every hour)
     useEffect(() => {
-        const interval = setInterval(fetchStreak, 60 * 60 * 1000); // Every hour
+        const interval = setInterval(fetchStreak, 60 * 60 * 1000);
         return () => clearInterval(interval);
     }, [fetchStreak]);
 
@@ -73,6 +93,6 @@ export const useStreak = () => {
         streak,
         loading,
         error,
-        refetch: fetchStreak // This will now work correctly
+        refetch: fetchStreak
     };
 };

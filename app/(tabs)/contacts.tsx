@@ -1166,7 +1166,7 @@ export default function ContactsScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={getKeyboardVerticalOffset()}
             >
-                {/* Screen Header - Same layout as ActivityScreen */}
+                {/* Screen Header - FIXED at top */}
                 <ScreenHeader
                     title={t('contacts.title')}
                     subtitle={
@@ -1177,18 +1177,6 @@ export default function ContactsScreen() {
                     iconName="people"
                     rightElement={
                         <View style={styles.headerActions}>
-                            {/* Temporarily hiding manual refresh button since we have realtime updates and it was causing confusion. Can re-enable if we want to give users a way to force refresh. */}
-                            {/* <TouchableOpacity
-                                onPress={handleManualRefresh}
-                                style={styles.refreshButton}
-                                disabled={loading}
-                            >
-                                <Ionicons
-                                    name="refresh"
-                                    size={ICON_SIZES.MD}
-                                    color={loading ? BaseColors.neutral[400] : BaseColors.primary}
-                                />
-                            </TouchableOpacity> */}
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}
@@ -1207,7 +1195,8 @@ export default function ContactsScreen() {
                         </View>
                     }
                 />
-                {/* Tabs */}
+
+                {/* Tabs - BELOW header but ABOVE scrollview */}
                 <View style={styles.tabsContainer}>
                     <View style={styles.tabContainer}>
                         <TouchableOpacity
@@ -1228,11 +1217,13 @@ export default function ContactsScreen() {
                                     styles.tabText,
                                     activeSection === 'contacts' && styles.activeTabText,
                                 ]}
+                                allowFontScaling={false}
                             >
                                 {t('contacts.tabs.contacts')}{' '}
                                 {totalContactsCount > 0 && `(${totalContactsCount})`}
                             </Text>
                         </TouchableOpacity>
+
                         <TouchableOpacity
                             style={[styles.tab, activeSection === 'requests' && styles.activeTab]}
                             onPress={() => {
@@ -1259,6 +1250,7 @@ export default function ContactsScreen() {
                                     styles.tabText,
                                     activeSection === 'requests' && styles.activeTabText,
                                 ]}
+                                allowFontScaling={false}
                             >
                                 {t('contacts.tabs.requests')}{' '}
                                 {totalRequestsCount > 0 && `(${totalRequestsCount})`}
@@ -1267,9 +1259,9 @@ export default function ContactsScreen() {
                     </View>
                 </View>
 
+                {/* SCROLLVIEW - Everything below tabs scrolls */}
                 {activeSection === 'contacts' ? (
                     <>
-                        {/* Contact Cards */}
                         <ScrollView
                             ref={scrollViewRef}
                             showsVerticalScrollIndicator={false}
@@ -1285,7 +1277,9 @@ export default function ContactsScreen() {
                                         color={BaseColors.text.light}
                                         style={styles.loadingIcon}
                                     />
-                                    <Text style={styles.loadingText}>{t('contacts.loading')}</Text>
+                                    <Text style={styles.loadingText} allowFontScaling={false}>
+                                        {t('contacts.loading')}
+                                    </Text>
                                 </View>
                             ) : allContacts.length === 0 ? (
                                 <View style={styles.emptyState}>
@@ -1294,10 +1288,10 @@ export default function ContactsScreen() {
                                         size={64}
                                         color={BaseColors.neutral[300]}
                                     />
-                                    <Text style={styles.emptyStateTitle}>
+                                    <Text style={styles.emptyStateTitle} allowFontScaling={false}>
                                         {t('contacts.emptyState.title')}
                                     </Text>
-                                    <Text style={styles.emptyStateText}>
+                                    <Text style={styles.emptyStateText} allowFontScaling={false}>
                                         {t('contacts.emptyState.message')}
                                     </Text>
                                 </View>
@@ -1334,9 +1328,12 @@ export default function ContactsScreen() {
                                     );
                                 })
                             )}
+
+                            {/* Add bottom padding for save button */}
+                            {newContacts.length === 0 && <View style={styles.scrollBottomPadding} />}
                         </ScrollView>
 
-                        {/* Save Button */}
+                        {/* Save Button - FIXED at bottom when new contacts exist */}
                         {newContacts.length > 0 && (
                             <View style={styles.footer}>
                                 <TouchableOpacity
@@ -1361,7 +1358,7 @@ export default function ContactsScreen() {
                                                 style={styles.buttonIcon}
                                             />
                                         )}
-                                        <Text style={styles.buttonText}>
+                                        <Text style={styles.buttonText} allowFontScaling={false}>
                                             {saving
                                                 ? t('contacts.buttons.sending')
                                                 : t('contacts.buttons.sendRequests', {
@@ -1387,7 +1384,7 @@ export default function ContactsScreen() {
                                     color={BaseColors.text.light}
                                     style={styles.loadingIcon}
                                 />
-                                <Text style={styles.loadingText}>
+                                <Text style={styles.loadingText} allowFontScaling={false}>
                                     {t('contacts.requests.loading')}
                                 </Text>
                             </View>
@@ -1398,10 +1395,10 @@ export default function ContactsScreen() {
                                     size={64}
                                     color={BaseColors.neutral[300]}
                                 />
-                                <Text style={styles.emptyStateTitle}>
+                                <Text style={styles.emptyStateTitle} allowFontScaling={false}>
                                     {t('contacts.requests.emptyState.title')}
                                 </Text>
-                                <Text style={styles.emptyStateText}>
+                                <Text style={styles.emptyStateText} allowFontScaling={false}>
                                     {t('contacts.requests.emptyState.message')}
                                 </Text>
                             </View>
@@ -1409,7 +1406,7 @@ export default function ContactsScreen() {
                             <>
                                 {incomingRequests.length > 0 && (
                                     <View style={styles.section}>
-                                        <Text style={styles.sectionTitle}>
+                                        <Text style={styles.sectionTitle} allowFontScaling={false}>
                                             {t('contacts.requests.received')}
                                         </Text>
                                         {incomingRequests.map((request) => (
@@ -1426,7 +1423,7 @@ export default function ContactsScreen() {
                                 )}
                                 {outgoingRequests.length > 0 && (
                                     <View style={styles.section}>
-                                        <Text style={styles.sectionTitle}>
+                                        <Text style={styles.sectionTitle} allowFontScaling={false}>
                                             {t('contacts.requests.sent')}
                                         </Text>
                                         {outgoingRequests.map((request) => (
@@ -1450,6 +1447,7 @@ export default function ContactsScreen() {
     );
 }
 
+// ==================== STYLES ====================
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
@@ -1462,6 +1460,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 14,
         paddingBottom: 8,
+        backgroundColor: BaseColors.background, // Match background
     },
     tabContainer: {
         flexDirection: 'row',
@@ -1510,10 +1509,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    refreshButton: {
-        padding: 4,
-        marginRight: 12,
-    },
     addButton: {
         padding: 4,
     },
@@ -1523,6 +1518,9 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingHorizontal: 20,
         paddingBottom: 16,
+    },
+    scrollBottomPadding: {
+        height: 20,
     },
     requestsContent: {
         paddingHorizontal: 20,
@@ -1590,6 +1588,7 @@ const styles = StyleSheet.create({
     cardTitle: {
         flexDirection: 'row',
         alignItems: 'center',
+        flex: 1, // Allow title to take available space
     },
     cardNumber: {
         width: 28,
@@ -1609,9 +1608,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: BaseColors.text.dark,
+        flex: 1, // Allow text to take available space
     },
     removeButton: {
         padding: 4,
+        marginLeft: 8, // Add space between title and remove button
     },
     input: {
         backgroundColor: BaseColors.surface,
@@ -1636,6 +1637,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: BaseColors.primaryDark,
         fontWeight: '500',
+        flex: 1, // Allow text to wrap
     },
     existingContactInfo: {
         backgroundColor: BaseColors.surface,
@@ -1653,7 +1655,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 15,
         color: BaseColors.text.dark,
-        flex: 1,
+        flex: 1, // This prevents icon spillover
     },
     footer: {
         paddingHorizontal: 20,
@@ -1724,6 +1726,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
+        marginRight: 8, // Add space between info and time
     },
     requestTextContainer: {
         marginLeft: 12,

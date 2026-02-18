@@ -18,6 +18,7 @@
       "bundleIdentifier": "com.dreamworks.tryggd"
     },
     "android": {
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/tryggd-icon-foreground-small.png",
