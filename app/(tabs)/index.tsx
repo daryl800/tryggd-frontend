@@ -813,7 +813,12 @@ export default function HomeScreen() {
                 <View style={styles.warningIconContainer}>
                   <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
                 </View>
-                <Text style={styles.messageText} numberOfLines={2}>
+                <Text
+                  style={styles.messageText}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
                   {t('home.youCheckedInTodayAt', {
                     time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
                   })}
@@ -824,7 +829,12 @@ export default function HomeScreen() {
                 <View style={styles.warningIconContainer}>
                   <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
                 </View>
-                <Text style={styles.warningText} numberOfLines={1}>
+                <Text
+                  style={styles.warningText}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
                   {t('home.dontForget')}
                 </Text>
               </View>
@@ -953,6 +963,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
+  checkedInText: {
+    color: BaseColors.surface,
+    fontSize: 24,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   circleBorder: {
     position: 'absolute',
     borderWidth: 2,
@@ -984,80 +1000,50 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: 12,
   },
+  // Update these styles in your StyleSheet
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 4, // Reduced from 8
     maxWidth: '100%',
-  },
-  checkedInText: {
-    color: BaseColors.surface,
-    fontSize: 24,
-    fontWeight: '800',
-    textAlign: 'center',
+    width: '100%',
   },
   ctaText: {
     color: BaseColors.text.dark,
     fontSize: 14,
     fontWeight: '800',
     textAlign: 'center',
-    letterSpacing: 1,
+    letterSpacing: 0.5, // Reduced from 1
+    marginBottom: 2,
   },
   countdownText: {
     color: BaseColors.primary,
-    fontSize: 22,
+    fontSize: 20, // Reduced from 22
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 4, // Reduced from 8
   },
   timeLeftText: {
     color: BaseColors.text.light,
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 10, // Reduced from 12
+    fontWeight: '600', // Reduced from 700
     textAlign: 'center',
+    marginTop: 1, // Reduced from 2
+  },
+  // Compact styles for when font is large
+  compactCtaText: {
+    fontSize: 11, // Reduced from 12
+    letterSpacing: 0.3,
+    marginBottom: 1,
+  },
+  compactCountdownText: {
+    fontSize: 16, // Reduced from 18
     marginTop: 2,
   },
-  warningGroup: {
-    paddingHorizontal: SCREEN_PADDING.horizontal,
+  compactTimeLeftText: {
+    fontSize: 9, // Reduced from 10
+    marginTop: 0,
   },
-  messageContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: BaseColors.primaryLight,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
-    width: '100%',
-  },
-  warningContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: BaseColors.errorLight,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: BaseColors.errorBorder,
-    width: '100%',
-  },
-  warningIconContainer: {
-    marginRight: 10,
-  },
-  messageText: {
-    flex: 1,
-    textAlign: 'center',
-    fontWeight: '600',
-    fontSize: 15,
-    color: BaseColors.primary,
-  },
-  warningText: {
-    flex: 1,
-    textAlign: 'center',
-    fontWeight: '600',
-    fontSize: 15,
-    color: BaseColors.error,
-  },
+
   cardsGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginBottom: 24,
@@ -1121,17 +1107,53 @@ const styles = StyleSheet.create({
   bottomPadding: {
     height: 20,
   },
-  compactCtaText: {
-    fontSize: 12,
-    letterSpacing: 0.5,
-    marginBottom: 2,
+  messageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.primaryLight,
+    paddingHorizontal: 12, // Reduced from 16
+    paddingVertical: 10, // Reduced from 12
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    width: '100%',
+    minHeight: 44, // Fixed minimum height
   },
-  compactCountdownText: {
-    fontSize: 18,
-    marginTop: 4,
+  warningGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
   },
-  compactTimeLeftText: {
-    fontSize: 10,
-    marginTop: 1,
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.errorLight,
+    paddingHorizontal: 12, // Reduced from 16
+    paddingVertical: 10, // Reduced from 12
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: BaseColors.errorBorder,
+    width: '100%',
+    minHeight: 44, // Fixed minimum height
   },
+  warningIconContainer: {
+    marginRight: 8, // Reduced from 10
+    width: 24, // Fixed width for icon
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  messageText: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 14, // Reduced from 15
+    color: BaseColors.primary,
+    lineHeight: 18, // Added for better vertical alignment
+  },
+  warningText: {
+    flex: 1,
+    textAlign: 'center',
+    fontWeight: '600',
+    fontSize: 14, // Reduced from 15
+    color: BaseColors.error,
+    lineHeight: 18, // Added for better vertical alignment
+  }
 });
