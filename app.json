@@ -2,7 +2,7 @@
   "expo": {
     "name": "tryggd",
     "slug": "tryggd-frontend",
-    "version": "1.9.0",
+    "version": "1.9.1",
     "orientation": "portrait",
     "icon": "./assets/images/tryggd-icon-small.png",
     "scheme": "tryggd",
@@ -15,7 +15,7 @@
           "remote-notification"
         ]
       },
-      "bundleIdentifier": "com.dreamworks.tryggd"
+      "bundleIdentifier": "com.marcustechnology.tryggd"
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.dreamworks.tryggd",
+      "package": "com.marcustechnology.tryggd",
       "versionCode": 1,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
@@ -37,7 +37,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/tryggd-app-icon-1024.png"
     },
     "plugins": [
       "expo-router",

@@ -51,7 +51,7 @@ export default function SignupScreen() {
                 email,
                 password,
                 options: {
-                    emailRedirectTo: "https://tryggd.se/signup-email-confirmation",
+                    emailRedirectTo: "https://tryggd.com/signup-email-confirmation",
                 },
             });
 

@@ -811,7 +811,7 @@ export default function HomeScreen() {
             {checkedInToday ? (
               <View style={styles.messageContainer}>
                 <View style={styles.warningIconContainer}>
-                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
                 </View>
                 <Text
                   style={styles.messageText}

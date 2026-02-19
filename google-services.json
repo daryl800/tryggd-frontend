@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:771703784741:android:c52f2800528485108cc6cc",
+        "mobilesdk_app_id": "1:771703784741:android:fef92aa6ceec357d8cc6cc",
         "android_client_info": {
-          "package_name": "com.dreamworks.tryggd"
+          "package_name": "com.marcustechnology.tryggd"
         }
       },
       "oauth_client": [],
