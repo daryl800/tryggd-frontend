@@ -11,9 +11,10 @@
         "everythingIsFine": "Allt är bra!!",
         "dontForget": "Glöm inte att checka in idag!",
         "youCheckedInTodayAt": "Du checkade in idag kl. {{time}}",
+        "pressMeToCheckIn": "CHECKA IN HÄR",
         "reset": "Återställ",
         "timer": "Timer",
-        "timeLeftToday": "Tid kvar idag",
+        "timeLeftToday": "Tid kvar",
         "activity": "Aktivitet",
         "contacts_one": "{{count}} kontakt",
         "contacts_other": "{{count}} kontakter",
@@ -86,7 +87,7 @@
         "loading": "Laddar kontakter...",
         "subtitle": {
             "withContacts": "Du har {{count}} av 3 möjliga kontakter",
-            "noContacts": "Lägg till kontakter att dela med (max 3)"
+            "noContacts": "Lägg till kontakter att dela med"
         },
         "emptyState": {
             "title": "Inga kontakter",

@@ -886,7 +886,9 @@ export default function HomeScreen() {
   );
 }
 
-const GROUP_GAP = 24;
+
+// ==================== STYLES ====================
+const GROUP_GAP = 18;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -984,10 +986,11 @@ const styles = StyleSheet.create({
   innerButton: {
     position: 'absolute',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', // Changed from 'center' to 'flex-start'
     borderWidth: 3,
     margin: 0,
     padding: 0,
+    paddingTop: INNER_BUTTON_SIZE * 0.15, // Add top padding to push content down slightly
   },
   innerButtonUnchecked: {
     backgroundColor: BaseColors.primaryLight,
@@ -998,52 +1001,52 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
   },
   iconContainer: {
-    marginBottom: 12,
+    marginBottom: 4,
+    marginTop: 4, // Add a little top margin
   },
   // Update these styles in your StyleSheet
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 4, // Reduced from 8
+    paddingHorizontal: 4,
     maxWidth: '100%',
     width: '100%',
+    marginTop: -4, // Pull text up closer to icon
   },
   ctaText: {
     color: BaseColors.text.dark,
     fontSize: 14,
     fontWeight: '800',
     textAlign: 'center',
-    letterSpacing: 0.5, // Reduced from 1
-    marginBottom: 2,
+    letterSpacing: 0.5,
+    marginBottom: 0,
   },
   countdownText: {
     color: BaseColors.primary,
-    fontSize: 20, // Reduced from 22
+    fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: 4, // Reduced from 8
+    marginTop: 2,
   },
   timeLeftText: {
     color: BaseColors.text.light,
-    fontSize: 10, // Reduced from 12
-    fontWeight: '600', // Reduced from 700
+    fontSize: 14,
+    fontWeight: '600',
     textAlign: 'center',
-    marginTop: 1, // Reduced from 2
+    marginTop: 2,
   },
-  // Compact styles for when font is large
   compactCtaText: {
-    fontSize: 11, // Reduced from 12
+    fontSize: 12,
     letterSpacing: 0.3,
     marginBottom: 1,
   },
   compactCountdownText: {
-    fontSize: 16, // Reduced from 18
+    fontSize: 16,
     marginTop: 2,
   },
   compactTimeLeftText: {
-    fontSize: 9, // Reduced from 10
+    fontSize: 9,
     marginTop: 0,
   },
-
   cardsGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginBottom: 24,

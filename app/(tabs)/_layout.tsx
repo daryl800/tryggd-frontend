@@ -37,14 +37,14 @@ export default function TabsLayout() {
       tabBarStyle: {
         backgroundColor: '#ffffff',
         height: Platform.select({
-          ios: 88,
-          android: 68 + insets.bottom
+          ios: 70,
+          android: 60 + insets.bottom
         }),
         paddingBottom: Platform.select({
-          ios: 28,
-          android: Math.max(12, insets.bottom)
+          ios: 20,
+          android: Math.max(8, insets.bottom)
         }),
-        paddingTop: 8,
+        paddingTop: 4,
       },
       tabBarLabelStyle: {
         fontSize: 10, // 👈 CHANGE THIS VALUE to make text bigger (was 11)

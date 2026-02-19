@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
         paddingTop: SCREEN_PADDING.top,
-        marginBottom: 10,
+        marginBottom: 5,
     },
 
     // Regular layout (for Activity, Statistics, etc.)

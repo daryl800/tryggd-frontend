@@ -11,10 +11,10 @@
     "everythingIsFine": "Everything is fine!!",
     "dontForget": "Don't forget to check in today!",
     "youCheckedInTodayAt": "You checked in today @ {{time}}",
-    "pressMeToCheckIn": "Press me to check in",
+    "pressMeToCheckIn": "CHECK IN HERE",
     "reset": "Reset",
     "timer": "Timer",
-    "timeLeftToday": "Time left today",
+    "timeLeftToday": "Time left",
     "activity": "Activity",
     "contacts_one": "{{count}} contact",
     "contacts_other": "{{count}} contacts",
@@ -87,7 +87,7 @@
     "loading": "Loading contacts...",
     "subtitle": {
       "withContacts": "You have {{count}} of 3 possible contacts",
-      "noContacts": "Add contacts to share with (max 3)"
+      "noContacts": "Add contacts to share with"
     },
     "emptyState": {
       "title": "No contacts",

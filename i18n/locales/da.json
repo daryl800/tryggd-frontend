@@ -11,9 +11,10 @@
         "everythingIsFine": "Alt er i orden!!",
         "dontForget": "Glem ikke at tjekke ind i dag!",
         "youCheckedInTodayAt": "Du tjekkede ind i dag kl. {{time}}",
+        "pressMeToCheckIn": "TJEK IND HER",
         "reset": "Nullstill",
         "timer": "Tidsur",
-        "timeLeftToday": "Tid igjen i dag",
+        "timeLeftToday": "Tid tilbage",
         "activity": "Aktivitet",
         "contacts_one": "{{count}} kontakt",
         "contacts_other": "{{count}} kontakter",
@@ -86,7 +87,7 @@
         "loading": "Laster kontakter...",
         "subtitle": {
             "withContacts": "Du har {{count}} av 3 mulige kontakter",
-            "noContacts": "Legg til kontakter å dele med (maks 3)"
+            "noContacts": "Legg til kontakter å dele med"
         },
         "emptyState": {
             "title": "Ingen kontakter",

@@ -11,9 +11,10 @@
         "everythingIsFine": "Kaikki on kunnossa!!",
         "dontForget": "Älä unohda kirjautua sisään tänään!",
         "youCheckedInTodayAt": "Kirjauduit sisään tänään klo {{time}}",
+        "pressMeToCheckIn": "KIRJAUDU TÄÄLLÄ",
         "reset": "Nollaa",
         "timer": "Ajastin",
-        "timeLeftToday": "Aikaa jäljellä tänään",
+        "timeLeftToday": "Aikaa jäljellä",
         "activity": "Toiminta",
         "contacts_one": "{{count}} yhteystieto",
         "contacts_other": "{{count}} yhteystietoa",
@@ -86,7 +87,7 @@
         "loading": "Ladataan yhteystietoja...",
         "subtitle": {
             "withContacts": "Sinulla on {{count}}/3 mahdollisesta yhteystiedosta",
-            "noContacts": "Lisää yhteystietoja jakamiseen (enintään 3)"
+            "noContacts": "Lisää yhteystietoja jakamiseen"
         },
         "emptyState": {
             "title": "Ei yhteystietoja",
