@@ -333,6 +333,7 @@
             "sending": "Lähetetään...",
             "sentTitle": "Tarkista sähköpostisi",
             "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
+            "login": "Siirry kirjautumiseen",
             "error": "Virhe lähetettäessä nollaussähköpostia"
         },
         "resetPassword": {

@@ -333,6 +333,7 @@
             "sending": "Sender...",
             "sentTitle": "Tjek din e-mail",
             "sentMessage": "Vi har sendt et link til at nulstille din adgangskode til din e-mail.",
+            "login": "Gå til login",
             "error": "Fejl ved afsendelse af nulstillingsmail"
         },
         "resetPassword": {

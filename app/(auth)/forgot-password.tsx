@@ -1,4 +1,5 @@
 // app/(auth)/forgot-password.tsx
+import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -25,13 +26,19 @@ export default function ForgotPasswordScreen() {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: "tryggd://auth/reset-password",
+                redirectTo: "https://tryggd.com/reset-password",
             });
             if (error) throw error;
 
             Alert.alert(
                 t("auth.forgotPassword.sentTitle"),
-                t("auth.forgotPassword.sentMessage")
+                t("auth.forgotPassword.sentMessage"),
+                [
+                    {
+                        text: "OK",
+                        onPress: () => router.replace("/(auth)/login")
+                    }
+                ]
             );
         } catch (err: any) {
             Alert.alert(t("auth.forgotPassword.error"), err.message);
@@ -53,10 +60,7 @@ export default function ForgotPasswordScreen() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={{ padding: 24 }}>
-                        <Text
-                            style={{ fontSize: 28, fontWeight: "700", marginBottom: 12 }}
-                            allowFontScaling={false}
-                        >
+                        <Text style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}>
                             {t("auth.forgotPassword.title")}
                         </Text>
 
@@ -67,7 +71,6 @@ export default function ForgotPasswordScreen() {
                                 marginBottom: 24,
                                 lineHeight: 20
                             }}
-                            allowFontScaling={false}
                         >
                             {t("auth.forgotPassword.instructions")}
                         </Text>
@@ -76,11 +79,16 @@ export default function ForgotPasswordScreen() {
                             placeholder={t("auth.email")}
                             value={email}
                             onChangeText={setEmail}
-                            style={inputStyle}
+                            style={{
+                                borderWidth: 1,
+                                borderColor: "#E5E7EB",
+                                padding: 14,
+                                borderRadius: 8,
+                                fontSize: 16,
+                                marginBottom: 16
+                            }}
                             keyboardType="email-address"
                             autoCapitalize="none"
-                            allowFontScaling={false}
-                            placeholderTextColor="#9CA3AF"
                         />
 
                         <TouchableOpacity
@@ -90,7 +98,6 @@ export default function ForgotPasswordScreen() {
                                 backgroundColor: email ? "#5FA893" : "#9CA3AF",
                                 padding: 16,
                                 borderRadius: 8,
-                                marginTop: 16,
                                 marginBottom: 20,
                             }}
                         >
@@ -101,11 +108,16 @@ export default function ForgotPasswordScreen() {
                                     fontSize: 16,
                                     fontWeight: "600"
                                 }}
-                                allowFontScaling={false}
                             >
                                 {loading
                                     ? t("auth.forgotPassword.sending")
                                     : t("auth.forgotPassword.send")}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
+                            <Text style={{ textAlign: "center", color: "#5FA893" }}>
+                                {t("auth.forgotPassword.login")}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -114,13 +126,3 @@ export default function ForgotPasswordScreen() {
         </SafeAreaView>
     );
 }
-
-/* ---------- styles ---------- */
-const inputStyle = {
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    padding: 14,
-    borderRadius: 8,
-    fontSize: 16,
-    color: "#1F2937",
-};

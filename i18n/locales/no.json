@@ -333,6 +333,7 @@
             "sending": "Sender...",
             "sentTitle": "Sjekk e-posten din",
             "sentMessage": "Vi sendte en lenke for å tilbakestille passordet til e-posten din.",
+            "login": "Gå til innlogging",
             "error": "Feil ved sending av tilbakestillingse-post"
         },
         "resetPassword": {

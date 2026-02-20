@@ -333,6 +333,7 @@
       "sending": "Sending...",
       "sentTitle": "Check your email",
       "sentMessage": "We sent a password reset link to your email.",
+      "login": "Go to Login",
       "error": "Error sending reset email"
     },
     "resetPassword": {
