@@ -1,4 +1,5 @@
 // app/(auth)/forgot-password.tsx
+import BaseColors from "@/constants/colors";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -77,16 +78,10 @@ export default function ForgotPasswordScreen() {
 
                         <TextInput
                             placeholder={t("auth.email")}
+                            placeholderTextColor={BaseColors.placeholderTextColor}
                             value={email}
                             onChangeText={setEmail}
-                            style={{
-                                borderWidth: 1,
-                                borderColor: "#E5E7EB",
-                                padding: 14,
-                                borderRadius: 8,
-                                fontSize: 16,
-                                marginBottom: 16
-                            }}
+                            style={inputStyle}
                             keyboardType="email-address"
                             autoCapitalize="none"
                         />
@@ -126,3 +121,14 @@ export default function ForgotPasswordScreen() {
         </SafeAreaView>
     );
 }
+
+/* ---------- styles ---------- */
+const inputStyle = {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 16,
+    color: "#1F2937",
+};

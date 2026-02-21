@@ -79,6 +79,9 @@ export const BaseColors = {
     // Border colors
     borderLight: '#F3F4F6',
 
+    placeholderTextColor: "#9CA3AF",
+
+
 };
 
 // For direct access if needed

@@ -1,4 +1,5 @@
 // app/(auth)/login.tsx
+import BaseColors from "@/constants/colors";
 import { registerAndSavePushToken } from "@/lib/notifications/core";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
@@ -23,7 +24,6 @@ export default function LoginScreen() {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-
     const passwordRef = useRef<TextInput>(null);
 
     const canSubmit = email && password.length >= 6 && !loading;
@@ -77,6 +77,7 @@ export default function LoginScreen() {
                         {/* Email */}
                         <TextInput
                             placeholder={t("auth.email")}
+                            placeholderTextColor={BaseColors.placeholderTextColor}
                             autoCapitalize="none"
                             keyboardType="email-address"
                             value={email}
@@ -84,7 +85,6 @@ export default function LoginScreen() {
                             onSubmitEditing={() => passwordRef.current?.focus()}
                             style={inputStyle}
                             allowFontScaling={false}
-                            placeholderTextColor="#9CA3AF"
                         />
 
                         {/* Password */}
@@ -92,12 +92,12 @@ export default function LoginScreen() {
                             <TextInput
                                 ref={passwordRef}
                                 placeholder={t("auth.password.placeholder")}
+                                placeholderTextColor={BaseColors.placeholderTextColor}
                                 secureTextEntry={!showPassword}
                                 value={password}
                                 onChangeText={setPassword}
                                 style={passwordInput}
                                 allowFontScaling={false}
-                                placeholderTextColor="#9CA3AF"
                             />
                             {password.length > 0 && (
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>

@@ -1,4 +1,5 @@
 // app/(auth)/signup.tsx
+import BaseColors from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useRef, useState } from "react";
@@ -103,6 +104,7 @@ export default function SignupScreen() {
                         {/* Name */}
                         <TextInput
                             placeholder={t("auth.displayName")}
+                            placeholderTextColor={BaseColors.placeholderTextColor}
                             value={displayName}
                             onChangeText={setDisplayName}
                             style={inputStyle}
@@ -112,6 +114,7 @@ export default function SignupScreen() {
                         {/* Email */}
                         <TextInput
                             placeholder={t("auth.email")}
+                            placeholderTextColor={BaseColors.placeholderTextColor}
                             autoCapitalize="none"
                             keyboardType="email-address"
                             value={email}
@@ -124,6 +127,7 @@ export default function SignupScreen() {
                         <View style={passwordWrapper}>
                             <TextInput
                                 placeholder={t("auth.password.placeholder")}
+                                placeholderTextColor={BaseColors.placeholderTextColor}
                                 secureTextEntry={!showPassword}
                                 value={password}
                                 onChangeText={setPassword}
@@ -147,6 +151,7 @@ export default function SignupScreen() {
                             <TextInput
                                 ref={confirmRef}
                                 placeholder={t("auth.confirmPassword")}
+                                placeholderTextColor={BaseColors.placeholderTextColor}
                                 secureTextEntry={!showConfirmPassword}
                                 value={confirmPassword}
                                 onChangeText={setConfirmPassword}
@@ -231,6 +236,7 @@ const inputStyle = {
     borderRadius: 8,
     marginBottom: 12,
     fontSize: 16,
+    color: "#1F2937",
 };
 
 const passwordWrapper = {
