@@ -1,7 +1,7 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
-import { updateContactCheckInPreference } from '@/lib/notifications/core';
+import { clearPushTokens, updateContactCheckInPreference } from '@/lib/notifications/core';
 import {
     disableSelfReminder,
     enableSelfReminder
@@ -25,7 +25,6 @@ import {
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -120,6 +119,8 @@ export default function SettingsScreen() {
         );
     };
 
+
+
     const handleLogout = async () => {
         Alert.alert(t('profile.logout.title'), t('profile.logout.confirm'), [
             {
@@ -130,9 +131,60 @@ export default function SettingsScreen() {
                 text: t('profile.logout.button'),
                 style: 'destructive',
                 onPress: async () => {
-                    await supabase.auth.signOut();
-                    await AsyncStorage.removeItem('@user_profile');
-                    router.replace('/(auth)/login');
+                    try {
+                        // 1. Get the current user before signing out
+                        const { data: { user } } = await supabase.auth.getUser();
+
+                        if (user) {
+                            // 2. Clear push tokens from Supabase (sets expo_push_token to null)
+                            await clearPushTokens(user.id);
+
+                            // 3. Get and potentially invalidate the push token from Expo
+                            const pushToken = await AsyncStorage.getItem('@expo_push_token');
+                            if (pushToken) {
+                                // Optional: Tell Expo this token is no longer valid
+                                // This helps with cleanup on Expo's side
+                                try {
+                                    await fetch('https://exp.host/--/api/v2/push/delete', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            token: pushToken
+                                        }),
+                                    });
+                                } catch (e) {
+                                    console.log('Note: Could not delete token from Expo', e);
+                                }
+                            }
+                        }
+
+                        // 4. Clear ALL AsyncStorage items
+                        const keysToRemove = [
+                            '@expo_push_token',                    // Push notification token
+                            '@user_profile',                       // User profile data
+                            '@app_language',                       // Language setting
+                            '@settings_notifications',             // Notification settings
+                            '@settings_check_in_reminder',         // Check-in reminder setting
+                            '@settings_contact_check_in',          // Contact check-in setting
+                            // Add any other keys your app uses
+                        ];
+
+                        await AsyncStorage.multiRemove(keysToRemove);
+
+                        // 5. Sign out from Supabase
+                        const { error } = await supabase.auth.signOut();
+                        if (error) throw error;
+
+                        // 6. Navigate to login
+                        router.replace('/(auth)/login');
+
+                    } catch (error) {
+                        console.error('Error during logout:', error);
+                        // Even if cleanup fails, try to navigate to login
+                        router.replace('/(auth)/login');
+                    }
                 },
             },
         ]);

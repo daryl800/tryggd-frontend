@@ -17,6 +17,7 @@ export const IS_EXPO_GO = Constants.appOwnership === 'expo';
 /**
  * Register for push notifications and save token + preferences to Supabase
  */
+// In lib/notifications/core.ts - update registerAndSavePushToken
 export async function registerAndSavePushToken(userId: string): Promise<boolean> {
     try {
         // Check if running on a real device
@@ -45,6 +46,9 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         const tokenData = await Notifications.getExpoPushTokenAsync();
         const token = tokenData.data;
         console.log('✅ Expo Push Token obtained');
+
+        // ✅ SAVE TO ASYNC STORAGE
+        await AsyncStorage.setItem('@expo_push_token', token);
 
         // Android-specific channel setup
         if (Platform.OS === 'android') {
@@ -335,6 +339,33 @@ export async function sendContactRequestNotification({
             return false;
         }
 
+        // ✅ Check for DeviceNotRegistered error in the response
+        if (result.data && Array.isArray(result.data)) {
+            for (const receipt of result.data) {
+                if (receipt.status === 'error' && receipt.details?.error === 'DeviceNotRegistered') {
+                    console.log('📱 Device not registered, cleaning up token for user:', receiverUserId);
+
+                    // Clear the invalid token from your database
+                    const { error: updateError } = await supabase
+                        .from('user_push_tokens')
+                        .update({
+                            expo_push_token: null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('user_id', receiverUserId);
+
+                    if (updateError) {
+                        console.error('❌ Error cleaning up invalid token:', updateError);
+                    } else {
+                        console.log('✅ Invalid token cleaned up for user:', receiverUserId);
+                    }
+
+                    // Still return false since notification wasn't delivered
+                    return false;
+                }
+            }
+        }
+
         console.log('✅ Contact request notification sent successfully');
         return true;
 
@@ -343,7 +374,6 @@ export async function sendContactRequestNotification({
         return false;
     }
 }
-
 /**
  * Mark notification as read
  */
@@ -445,13 +475,10 @@ export async function deleteNotification(notificationId: string): Promise<boolea
  */
 export async function clearPushTokens(userId: string): Promise<boolean> {
     try {
+        // Delete the token record instead of updating to null
         const { error } = await supabase
             .from('user_push_tokens')
-            .update({
-                expo_push_token: null,
-                contact_checkin_notifications: false,
-                updated_at: new Date().toISOString()
-            })
+            .delete()
             .eq('user_id', userId);
 
         if (error) {
