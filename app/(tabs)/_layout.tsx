@@ -1,7 +1,7 @@
 // app/(tabs)/_layout.tsx
+import { useContactStore } from "@/stores/contactStore"; // Import the store
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,11 +22,11 @@ const NotificationBadge = ({ count }: { count: number }) => {
 
 export default function TabsLayout() {
   const { user, initialized } = useAuth();
-  const [unreadRequests, setUnreadRequests] = useState(0);
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
-  // ... (keep all your fetch functions the same)
+  // Get unreadCount directly from the store
+  const unreadCount = useContactStore((state) => state.unreadCount);
 
   if (!initialized) return null;
   if (!user) return <Redirect href="/(auth)/login" />;
@@ -47,7 +47,7 @@ export default function TabsLayout() {
         paddingTop: 4,
       },
       tabBarLabelStyle: {
-        fontSize: 10, // 👈 CHANGE THIS VALUE to make text bigger (was 11)
+        fontSize: 10,
         fontWeight: '600',
         marginTop: 2,
       },
@@ -55,7 +55,7 @@ export default function TabsLayout() {
         marginTop: 2,
       },
       tabBarActiveTintColor: '#5FA893',
-      tabBarAllowFontScaling: true, // 👈 Set to true to allow system font scaling
+      tabBarAllowFontScaling: true,
     }}>
       {/* Home Tab */}
       <Tabs.Screen name="index" options={{
@@ -79,8 +79,8 @@ export default function TabsLayout() {
         tabBarIcon: ({ color, size, focused }) => (
           <View style={styles.tabIconContainer}>
             <Ionicons name={focused ? "people" : "people-outline"} color={color} size={size} />
-            {unreadRequests > 0 && (
-              <NotificationBadge count={unreadRequests} />
+            {unreadCount > 0 && (
+              <NotificationBadge count={unreadCount} />
             )}
           </View>
         )

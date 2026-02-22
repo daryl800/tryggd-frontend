@@ -3,6 +3,7 @@ import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { sendContactRequestNotification } from '@/lib/notifications';
+import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
@@ -274,7 +275,10 @@ export default function ContactsScreen() {
     const [activeSection, setActiveSection] = useState<'contacts' | 'requests'>(
         'contacts'
     );
-    const [hasUnreadRequests, setHasUnreadRequests] = useState(false);
+
+    // Use the store instead
+    const { setUnreadCount, incrementUnread, resetUnread, unreadCount } = useContactStore();
+
     const scrollViewRef = useRef<ScrollView>(null);
     const inputRefs = useRef<(TextInput | null)[]>([]);
     const fetchAllDataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -368,7 +372,8 @@ export default function ContactsScreen() {
                     return new Date(request.created_at) > new Date(lastViewed);
                 }).length || 0;
 
-            setHasUnreadRequests(unreadCount > 0);
+            // Update the store
+            setUnreadCount(unreadCount);
         } catch (error) {
             console.error('Check unread requests error:', error);
         }
@@ -441,6 +446,7 @@ export default function ContactsScreen() {
         };
     }, []);
 
+    // Update subscription to use store
     const subscribeToContactRequests = async () => {
         const { data: userData } = await supabase.auth.getUser();
         const user = userData.user;
@@ -451,14 +457,17 @@ export default function ContactsScreen() {
             .on(
                 'postgres_changes',
                 {
-                    event: '*',
+                    event: 'INSERT',
                     schema: 'public',
                     table: 'contact_requests',
                     filter: `receiver_user_id=eq.${user.id}`,
                 },
                 (payload) => {
+                    console.log('🔔 New request received!', payload.new);
+                    // Increment the unread count in store
+                    incrementUnread();
                     fetchAllData();
-                    checkUnreadRequests();
+                    checkUnreadRequests(); // Double-check with proper logic
                 }
             )
             .on(
@@ -1140,13 +1149,12 @@ export default function ContactsScreen() {
                     'last_viewed_requests',
                     new Date().toISOString()
                 );
-                setHasUnreadRequests(false);
+                // Reset the store count
+                resetUnread();
             }
         };
-
         markAsRead();
-    }, [activeSection]);
-
+    }, [activeSection, resetUnread]);
 
 
     const allContacts = [...existingContacts, ...newContacts];
@@ -1220,7 +1228,7 @@ export default function ContactsScreen() {
                             style={[styles.tab, activeSection === 'requests' && styles.activeTab]}
                             onPress={() => {
                                 setActiveSection('requests');
-                                setHasUnreadRequests(false);
+                                resetUnread(); // Reset when viewing requests
                             }}
                         >
                             <View style={styles.tabIconContainer}>
@@ -1233,7 +1241,7 @@ export default function ContactsScreen() {
                                             : BaseColors.neutral[400]
                                     }
                                 />
-                                {hasUnreadRequests && activeSection !== 'requests' && (
+                                {unreadCount > 0 && activeSection !== 'requests' && (
                                     <View style={styles.unreadBadge} />
                                 )}
                             </View>
