@@ -52,10 +52,6 @@ export default function ActivityScreen() {
     Map<string, { email: string; display_name: string }>
   >(new Map());
 
-
-
-
-
   // Add a ref to track if this is first mount
   const isFirstMount = useRef(true);
 
@@ -83,13 +79,6 @@ export default function ActivityScreen() {
       fetchActivities(); // Your fetch function
     }, [])
   );
-
-
-
-
-
-
-
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -643,7 +632,7 @@ export default function ActivityScreen() {
                       {
                         color: timeColorAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [BaseColors.text.dark, BaseColors.primary],
+                          outputRange: [BaseColors.primary, BaseColors.text.dark],
                         }),
                       },
                       hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
