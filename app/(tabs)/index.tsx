@@ -861,7 +861,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => router.push('/(tabs)/statistics')}
+                // onPress={() => router.push('/(tabs)/statistics')}
                 style={styles.card}
                 activeOpacity={0.8}
               >
