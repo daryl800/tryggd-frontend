@@ -143,26 +143,18 @@ const ContactCard = memo(
                     </>
                 ) : (
                     <View style={styles.existingContactInfo}>
-                        <View style={styles.existingContactRow}>
-                            <Ionicons
-                                name="mail-outline"
-                                size={18}
-                                color={BaseColors.neutral[500]}
-                            />
-                            <Text style={styles.existingContactText}>{contact.email}</Text>
-                        </View>
+                        {/* Person icon with display name - now first */}
                         {contact.display_name && contact.display_name.trim() !== '' && (
                             <View style={styles.existingContactRow}>
-                                <Ionicons
-                                    name="person-outline"
-                                    size={18}
-                                    color={BaseColors.neutral[500]}
-                                />
-                                <Text style={styles.existingContactText}>
-                                    {contact.display_name}
-                                </Text>
+                                <Ionicons name="person-outline" size={18} color={BaseColors.primary} />
+                                <Text style={styles.displayNameMain}>{contact.display_name}</Text>
                             </View>
                         )}
+                        {/* Email with lighter color and smaller font - now second */}
+                        <View style={styles.existingContactRow}>
+                            <Ionicons name="mail-outline" size={16} color={BaseColors.neutral[400]} />
+                            <Text style={styles.emailSubdued}>{contact.email}</Text>
+                        </View>
                     </View>
                 )}
             </View>
@@ -1817,4 +1809,17 @@ const styles = StyleSheet.create({
         color: BaseColors.text.dark,
         marginBottom: 12,
     },
+    displayNameMain: {
+        marginLeft: 10,
+        fontSize: 16,
+        fontWeight: '600',
+        color: BaseColors.text.dark,
+        flex: 1,
+    },
+    emailSubdued: {
+        marginLeft: 10,
+        fontSize: 14,
+        color: BaseColors.neutral[500],
+        flex: 1,
+    }
 });
