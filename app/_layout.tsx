@@ -14,8 +14,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import i18n from '../i18n';
 
+import { useNavigationContainerRef } from "expo-router";
+
 // ✅ Import your custom components
 import { CustomText, CustomTextInput } from '@/components/CustomText';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // ✅ Make them available globally
 (global as any).Text = CustomText;
@@ -26,6 +29,51 @@ const IS_EXPO_GO = Constants.appOwnership === 'expo';
 function RootLayoutNav() {
   const { initialized, user } = useAuth();
   const router = useRouter();
+
+  const navigationRef = useNavigationContainerRef();
+  const [isNavReady, setIsNavReady] = React.useState(false);
+
+  const NAVIGATION_STATE_KEY = "NAVIGATION_STATE_V1";
+
+  useEffect(() => {
+    const restoreState = async () => {
+      try {
+        const savedState = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
+
+        if (savedState) {
+          const state = JSON.parse(savedState);
+
+          // Wait until navigation container is ready
+          const unsubscribe = navigationRef.addListener("ready", () => {
+            navigationRef.resetRoot(state);
+          });
+
+          return unsubscribe;
+        }
+      } catch (e) {
+        console.warn("Failed to restore navigation state", e);
+      } finally {
+        setIsNavReady(true);
+      }
+    };
+
+    restoreState();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigationRef.addListener("state", async () => {
+      const state = navigationRef.getRootState();
+
+      if (state) {
+        await AsyncStorage.setItem(
+          NAVIGATION_STATE_KEY,
+          JSON.stringify(state)
+        );
+      }
+    });
+
+    return unsubscribe;
+  }, [navigationRef]);
 
   useEffect(() => {
     // ... keep all your existing useEffect code exactly the same
@@ -124,7 +172,7 @@ function RootLayoutNav() {
     }
   }, [user]);
 
-  if (!initialized) {
+  if (!initialized || !isNavReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
@@ -133,7 +181,7 @@ function RootLayoutNav() {
   }
 
   // FIX: Return Slot directly, no extra View wrapper
-  return <Slot />;
+  return <Slot ref={navigationRef} />;
 }
 
 export default function RootLayout() {

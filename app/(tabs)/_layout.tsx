@@ -56,7 +56,6 @@ export default function TabsLayout() {
         tabBarActiveTintColor: '#5FA893',
         tabBarAllowFontScaling: true,
       }}
-      initialRouteName="index"  // This alone forces the home tab as default
     >
       {/* Home Tab */}
       <Tabs.Screen
