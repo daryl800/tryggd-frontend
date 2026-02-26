@@ -3,7 +3,6 @@ import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import React, { useEffect } from 'react';
 import { ActivityIndicator, AppState, View } from "react-native";
 
-import { isSelfReminderEnabled, refreshReminderSchedule, scheduleDailyReminder } from '@/lib/notifications/reminderManager';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import * as Notifications from 'expo-notifications';
@@ -76,18 +75,11 @@ function RootLayoutNav() {
   }, [navigationRef]);
 
   useEffect(() => {
-    // ... keep all your existing useEffect code exactly the same
     let subscription: Notifications.Subscription | undefined;
 
     const init = async () => {
       subscription = await setupNotificationHandler();
-      const initReminder = async () => {
-        const enabled = await isSelfReminderEnabled();
-        if (enabled) {
-          await scheduleDailyReminder();
-        }
-      };
-      initReminder();
+      console.log('📱 Notifications handler set up, reminders managed by server');
     };
 
     init();
@@ -102,13 +94,8 @@ function RootLayoutNav() {
       if (state === "active") {
         await Notifications.dismissAllNotificationsAsync();
         await Notifications.setBadgeCountAsync(0);
-        await refreshReminderSchedule();
       }
     });
-
-    (async () => {
-      await refreshReminderSchedule();
-    })();
 
     return () => {
       subscription?.remove();

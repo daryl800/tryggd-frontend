@@ -5,13 +5,13 @@ import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
 import {
-  cancelTodayReminderAfterCheckin,
-  scheduleDailyReminder
+  cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
+import * as Notifications from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -218,7 +218,7 @@ export default function HomeScreen() {
   const { streak, loading: streakLoading, refetch: refetchStreak } = useStreak();
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [fontScale, setFontScale] = useState(1); // ✅ Moved INSIDE component
+  const [fontScale, setFontScale] = useState(1);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -229,7 +229,6 @@ export default function HomeScreen() {
 
   const [contactsCount, setContactsCount] = useState(0);
 
-  // ✅ Moved INSIDE component
   useEffect(() => {
     setFontScale(PixelRatio.getFontScale());
   }, []);
@@ -347,6 +346,20 @@ export default function HomeScreen() {
     ]).start();
   };
 
+  // Handle notification responses
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(async (response) => {
+      const { type, isBackup } = response.notification.request.content.data;
+
+      if (type === 'self_reminder_backup' && isBackup) {
+        console.log('Backup notification tapped');
+        fetchLastCheckin();
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
   const resetAllState = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setCheckedInToday(false);
@@ -392,8 +405,6 @@ export default function HomeScreen() {
 
       if (isFromToday) {
         await cancelTodayReminderAfterCheckin();
-      } else {
-        await scheduleDailyReminder();
       }
 
       setShowResetButton(isFromToday);
@@ -986,11 +997,11 @@ const styles = StyleSheet.create({
   innerButton: {
     position: 'absolute',
     alignItems: 'center',
-    justifyContent: 'flex-start', // Changed from 'center' to 'flex-start'
+    justifyContent: 'flex-start',
     borderWidth: 3,
     margin: 0,
     padding: 0,
-    paddingTop: INNER_BUTTON_SIZE * 0.15, // Add top padding to push content down slightly
+    paddingTop: INNER_BUTTON_SIZE * 0.15,
   },
   innerButtonUnchecked: {
     backgroundColor: BaseColors.primaryLight,
@@ -1002,15 +1013,14 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginBottom: 4,
-    marginTop: 4, // Add a little top margin
+    marginTop: 4,
   },
-  // Update these styles in your StyleSheet
   textContainer: {
     alignItems: 'center',
     paddingHorizontal: 4,
     maxWidth: '100%',
     width: '100%',
-    marginTop: -4, // Pull text up closer to icon
+    marginTop: -4,
   },
   ctaText: {
     color: BaseColors.text.dark,
@@ -1114,13 +1124,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: BaseColors.primaryLight,
-    paddingHorizontal: 12, // Reduced from 16
-    paddingVertical: 10, // Reduced from 12
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     width: '100%',
-    minHeight: 44, // Fixed minimum height
+    minHeight: 44,
   },
   warningGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -1129,17 +1139,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: BaseColors.errorLight,
-    paddingHorizontal: 12, // Reduced from 16
-    paddingVertical: 10, // Reduced from 12
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: BaseColors.errorBorder,
     width: '100%',
-    minHeight: 44, // Fixed minimum height
+    minHeight: 44,
   },
   warningIconContainer: {
-    marginRight: 8, // Reduced from 10
-    width: 24, // Fixed width for icon
+    marginRight: 8,
+    width: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1147,16 +1157,16 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14, // Reduced from 15
+    fontSize: 14,
     color: BaseColors.primary,
-    lineHeight: 18, // Added for better vertical alignment
+    lineHeight: 18,
   },
   warningText: {
     flex: 1,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14, // Reduced from 15
+    fontSize: 14,
     color: BaseColors.error,
-    lineHeight: 18, // Added for better vertical alignment
+    lineHeight: 18,
   }
 });

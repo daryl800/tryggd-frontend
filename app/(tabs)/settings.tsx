@@ -93,15 +93,27 @@ export default function SettingsScreen() {
         setIsNotificationsExpanded(!isNotificationsExpanded);
     };
 
+    // Replace saveCheckInReminder with:
     const saveCheckInReminder = async (enabled: boolean) => {
         setCheckInReminderEnabled(enabled);
 
-        await AsyncStorage.setItem(
-            STORAGE_KEYS.CHECK_IN_REMINDER,
-            enabled.toString()
-        );
+        // Save to Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            await supabase
+                .from('user_settings')
+                .upsert({
+                    user_id: user.id,
+                    reminder_enabled: enabled,
+                    daily_reminder_time: '15:00', // Default time
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+                }, { onConflict: 'user_id' });
+        }
 
-        // ⭐ IMPORTANT: trigger scheduling logic
+        // Keep AsyncStorage for local backup
+        await AsyncStorage.setItem(STORAGE_KEYS.CHECK_IN_REMINDER, enabled.toString());
+
+        // Your existing notification logic
         if (enabled) {
             await enableSelfReminder();
         } else {
