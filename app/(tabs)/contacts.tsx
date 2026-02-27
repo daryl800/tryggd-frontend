@@ -10,11 +10,13 @@ import { useFocusEffect } from 'expo-router';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    ActivityIndicator,
     Alert,
     AppState,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
@@ -269,48 +271,69 @@ export default function ContactsScreen() {
     const [newContacts, setNewContacts] = useState<ContactSlot[]>([]);
     const [incomingRequests, setIncomingRequests] = useState<ContactRequest[]>([]);
     const [outgoingRequests, setOutgoingRequests] = useState<ContactRequest[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [activeInputIndex, setActiveInputIndex] = useState<number | null>(null);
     const [activeSection, setActiveSection] = useState<'contacts' | 'requests'>(
         'contacts'
     );
 
-    // Use the store instead
     const { setUnreadCount, incrementUnread, resetUnread, unreadCount } = useContactStore();
-
     const scrollViewRef = useRef<ScrollView>(null);
     const inputRefs = useRef<(TextInput | null)[]>([]);
-    const fetchAllDataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isMountedRef = useRef(true);
+    const lastFetchRef = useRef<number>(0);
+    const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
 
-    // ✅ 1. Define fetch function with useCallback
-    const fetchAllData = useCallback(async () => {
-        if (fetchAllDataTimeoutRef.current) {
-            clearTimeout(fetchAllDataTimeoutRef.current);
+    // Single source of truth for data fetching
+    const fetchAllData = useCallback(async (showLoadingState = false) => {
+        // Prevent too frequent fetches (minimum 2 seconds between fetches)
+        const now = Date.now();
+        if (now - lastFetchRef.current < 2000 && lastFetchRef.current !== 0) {
+            console.log('⏳ Skipping fetch - too frequent');
+            return;
         }
 
-        fetchAllDataTimeoutRef.current = setTimeout(async () => {
-            if (!isMountedRef.current) return;
+        if (showLoadingState) {
+            setIsRefreshing(true);
+        }
 
-            setLoading(true);
-            try {
-                const { data: userData } = await supabase.auth.getUser();
-                const user = userData.user;
-                if (!user) return;
+        try {
+            const { data: userData } = await supabase.auth.getUser();
+            const user = userData.user;
+            if (!user) return;
 
-                // Fetch existing contacts
-                const { data: contactRows } = await supabase
+            // Fetch everything in parallel for better performance
+            const [contactsResult, incomingResult, outgoingResult] = await Promise.all([
+                supabase
                     .from('contacts')
                     .select('id, contact_user_id, contact_email, contact_display_name')
                     .eq('owner_user_id', user.id)
-                    .order('created_at');
+                    .order('created_at'),
 
+                supabase
+                    .from('contact_requests')
+                    .select('*')
+                    .eq('receiver_user_id', user.id)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false }),
+
+                supabase
+                    .from('contact_requests')
+                    .select('*')
+                    .eq('sender_user_id', user.id)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false })
+            ]);
+
+            if (isMountedRef.current) {
+                // Transform contacts
                 const contacts: ContactSlot[] =
-                    contactRows?.map((row) => ({
+                    contactsResult.data?.map((row) => ({
                         id: row.id,
                         user_id: row.contact_user_id,
                         email: row.contact_email || '',
@@ -318,35 +341,22 @@ export default function ContactsScreen() {
                     })) || [];
 
                 setExistingContacts(contacts);
+                setIncomingRequests(incomingResult.data || []);
+                setOutgoingRequests(outgoingResult.data || []);
 
-                // Fetch incoming contact requests
-                const { data: incomingData } = await supabase
-                    .from('contact_requests')
-                    .select('*')
-                    .eq('receiver_user_id', user.id)
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false });
-
-                setIncomingRequests(incomingData || []);
-
-                // Fetch outgoing contact requests
-                const { data: outgoingData } = await supabase
-                    .from('contact_requests')
-                    .select('*')
-                    .eq('sender_user_id', user.id)
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false });
-
-                setOutgoingRequests(outgoingData || []);
-            } catch (error) {
-                console.error('Fetch data error:', error);
-                Alert.alert(t('errors.title'), t('contacts.errors.loadData'));
-            } finally {
-                if (isMountedRef.current) {
-                    setLoading(false);
-                }
+                lastFetchRef.current = Date.now();
             }
-        }, 300);
+        } catch (error) {
+            console.error('Fetch data error:', error);
+            if (isMountedRef.current) {
+                Alert.alert(t('errors.title'), t('contacts.errors.loadData'));
+            }
+        } finally {
+            if (isMountedRef.current) {
+                setIsInitialLoading(false);
+                setIsRefreshing(false);
+            }
+        }
     }, [t]);
 
     const checkUnreadRequests = useCallback(async () => {
@@ -372,47 +382,74 @@ export default function ContactsScreen() {
                     return new Date(request.created_at) > new Date(lastViewed);
                 }).length || 0;
 
-            // Update the store
             setUnreadCount(unreadCount);
         } catch (error) {
             console.error('Check unread requests error:', error);
         }
-    }, []);
+    }, [setUnreadCount]);
 
-    // ✅ 2. Initial fetch
+    // Initial load - only once
     useEffect(() => {
         isMountedRef.current = true;
 
-        fetchAllData();
-        checkUnreadRequests();
-        cleanupContactData();
+        const initialize = async () => {
+            await fetchAllData(true);
+            await checkUnreadRequests();
+            cleanupContactData();
+        };
+
+        initialize();
 
         return () => {
             isMountedRef.current = false;
-            if (fetchAllDataTimeoutRef.current) {
-                clearTimeout(fetchAllDataTimeoutRef.current);
+            if (fetchTimeoutRef.current) {
+                clearTimeout(fetchTimeoutRef.current);
             }
         };
-    }, []);
+    }, []); // Empty dependency array - only run once
 
-    // ✅ 3. FOCUS EFFECT - triggers on tab switch and initial mount
+    // Smart focus effect - only fetch if data is stale (> 30 seconds)
     useFocusEffect(
         useCallback(() => {
-            console.log('🎯 Contacts screen focused - fetching fresh data');
-            fetchAllData();
+            const now = Date.now();
+            const timeSinceLastFetch = now - lastFetchRef.current;
+
+            // Only fetch if data is stale (older than 30 seconds) or no data
+            if (timeSinceLastFetch > 30000 || existingContacts.length === 0) {
+                console.log('🎯 Data stale, refreshing...');
+                fetchAllData(false);
+                checkUnreadRequests();
+            } else {
+                console.log('🎯 Using cached data');
+            }
+
+            // Check unread requests without full refresh
             checkUnreadRequests();
-        }, [fetchAllData, checkUnreadRequests])
+        }, [fetchAllData, checkUnreadRequests, existingContacts.length])
     );
 
-    // ✅ 4. APP STATE EFFECT - triggers on lock/unlock and background/foreground
+    // App state effect - debounced refresh
     useEffect(() => {
         let isActive = true;
 
         const handleAppStateChange = (nextAppState: string) => {
             if (nextAppState === 'active' && isActive) {
-                console.log('📱 App became active - refreshing contacts data');
-                fetchAllData();
-                checkUnreadRequests();
+                console.log('📱 App became active - checking data freshness');
+
+                // Debounce app state refreshes
+                if (fetchTimeoutRef.current) {
+                    clearTimeout(fetchTimeoutRef.current);
+                }
+
+                fetchTimeoutRef.current = setTimeout(() => {
+                    if (isMountedRef.current) {
+                        const timeSinceLastFetch = Date.now() - lastFetchRef.current;
+                        if (timeSinceLastFetch > 10000) { // Only refresh if >10 seconds
+                            fetchAllData(false);
+                            checkUnreadRequests();
+                        }
+                    }
+                }, 500);
             }
         };
 
@@ -421,17 +458,89 @@ export default function ContactsScreen() {
         return () => {
             isActive = false;
             subscription.remove();
+            if (fetchTimeoutRef.current) {
+                clearTimeout(fetchTimeoutRef.current);
+            }
         };
     }, [fetchAllData, checkUnreadRequests]);
 
-    // ✅ 5. Realtime subscriptions (keep your existing ones)
+    // Optimized real-time subscriptions
     useEffect(() => {
         let contactRequestsSubscription: any = null;
         let contactsSubscription: any = null;
 
         const setupSubscriptions = async () => {
-            contactRequestsSubscription = await subscribeToContactRequests();
-            contactsSubscription = await subscribeToContacts();
+            const { data: userData } = await supabase.auth.getUser();
+            const user = userData.user;
+            if (!user) return;
+
+            // Contact requests subscription
+            contactRequestsSubscription = supabase
+                .channel(`contact_requests:${user.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'contact_requests',
+                        filter: `receiver_user_id=eq.${user.id}`,
+                    },
+                    (payload) => {
+                        console.log('🔔 New request received!');
+                        incrementUnread();
+
+                        // Instead of full refresh, update state directly
+                        if (isMountedRef.current) {
+                            setIncomingRequests(prev => [payload.new as ContactRequest, ...prev]);
+                        }
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'contact_requests',
+                        filter: `sender_user_id=eq.${user.id}`,
+                    },
+                    () => {
+                        // Debounce these updates
+                        if (fetchTimeoutRef.current) {
+                            clearTimeout(fetchTimeoutRef.current);
+                        }
+                        fetchTimeoutRef.current = setTimeout(() => {
+                            if (isMountedRef.current) {
+                                fetchAllData(false);
+                            }
+                        }, 1000);
+                    }
+                )
+                .subscribe();
+
+            // Contacts subscription - only refresh if it's a change we care about
+            contactsSubscription = supabase
+                .channel(`contacts:${user.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'contacts',
+                        filter: `owner_user_id=eq.${user.id}`,
+                    },
+                    () => {
+                        // Debounce contacts updates
+                        if (fetchTimeoutRef.current) {
+                            clearTimeout(fetchTimeoutRef.current);
+                        }
+                        fetchTimeoutRef.current = setTimeout(() => {
+                            if (isMountedRef.current) {
+                                fetchAllData(false);
+                            }
+                        }, 1000);
+                    }
+                )
+                .subscribe();
         };
 
         setupSubscriptions();
@@ -443,89 +552,32 @@ export default function ContactsScreen() {
             if (contactsSubscription) {
                 contactsSubscription.unsubscribe();
             }
+            if (fetchTimeoutRef.current) {
+                clearTimeout(fetchTimeoutRef.current);
+            }
         };
-    }, []);
+    }, []); // Empty dependency - run once
 
-    // Update subscription to use store
-    const subscribeToContactRequests = async () => {
-        const { data: userData } = await supabase.auth.getUser();
-        const user = userData.user;
-        if (!user) return null;
+    // Pull-to-refresh handler
+    const handleManualRefresh = useCallback(async () => {
+        setIsRefreshing(true);
+        await fetchAllData(true);
+        await checkUnreadRequests();
+    }, [fetchAllData, checkUnreadRequests]);
 
-        const subscription = supabase
-            .channel(`contact_requests:${user.id}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'contact_requests',
-                    filter: `receiver_user_id=eq.${user.id}`,
-                },
-                (payload) => {
-                    console.log('🔔 New request received!', payload.new);
-                    // Increment the unread count in store
-                    incrementUnread();
-                    fetchAllData();
-                    checkUnreadRequests(); // Double-check with proper logic
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'contact_requests',
-                    filter: `sender_user_id=eq.${user.id}`,
-                },
-                (payload) => {
-                    fetchAllData();
-                }
-            )
-            .subscribe((status) => {
-                console.log('Contact requests subscription status:', status);
-            });
-
-        return subscription;
-    };
-
-    const subscribeToContacts = async () => {
-        const { data: userData } = await supabase.auth.getUser();
-        const user = userData.user;
-        if (!user) return null;
-
-        const subscription = supabase
-            .channel(`contacts:${user.id}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'contacts',
-                    filter: `contact_user_id=eq.${user.id}`,
-                },
-                (payload) => {
-                    fetchAllData();
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'contacts',
-                    filter: `owner_user_id=eq.${user.id}`,
-                },
-                (payload) => {
-                    fetchAllData();
-                }
-            )
-            .subscribe((status) => {
-                console.log('Contacts subscription status:', status);
-            });
-
-        return subscription;
-    };
+    // Mark requests as read when viewing
+    useEffect(() => {
+        const markAsRead = async () => {
+            if (activeSection === 'requests' && unreadCount > 0) {
+                await AsyncStorage.setItem(
+                    'last_viewed_requests',
+                    new Date().toISOString()
+                );
+                resetUnread();
+            }
+        };
+        markAsRead();
+    }, [activeSection, unreadCount, resetUnread]);
 
     const handleAddNewContact = () => {
         if (totalContactsCount >= 3) {
@@ -1133,31 +1185,28 @@ export default function ContactsScreen() {
         }
     };
 
-    // ✅ Update handleManualRefresh to use the new fetch
-    const handleManualRefresh = useCallback(async () => {
-        setLoading(true);
-        await fetchAllData();
-        await checkUnreadRequests();
-        setLoading(false);
-    }, [fetchAllData, checkUnreadRequests]);
-
-    // ✅ Update mark as read effect
-    useEffect(() => {
-        const markAsRead = async () => {
-            if (activeSection === 'requests') {
-                await AsyncStorage.setItem(
-                    'last_viewed_requests',
-                    new Date().toISOString()
-                );
-                // Reset the store count
-                resetUnread();
-            }
-        };
-        markAsRead();
-    }, [activeSection, resetUnread]);
-
 
     const allContacts = [...existingContacts, ...newContacts];
+
+    // Loading states
+    if (isInitialLoading) {
+        return (
+            <SafeAreaView style={styles.mainContainer} edges={['top']}>
+                <ScreenHeader
+                    title={t('contacts.title')}
+                    subtitle={t('contacts.loading')}
+                    iconName="people"
+                />
+                <View style={styles.initialLoadingContainer}>
+                    <ActivityIndicator size="large" color={BaseColors.primary} />
+                    <Text style={styles.initialLoadingText}>
+                        {t('common.loading')}
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
 
     return (
         <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -1166,7 +1215,7 @@ export default function ContactsScreen() {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={getKeyboardVerticalOffset()}
             >
-                {/* Screen Header - FIXED at top */}
+                {/* Screen Header */}
                 <ScreenHeader
                     title={t('contacts.title')}
                     subtitle={
@@ -1177,6 +1226,18 @@ export default function ContactsScreen() {
                     iconName="people"
                     rightElement={
                         <View style={styles.headerActions}>
+                            <TouchableOpacity
+                                onPress={handleManualRefresh}
+                                style={styles.refreshButton}
+                                disabled={isRefreshing}
+                            >
+                                <Ionicons
+                                    name="refresh"
+                                    size={ICON_SIZES.MD}
+                                    color={isRefreshing ? BaseColors.neutral[300] : BaseColors.primary}
+                                    style={isRefreshing ? styles.refreshing : undefined}
+                                />
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}
@@ -1196,7 +1257,7 @@ export default function ContactsScreen() {
                     }
                 />
 
-                {/* Tabs - BELOW header but ABOVE scrollview */}
+                {/* Tabs */}
                 <View style={styles.tabsContainer}>
                     <View style={styles.tabContainer}>
                         <TouchableOpacity
@@ -1228,7 +1289,7 @@ export default function ContactsScreen() {
                             style={[styles.tab, activeSection === 'requests' && styles.activeTab]}
                             onPress={() => {
                                 setActiveSection('requests');
-                                resetUnread(); // Reset when viewing requests
+                                resetUnread();
                             }}
                         >
                             <View style={styles.tabIconContainer}>
@@ -1259,7 +1320,7 @@ export default function ContactsScreen() {
                     </View>
                 </View>
 
-                {/* SCROLLVIEW - Everything below tabs scrolls */}
+                {/* CONTACTS SECTION */}
                 {activeSection === 'contacts' ? (
                     <>
                         <ScrollView
@@ -1268,20 +1329,18 @@ export default function ContactsScreen() {
                             style={styles.scrollView}
                             keyboardShouldPersistTaps="handled"
                             contentContainerStyle={styles.scrollContent}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={isRefreshing}
+                                    onRefresh={handleManualRefresh}
+                                    colors={[BaseColors.primary]}
+                                    tintColor={BaseColors.primary}
+                                    title={t('common.refreshing')}
+                                    titleColor={BaseColors.neutral[500]}
+                                />
+                            }
                         >
-                            {loading ? (
-                                <View style={styles.loadingContainer}>
-                                    <Ionicons
-                                        name="refresh"
-                                        size={36}
-                                        color={BaseColors.text.light}
-                                        style={styles.loadingIcon}
-                                    />
-                                    <Text style={styles.loadingText} allowFontScaling={false}>
-                                        {t('contacts.loading')}
-                                    </Text>
-                                </View>
-                            ) : allContacts.length === 0 ? (
+                            {allContacts.length === 0 && !isRefreshing ? (
                                 <View style={styles.emptyState}>
                                     <Ionicons
                                         name="people-outline"
@@ -1296,37 +1355,44 @@ export default function ContactsScreen() {
                                     </Text>
                                 </View>
                             ) : (
-                                allContacts.map((contact, index) => {
-                                    const isNewContact = index >= existingContacts.length;
-                                    const adjustedIndex = isNewContact
-                                        ? index - existingContacts.length
-                                        : index;
-
-                                    return (
+                                <>
+                                    {/* Show existing contacts first */}
+                                    {existingContacts.map((contact, index) => (
                                         <ContactCard
-                                            key={
-                                                isNewContact
-                                                    ? `new-${adjustedIndex}`
-                                                    : `existing-${contact.id}`
-                                            }
+                                            key={`existing-${contact.id}`}
                                             contact={contact}
                                             index={index}
                                             isActive={activeInputIndex === index}
-                                            onEmailChange={(text) =>
-                                                updateNewContact(adjustedIndex, text)
-                                            }
+                                            onEmailChange={() => { }} // No email change for existing contacts
                                             onFocus={() => handleInputFocus(index)}
                                             onBlur={() => handleInputBlur(index)}
-                                            onRemove={() =>
-                                                isNewContact
-                                                    ? removeNewContact(adjustedIndex)
-                                                    : removeExistingContact(adjustedIndex)
-                                            }
+                                            onRemove={() => removeExistingContact(index)}
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
-                                            isNewContact={isNewContact}
+                                            isNewContact={false}
                                         />
-                                    );
-                                })
+                                    ))}
+
+                                    {/* Show new contacts (being added) */}
+                                    {newContacts.map((contact, newIndex) => {
+                                        const actualIndex = existingContacts.length + newIndex;
+                                        return (
+                                            <ContactCard
+                                                key={`new-${newIndex}`}
+                                                contact={contact}
+                                                index={actualIndex}
+                                                isActive={activeInputIndex === actualIndex}
+                                                onEmailChange={(text) =>
+                                                    updateNewContact(newIndex, text)
+                                                }
+                                                onFocus={() => handleInputFocus(actualIndex)}
+                                                onBlur={() => handleInputBlur(actualIndex)}
+                                                onRemove={() => removeNewContact(newIndex)}
+                                                inputRef={(ref) => (inputRefs.current[actualIndex] = ref)}
+                                                isNewContact={true}
+                                            />
+                                        );
+                                    })}
+                                </>
                             )}
 
                             {/* Add bottom padding for save button */}
@@ -1348,7 +1414,7 @@ export default function ContactsScreen() {
                                                 name="refresh"
                                                 size={18}
                                                 color="#fff"
-                                                style={styles.buttonIcon}
+                                                style={[styles.buttonIcon, styles.spinning]}
                                             />
                                         ) : (
                                             <Ionicons
@@ -1371,24 +1437,22 @@ export default function ContactsScreen() {
                         )}
                     </>
                 ) : (
-                    // Requests Section
+                    /* REQUESTS SECTION */
                     <ScrollView
                         style={styles.scrollView}
                         contentContainerStyle={styles.requestsContent}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={isRefreshing}
+                                onRefresh={handleManualRefresh}
+                                colors={[BaseColors.primary]}
+                                tintColor={BaseColors.primary}
+                                title={t('common.refreshing')}
+                                titleColor={BaseColors.neutral[500]}
+                            />
+                        }
                     >
-                        {loading ? (
-                            <View style={styles.loadingContainer}>
-                                <Ionicons
-                                    name="refresh"
-                                    size={36}
-                                    color={BaseColors.text.light}
-                                    style={styles.loadingIcon}
-                                />
-                                <Text style={styles.loadingText} allowFontScaling={false}>
-                                    {t('contacts.requests.loading')}
-                                </Text>
-                            </View>
-                        ) : totalRequestsCount === 0 ? (
+                        {totalRequestsCount === 0 && !isRefreshing ? (
                             <View style={styles.emptyState}>
                                 <Ionicons
                                     name="mail-open-outline"
@@ -1504,10 +1568,6 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.highlight,
         marginLeft: 4,
         marginTop: -8,
-    },
-    headerActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
     },
     addButton: {
         padding: 4,
@@ -1829,5 +1889,27 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: BaseColors.neutral[500],
         flex: 1,
-    }
+    },
+    initialLoadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: BaseColors.background,
+    },
+    initialLoadingText: {
+        marginTop: 12,
+        fontSize: 16,
+        color: BaseColors.neutral[500],
+    },
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+    },
+    refreshButton: {
+        padding: 4,
+    },
+    refreshing: {
+        transform: [{ rotate: '45deg' }],
+    },
 });
