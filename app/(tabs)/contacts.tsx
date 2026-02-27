@@ -1226,7 +1226,7 @@ export default function ContactsScreen() {
                     iconName="people"
                     rightElement={
                         <View style={styles.headerActions}>
-                            <TouchableOpacity
+                            {/* <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
                                 disabled={isRefreshing}
@@ -1237,7 +1237,7 @@ export default function ContactsScreen() {
                                     color={isRefreshing ? BaseColors.neutral[300] : BaseColors.primary}
                                     style={isRefreshing ? styles.refreshing : undefined}
                                 />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}

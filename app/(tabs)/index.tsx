@@ -440,7 +440,7 @@ export default function HomeScreen() {
 
       triggerCheckInAnimation();
 
-      const tz = (Localization as any).timeZone || 'UTC';
+      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
       // Insert checkin to database
       const { data, error } = await supabase
