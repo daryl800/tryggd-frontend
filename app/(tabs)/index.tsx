@@ -4,6 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
+import { sendCheckinNotification } from '@/lib/api/checkinApi';
 import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
@@ -432,14 +433,16 @@ export default function HomeScreen() {
     }, [fetchLastCheckin, fetchContactsCount])
   );
 
+
   const handleCheckIn = useCallback(async () => {
     try {
       if (!user) throw new Error(t('home.errors.noUser'));
 
       triggerCheckInAnimation();
 
-      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      const tz = (Localization as any).timeZone || 'UTC';
 
+      // Insert checkin to database
       const { data, error } = await supabase
         .from('checkins')
         .insert({
@@ -452,6 +455,14 @@ export default function HomeScreen() {
       if (error) throw error;
       if (!data) return;
 
+      // Send notifications to contacts USING TOKENMANAGER
+      await sendCheckinNotification(
+        user.id,
+        data.checked_in_at_utc,
+        tz
+      );
+
+      // Update local state
       setCheckedInToday(true);
       setShowResetButton(true);
       setLastCheckinUtc(data.checked_in_at_utc);

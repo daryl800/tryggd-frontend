@@ -1,52 +1,48 @@
 // app/_layout.tsx
-import { setupNotificationHandler } from '@/lib/notifications/handlers';
-import React, { useEffect } from 'react';
-import { ActivityIndicator, AppState, View } from "react-native";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
-import * as Notifications from 'expo-notifications';
-import { Slot, useRouter } from "expo-router";
+import { Slot, useNavigationContainerRef, useRouter } from "expo-router";
+import React, { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
+import { ActivityIndicator, AppState, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// Custom components & providers
+import { CustomText, CustomTextInput } from '@/components/CustomText';
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import i18n from '../i18n';
 
-import { useNavigationContainerRef } from "expo-router";
+// Services & utilities
+import { tokenManager } from '@/lib/auth/tokenManager';
+import { registerAndSavePushToken } from '@/lib/notifications/core';
+import { setupNotificationHandler } from '@/lib/notifications/handlers';
+import * as Notifications from 'expo-notifications';
 
-// ✅ Import your custom components
-import { CustomText, CustomTextInput } from '@/components/CustomText';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// ✅ Make them available globally
+// Make custom components available globally
 (global as any).Text = CustomText;
 (global as any).TextInput = CustomTextInput;
 
 const IS_EXPO_GO = Constants.appOwnership === 'expo';
+const NAVIGATION_STATE_KEY = "NAVIGATION_STATE_V1";
 
-function RootLayoutNav() {
-  const { initialized, user } = useAuth();
-  const router = useRouter();
-
-  const navigationRef = useNavigationContainerRef();
+// ============================================
+// Navigation State Manager
+// ============================================
+function useNavigationPersistence(navigationRef: any) {
   const [isNavReady, setIsNavReady] = React.useState(false);
 
-  const NAVIGATION_STATE_KEY = "NAVIGATION_STATE_V1";
-
+  // Restore navigation state
   useEffect(() => {
     const restoreState = async () => {
       try {
         const savedState = await AsyncStorage.getItem(NAVIGATION_STATE_KEY);
-
         if (savedState) {
           const state = JSON.parse(savedState);
-
-          // Wait until navigation container is ready
           const unsubscribe = navigationRef.addListener("ready", () => {
             navigationRef.resetRoot(state);
           });
-
           return unsubscribe;
         }
       } catch (e) {
@@ -59,31 +55,34 @@ function RootLayoutNav() {
     restoreState();
   }, []);
 
+  // Save navigation state
   useEffect(() => {
     const unsubscribe = navigationRef.addListener("state", async () => {
       const state = navigationRef.getRootState();
-
       if (state) {
-        await AsyncStorage.setItem(
-          NAVIGATION_STATE_KEY,
-          JSON.stringify(state)
-        );
+        await AsyncStorage.setItem(NAVIGATION_STATE_KEY, JSON.stringify(state));
       }
     });
 
     return unsubscribe;
   }, [navigationRef]);
 
+  return isNavReady;
+}
+
+// ============================================
+// Notification Manager
+// ============================================
+function useNotifications(user: any) {
   useEffect(() => {
-    let subscription: Notifications.Subscription | undefined;
-
-    const init = async () => {
+    // Setup notification handler
+    let subscription: any;
+    const initNotifications = async () => {
       subscription = await setupNotificationHandler();
-      console.log('📱 Notifications handler set up, reminders managed by server');
     };
+    initNotifications();
 
-    init();
-
+    // Clear badges when app becomes active
     const clearBadge = async () => {
       await Notifications.dismissAllNotificationsAsync();
       await Notifications.setBadgeCountAsync(0);
@@ -103,8 +102,32 @@ function RootLayoutNav() {
     };
   }, []);
 
+  // Setup push notifications when user logs in
   useEffect(() => {
-    // ... keep your linking code exactly the same
+    if (!user || IS_EXPO_GO) {
+      console.log('📱 Expo Go: Skipping push notification setup');
+      return;
+    }
+
+    const setupPush = async () => {
+      try {
+        console.log('🚀 Setting up push notifications for user:', user.id);
+        const success = await registerAndSavePushToken(user.id);
+        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues');
+      } catch (error: any) {
+        console.error('⚠️ Push setup error:', error.message || error);
+      }
+    };
+
+    setupPush();
+  }, [user?.id]);
+}
+
+// ============================================
+// Deep Link Manager
+// ============================================
+function useDeepLinking(router: any) {
+  useEffect(() => {
     const handleUrl = (url: string | null) => {
       if (!url) return;
 
@@ -117,8 +140,10 @@ function RootLayoutNav() {
       }
 
       if (parsed.queryParams?.type === "recovery" && parsed.queryParams.access_token) {
-        const token = parsed.queryParams.access_token;
-        router.replace(`/(auth)/reset-password?access_token=${token}`);
+        router.replace({
+          pathname: "/(auth)/forgot-password",
+          params: { access_token: parsed.queryParams.access_token }
+        });
         return;
       }
     };
@@ -126,38 +151,28 @@ function RootLayoutNav() {
     Linking.getInitialURL().then(handleUrl);
     const subscription = Linking.addEventListener("url", ({ url }) => handleUrl(url));
 
-    return () => {
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, [router]);
+}
 
+// ============================================
+// Main Navigation Component
+// ============================================
+function RootLayoutNav() {
+  const { initialized, user } = useAuth();
+  const router = useRouter();
+  const navigationRef = useNavigationContainerRef();
+
+  // Initialize services
   useEffect(() => {
-    // ... keep your push notification code exactly the same
-    const setupPushNotifications = async () => {
-      if (!user || IS_EXPO_GO) {
-        console.log('📱 Expo Go: Skipping push notification setup');
-        return;
-      }
+    tokenManager.startAutoRefresh();
+    return () => tokenManager.stopAutoRefresh();
+  }, []);
 
-      try {
-        console.log('🚀 Setting up push notifications for user:', user.id);
-        const { registerAndSavePushToken } = await import('../lib/notifications/core');
-        const success = await registerAndSavePushToken(user.id);
-
-        if (success) {
-          console.log('✅ Push notification setup complete');
-        } else {
-          console.warn('⚠️ Push notification setup had issues');
-        }
-      } catch (error: any) {
-        console.error('⚠️ Error in push notification setup:', error.message || error);
-      }
-    };
-
-    if (user) {
-      setupPushNotifications();
-    }
-  }, [user]);
+  // Use custom hooks
+  const isNavReady = useNavigationPersistence(navigationRef);
+  useNotifications(user);
+  useDeepLinking(router);
 
   if (!initialized || !isNavReady) {
     return (
@@ -167,17 +182,18 @@ function RootLayoutNav() {
     );
   }
 
-  // FIX: Return Slot directly, no extra View wrapper
-  return <Slot ref={navigationRef} />;
+  return <Slot />;
 }
 
+// ============================================
+// Root Layout
+// ============================================
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <I18nextProvider i18n={i18n}>
           <AuthProvider>
-            {/* REMOVED the extra View wrapper that was causing the tab bar issue */}
             <RootLayoutNav />
           </AuthProvider>
         </I18nextProvider>
