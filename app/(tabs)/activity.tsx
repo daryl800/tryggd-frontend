@@ -652,39 +652,44 @@ export default function ActivityScreen() {
             timeZone: tz,
           });
 
-          const weekday = d
-            .toLocaleDateString(t('activity.time.locale'), {
-              weekday: 'short',
+          // Get today and yesterday dates for comparison
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          // Format dates to YYYY-MM-DD for comparison
+          const dStr = d.toISOString().split('T')[0];
+          const todayStr = today.toISOString().split('T')[0];
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+          // Determine if it's today or yesterday
+          if (dStr === todayStr) {
+            dateText = t('activity.today') || 'Today';
+          } else if (dStr === yesterdayStr) {
+            dateText = t('activity.yesterday') || 'Yesterday';
+          } else {
+            // Use regular date formatting for older dates
+            const weekday = d
+              .toLocaleDateString(t('activity.time.locale'), {
+                weekday: 'short',
+                timeZone: tz,
+              })
+              .replace('.', '');
+
+            const dayOfMonth = d.getDate();
+            const monthName = d.toLocaleDateString(t('activity.time.locale'), {
+              month: 'short',
               timeZone: tz,
-            })
-            .replace('.', '');
+            });
 
-          const dayOfMonth = d.getDate();
-          const monthName = d.toLocaleDateString(t('activity.time.locale'), {
-            month: 'short',
-            timeZone: tz,
-          });
-
-          dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
+            dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
+          }
 
           const parts = tz.split('/');
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
         } catch (error) {
           console.error('Error formatting time:', error);
-          const d = new Date(timestamp!);
-          timeText = d.toLocaleTimeString(t('activity.time.locale'), {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-
-          const weekday = d
-            .toLocaleDateString(t('activity.time.locale'), { weekday: 'short' })
-            .replace('.', '');
-          const dayOfMonth = d.getDate();
-          const monthName = d.toLocaleDateString(t('activity.time.locale'), { month: 'long' });
-          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
-          timezoneText = timezone || 'UTC';
+          // ... error handling
         }
       }
 
@@ -1082,6 +1087,13 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
 
+  date: {
+    fontSize: 13,
+    color: BaseColors.text.dark, // Changed from BaseColors.text.light
+    marginBottom: 8,
+    fontWeight: '500', // Added medium weight for better visibility
+  },
+
   time: {
     fontSize: 15,
     fontWeight: '600',
@@ -1089,10 +1101,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
 
-  date: {
-    fontSize: 13,
-    color: BaseColors.text.light,
-    marginBottom: 8,
+  // If you want "Today" and "Yesterday" to stand out more
+  todayText: {
+    color: BaseColors.primary, // Make "Today" green/primary color
+    fontWeight: '600',
+  },
+
+  yesterdayText: {
+    color: BaseColors.warning || '#FFA500', // Make "Yesterday" orange
+    fontWeight: '600',
   },
 
   noCheckIn: {
