@@ -2,6 +2,8 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { responseService } from '@/lib/notifications/responseService';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -497,11 +499,12 @@ export default function ActivityScreen() {
     checkin_timezone?: string | null;
   }) => {
     const { t } = useTranslation();
+    const { user } = useAuth(); // Get current user
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
-    // State for button loading/disabled
     const [sendingResponse, setSendingResponse] = useState(false);
+    const [responseSent, setResponseSent] = useState(false);
 
     // Status calculation
     const getCheckInStatus = useCallback(() => {
@@ -572,62 +575,54 @@ export default function ActivityScreen() {
       }
     }, [timestamp]);
 
-    // Handler for response button (only for non-owner)
+    const status = getCheckInStatus();
+    const isButtonEnabled = status.status === 'checked-today' && !isOwner && !responseSent;
+
+    // Handler for response button - THIS IS THE KEY PART
     const handleSendResponse = async () => {
-      if (sendingResponse || isOwner) return;
+      if (sendingResponse || !isButtonEnabled || !user) return;
 
       setSendingResponse(true);
       try {
-        console.log('Sending response to user:', userId);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('Response sent successfully!');
+        // First check if already responded (optional - can also be done on server)
+        const alreadyResponded = await responseService.hasResponded(
+          userId,           // recipient
+          user.id,          // sender
+          timestamp || ''   // checkin time
+        );
+
+        if (alreadyResponded) {
+          console.log('Already responded to this check-in');
+          setResponseSent(true);
+          return;
+        }
+
+        // Call the service to send the response
+        const result = await responseService.sendResponse({
+          recipientUserId: userId,
+          senderUserId: user.id,
+          checkinTime: timestamp || '',
+        });
+
+        if (result.success) {
+          console.log('✅ Response sent successfully!');
+          setResponseSent(true);
+
+          // Optional: Show a success message to user
+          // You could use a toast or alert here
+        } else {
+          console.error('Failed to send response:', result.error);
+          // Optional: Show error message to user
+        }
       } catch (error) {
         console.error('Error sending response:', error);
+        // Optional: Show error message to user
       } finally {
         setSendingResponse(false);
       }
     };
 
-    const status = getCheckInStatus();
-    const isButtonEnabled = status.status === 'checked-today' && !isOwner; // Only enable for today's check-ins and non-owner
-
-    useEffect(() => {
-      if (hasNewUpdate && timestamp) {
-        timeScaleAnim.setValue(1);
-        timeColorAnim.setValue(0);
-
-        Animated.parallel([
-          Animated.sequence([
-            Animated.timing(timeScaleAnim, {
-              toValue: 1.1,
-              duration: 150,
-              useNativeDriver: true
-            }),
-            Animated.delay(700),
-            Animated.timing(timeScaleAnim, {
-              toValue: 1,
-              duration: 150,
-              useNativeDriver: true
-            }),
-          ]),
-          Animated.sequence([
-            Animated.timing(timeColorAnim, {
-              toValue: 1,
-              duration: 150,
-              useNativeDriver: true
-            }),
-            Animated.delay(700),
-            Animated.timing(timeColorAnim, {
-              toValue: 0,
-              duration: 150,
-              useNativeDriver: true
-            }),
-          ]),
-        ]).start();
-      }
-    }, [hasNewUpdate, timestamp]);
-
-    // Format time
+    // Format time (with Today/Yesterday support)
     const formatActivityTime = (timestamp: string | null, timezone?: string | null) => {
       let timeText = '';
       let dateText = '';
@@ -651,18 +646,16 @@ export default function ActivityScreen() {
           const yesterday = new Date(today);
           yesterday.setDate(yesterday.getDate() - 1);
 
-          // Format dates to YYYY-MM-DD for comparison (using UTC to avoid timezone issues)
           const dStr = d.toISOString().split('T')[0];
           const todayStr = today.toISOString().split('T')[0];
           const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-          // Determine if it's today or yesterday
+          // Show "Today" or "Yesterday" for recent check-ins
           if (dStr === todayStr) {
             dateText = t('activity.today') || 'Today';
           } else if (dStr === yesterdayStr) {
             dateText = t('activity.yesterday') || 'Yesterday';
           } else {
-            // Use regular date formatting for older dates
             const weekday = d
               .toLocaleDateString(t('activity.time.locale'), {
                 weekday: 'short',
@@ -683,6 +676,7 @@ export default function ActivityScreen() {
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
         } catch (error) {
           console.error('Error formatting time:', error);
+          // Fallback formatting
           const d = new Date(timestamp!);
           timeText = d.toLocaleTimeString(t('activity.time.locale'), {
             hour12: false,
@@ -708,15 +702,14 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          {/* Left column with person icon and status badge at bottom-right - NOW FOR EVERYONE including owner */}
+          {/* Left column with person icon and status badge */}
           <View style={styles.leftIconsColumn}>
             <View style={styles.iconContainer}>
               <Ionicons
-                name={isOwner ? "person-circle" : "person-circle"}
+                name="person-circle"
                 size={48}
-                color={isOwner ? BaseColors.primary : BaseColors.primary}
+                color={BaseColors.primary}
               />
-              {/* Status badge for EVERYONE (including owner) */}
               <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
                 <Ionicons
                   name={status.icon}
@@ -767,38 +760,54 @@ export default function ActivityScreen() {
               </Text>
             )}
 
-            {/* Response button - ONLY for non-owner contacts with valid check-in */}
+            {/* Response button - only for non-owner with valid check-in */}
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.responseButton,
-                    !isButtonEnabled && styles.responseButtonDisabled,
-                    sendingResponse && styles.responseButtonSending
-                  ]}
-                  onPress={handleSendResponse}
-                  disabled={!isButtonEnabled || sendingResponse}
-                  activeOpacity={0.7}
-                >
-                  {sendingResponse ? (
-                    <ActivityIndicator size="small" color={BaseColors.primary} />
-                  ) : (
-                    <>
-                      <Ionicons
-                        name="thumbs-up-outline"
-                        size={16}
-                        color={isButtonEnabled ? BaseColors.primary : BaseColors.neutral[400]}
-                        style={styles.buttonIcon}
-                      />
-                      <Text style={[
-                        styles.responseButtonText,
-                        !isButtonEnabled && styles.responseButtonTextDisabled
-                      ]}>
-                        {t('activity.respond') || 'Good job!'}
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
+                {responseSent ? (
+                  // Show "Sent!" state
+                  <View style={[styles.responseButton, styles.responseButtonSent]}>
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={16}
+                      color={BaseColors.success}
+                      style={styles.buttonIcon}
+                    />
+                    <Text style={styles.responseButtonSentText}>
+                      {t('activity.sent') || 'Sent!'}
+                    </Text>
+                  </View>
+                ) : (
+                  // Show active button
+                  <TouchableOpacity
+                    style={[
+                      styles.responseButton,
+                      !isButtonEnabled && styles.responseButtonDisabled,
+                      sendingResponse && styles.responseButtonSending
+                    ]}
+                    onPress={handleSendResponse}
+                    disabled={!isButtonEnabled || sendingResponse}
+                    activeOpacity={0.7}
+                  >
+                    {sendingResponse ? (
+                      <ActivityIndicator size="small" color={BaseColors.primary} />
+                    ) : (
+                      <>
+                        <Ionicons
+                          name="thumbs-up-outline"
+                          size={16}
+                          color={isButtonEnabled ? BaseColors.primary : BaseColors.neutral[400]}
+                          style={styles.buttonIcon}
+                        />
+                        <Text style={[
+                          styles.responseButtonText,
+                          !isButtonEnabled && styles.responseButtonTextDisabled
+                        ]}>
+                          {t('activity.respond') || 'Good job!'}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </View>
