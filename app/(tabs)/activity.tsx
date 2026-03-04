@@ -13,6 +13,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -499,13 +500,16 @@ export default function ActivityScreen() {
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
-    // Status calculation with better icons
+    // State for button loading/disabled
+    const [sendingResponse, setSendingResponse] = useState(false);
+
+    // Status calculation
     const getCheckInStatus = useCallback(() => {
       if (!timestamp) {
         return {
           icon: 'help-circle-outline',
           color: BaseColors.warning || '#FFA500',
-          iconSet: 'Ionicons'
+          status: 'never'
         };
       }
 
@@ -513,15 +517,12 @@ export default function ActivityScreen() {
         const lastCheckIn = new Date(timestamp);
         const now = new Date();
 
-        // Get UTC date strings
         const lastDateStr = lastCheckIn.toISOString().split('T')[0];
         const todayStr = now.toISOString().split('T')[0];
 
-        // Adjust for Stockholm timezone (UTC+1)
         const lastHour = lastCheckIn.getUTCHours();
         const nowHour = now.getUTCHours();
 
-        // Adjust last check-in date if after 23:00 UTC
         let adjustedLastDate = lastDateStr;
         if (lastHour >= 23) {
           const nextDay = new Date(lastCheckIn);
@@ -529,7 +530,6 @@ export default function ActivityScreen() {
           adjustedLastDate = nextDay.toISOString().split('T')[0];
         }
 
-        // Adjust today if after 23:00 UTC
         let adjustedToday = todayStr;
         if (nowHour >= 23) {
           const nextDay = new Date(now);
@@ -541,11 +541,10 @@ export default function ActivityScreen() {
           return {
             icon: 'checkmark-circle',
             color: BaseColors.success || '#4CAF50',
-            iconSet: 'Ionicons'
+            status: 'checked-today'
           };
         }
 
-        // Check if it was yesterday
         const yesterday = new Date(adjustedToday);
         const yesterdayParts = adjustedToday.split('-').map(Number);
         yesterday.setUTCFullYear(yesterdayParts[0], yesterdayParts[1] - 1, yesterdayParts[2] - 1);
@@ -555,26 +554,48 @@ export default function ActivityScreen() {
           return {
             icon: 'time-outline',
             color: BaseColors.warning || '#FFA500',
-            iconSet: 'Ionicons'
+            status: 'yesterday'
           };
         }
 
         return {
           icon: 'alert-circle',
           color: BaseColors.error || '#F44336',
-          iconSet: 'Ionicons'
+          status: 'older'
         };
       } catch (error) {
-        console.error('Error calculating check-in status:', error);
         return {
           icon: 'help-circle-outline',
           color: BaseColors.neutral[400],
-          iconSet: 'Ionicons'
+          status: 'error'
         };
       }
-    }, [timestamp, checkin_timezone]);
+    }, [timestamp]);
+
+    // Handler for response button
+    const handleSendResponse = async () => {
+      if (sendingResponse) return;
+
+      setSendingResponse(true);
+      try {
+        // We'll implement this later with Supabase
+        console.log('Sending response to user:', userId);
+        console.log('Check-in time:', timestamp);
+
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        console.log('Response sent successfully!');
+
+      } catch (error) {
+        console.error('Error sending response:', error);
+      } finally {
+        setSendingResponse(false);
+      }
+    };
 
     const status = getCheckInStatus();
+    const isButtonEnabled = status.status === 'checked-today'; // Only enable for today's check-ins
 
     useEffect(() => {
       if (hasNewUpdate && timestamp) {
@@ -675,21 +696,22 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          {/* Left side: Person icon and status icon in column */}
+          {/* Left column with person icon and status badge at bottom-right */}
           {!isOwner && (
             <View style={styles.leftIconsColumn}>
-              <Ionicons
-                name="person-circle"
-                size={32}
-                color={BaseColors.primary}
-                style={styles.personIcon}
-              />
-              <View style={styles.statusBadge}>
+              <View style={styles.iconContainer}>
                 <Ionicons
-                  name={status.icon}
-                  size={16}
-                  color={status.color}
+                  name="person-circle"
+                  size={48}
+                  color={BaseColors.primary}
                 />
+                <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
+                  <Ionicons
+                    name={status.icon}
+                    size={14}
+                    color="#FFFFFF"
+                  />
+                </View>
               </View>
             </View>
           )}
@@ -699,6 +721,7 @@ export default function ActivityScreen() {
 
           {/* Content area */}
           <View style={styles.contentContainer}>
+            {/* Name and email row */}
             {!isOwner && (
               <View style={styles.nameEmailRow}>
                 <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
@@ -712,35 +735,65 @@ export default function ActivityScreen() {
               </View>
             )}
 
+            {/* Time info */}
             {isValidTimestamp ? (
-              <View style={styles.timeContainer}>
-                <View style={styles.timeRow}>
-                  <Animated.Text
-                    style={[
-                      styles.time,
-                      {
-                        color: timeColorAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [BaseColors.primary, BaseColors.text.dark],
-                        }),
-                      },
-                      hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
-                    ]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {timeText}
-                  </Animated.Text>
-                  <Text style={styles.timezone} numberOfLines={1}>
-                    ({timezoneText})
-                  </Text>
-                </View>
+              <>
+                <Animated.Text
+                  style={[
+                    styles.time,
+                    {
+                      color: timeColorAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [BaseColors.primary, BaseColors.text.dark],
+                      }),
+                    },
+                    hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {timeText} ({timezoneText})
+                </Animated.Text>
                 <Text style={styles.date}>{dateText}</Text>
-              </View>
+              </>
             ) : (
               <Text style={[styles.time, styles.noCheckIn]}>
                 {t('activity.noCheckIn')}
               </Text>
+            )}
+
+            {/* Response button - only show for non-owner contacts with valid check-in */}
+            {!isOwner && isValidTimestamp && (
+              <View style={styles.responseButtonContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.responseButton,
+                    !isButtonEnabled && styles.responseButtonDisabled,
+                    sendingResponse && styles.responseButtonSending
+                  ]}
+                  onPress={handleSendResponse}
+                  disabled={!isButtonEnabled || sendingResponse}
+                  activeOpacity={0.7}
+                >
+                  {sendingResponse ? (
+                    <ActivityIndicator size="small" color={BaseColors.primary} />
+                  ) : (
+                    <>
+                      <Ionicons
+                        name="thumbs-up-outline"
+                        size={16}
+                        color={isButtonEnabled ? BaseColors.primary : BaseColors.neutral[400]}
+                        style={styles.buttonIcon}
+                      />
+                      <Text style={[
+                        styles.responseButtonText,
+                        !isButtonEnabled && styles.responseButtonTextDisabled
+                      ]}>
+                        {t('activity.respond') || 'Good job!'}
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         </View>
@@ -970,62 +1023,51 @@ const styles = StyleSheet.create({
     width: 30, // Fixed width for alignment
     marginRight: 10,
   },
-  statusIcon: {
-    fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  iconPlaceholder: {
-    width: 30, // Match the leftIconsStack width for alignment
-    marginRight: 10,
-  },
-  activityItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: BaseColors.neutral[200],
-  },
-  lastItem: {
-    borderBottomWidth: 0,
-  },
-  activityRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  // Left column with person icon and status badge
+
+
+
+
   leftIconsColumn: {
-    width: 32, // Reduced from 32
+    width: 48,
+    marginRight: 12,
     alignItems: 'center',
-    marginRight: 6, // Reduced from 6
+  },
+
+  iconContainer: {
     position: 'relative',
+    width: 48,
+    height: 48,
   },
-  personIcon: {
-    marginBottom: 2,
-  },
+
   statusBadge: {
     position: 'absolute',
-    bottom: -4,
-    right: -6, // Changed from -4 to bring it closer
-    backgroundColor: BaseColors.background,
-    borderRadius: 10,
-    padding: 2,
-    borderWidth: 1,
-    borderColor: BaseColors.neutral[200],
+    bottom: 0,
+    right: 0,
+    borderRadius: 12,
+    width: 22,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: BaseColors.background,
   },
-  // Placeholder for owner to maintain alignment
+
   ownerPlaceholder: {
-    width: 36,
-    marginRight: 8,
+    width: 48,
+    marginRight: 12,
   },
-  // Content area takes remaining space
+
   contentContainer: {
     flex: 1,
   },
+
   nameEmailRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 4,
   },
+
   name: {
     fontSize: 16,
     fontWeight: '600',
@@ -1033,39 +1075,83 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
+
   email: {
     fontSize: 12,
     color: BaseColors.neutral[400],
     flexShrink: 1,
   },
-  // Time container
-  timeContainer: {
-    flex: 1,
-  },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-    marginBottom: 2,
-  },
+
   time: {
     fontSize: 15,
     fontWeight: '600',
     color: BaseColors.text.dark,
+    marginBottom: 2,
   },
-  timezone: {
-    fontSize: 11,
-    color: BaseColors.text.light,
-    fontWeight: '500',
-  },
+
   date: {
     fontSize: 13,
     color: BaseColors.text.light,
+    marginBottom: 8,
   },
+
   noCheckIn: {
     color: BaseColors.text.light,
     fontSize: 14,
     fontStyle: 'italic',
+  },
+
+  // Response button styles
+  responseButtonContainer: {
+    marginTop: 4,
+  },
+
+  responseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.primaryLight || '#E3F2FD',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: BaseColors.primary,
+  },
+
+  responseButtonDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+    borderColor: BaseColors.neutral[400],
+  },
+
+  responseButtonSending: {
+    opacity: 0.7,
+  },
+
+  buttonIcon: {
+    marginRight: 6,
+  },
+
+  responseButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: BaseColors.primary,
+  },
+
+  responseButtonTextDisabled: {
+    color: BaseColors.neutral[400],
+  },
+
+  activityItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: BaseColors.neutral[200],
+  },
+
+  lastItem: {
+    borderBottomWidth: 0,
+  },
+
+  activityRow: {
+    flexDirection: 'row',
   },
 });
