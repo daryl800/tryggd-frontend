@@ -572,21 +572,15 @@ export default function ActivityScreen() {
       }
     }, [timestamp]);
 
-    // Handler for response button
+    // Handler for response button (only for non-owner)
     const handleSendResponse = async () => {
-      if (sendingResponse) return;
+      if (sendingResponse || isOwner) return;
 
       setSendingResponse(true);
       try {
-        // We'll implement this later with Supabase
         console.log('Sending response to user:', userId);
-        console.log('Check-in time:', timestamp);
-
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
-
         console.log('Response sent successfully!');
-
       } catch (error) {
         console.error('Error sending response:', error);
       } finally {
@@ -595,7 +589,7 @@ export default function ActivityScreen() {
     };
 
     const status = getCheckInStatus();
-    const isButtonEnabled = status.status === 'checked-today'; // Only enable for today's check-ins
+    const isButtonEnabled = status.status === 'checked-today' && !isOwner; // Only enable for today's check-ins and non-owner
 
     useEffect(() => {
       if (hasNewUpdate && timestamp) {
@@ -657,7 +651,7 @@ export default function ActivityScreen() {
           const yesterday = new Date(today);
           yesterday.setDate(yesterday.getDate() - 1);
 
-          // Format dates to YYYY-MM-DD for comparison
+          // Format dates to YYYY-MM-DD for comparison (using UTC to avoid timezone issues)
           const dStr = d.toISOString().split('T')[0];
           const todayStr = today.toISOString().split('T')[0];
           const yesterdayStr = yesterday.toISOString().split('T')[0];
@@ -689,7 +683,20 @@ export default function ActivityScreen() {
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
         } catch (error) {
           console.error('Error formatting time:', error);
-          // ... error handling
+          const d = new Date(timestamp!);
+          timeText = d.toLocaleTimeString(t('activity.time.locale'), {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+
+          const weekday = d
+            .toLocaleDateString(t('activity.time.locale'), { weekday: 'short' })
+            .replace('.', '');
+          const dayOfMonth = d.getDate();
+          const monthName = d.toLocaleDateString(t('activity.time.locale'), { month: 'long' });
+          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
+          timezoneText = timezone || 'UTC';
         }
       }
 
@@ -701,44 +708,38 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          {/* Left column with person icon and status badge at bottom-right */}
-          {!isOwner && (
-            <View style={styles.leftIconsColumn}>
-              <View style={styles.iconContainer}>
+          {/* Left column with person icon and status badge at bottom-right - NOW FOR EVERYONE including owner */}
+          <View style={styles.leftIconsColumn}>
+            <View style={styles.iconContainer}>
+              <Ionicons
+                name={isOwner ? "person-circle" : "person-circle"}
+                size={48}
+                color={isOwner ? BaseColors.primary : BaseColors.primary}
+              />
+              {/* Status badge for EVERYONE (including owner) */}
+              <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
                 <Ionicons
-                  name="person-circle"
-                  size={48}
-                  color={BaseColors.primary}
+                  name={status.icon}
+                  size={14}
+                  color="#FFFFFF"
                 />
-                <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-                  <Ionicons
-                    name={status.icon}
-                    size={14}
-                    color="#FFFFFF"
-                  />
-                </View>
               </View>
             </View>
-          )}
-
-          {/* For owner, use a placeholder with same dimensions */}
-          {isOwner && <View style={styles.ownerPlaceholder} />}
+          </View>
 
           {/* Content area */}
           <View style={styles.contentContainer}>
             {/* Name and email row */}
-            {!isOwner && (
-              <View style={styles.nameEmailRow}>
-                <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-                  {name}
+            <View style={styles.nameEmailRow}>
+              <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+                {isOwner ? t('activity.you') : name}
+              </Text>
+              {!isOwner && email && (
+                <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
+                  {email}
                 </Text>
-                {email && (
-                  <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
-                    {email}
-                  </Text>
-                )}
-              </View>
-            )}
+              )}
+            </View>
 
             {/* Time info */}
             {isValidTimestamp ? (
@@ -766,7 +767,7 @@ export default function ActivityScreen() {
               </Text>
             )}
 
-            {/* Response button - only show for non-owner contacts with valid check-in */}
+            {/* Response button - ONLY for non-owner contacts with valid check-in */}
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
