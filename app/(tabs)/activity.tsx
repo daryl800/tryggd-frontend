@@ -472,8 +472,8 @@ export default function ActivityScreen() {
     };
   }, []);
 
+
   // ActivityItem Component (reusable within this file)
-  // ActivityItem Component
   const ActivityItem = ({
     name,
     email,
@@ -498,6 +498,83 @@ export default function ActivityScreen() {
     const { t } = useTranslation();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
+
+    // Status calculation with better icons
+    const getCheckInStatus = useCallback(() => {
+      if (!timestamp) {
+        return {
+          icon: 'help-circle-outline',
+          color: BaseColors.warning || '#FFA500',
+          iconSet: 'Ionicons'
+        };
+      }
+
+      try {
+        const lastCheckIn = new Date(timestamp);
+        const now = new Date();
+
+        // Get UTC date strings
+        const lastDateStr = lastCheckIn.toISOString().split('T')[0];
+        const todayStr = now.toISOString().split('T')[0];
+
+        // Adjust for Stockholm timezone (UTC+1)
+        const lastHour = lastCheckIn.getUTCHours();
+        const nowHour = now.getUTCHours();
+
+        // Adjust last check-in date if after 23:00 UTC
+        let adjustedLastDate = lastDateStr;
+        if (lastHour >= 23) {
+          const nextDay = new Date(lastCheckIn);
+          nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+          adjustedLastDate = nextDay.toISOString().split('T')[0];
+        }
+
+        // Adjust today if after 23:00 UTC
+        let adjustedToday = todayStr;
+        if (nowHour >= 23) {
+          const nextDay = new Date(now);
+          nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+          adjustedToday = nextDay.toISOString().split('T')[0];
+        }
+
+        if (adjustedLastDate === adjustedToday) {
+          return {
+            icon: 'checkmark-circle',
+            color: BaseColors.success || '#4CAF50',
+            iconSet: 'Ionicons'
+          };
+        }
+
+        // Check if it was yesterday
+        const yesterday = new Date(adjustedToday);
+        const yesterdayParts = adjustedToday.split('-').map(Number);
+        yesterday.setUTCFullYear(yesterdayParts[0], yesterdayParts[1] - 1, yesterdayParts[2] - 1);
+        const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+        if (adjustedLastDate === yesterdayStr) {
+          return {
+            icon: 'time-outline',
+            color: BaseColors.warning || '#FFA500',
+            iconSet: 'Ionicons'
+          };
+        }
+
+        return {
+          icon: 'alert-circle',
+          color: BaseColors.error || '#F44336',
+          iconSet: 'Ionicons'
+        };
+      } catch (error) {
+        console.error('Error calculating check-in status:', error);
+        return {
+          icon: 'help-circle-outline',
+          color: BaseColors.neutral[400],
+          iconSet: 'Ionicons'
+        };
+      }
+    }, [timestamp, checkin_timezone]);
+
+    const status = getCheckInStatus();
 
     useEffect(() => {
       if (hasNewUpdate && timestamp) {
@@ -598,17 +675,29 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          {isOwner ? (
-            <View style={styles.iconPlaceholder} />
-          ) : (
-            <Ionicons
-              name="person"
-              size={20}
-              color={BaseColors.primary}
-              style={styles.icon}
-            />
+          {/* Left side: Person icon and status icon in column */}
+          {!isOwner && (
+            <View style={styles.leftIconsColumn}>
+              <Ionicons
+                name="person-circle"
+                size={32}
+                color={BaseColors.primary}
+                style={styles.personIcon}
+              />
+              <View style={styles.statusBadge}>
+                <Ionicons
+                  name={status.icon}
+                  size={16}
+                  color={status.color}
+                />
+              </View>
+            </View>
           )}
 
+          {/* For owner, use a placeholder with same dimensions */}
+          {isOwner && <View style={styles.ownerPlaceholder} />}
+
+          {/* Content area */}
           <View style={styles.contentContainer}>
             {!isOwner && (
               <View style={styles.nameEmailRow}>
@@ -625,7 +714,7 @@ export default function ActivityScreen() {
 
             {isValidTimestamp ? (
               <View style={styles.timeContainer}>
-                <Animated.View style={styles.timeWithTimezone}>
+                <View style={styles.timeRow}>
                   <Animated.Text
                     style={[
                       styles.time,
@@ -645,7 +734,7 @@ export default function ActivityScreen() {
                   <Text style={styles.timezone} numberOfLines={1}>
                     ({timezoneText})
                   </Text>
-                </Animated.View>
+                </View>
                 <Text style={styles.date}>{dateText}</Text>
               </View>
             ) : (
@@ -864,21 +953,70 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
+  icon: {
+    marginRight: 10,
+    marginTop: 2,
+  },
+  // Update timeWithTimezone to accommodate the icon
+  timeWithTimezone: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  leftIconsStack: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: 30, // Fixed width for alignment
+    marginRight: 10,
+  },
+  statusIcon: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  iconPlaceholder: {
+    width: 30, // Match the leftIconsStack width for alignment
+    marginRight: 10,
+  },
   activityItem: {
-    paddingVertical: 8,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: BaseColors.neutral[200],
   },
   lastItem: {
-    marginBottom: 0,
-    paddingBottom: 0,
+    borderBottomWidth: 0,
   },
   activityRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  icon: {
-    marginRight: 10,
-    marginTop: 2,
+  // Left column with person icon and status badge
+  leftIconsColumn: {
+    width: 32, // Reduced from 32
+    alignItems: 'center',
+    marginRight: 6, // Reduced from 6
+    position: 'relative',
   },
+  personIcon: {
+    marginBottom: 2,
+  },
+  statusBadge: {
+    position: 'absolute',
+    bottom: -4,
+    right: -6, // Changed from -4 to bring it closer
+    backgroundColor: BaseColors.background,
+    borderRadius: 10,
+    padding: 2,
+    borderWidth: 1,
+    borderColor: BaseColors.neutral[200],
+  },
+  // Placeholder for owner to maintain alignment
+  ownerPlaceholder: {
+    width: 36,
+    marginRight: 8,
+  },
+  // Content area takes remaining space
   contentContainer: {
     flex: 1,
   },
@@ -886,7 +1024,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   name: {
     fontSize: 16,
@@ -900,40 +1038,34 @@ const styles = StyleSheet.create({
     color: BaseColors.neutral[400],
     flexShrink: 1,
   },
+  // Time container
   timeContainer: {
     flex: 1,
-    flexDirection: 'column',
-    gap: 2,
   },
-  timeWithTimezone: {
+  timeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 4,
+    marginBottom: 2,
   },
   time: {
     fontSize: 15,
     fontWeight: '600',
     color: BaseColors.text.dark,
-    flexShrink: 1,
   },
   timezone: {
     fontSize: 11,
     color: BaseColors.text.light,
     fontWeight: '500',
-    flexShrink: 1,
   },
   date: {
     fontSize: 13,
-    fontWeight: '500',
     color: BaseColors.text.light,
   },
   noCheckIn: {
     color: BaseColors.text.light,
     fontSize: 14,
-  },
-  iconPlaceholder: {
-    width: 20,
-    marginRight: 10,
+    fontStyle: 'italic',
   },
 });
