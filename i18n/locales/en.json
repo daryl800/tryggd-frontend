@@ -77,6 +77,15 @@
       "loadActivities": "Failed to load activities",
       "fetchContacts": "Failed to fetch contacts",
       "fetchOwnerActivity": "Failed to fetch owner activity"
+    },
+    "day": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "other": "{{date, date, MMMM d, yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👏 Clap for this?",
+      "responded": "👏 Applauded!"
     }
   },
   "contacts": {

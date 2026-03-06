@@ -77,6 +77,15 @@
             "loadActivities": "Kunne ikke laste aktiviteter",
             "fetchContacts": "Kunne ikke hente kontakter",
             "fetchOwnerActivity": "Kunne ikke hente eiers aktivitet"
+        },
+        "day": {
+            "today": "I dag",
+            "yesterday": "I går",
+            "other": "{{date, date, d. MMMM yyyy}}"
+        },
+        "responseButton": {
+            "sendResponse": "👏 Klap for dette?",
+            "responded": "👏 Klappet!"
         }
     },
     "contacts": {

@@ -77,6 +77,15 @@
             "loadActivities": "Toimintoja ei voitu ladata",
             "fetchContacts": "Yhteystietoja ei voitu hakea",
             "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea"
+        },
+        "day": {
+            "today": "Tänään",
+            "yesterday": "Eilen",
+            "other": "{{date, date, d. MMMM yyyy}}"
+        },
+        "responseButton": {
+            "sendResponse": "👏 Taputa tälle?",
+            "responded": "👏 Taputettu!"
         }
     },
     "contacts": {

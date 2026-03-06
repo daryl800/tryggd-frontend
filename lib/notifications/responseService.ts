@@ -1,21 +1,33 @@
 // lib/notifications/responseService.ts
 
-import { tokenManager } from '../auth/tokenManager';
-import { supabase } from '../supabase';
+import { tokenManager } from "../auth/tokenManager";
+import { supabase } from "../supabase";
 
 const EDGE_FUNCTION_URL = 'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-checkin-response';
 
-interface CheckinRequest {
-    recipientUserId: string;
-    senderUserId: string;
-    checkinTime: string;
-}
-
 class ResponseNotificationService {
-    async sendResponse({ recipientUserId, senderUserId, checkinTime }: CheckinRequest, retryCount = 0): Promise<{ success: boolean; data?: any; error?: any }> {
-        const MAX_RETRIES = 2;
+    private responseCache = new Map<string, boolean>();
+    private notificationIdCache = new Map<string, string>();
+    private pendingRequests = new Map<string, Promise<boolean>>(); // ← NEW: deduplicate requests
+
+    // ============================================
+    // NEW METHOD: Synchronous cache check
+    // ============================================
+    hasCachedResponse(cacheKey: string): boolean {
+        return this.responseCache.has(cacheKey);
+    }
+
+
+    async sendResponse({
+        recipientUserId,
+        senderUserId,
+        checkinTime,
+    }: {
+        recipientUserId: string;
+        senderUserId: string;
+        checkinTime: string;
+    }) {
         try {
-            // Get the user's JWT token (exactly like working function)
             const token = await tokenManager.getValidToken();
 
             if (!token) {
@@ -32,7 +44,6 @@ class ResponseNotificationService {
 
             console.log('📤 Sending to Edge Function:', requestBody);
 
-            // Send with JWT token (gateway will now let it through)
             const response = await fetch(EDGE_FUNCTION_URL, {
                 method: 'POST',
                 headers: {
@@ -52,12 +63,15 @@ class ResponseNotificationService {
                 data = { raw: responseText };
             }
 
-            if (!response.ok && response.status === 401 && retryCount < MAX_RETRIES) {
-                console.log(`🔄 Token expired, refreshing (attempt ${retryCount + 1})...`);
-                const newToken = await tokenManager.refreshTokenNow();
-                if (newToken) {
-                    return this.sendResponse({ recipientUserId, senderUserId, checkinTime }, retryCount + 1);
-                }
+            if (!response.ok) {
+                return { success: false, error: { status: response.status, data } };
+            }
+
+            // Cache the successful response
+            const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
+            this.responseCache.set(cacheKey, true);
+            if (data.notificationId) {
+                this.notificationIdCache.set(cacheKey, data.notificationId);
             }
 
             return { success: true, data };
@@ -68,27 +82,122 @@ class ResponseNotificationService {
         }
     }
 
-    async hasResponded(recipientUserId: string, senderUserId: string, checkinTime: string) {
+    async hasResponded(recipientUserId: string, senderUserId: string, checkinTime: string): Promise<boolean> {
+        const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
+
+        // Check cache first
+        if (this.responseCache.has(cacheKey)) {
+            console.log('📦 Using cached response status: true');
+            return true;
+        }
+
+        // Check pending requests
+        if (this.pendingRequests.has(cacheKey)) {
+            console.log('⏳ Waiting for pending request...');
+            return this.pendingRequests.get(cacheKey)!;
+        }
+
+        // Start query and store promise
+        const promise = this.queryDatabase(recipientUserId, senderUserId, checkinTime, cacheKey);
+        this.pendingRequests.set(cacheKey, promise);
+
+        const result = await promise;
+        this.pendingRequests.delete(cacheKey);
+
+        return result;
+    }
+
+    private async queryDatabase(
+        recipientUserId: string,
+        senderUserId: string,
+        checkinTime: string,
+        cacheKey: string
+    ): Promise<boolean> {
         try {
-            const { data, error } = await supabase
-                .from('notifications')
-                .select('id')
+            // Get the correct timezone
+            const { data: checkinData } = await supabase
+                .from('users_latest_checkin')
+                .select('checkin_timezone')
                 .eq('user_id', recipientUserId)
-                .eq('sender_user_id', senderUserId)
-                .eq('type', 'checkin_response')
-                .filter('data->>checkinTime', 'eq', checkinTime)
                 .maybeSingle();
 
-            if (error) {
-                console.error('Error checking response:', error);
-                return false;
+            const { data: userSettings } = await supabase
+                .from('user_settings')
+                .select('timezone')
+                .eq('user_id', recipientUserId)
+                .maybeSingle();
+
+            const timezone = checkinData?.checkin_timezone ||
+                userSettings?.timezone ||
+                'Europe/Stockholm';
+
+            const localTimeStr = new Date(checkinTime).toLocaleString('en-GB', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: timezone
+            });
+
+            console.log('🔍 Database check:', {
+                recipient: recipientUserId,
+                sender: senderUserId,
+                iso: checkinTime,
+                local: localTimeStr,
+                timezone
+            });
+
+            // Run queries in parallel with Promise.all
+            const [byIsoResult, byLocalResult] = await Promise.all([
+                supabase
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', recipientUserId)
+                    .eq('sender_user_id', senderUserId)
+                    .eq('type', 'checkin_response')
+                    .filter('data->>checkinTime', 'eq', checkinTime),
+
+                supabase
+                    .from('notifications')
+                    .select('id')
+                    .eq('user_id', recipientUserId)
+                    .eq('sender_user_id', senderUserId)
+                    .eq('type', 'checkin_response')
+                    .filter('data->>checkinTimeLocal', 'eq', localTimeStr)
+            ]);
+
+            const allMatches = [
+                ...(byIsoResult.data || []),
+                ...(byLocalResult.data || [])
+            ];
+
+            const hasResponse = allMatches.length > 0;
+
+            if (hasResponse) {
+                console.log('✅ Found response in database');
+                this.responseCache.set(cacheKey, true);
+            } else {
+                console.log('❌ No response found in database');
+
+                // Optional: Cache negative results briefly to prevent repeated checks
+                // setTimeout(() => this.responseCache.delete(cacheKey), 5000);
             }
 
-            return !!data;
+            return hasResponse;
+
         } catch (error) {
-            console.error('Error in hasResponded:', error);
+            console.error('❌ Error in queryDatabase:', error);
             return false;
         }
+    }
+
+    // Call this on logout to clear cache
+    clearCache() {
+        this.responseCache.clear();
+        this.notificationIdCache.clear();
+        this.pendingRequests.clear(); // Clear pending requests too
     }
 }
 

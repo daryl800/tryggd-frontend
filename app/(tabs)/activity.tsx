@@ -21,6 +21,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 
+
 type Activity = {
   user_id: string;
   display_name: string;
@@ -141,7 +142,7 @@ export default function ActivityScreen() {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error(t('activity.errors.fetchOwnerActivity'), error);
+        console.error(t('activity.errors.fetchOwnerActivity' as any), error);
         return;
       }
 
@@ -504,7 +505,69 @@ export default function ActivityScreen() {
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
     const [sendingResponse, setSendingResponse] = useState(false);
-    const [responseSent, setResponseSent] = useState(false);
+    // Initialize from cache SYNCHRONOUSLY (no async)
+    const [responseSent, setResponseSent] = useState(() => {
+      if (!user || !timestamp || isOwner) return false;
+
+      // Check cache synchronously - this runs instantly on mount
+      const cacheKey = `${userId}_${user.id}_${timestamp}`;
+      return responseService.hasCachedResponse(cacheKey);
+    });
+
+    // Then do async check for non-cached items in background
+    useEffect(() => {
+      const checkIfResponded = async () => {
+        if (!user || !timestamp || isOwner || responseSent) return;
+
+        const alreadyResponded = await responseService.hasResponded(
+          userId,
+          user.id,
+          timestamp
+        );
+
+        if (alreadyResponded) {
+          setResponseSent(true);
+        }
+      };
+
+      checkIfResponded();
+    }, [userId, user?.id, timestamp, isOwner, responseSent]);
+
+    // Also log when state changes
+    useEffect(() => {
+      console.log('🔄 responseSent CHANGED TO:', responseSent, 'for user:', userId);
+    }, [responseSent]);
+
+    // ADD THIS: Check whenever the screen comes into focus
+    useFocusEffect(
+      useCallback(() => {
+        const checkOnFocus = async () => {
+          if (!user || !timestamp || isOwner) return;
+
+          console.log('🎯 [useFocusEffect] Tab focused, rechecking response status:', {
+            userId,
+            timestamp
+          });
+
+          const alreadyResponded = await responseService.hasResponded(
+            userId,
+            user.id,
+            timestamp
+          );
+
+          // Only update if changed to avoid unnecessary renders
+          setResponseSent(prev => {
+            if (prev !== alreadyResponded) {
+              console.log('🔄 Response status changed:', { from: prev, to: alreadyResponded });
+              return alreadyResponded;
+            }
+            return prev;
+          });
+        };
+
+        checkOnFocus();
+      }, [userId, user?.id, timestamp, isOwner])
+    );
 
     // Status calculation
     const getCheckInStatus = useCallback(() => {
@@ -632,8 +695,9 @@ export default function ActivityScreen() {
       if (isValidTimestamp) {
         try {
           const d = new Date(timestamp!);
-          const tz = timezone || 'UTC';
+          const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
+          // Format time (this is correct)
           timeText = d.toLocaleTimeString(t('activity.time.locale'), {
             hour12: false,
             hour: '2-digit',
@@ -641,27 +705,33 @@ export default function ActivityScreen() {
             timeZone: tz,
           });
 
-          // Get today and yesterday dates for comparison
+          // FIX: Get local date strings for comparison
+          const dLocalStr = d.toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD format
           const today = new Date();
+          const todayLocalStr = today.toLocaleDateString('en-CA', { timeZone: tz });
+
           const yesterday = new Date(today);
           yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayLocalStr = yesterday.toLocaleDateString('en-CA', { timeZone: tz });
 
-          const dStr = d.toISOString().split('T')[0];
-          const todayStr = today.toISOString().split('T')[0];
-          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          console.log('📅 Date comparison:', {
+            checkin: dLocalStr,
+            today: todayLocalStr,
+            yesterday: yesterdayLocalStr,
+            timezone: tz
+          });
 
-          // Show "Today" or "Yesterday" for recent check-ins
-          if (dStr === todayStr) {
-            dateText = t('activity.today') || 'Today';
-          } else if (dStr === yesterdayStr) {
-            dateText = t('activity.yesterday') || 'Yesterday';
+          // Compare using local dates
+          if (dLocalStr === todayLocalStr) {
+            dateText = t('activity.day.today') || 'Today';
+          } else if (dLocalStr === yesterdayLocalStr) {
+            dateText = t('activity.day.yesterday') || 'Yesterday';
           } else {
-            const weekday = d
-              .toLocaleDateString(t('activity.time.locale'), {
-                weekday: 'short',
-                timeZone: tz,
-              })
-              .replace('.', '');
+            // Format normally for older dates
+            const weekday = d.toLocaleDateString(t('activity.time.locale'), {
+              weekday: 'short',
+              timeZone: tz,
+            }).replace('.', '');
 
             const dayOfMonth = d.getDate();
             const monthName = d.toLocaleDateString(t('activity.time.locale'), {
@@ -674,23 +744,9 @@ export default function ActivityScreen() {
 
           const parts = tz.split('/');
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
-        } catch (error) {
-          console.error('Error formatting time:', error);
-          // Fallback formatting
-          const d = new Date(timestamp!);
-          timeText = d.toLocaleTimeString(t('activity.time.locale'), {
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-          });
 
-          const weekday = d
-            .toLocaleDateString(t('activity.time.locale'), { weekday: 'short' })
-            .replace('.', '');
-          const dayOfMonth = d.getDate();
-          const monthName = d.toLocaleDateString(t('activity.time.locale'), { month: 'long' });
-          dateText = `${weekday} ${dayOfMonth} ${monthName}`;
-          timezoneText = timezone || 'UTC';
+        } catch (error) {
+          // ... error handling
         }
       }
 
@@ -750,9 +806,10 @@ export default function ActivityScreen() {
                   ]}
                   numberOfLines={1}
                 >
-                  {timeText} ({timezoneText})
+                  <Text>🎯 </Text>
+                  {timeText}  {dateText}
                 </Animated.Text>
-                <Text style={styles.date}>{dateText}</Text>
+                <Text style={styles.timezone}>({timezoneText})</Text>
               </>
             ) : (
               <Text style={[styles.time, styles.noCheckIn]}>
@@ -765,15 +822,15 @@ export default function ActivityScreen() {
               <View style={styles.responseButtonContainer}>
                 {responseSent ? (
                   // Show "Sent!" state
-                  <View style={[styles.responseButton, styles.responseButtonSent]}>
-                    <Ionicons
-                      name="checkmark-circle"
+                  <View style={[styles.responseButton]}>
+                    {/* <Ionicons
+                      name="clapping-hands"
                       size={16}
                       color={BaseColors.success}
                       style={styles.buttonIcon}
-                    />
-                    <Text style={styles.responseButtonSentText}>
-                      {t('activity.sent') || 'Sent!'}
+                    /> */}
+                    <Text style={styles.responseButtonText}>
+                      {t('activity.responseButton.responded') || 'Sent!'}
                     </Text>
                   </View>
                 ) : (
@@ -792,17 +849,17 @@ export default function ActivityScreen() {
                       <ActivityIndicator size="small" color={BaseColors.primary} />
                     ) : (
                       <>
-                        <Ionicons
+                        {/* <Ionicons
                           name="thumbs-up-outline"
                           size={16}
                           color={isButtonEnabled ? BaseColors.primary : BaseColors.neutral[400]}
                           style={styles.buttonIcon}
-                        />
+                        /> */}
                         <Text style={[
                           styles.responseButtonText,
                           !isButtonEnabled && styles.responseButtonTextDisabled
                         ]}>
-                          {t('activity.respond') || 'Good job!'}
+                          {t('activity.responseButton.sendResponse') || 'Good job!'}
                         </Text>
                       </>
                     )}
@@ -812,7 +869,7 @@ export default function ActivityScreen() {
             )}
           </View>
         </View>
-      </View>
+      </View >
     );
   };
 
@@ -1025,35 +1082,22 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 2,
   },
-  // Update timeWithTimezone to accommodate the icon
-  timeWithTimezone: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 4,
-  },
   leftIconsStack: {
     flexDirection: 'column',
     alignItems: 'center',
     width: 30, // Fixed width for alignment
     marginRight: 10,
   },
-
-
-
-
   leftIconsColumn: {
     width: 48,
     marginRight: 12,
     alignItems: 'center',
   },
-
   iconContainer: {
     position: 'relative',
     width: 48,
     height: 48,
   },
-
   statusBadge: {
     position: 'absolute',
     bottom: 0,
@@ -1066,16 +1110,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: BaseColors.background,
   },
-
   ownerPlaceholder: {
     width: 48,
     marginRight: 12,
   },
-
   contentContainer: {
     flex: 1,
   },
-
   nameEmailRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1096,43 +1137,33 @@ const styles = StyleSheet.create({
     color: BaseColors.neutral[400],
     flexShrink: 1,
   },
-
   date: {
     fontSize: 13,
-    color: BaseColors.text.dark, // Changed from BaseColors.text.light
+    color: BaseColors.primary, // Changed from BaseColors.text.light
     marginBottom: 8,
     fontWeight: '500', // Added medium weight for better visibility
   },
-
+  timezone: {
+    fontSize: 15,
+    color: BaseColors.primary,
+    marginBottom: 8,
+    fontWeight: '500',
+  },
   time: {
     fontSize: 15,
     fontWeight: '600',
     color: BaseColors.text.dark,
     marginBottom: 2,
   },
-
-  // If you want "Today" and "Yesterday" to stand out more
-  todayText: {
-    color: BaseColors.primary, // Make "Today" green/primary color
-    fontWeight: '600',
-  },
-
-  yesterdayText: {
-    color: BaseColors.warning || '#FFA500', // Make "Yesterday" orange
-    fontWeight: '600',
-  },
-
   noCheckIn: {
     color: BaseColors.text.light,
     fontSize: 14,
     fontStyle: 'italic',
   },
-
   // Response button styles
   responseButtonContainer: {
     marginTop: 4,
   },
-
   responseButton: {
     flexDirection: 'row',
     alignItems: 'center',

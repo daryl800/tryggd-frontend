@@ -77,6 +77,15 @@
             "loadActivities": "Kunde inte ladda aktiviteter",
             "fetchContacts": "Kunde inte hämta kontakter",
             "fetchOwnerActivity": "Kunde inte hämta ägares aktivitet"
+        },
+        "day": {
+            "today": "Idag",
+            "yesterday": "Igår",
+            "other": "{{date, date, d MMMM yyyy}}"
+        },
+        "responseButton": {
+            "sendResponse": "👏 Klappa för detta?",
+            "responded": "👏 Applåderat!"
         }
     },
     "contacts": {
