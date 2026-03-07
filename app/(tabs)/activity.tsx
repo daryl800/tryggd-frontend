@@ -21,7 +21,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 
-
 type Activity = {
   user_id: string;
   display_name: string;
@@ -34,6 +33,28 @@ type Activity = {
   checkin_timezone?: string | null;
 };
 
+// ✅ Define ResponseNotification type using your existing notifications table
+type ResponseNotification = {
+  id: string;
+  user_id: string; // recipient
+  sender_user_id: string; // sender
+  type: string;
+  title: string;
+  body: string;
+  data: {
+    responseType?: string;
+    checkinId?: string;
+    checkinTime?: string;
+    fromUserName?: string;
+    toUserId?: string;
+  };
+  read: boolean;
+  created_at: string;
+  sender?: {
+    display_name: string;
+  };
+};
+
 export default function ActivityScreen() {
   const { t } = useTranslation();
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -44,12 +65,18 @@ export default function ActivityScreen() {
     Map<string, { email: string; display_name: string }>
   >(new Map());
 
+  // State for response notifications
+  const [responses, setResponses] = useState<ResponseNotification[]>([]);
+  const [unreadResponses, setUnreadResponses] = useState<ResponseNotification[]>([]);
+  const [showResponses, setShowResponses] = useState(false);
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
   const myContactIds = useRef<string[]>([]);
   const checkinsChannelRef = useRef<any>(null);
   const contactsChannelRef = useRef<any>(null);
   const ownerCheckinsChannelRef = useRef<any>(null);
+  const responsesChannelRef = useRef<any>(null);
   const isInitialized = useRef(false);
   const isFocused = useRef(false);
   const contactMapRef = useRef<
@@ -80,7 +107,8 @@ export default function ActivityScreen() {
         console.log('🔄 This is a re-focus (tab switch or unlock?)');
       }
 
-      fetchActivities(); // Your fetch function
+      fetchActivities();
+      fetchUnreadResponseNotifications(); // Also fetch unread responses
     }, [])
   );
 
@@ -91,6 +119,377 @@ export default function ActivityScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  const isTodayLocal = (dateStr: string, timezone: string): boolean => {
+    try {
+      const date = new Date(dateStr);
+      const now = new Date();
+
+      // Convert both to local date strings in the given timezone
+      const dateLocalStr = date.toLocaleDateString('en-CA', { timeZone: timezone });
+      const nowLocalStr = now.toLocaleDateString('en-CA', { timeZone: timezone });
+
+      return dateLocalStr === nowLocalStr;
+    } catch (error) {
+      console.error('Error checking if date is today:', error);
+      return false;
+    }
+  };
+
+  // Add state for today's responses
+  const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
+
+  // Update fetchResponseNotifications to also set today's responses
+  const fetchResponseNotifications = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user) return;
+
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'checkin_response')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+
+      if (!notifications || notifications.length === 0) {
+        setResponses([]);
+        setUnreadResponses([]);
+        setTodayResponses([]);
+        return;
+      }
+
+      const senderIds = notifications
+        .map(n => n.sender_user_id)
+        .filter(id => id != null);
+
+      let senderMap: Record<string, string> = {};
+
+      if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', senderIds);
+
+        if (profiles) {
+          profiles.forEach(profile => {
+            senderMap[profile.id] = profile.display_name;
+          });
+        }
+      }
+
+      // Get user's timezone from settings or use default
+      const userTimezone = ownerActivity?.checkin_timezone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone ||
+        'UTC';
+
+      // Enrich notifications and filter today's
+      const enriched = notifications.map(notification => {
+        let parsedData = {};
+        try {
+          parsedData = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : notification.data || {};
+        } catch (e) {
+          console.error('Error parsing notification data:', e);
+        }
+
+        return {
+          ...notification,
+          data: parsedData,
+          sender: {
+            display_name: senderMap[notification.sender_user_id] ||
+              (parsedData as any).senderName ||
+              'Someone'
+          }
+        };
+      });
+
+      setResponses(enriched);
+
+      // Filter for today's responses using local time
+      const today = enriched.filter(r =>
+        isTodayLocal(r.created_at, userTimezone)
+      );
+      setTodayResponses(today);
+
+      const unread = enriched.filter(r => !r.read);
+      setUnreadResponses(unread);
+
+    } catch (error) {
+      console.error('Error fetching response notifications:', error);
+    }
+  };
+
+
+  // Fetch only unread response notifications
+  const fetchUnreadResponseNotifications = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user) return;
+
+      // QUERY 1: Get unread notifications with type 'checkin_response'
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'checkin_response')  // Changed from 'response' to 'checkin_response'
+        .eq('read', false)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!notifications || notifications.length === 0) {
+        setUnreadResponses([]);
+        return;
+      }
+
+      // QUERY 2: Get sender profiles separately
+      const senderIds = notifications
+        .map(n => n.sender_user_id)
+        .filter(id => id != null);
+
+      let senderMap: Record<string, string> = {};
+
+      if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', senderIds);
+
+        if (profiles) {
+          profiles.forEach(profile => {
+            senderMap[profile.id] = profile.display_name;
+          });
+        }
+      }
+
+      // Parse JSON data and combine
+      const enriched = notifications.map(notification => {
+        let parsedData = {};
+        try {
+          parsedData = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : notification.data || {};
+        } catch (e) {
+          console.error('Error parsing notification data:', e);
+        }
+
+        return {
+          ...notification,
+          data: parsedData,
+          sender: {
+            display_name: senderMap[notification.sender_user_id] ||
+              (parsedData as any).senderName ||
+              'Someone'
+          }
+        };
+      });
+
+      setUnreadResponses(enriched);
+
+      if (enriched.length > 0 && !showResponses) {
+        console.log(`📬 You have ${enriched.length} unread responses`);
+      }
+
+    } catch (error) {
+      console.error('Error fetching unread responses:', error);
+    }
+  };
+
+  // Update ResponseItem component to handle the data structure
+  const ResponseItem = ({ response, onPress }: { response: any; onPress: () => void }) => {
+    const formattedTime = new Date(response.created_at).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const formattedDate = new Date(response.created_at).toLocaleDateString();
+
+    // Get sender name from various possible sources
+    const fromName = response.sender?.display_name ||
+      response.data?.senderName ||
+      'Someone';
+
+    // Use the notification body or a default message
+    const message = response.body || 'responded to your check-in';
+
+    return (
+      <TouchableOpacity
+        style={[styles.responseItem, !response.read && styles.responseItemUnread]}
+        onPress={onPress}
+      >
+        <View style={styles.responseIcon}>
+          <Ionicons
+            name="hand-left"
+            size={24}
+            color={response.read ? BaseColors.neutral[400] : BaseColors.primary}
+          />
+        </View>
+        <View style={styles.responseContent}>
+          <Text style={styles.responseText}>
+            <Text style={styles.responseSender}>
+              {fromName}
+            </Text>
+            {' '}{message}
+          </Text>
+          <Text style={styles.responseTime}>
+            {formattedDate} at {formattedTime}
+          </Text>
+        </View>
+        {!response.read && <View style={styles.unreadDot} />}
+      </TouchableOpacity>
+    );
+  };
+
+  // Update the subscription setup
+  const setupResponsesSubscription = () => {
+    if (responsesChannelRef.current) {
+      supabase.removeChannel(responsesChannelRef.current);
+      responsesChannelRef.current = null;
+    }
+
+    supabase.auth.getUser().then(({ data: userData }) => {
+      const user = userData.user;
+      if (!user) return;
+
+      const channel = supabase
+        .channel('response-notifications')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`,
+          },
+          async (payload) => {
+            // Only process checkin_response type notifications
+            if (payload.new.type === 'checkin_response') {
+              console.log('📬 New response notification received:', payload.new);
+
+              // Parse the data field
+              let parsedData = {};
+              try {
+                parsedData = typeof payload.new.data === 'string'
+                  ? JSON.parse(payload.new.data)
+                  : payload.new.data || {};
+              } catch (e) {
+                console.error('Error parsing notification data:', e);
+              }
+
+              // Get sender name
+              let senderName = 'Someone';
+              if (payload.new.sender_user_id) {
+                const { data: profile } = await supabase
+                  .from('profiles')
+                  .select('display_name')
+                  .eq('id', payload.new.sender_user_id)
+                  .single();
+
+                senderName = profile?.display_name ||
+                  (parsedData as any).senderName ||
+                  'Someone';
+              }
+
+              const newNotification = {
+                ...payload.new,
+                data: parsedData,
+                sender: {
+                  display_name: senderName
+                }
+              };
+
+              // Update state
+              setResponses(prev => [newNotification, ...prev]);
+              if (!payload.new.read) {
+                setUnreadResponses(prev => [newNotification, ...prev]);
+              }
+            }
+          }
+        )
+        .subscribe();
+
+      responsesChannelRef.current = channel;
+    });
+  };
+
+  // Update initialize function to use the fixed functions
+  const initialize = async (force = false) => {
+    if (isInitialized.current && !force) return;
+    isInitialized.current = true;
+
+    lastCheckinTimes.current.clear();
+    await fetchActivities();
+    await fetchResponseNotifications(); // Fetch response notifications
+    setupContactsSubscription();
+    setupCheckinsSubscription();
+    setupOwnerCheckinsSubscription();
+    setupResponsesSubscription(); // Setup responses subscription
+  };
+
+  const handleScreenFocus = useCallback(() => {
+    isFocused.current = true;
+    if (isInitialized.current) {
+      fetchActivities();
+      fetchUnreadResponseNotifications(); // Also refresh unread responses
+    } else {
+      initialize();
+    }
+  }, []);
+
+  // ✅ Mark a response notification as read
+  const markResponseAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      // Update local state
+      setResponses(prev =>
+        prev.map(r => r.id === notificationId ? { ...r, read: true } : r)
+      );
+
+      setUnreadResponses(prev => prev.filter(r => r.id !== notificationId));
+    } catch (error) {
+      console.error('Error marking response as read:', error);
+    }
+  };
+
+  // ✅ Mark all response notifications as read
+  const markAllResponsesAsRead = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user || unreadResponses.length === 0) return;
+
+      const unreadIds = unreadResponses.map(r => r.id);
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .in('id', unreadIds);
+
+      if (error) throw error;
+
+      // Update local state
+      setResponses(prev =>
+        prev.map(r => unreadIds.includes(r.id) ? { ...r, read: true } : r)
+      );
+
+      setUnreadResponses([]);
+    } catch (error) {
+      console.error('Error marking all responses as read:', error);
+    }
+  };
 
   const fetchContacts = async (): Promise<{
     ids: string[];
@@ -146,8 +545,6 @@ export default function ActivityScreen() {
         return;
       }
 
-      console.log('Raw data from users_latest_checkin:', data); // Add this
-
       if (data) {
         const isNew =
           !lastCheckinTimes.current.has(user.id) ||
@@ -182,6 +579,7 @@ export default function ActivityScreen() {
     try {
       const { ids: contactIds, map: freshContactMap } = await fetchContacts();
       await fetchOwnerActivity();
+      await fetchUnreadResponseNotifications(); // Also fetch unread responses
 
       if (contactIds.length === 0) {
         setActivities([]);
@@ -245,7 +643,7 @@ export default function ActivityScreen() {
       if (nextAppState === 'active') {
         console.log('📱 App became active - refreshing activity data');
         if (isMounted) {
-          fetchActivities(); // Your activity fetch function
+          fetchActivities();
         }
       }
     };
@@ -255,7 +653,9 @@ export default function ActivityScreen() {
       isMounted = false;
       subscription.remove();
     };
-  }, [fetchActivities]); // Add dependencies
+  }, []);
+
+  // ... (keep all your existing subscription setup functions)
 
   const setupOwnerCheckinsSubscription = () => {
     if (ownerCheckinsChannelRef.current) {
@@ -434,22 +834,9 @@ export default function ActivityScreen() {
     });
   };
 
-  const initialize = async (force = false) => {
-    if (isInitialized.current && !force) return;
-    isInitialized.current = true;
 
-    lastCheckinTimes.current.clear();
-    await fetchActivities();
-    setupContactsSubscription();
-    setupCheckinsSubscription();
-    setupOwnerCheckinsSubscription();
-  };
 
-  const handleScreenFocus = useCallback(() => {
-    isFocused.current = true;
-    if (isInitialized.current) fetchActivities();
-    else initialize();
-  }, []);
+
 
   const handleScreenBlur = useCallback(() => {
     isFocused.current = false;
@@ -471,10 +858,13 @@ export default function ActivityScreen() {
         supabase.removeChannel(contactsChannelRef.current);
       if (ownerCheckinsChannelRef.current)
         supabase.removeChannel(ownerCheckinsChannelRef.current);
+      if (responsesChannelRef.current)
+        supabase.removeChannel(responsesChannelRef.current);
       isInitialized.current = false;
       lastCheckinTimes.current.clear();
     };
   }, []);
+
 
 
   // ActivityItem Component (reusable within this file)
@@ -500,76 +890,52 @@ export default function ActivityScreen() {
     checkin_timezone?: string | null;
   }) => {
     const { t } = useTranslation();
-    const { user } = useAuth(); // Get current user
+    const { user } = useAuth();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
     const [sendingResponse, setSendingResponse] = useState(false);
-    // Initialize from cache SYNCHRONOUSLY (no async)
     const [responseSent, setResponseSent] = useState(() => {
       if (!user || !timestamp || isOwner) return false;
-
-      // Check cache synchronously - this runs instantly on mount
       const cacheKey = `${userId}_${user.id}_${timestamp}`;
       return responseService.hasCachedResponse(cacheKey);
     });
 
-    // Then do async check for non-cached items in background
     useEffect(() => {
       const checkIfResponded = async () => {
         if (!user || !timestamp || isOwner || responseSent) return;
-
         const alreadyResponded = await responseService.hasResponded(
           userId,
           user.id,
           timestamp
         );
-
         if (alreadyResponded) {
           setResponseSent(true);
         }
       };
-
       checkIfResponded();
     }, [userId, user?.id, timestamp, isOwner, responseSent]);
 
-    // Also log when state changes
-    useEffect(() => {
-      console.log('🔄 responseSent CHANGED TO:', responseSent, 'for user:', userId);
-    }, [responseSent]);
-
-    // ADD THIS: Check whenever the screen comes into focus
     useFocusEffect(
       useCallback(() => {
         const checkOnFocus = async () => {
           if (!user || !timestamp || isOwner) return;
-
-          console.log('🎯 [useFocusEffect] Tab focused, rechecking response status:', {
-            userId,
-            timestamp
-          });
-
           const alreadyResponded = await responseService.hasResponded(
             userId,
             user.id,
             timestamp
           );
-
-          // Only update if changed to avoid unnecessary renders
           setResponseSent(prev => {
             if (prev !== alreadyResponded) {
-              console.log('🔄 Response status changed:', { from: prev, to: alreadyResponded });
               return alreadyResponded;
             }
             return prev;
           });
         };
-
         checkOnFocus();
       }, [userId, user?.id, timestamp, isOwner])
     );
 
-    // Status calculation
     const getCheckInStatus = useCallback(() => {
       if (!timestamp) {
         return {
@@ -641,17 +1007,15 @@ export default function ActivityScreen() {
     const status = getCheckInStatus();
     const isButtonEnabled = status.status === 'checked-today' && !isOwner && !responseSent;
 
-    // Handler for response button - THIS IS THE KEY PART
     const handleSendResponse = async () => {
       if (sendingResponse || !isButtonEnabled || !user) return;
 
       setSendingResponse(true);
       try {
-        // First check if already responded (optional - can also be done on server)
         const alreadyResponded = await responseService.hasResponded(
-          userId,           // recipient
-          user.id,          // sender
-          timestamp || ''   // checkin time
+          userId,
+          user.id,
+          timestamp || ''
         );
 
         if (alreadyResponded) {
@@ -660,7 +1024,6 @@ export default function ActivityScreen() {
           return;
         }
 
-        // Call the service to send the response
         const result = await responseService.sendResponse({
           recipientUserId: userId,
           senderUserId: user.id,
@@ -670,22 +1033,16 @@ export default function ActivityScreen() {
         if (result.success) {
           console.log('✅ Response sent successfully!');
           setResponseSent(true);
-
-          // Optional: Show a success message to user
-          // You could use a toast or alert here
         } else {
           console.error('Failed to send response:', result.error);
-          // Optional: Show error message to user
         }
       } catch (error) {
         console.error('Error sending response:', error);
-        // Optional: Show error message to user
       } finally {
         setSendingResponse(false);
       }
     };
 
-    // Format time (with Today/Yesterday support)
     const formatActivityTime = (timestamp: string | null, timezone?: string | null) => {
       let timeText = '';
       let dateText = '';
@@ -697,7 +1054,6 @@ export default function ActivityScreen() {
           const d = new Date(timestamp!);
           const tz = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-          // Format time (this is correct)
           timeText = d.toLocaleTimeString(t('activity.time.locale'), {
             hour12: false,
             hour: '2-digit',
@@ -705,8 +1061,7 @@ export default function ActivityScreen() {
             timeZone: tz,
           });
 
-          // FIX: Get local date strings for comparison
-          const dLocalStr = d.toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD format
+          const dLocalStr = d.toLocaleDateString('en-CA', { timeZone: tz });
           const today = new Date();
           const todayLocalStr = today.toLocaleDateString('en-CA', { timeZone: tz });
 
@@ -714,20 +1069,11 @@ export default function ActivityScreen() {
           yesterday.setDate(yesterday.getDate() - 1);
           const yesterdayLocalStr = yesterday.toLocaleDateString('en-CA', { timeZone: tz });
 
-          console.log('📅 Date comparison:', {
-            checkin: dLocalStr,
-            today: todayLocalStr,
-            yesterday: yesterdayLocalStr,
-            timezone: tz
-          });
-
-          // Compare using local dates
           if (dLocalStr === todayLocalStr) {
             dateText = t('activity.day.today') || 'Today';
           } else if (dLocalStr === yesterdayLocalStr) {
             dateText = t('activity.day.yesterday') || 'Yesterday';
           } else {
-            // Format normally for older dates
             const weekday = d.toLocaleDateString(t('activity.time.locale'), {
               weekday: 'short',
               timeZone: tz,
@@ -746,7 +1092,7 @@ export default function ActivityScreen() {
           timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
 
         } catch (error) {
-          // ... error handling
+          console.error('Error formatting time:', error);
         }
       }
 
@@ -821,20 +1167,12 @@ export default function ActivityScreen() {
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
                 {responseSent ? (
-                  // Show "Sent!" state
                   <View style={[styles.responseButton]}>
-                    {/* <Ionicons
-                      name="clapping-hands"
-                      size={16}
-                      color={BaseColors.success}
-                      style={styles.buttonIcon}
-                    /> */}
                     <Text style={styles.responseButtonText}>
                       {t('activity.responseButton.responded') || 'Sent!'}
                     </Text>
                   </View>
                 ) : (
-                  // Show active button
                   <TouchableOpacity
                     style={[
                       styles.responseButton,
@@ -848,20 +1186,12 @@ export default function ActivityScreen() {
                     {sendingResponse ? (
                       <ActivityIndicator size="small" color={BaseColors.primary} />
                     ) : (
-                      <>
-                        {/* <Ionicons
-                          name="thumbs-up-outline"
-                          size={16}
-                          color={isButtonEnabled ? BaseColors.primary : BaseColors.neutral[400]}
-                          style={styles.buttonIcon}
-                        /> */}
-                        <Text style={[
-                          styles.responseButtonText,
-                          !isButtonEnabled && styles.responseButtonTextDisabled
-                        ]}>
-                          {t('activity.responseButton.sendResponse') || 'Good job!'}
-                        </Text>
-                      </>
+                      <Text style={[
+                        styles.responseButtonText,
+                        !isButtonEnabled && styles.responseButtonTextDisabled
+                      ]}>
+                        {t('activity.responseButton.sendResponse') || 'Good job!'}
+                      </Text>
                     )}
                   </TouchableOpacity>
                 )}
@@ -869,7 +1199,7 @@ export default function ActivityScreen() {
             )}
           </View>
         </View>
-      </View >
+      </View>
     );
   };
 
@@ -908,6 +1238,14 @@ export default function ActivityScreen() {
                     <Text style={styles.cardTitle}>
                       {t('activity.you')}
                     </Text>
+                    {todayResponses.length > 0 && (
+                      <View style={styles.responseBadge}>
+                        <Ionicons name="heart" size={14} color={BaseColors.primary} />
+                        <Text style={styles.responseBadgeText}>
+                          {todayResponses.length}
+                        </Text>
+                      </View>
+                    )}
                   </View>
 
                   <ActivityItem
@@ -920,6 +1258,27 @@ export default function ActivityScreen() {
                     checkin_timezone={ownerActivity.checkin_timezone}
                     isLast
                   />
+
+                  {/* Show today's responses under the owner's check-in */}
+                  {todayResponses.length > 0 && (
+                    <View style={styles.todayResponses}>
+                      <Text style={styles.todayResponsesTitle}>
+                        👋 {todayResponses.length} {todayResponses.length === 1 ? 'person' : 'people'} cheered you today:
+                      </Text>
+                      {todayResponses.map((response, index) => (
+                        <View key={response.id} style={styles.todayResponseItem}>
+                          <Ionicons name="heart" size={16} color={BaseColors.primary} />
+                          <Text style={styles.todayResponseText}>
+                            <Text style={styles.todayResponseName}>
+                              {response.sender?.display_name}
+                            </Text>
+                            {response.body ? ` ${response.body}` : ' cheered for you!'}
+                          </Text>
+                          {!response.read && <View style={styles.smallUnreadDot} />}
+                        </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
               )}
 
@@ -1027,6 +1386,118 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  responsesCard: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+    backgroundColor: BaseColors.surface,
+    borderRadius: 12,
+    shadowColor: BaseColors.shadowColor,
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 4,
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  responsesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: BaseColors.neutral[200],
+  },
+  responsesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  responsesHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  responsesTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+    color: BaseColors.text.dark,
+    flex: 1,
+  },
+  unreadBadge: {
+    backgroundColor: BaseColors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  unreadBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  markAllReadButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  markAllReadText: {
+    fontSize: 12,
+    color: BaseColors.primary,
+    fontWeight: '500',
+  },
+  responsesList: {
+    padding: 16,
+  },
+  responseItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: BaseColors.background,
+  },
+  responseItemUnread: {
+    backgroundColor: BaseColors.primaryLight + '20',
+    borderLeftWidth: 3,
+    borderLeftColor: BaseColors.primary,
+  },
+  responseIcon: {
+    width: 40,
+    alignItems: 'center',
+  },
+  responseContent: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  responseText: {
+    fontSize: 14,
+    color: BaseColors.text.dark,
+    lineHeight: 20,
+  },
+  responseSender: {
+    fontWeight: '600',
+    color: BaseColors.primary,
+  },
+  responseTime: {
+    fontSize: 11,
+    color: BaseColors.neutral[400],
+    marginTop: 2,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: BaseColors.primary,
+    marginLeft: 8,
+  },
+  noResponsesText: {
+    textAlign: 'center',
+    color: BaseColors.neutral[400],
+    padding: 20,
+  },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1085,7 +1556,7 @@ const styles = StyleSheet.create({
   leftIconsStack: {
     flexDirection: 'column',
     alignItems: 'center',
-    width: 30, // Fixed width for alignment
+    width: 30,
     marginRight: 10,
   },
   leftIconsColumn: {
@@ -1123,7 +1594,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 4,
   },
-
   name: {
     fontSize: 16,
     fontWeight: '600',
@@ -1131,7 +1601,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
-
   email: {
     fontSize: 12,
     color: BaseColors.neutral[400],
@@ -1139,9 +1608,9 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 13,
-    color: BaseColors.primary, // Changed from BaseColors.text.light
+    color: BaseColors.primary,
     marginBottom: 8,
-    fontWeight: '500', // Added medium weight for better visibility
+    fontWeight: '500',
   },
   timezone: {
     fontSize: 15,
@@ -1160,7 +1629,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
   },
-  // Response button styles
   responseButtonContainer: {
     marginTop: 4,
   },
@@ -1175,41 +1643,81 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BaseColors.primary,
   },
-
   responseButtonDisabled: {
     backgroundColor: BaseColors.neutral[200],
     borderColor: BaseColors.neutral[400],
   },
-
   responseButtonSending: {
     opacity: 0.7,
   },
-
   buttonIcon: {
     marginRight: 6,
   },
-
   responseButtonText: {
     fontSize: 13,
     fontWeight: '600',
     color: BaseColors.primary,
   },
-
   responseButtonTextDisabled: {
     color: BaseColors.neutral[400],
   },
-
   activityItem: {
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: BaseColors.neutral[200],
   },
-
   lastItem: {
     borderBottomWidth: 0,
   },
-
   activityRow: {
     flexDirection: 'row',
+  },
+  // Add to your StyleSheet
+  responseBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.primaryLight,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  responseBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: BaseColors.primary,
+  },
+  todayResponses: {
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: BaseColors.neutral[200],
+  },
+  todayResponsesTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+    marginBottom: 8,
+  },
+  todayResponseItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    gap: 8,
+  },
+  todayResponseText: {
+    flex: 1,
+    fontSize: 14,
+    color: BaseColors.text.dark,
+  },
+  todayResponseName: {
+    fontWeight: '600',
+    color: BaseColors.primary,
+  },
+  smallUnreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: BaseColors.primary,
   },
 });

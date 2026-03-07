@@ -254,8 +254,23 @@
     "information": "Information",
     "language": "Language",
     "theme": "Theme",
-    "notifications": "Notifications",
-    "notificationsDesc": "Enable notifications for check-ins",
+    "notifications": {
+      "title": "Notifications",
+      "preferences": "Notification preferences",
+      "summary": {
+        "reminders": "Reminders",
+        "activity": "Activity",
+        "allOff": "All notifications off"
+      },
+      "stayOnTrack": {
+        "title": "Stay on track",
+        "description": "Remind me to complete my personal safety daily check-ins"
+      },
+      "contactActivity": {
+        "title": "Contact activity",
+        "description": "Notify me when my contacts complete their check-ins"
+      }
+    },
     "about": "About",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",

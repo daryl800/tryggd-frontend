@@ -1,23 +1,153 @@
 // lib/notifications/responseService.ts
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenManager } from "../auth/tokenManager";
 import { supabase } from "../supabase";
 
 const EDGE_FUNCTION_URL = 'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-checkin-response';
 
+const RESPONSES_CACHE_KEY = 'cached_responses';
+const LAST_FETCH_KEY = 'last_responses_fetch';
+
 class ResponseNotificationService {
     private responseCache = new Map<string, boolean>();
     private notificationIdCache = new Map<string, string>();
-    private pendingRequests = new Map<string, Promise<boolean>>(); // ← NEW: deduplicate requests
+    private pendingRequests = new Map<string, Promise<boolean>>();
 
     // ============================================
-    // NEW METHOD: Synchronous cache check
+    // Load responses from AsyncStorage
+    // ============================================
+    async loadCachedResponses(): Promise<any[]> {
+        try {
+            const cached = await AsyncStorage.getItem(RESPONSES_CACHE_KEY);
+            return cached ? JSON.parse(cached) : [];
+        } catch (error) {
+            console.error('Error loading cached responses:', error);
+            return [];
+        }
+    }
+
+    // ============================================
+    // Save responses to AsyncStorage
+    // ============================================
+    async saveResponsesToCache(responses: any[]) {
+        try {
+            await AsyncStorage.setItem(RESPONSES_CACHE_KEY, JSON.stringify(responses));
+            await AsyncStorage.setItem(LAST_FETCH_KEY, Date.now().toString());
+        } catch (error) {
+            console.error('Error saving responses to cache:', error);
+        }
+    }
+
+    // ============================================
+    // Check memory cache
     // ============================================
     hasCachedResponse(cacheKey: string): boolean {
         return this.responseCache.has(cacheKey);
     }
 
+    // ============================================
+    // Get responses (cache-first)
+    // ============================================
+    async getResponses(userId: string, forceRefresh = false): Promise<any[]> {
+        const cached = await this.loadCachedResponses();
 
+        const lastFetch = await AsyncStorage.getItem(LAST_FETCH_KEY);
+        const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+
+        const shouldRefresh =
+            forceRefresh ||
+            !lastFetch ||
+            parseInt(lastFetch) < fiveMinutesAgo;
+
+        if (shouldRefresh) {
+            this.fetchResponsesFromDB(userId).catch(console.error);
+        }
+
+        return cached;
+    }
+
+    // ============================================
+    // Fetch fresh responses from database
+    // ============================================
+    async fetchResponsesFromDB(userId: string): Promise<any[]> {
+        try {
+            console.log('📡 Fetching fresh responses from database...');
+
+            const { data: responses, error } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('type', 'checkin_response')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (!responses || responses.length === 0) {
+                console.log('📡 No responses found');
+                return [];
+            }
+
+            const senderIds = [
+                ...new Set(
+                    responses
+                        .map(r => r.sender_user_id)
+                        .filter(Boolean)
+                )
+            ];
+
+            const { data: profiles } = await supabase
+                .from('profiles')
+                .select('id, display_name, avatar_url')
+                .in('id', senderIds);
+
+            const profileMap = new Map<string, any>();
+            profiles?.forEach(p => profileMap.set(p.id, p));
+
+            const formattedResponses = responses.map(r => ({
+                ...r,
+                senderName:
+                    profileMap.get(r.sender_user_id)?.display_name ||
+                    r.data?.senderName ||
+                    'Someone'
+            }));
+
+            await this.saveResponsesToCache(formattedResponses);
+
+            console.log(`✅ Fetched ${formattedResponses.length} responses from DB`);
+
+            return formattedResponses;
+
+        } catch (error) {
+            console.error('Error fetching fresh responses:', error);
+            return [];
+        }
+    }
+
+    // ============================================
+    // Group responses by check-in time
+    // ============================================
+    groupResponsesByCheckin(responses: any[]): Map<string, any[]> {
+        const grouped = new Map<string, any[]>();
+
+        responses.forEach(response => {
+            const checkinTime = response.data?.checkinTime;
+
+            if (checkinTime) {
+                if (!grouped.has(checkinTime)) {
+                    grouped.set(checkinTime, []);
+                }
+
+                grouped.get(checkinTime)!.push(response);
+            }
+        });
+
+        return grouped;
+    }
+
+    // ============================================
+    // Send response
+    // ============================================
     async sendResponse({
         recipientUserId,
         senderUserId,
@@ -54,9 +184,14 @@ class ResponseNotificationService {
             });
 
             const responseText = await response.text();
-            console.log('📥 Response:', { status: response.status, body: responseText });
+
+            console.log('📥 Response:', {
+                status: response.status,
+                body: responseText
+            });
 
             let data;
+
             try {
                 data = JSON.parse(responseText);
             } catch {
@@ -67,11 +202,56 @@ class ResponseNotificationService {
                 return { success: false, error: { status: response.status, data } };
             }
 
-            // Cache the successful response
             const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
+
             this.responseCache.set(cacheKey, true);
+
             if (data.notificationId) {
                 this.notificationIdCache.set(cacheKey, data.notificationId);
+            }
+
+            // Update AsyncStorage cache
+            try {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('display_name')
+                    .eq('id', senderUserId)
+                    .single();
+
+                const newResponse = {
+                    id: data.notificationId,
+                    user_id: recipientUserId,
+                    sender_user_id: senderUserId,
+                    type: 'checkin_response',
+                    body: `Good job at ${new Date(checkinTime).toLocaleTimeString()}!`,
+                    created_at: new Date().toISOString(),
+                    data: {
+                        senderName: profile?.display_name || 'Someone',
+                        checkinTime,
+                        checkinTimeLocal: new Date(checkinTime).toLocaleString('en-GB', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })
+                    },
+                    sender: {
+                        display_name: profile?.display_name || 'Someone'
+                    },
+                    senderName: profile?.display_name || 'Someone'
+                };
+
+                const cached = (await this.loadCachedResponses()) ?? [];
+
+                cached.unshift(newResponse);
+
+                await this.saveResponsesToCache(cached);
+
+                console.log('✅ Updated AsyncStorage cache with new response');
+
+            } catch (cacheError) {
+                console.error('Error updating cache:', cacheError);
             }
 
             return { success: true, data };
@@ -82,39 +262,54 @@ class ResponseNotificationService {
         }
     }
 
-    async hasResponded(recipientUserId: string, senderUserId: string, checkinTime: string): Promise<boolean> {
+    // ============================================
+    // Check if user has responded
+    // ============================================
+    async hasResponded(
+        recipientUserId: string,
+        senderUserId: string,
+        checkinTime: string
+    ): Promise<boolean> {
+
         const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
 
-        // Check cache first
         if (this.responseCache.has(cacheKey)) {
             console.log('📦 Using cached response status: true');
             return true;
         }
 
-        // Check pending requests
         if (this.pendingRequests.has(cacheKey)) {
             console.log('⏳ Waiting for pending request...');
             return this.pendingRequests.get(cacheKey)!;
         }
 
-        // Start query and store promise
-        const promise = this.queryDatabase(recipientUserId, senderUserId, checkinTime, cacheKey);
+        const promise = this.queryDatabase(
+            recipientUserId,
+            senderUserId,
+            checkinTime,
+            cacheKey
+        );
+
         this.pendingRequests.set(cacheKey, promise);
 
         const result = await promise;
+
         this.pendingRequests.delete(cacheKey);
 
         return result;
     }
 
+    // ============================================
+    // Database query
+    // ============================================
     private async queryDatabase(
         recipientUserId: string,
         senderUserId: string,
         checkinTime: string,
         cacheKey: string
     ): Promise<boolean> {
+
         try {
-            // Get the correct timezone
             const { data: checkinData } = await supabase
                 .from('users_latest_checkin')
                 .select('checkin_timezone')
@@ -127,7 +322,8 @@ class ResponseNotificationService {
                 .eq('user_id', recipientUserId)
                 .maybeSingle();
 
-            const timezone = checkinData?.checkin_timezone ||
+            const timezone =
+                checkinData?.checkin_timezone ||
                 userSettings?.timezone ||
                 'Europe/Stockholm';
 
@@ -149,7 +345,6 @@ class ResponseNotificationService {
                 timezone
             });
 
-            // Run queries in parallel with Promise.all
             const [byIsoResult, byLocalResult] = await Promise.all([
                 supabase
                     .from('notifications')
@@ -180,9 +375,6 @@ class ResponseNotificationService {
                 this.responseCache.set(cacheKey, true);
             } else {
                 console.log('❌ No response found in database');
-
-                // Optional: Cache negative results briefly to prevent repeated checks
-                // setTimeout(() => this.responseCache.delete(cacheKey), 5000);
             }
 
             return hasResponse;
@@ -193,11 +385,23 @@ class ResponseNotificationService {
         }
     }
 
-    // Call this on logout to clear cache
-    clearCache() {
+    // ============================================
+    // Clear cache
+    // ============================================
+    async clearCache() {
         this.responseCache.clear();
         this.notificationIdCache.clear();
-        this.pendingRequests.clear(); // Clear pending requests too
+        this.pendingRequests.clear();
+
+        try {
+            await AsyncStorage.removeItem(RESPONSES_CACHE_KEY);
+            await AsyncStorage.removeItem(LAST_FETCH_KEY);
+
+            console.log('🧹 AsyncStorage cache cleared');
+
+        } catch (error) {
+            console.error('Error clearing AsyncStorage:', error);
+        }
     }
 }
 

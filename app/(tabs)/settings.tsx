@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import {
     Alert,
     LayoutAnimation,
+    Linking,
     Platform,
     ScrollView,
     StyleSheet,
@@ -277,8 +278,9 @@ export default function SettingsScreen() {
                 </View>
 
                 {/* Notifications */}
+                {/* Notifications */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionLabel}>{t("settings.notifications")}</Text>
+                    <Text style={styles.sectionLabel}>{t("settings.notifications.title")}</Text>
                     <View style={styles.card}>
                         {/* Notifications Header */}
                         <TouchableOpacity
@@ -291,11 +293,12 @@ export default function SettingsScreen() {
                                     <Ionicons name="notifications" size={22} color={BaseColors.primary} />
                                 </View>
                                 <View style={styles.settingText}>
-                                    <Text style={styles.settingTitle}>Notification preferences</Text>
+                                    <Text style={styles.settingTitle}>{t("settings.notifications.preferences")}</Text>
                                     <Text style={styles.settingSubtitle}>
                                         {checkInReminderEnabled || contactCheckInEnabled
-                                            ? `${checkInReminderEnabled ? 'Reminders' : ''}${checkInReminderEnabled && contactCheckInEnabled ? ' & ' : ''}${contactCheckInEnabled ? 'Activity' : ''}`
-                                            : 'All notifications off'}
+                                            ? `${checkInReminderEnabled ? t("settings.notifications.stayOnTrack.title") : ""}${checkInReminderEnabled && contactCheckInEnabled ? " & " : ""
+                                            }${contactCheckInEnabled ? t("settings.notifications.contactActivity.title") : ""}`
+                                            : t("settings.notifications.summary.allOff")}
                                     </Text>
                                 </View>
                             </View>
@@ -312,9 +315,11 @@ export default function SettingsScreen() {
                                 {/* Check-in Reminder Switch */}
                                 <View style={styles.notificationSwitchItem}>
                                     <View style={styles.notificationContent}>
-                                        <Text style={styles.switchLabel}>Stay on track</Text>
+                                        <Text style={styles.switchLabel}>
+                                            {t("settings.notifications.stayOnTrack.title")}
+                                        </Text>
                                         <Text style={styles.notificationDescription}>
-                                            Remind me to complete my personal safety daily check-ins
+                                            {t("settings.notifications.stayOnTrack.description")}
                                         </Text>
                                     </View>
                                     <Switch
@@ -331,9 +336,11 @@ export default function SettingsScreen() {
                                 {/* Contact Check-in Switch */}
                                 <View style={styles.notificationSwitchItem}>
                                     <View style={styles.notificationContent}>
-                                        <Text style={styles.switchLabel}>Contact activity</Text>
+                                        <Text style={styles.switchLabel}>
+                                            {t("settings.notifications.contactActivity.title")}
+                                        </Text>
                                         <Text style={styles.notificationDescription}>
-                                            Notify me when my contacts complete their check-ins
+                                            {t("settings.notifications.contactActivity.description")}
                                         </Text>
                                     </View>
                                     <Switch
@@ -355,7 +362,7 @@ export default function SettingsScreen() {
                     <View style={styles.card}>
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("http://tryggd.com/about-tryggd")}
+                            onPress={() => Linking.openURL("http://tryggd.com/about-tryggd")}
                             // onPress={() => router.push("/about")}
                             activeOpacity={0.7}
                         >
@@ -370,7 +377,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("http://tryggd.com/privacy-policy")}
+                            onPress={() => Linking.openURL("http://tryggd.com/privacy-policy")}
                             // onPress={() => router.push("/privacy")}
                             activeOpacity={0.7}
                         >
@@ -385,7 +392,7 @@ export default function SettingsScreen() {
 
                         <TouchableOpacity
                             style={styles.settingItem}
-                            onPress={() => router.push("http://tryggd.com/terms-of-service")}
+                            onPress={() => Linking.openURL("http://tryggd.com/terms-of-service")}
                             // onPress={() => router.push("/terms")}
                             activeOpacity={0.7}
                         >

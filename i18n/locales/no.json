@@ -8,13 +8,13 @@
             "evening": "God kveld",
             "night": "God natt"
         },
-        "everythingIsFine": "Alt er i orden!!",
+        "everythingIsFine": "Alt er bra!!",
         "dontForget": "Ikke glem å sjekke inn i dag!",
-        "youCheckedInTodayAt": "Du sjekket inn i dag kl. {{time}}",
+        "youCheckedInTodayAt": "Du sjekket inn i dag kl {{time}}",
         "pressMeToCheckIn": "SJEKK INN HER",
-        "reset": "Nullstill",
-        "timer": "Tidsur",
-        "timeLeftToday": "Tid igjen",
+        "reset": "Tilbakestill",
+        "timer": "Tidtakere",
+        "timeLeftToday": "Tid igjen i dag",
         "activity": "Aktivitet",
         "contacts_one": "{{count}} kontakt",
         "contacts_other": "{{count}} kontakter",
@@ -49,43 +49,43 @@
         "errors": {
             "fetchLastCheckin": "Kunne ikke hente siste innsjekk",
             "noUser": "Ingen bruker funnet",
-            "checkin": "Innsjekk mislyktes",
+            "checkin": "Innsjekking mislyktes",
             "loadState": "Kunne ikke laste tilstand"
         }
     },
     "activity": {
         "title": "Aktivitet",
-        "subtitle": "Dine og dine kontakters siste innsjekker",
+        "subtitle": "Siste innsjekk for deg og dine kontakter",
         "you": "Du",
-        "yourActivity": "deg selv",
+        "yourActivity": "Din aktivitet",
         "contacts": "Kontakter",
-        "loading": "Laster aktiviteter...",
-        "noCheckIn": "Ingen innsjekk ennå",
+        "loading": "Laster aktivitet...",
+        "noCheckIn": "Ingen innsjekking ennå",
         "emptyState": {
             "title": "Ingen kontakter",
-            "message": "Legg til kontakter for å se deres aktiviteter"
+            "message": "Legg til kontakter for å se aktivitet"
         },
         "priority": {
             "failed": "Mislyktes",
             "ongoing": "Pågående",
-            "successful": "Vellykket"
+            "successful": "Lyktes"
         },
         "time": {
             "locale": "nb-NO"
         },
         "errors": {
-            "loadActivities": "Kunne ikke laste aktiviteter",
+            "loadActivities": "Kunne ikke laste aktivitet",
             "fetchContacts": "Kunne ikke hente kontakter",
-            "fetchOwnerActivity": "Kunne ikke hente eiers aktivitet"
+            "fetchOwnerActivity": "Kunne ikke hente brukeraktivitet"
         },
         "day": {
             "today": "I dag",
             "yesterday": "I går",
-            "other": "{{date, date, MMMM d, yyyy}}"
+            "other": "{{date, date, d. MMMM yyyy}}"
         },
-        "responseButtons": {
-            "sendResponse": "👏 Klappe for dette?",
-            "responded": "👏 Applaudert!"
+        "responseButton": {
+            "sendResponse": "👏 Gi en high five?",
+            "responded": "👏 High five sendt!"
         }
     },
     "contacts": {
@@ -95,12 +95,12 @@
         "displayingAs": "Vises som",
         "loading": "Laster kontakter...",
         "subtitle": {
-            "withContacts": "Du har {{count}} av 3 mulige kontakter",
-            "noContacts": "Legg til kontakter å dele med"
+            "withContacts": "Du har {{count}}/3 mulige kontakter",
+            "noContacts": "Legg til kontakter for deling"
         },
         "emptyState": {
             "title": "Ingen kontakter",
-            "message": "Trykk på + for å legge til din første kontakt"
+            "message": "Trykk + for å legge til første kontakt"
         },
         "tabs": {
             "contacts": "Kontakter",
@@ -113,24 +113,24 @@
             "loading": "Laster forespørsler...",
             "emptyState": {
                 "title": "Ingen forespørsler",
-                "message": "Når noen sender en kontaktforespørsel, vil den vises her"
+                "message": "Når noen sender en kontaktforespørsel vises den her"
             }
         },
         "placeholders": {
-            "email": "Skriv e-postadresse"
+            "email": "Skriv inn e-postadresse"
         },
         "buttons": {
             "accept": "Godta",
-            "reject": "Avslå",
+            "reject": "Avvis",
             "delete": "Slett",
             "cancelRequest": "Avbryt forespørsel",
             "sending": "Sender...",
-            "sendRequests": "Send forespørsel{{count, plural, =1 {} other {er}}"
+            "sendRequests": "Send forespørsel{{count, plural, =1 {} other {er}}}"
         },
         "alerts": {
             "limitReached": {
                 "title": "Grense nådd",
-                "message": "Du kan bare legge til opp til 3 kontakter."
+                "message": "Du kan legge til maks 3 kontakter."
             },
             "delete": {
                 "title": "Slett kontakt",
@@ -138,19 +138,19 @@
             },
             "contactExists": {
                 "title": "Kontakt finnes allerede",
-                "message": "{{name}} er allerede i dine kontakter"
+                "message": "{{name}} er allerede blant dine kontakter"
             },
             "requestExists": {
                 "title": "Forespørsel allerede sendt",
-                "message": "Du har allerede sendt en forespørsel til denne brukeren."
+                "message": "Du har allerede sendt forespørsel til denne brukeren"
             },
             "requestReceived": {
                 "title": "Forespørsel mottatt",
-                "message": "Du har allerede en forespørsel fra {{email}}. Sjekk under \"Forespørsler\"."
+                "message": "Du har allerede en forespørsel fra {{email}}. Sjekk 'Forespørsler'"
             },
             "invalidEmail": {
                 "title": "Ugyldig e-post",
-                "message": "{{email}} er ikke registrert eller ikke bekreftet"
+                "message": "{{email}} er ikke registrert eller verifisert"
             },
             "selfContact": {
                 "title": "Ugyldig kontakt",
@@ -158,11 +158,11 @@
             },
             "noChanges": {
                 "title": "Ingen endringer",
-                "message": "Ingen nye kontakter å lagre."
+                "message": "Ingen nye kontakter å lagre"
             },
-            "alreadyInContacts": "Denne brukeren er allerede i dine kontakter",
+            "alreadyInContacts": "Denne brukeren er allerede blant dine kontakter",
             "requestHandled": {
-                "title": "Forespørsel allerede håndtert",
+                "title": "Forespørsel håndtert",
                 "message": "Denne forespørselen er allerede håndtert"
             }
         },
@@ -173,31 +173,20 @@
             },
             "contactAdded": {
                 "title": "Kontakt lagt til",
-                "message": "{{name}} har blitt lagt til i dine kontakter"
+                "message": "{{name}} er lagt til blant dine kontakter"
             },
             "deleted": {
-                "title": "Kontakt fjernet",
-                "message": "{{name}} har blitt fjernet. Alle relasjoner er slettet."
+                "title": "Kontakt slettet",
+                "message": "{{name}} er slettet. Alle relasjoner er fjernet"
             },
             "requestRejected": {
-                "title": "Forespørsel avslått",
-                "message": "Kontaktforespørsel er avslått"
+                "title": "Forespørsel avvist",
+                "message": "Kontaktforespørsel avvist"
             },
             "requestCancelled": {
                 "title": "Forespørsel avbrutt",
-                "message": "Kontaktforespørsel er avbrutt"
+                "message": "Kontaktforespørsel avbrutt"
             }
-        },
-        "errors": {
-            "loadData": "Kunne ikke laste data",
-            "save": "Kunne ikke lagre kontakter",
-            "delete": "Kunne ikke slette kontakt",
-            "sendRequest": "Kunne ikke sende kontaktforespørsel",
-            "search": "Kunne ikke søke etter bruker",
-            "requestNotFound": "Kunne ikke finne kontaktforespørsel eller den var allerede håndtert",
-            "accept": "Kunne ikke godta kontaktforespørsel",
-            "reject": "Kunne ikke avslå forespørsel",
-            "cancel": "Kunne ikke avbryte forespørsel"
         }
     },
     "profile": {
@@ -213,15 +202,15 @@
         "fields": {
             "name": "Navn",
             "email": "E-post",
-            "phone": "Telefonnummer",
+            "phone": "Telefon",
             "notSpecified": "Ikke spesifisert"
         },
         "settings": {
             "title": "Innstillinger",
-            "subtitle": "Appinnstillinger og varsler"
+            "subtitle": "App-innstillinger og varsler"
         },
         "avatarModal": {
-            "title": "Endre profilbilde",
+            "title": "Bytt profilbilde",
             "takePhoto": "Ta bilde",
             "chooseFromLibrary": "Velg fra bibliotek"
         },
@@ -234,16 +223,16 @@
             "camera": "Kameratilgang kreves"
         },
         "notices": {
-            "title": "Merknad",
-            "emailConfirmation": "Profil lagret, men e-postendring krever bekreftelse"
+            "title": "Varsel",
+            "emailConfirmation": "Profil lagret, men endring av e-post krever bekreftelse"
         },
         "success": {
             "title": "Lagret",
-            "saved": "Din profil har blitt oppdatert."
+            "saved": "Din profil er oppdatert"
         },
         "errors": {
             "loadProfile": "Kunne ikke laste profil",
-            "notLoggedIn": "Du er ikke innlogget",
+            "notLoggedIn": "Du er ikke logget inn",
             "updateProfile": "Kunne ikke oppdatere profil",
             "saveProfile": "Kunne ikke lagre profil"
         }
@@ -254,26 +243,39 @@
         "information": "Informasjon",
         "language": "Språk",
         "theme": "Tema",
-        "notifications": "Varsler",
-        "notificationsDesc": "Aktiver varsler for innsjekk",
+        "notifications": {
+            "title": "Varsler",
+            "preferences": "Varselinnstillinger",
+            "summary": {
+                "reminders": "Påminnelser",
+                "activity": "Aktivitet",
+                "allOff": "Alle varsler av"
+            },
+            "stayOnTrack": {
+                "title": "Hold deg på sporet",
+                "description": "Minn meg på daglig sikkerhetssjekk"
+            },
+            "contactActivity": {
+                "title": "Kontaktaktivitet",
+                "description": "Gi beskjed når kontaktene mine sjekker inn"
+            }
+        },
         "about": "Om",
-        "privacy": "Personvernregler",
-        "terms": "Tjenestevilkår",
+        "privacy": "Personvern",
+        "terms": "Vilkår",
         "logout": "Logg ut",
-        "resetData": "Nullstill data",
+        "resetData": "Tilbakestill data",
         "light": "Lys",
         "dark": "Mørk",
-        "systemDefault": "Bruk systeminnstilling",
+        "systemDefault": "Følg systeminnstilling",
         "english": "Engelsk",
         "swedish": "Svensk",
         "norwegian": "Norsk",
         "danish": "Dansk",
         "finnish": "Finsk",
-        "chineseSimplified": "Kinesisk (Forenklet)",
-        "chineseTraditional": "Kinesisk (Tradisjonell)",
-        "resetWarning": "Er du sikker? Alle dine data vil bli slettet.",
-        "logoutConfirm": "Er du sikker på at du vil logge ut?",
-        "confirmReset": "Nullstill",
+        "resetWarning": "Er du sikker? All data vil slettes",
+        "logoutConfirm": "Vil du virkelig logge ut?",
+        "confirmReset": "Tilbakestill",
         "cancel": "Avbryt",
         "ok": "OK"
     },
@@ -291,7 +293,7 @@
         "no": "Nei"
     },
     "time": {
-        "justNow": "Nettopp",
+        "justNow": "Akkurat nå",
         "minutesAgo": "{{count}} min siden",
         "hoursAgo": "{{count}} time{{count, plural, =1 {} other {r}}} siden",
         "daysAgo": "{{count}} dag{{count, plural, =1 {} other {er}}} siden"
@@ -310,11 +312,11 @@
             "creating": "Oppretter konto...",
             "success": {
                 "title": "Konto opprettet 🎉",
-                "message": "Kontoen din er klar. Du kan nå logge inn."
+                "message": "Din konto er klar. Du kan nå logge inn."
             },
             "verifyEmail": {
-                "title": "Vennligst bekreft e-posten din!",
-                "message": "Vi har sendt en bekreftelses-e-post til innboksen din. Etter at du har bekreftet, vennligst logg inn."
+                "title": "Bekreft e-post!",
+                "message": "Vi har sendt en bekreftelsesmail. Bekreft og logg inn"
             },
             "error": "Registrering mislyktes"
         },
@@ -330,30 +332,30 @@
             "placeholder": "Passord (minst 6 tegn)"
         },
         "confirmPassword": "Bekreft passord",
-        "passwordsMatch": "✔ Passordene samsvarer",
-        "passwordsNoMatch": "✖ Passordene samsvarer ikke",
+        "passwordsMatch": "✔ Passordene stemmer",
+        "passwordsNoMatch": "✖ Passordene stemmer ikke",
         "alreadyHaveAccount": "Har du allerede en konto? Logg inn",
-        "noAccount": "Har du ikke en konto? Registrer deg",
+        "noAccount": "Har du ingen konto? Registrer",
         "unknownError": "Ukjent feil",
         "forgotPassword": {
             "title": "Glemt passord",
             "instructions": "Skriv inn e-postadressen din",
-            "send": "Send tilbakestillingse-post",
+            "send": "Send nullstillingsmail",
             "sending": "Sender...",
             "sentTitle": "Sjekk e-posten din",
-            "sentMessage": "Vi sendte en lenke for å tilbakestille passordet til e-posten din.",
+            "sentMessage": "Vi har sendt en nullstillingslink til e-posten din",
             "login": "Gå til innlogging",
-            "error": "Feil ved sending av tilbakestillingse-post"
+            "error": "Feil ved sending av nullstillingsmail"
         },
         "resetPassword": {
-            "title": "Tilbakestill passord",
-            "instructions": "Skriv inn ditt nye passord nedenfor.",
+            "title": "Nullstill passord",
+            "instructions": "Skriv inn ditt nye passord nedenfor",
             "save": "Lagre nytt passord",
             "saving": "Lagrer...",
-            "successTitle": "Passord tilbakestilt!",
-            "successMessage": "Du kan nå logge inn med ditt nye passord.",
+            "successTitle": "Passord nullstilt!",
+            "successMessage": "Du kan nå logge inn med nytt passord",
             "login": "Gå til innlogging",
-            "error": "Feil ved tilbakestilling av passord",
+            "error": "Feil ved nullstilling",
             "passwordPlaceholder": "Nytt passord"
         }
     }

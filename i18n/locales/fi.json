@@ -125,7 +125,7 @@
             "delete": "Poista",
             "cancelRequest": "Peruuta pyyntö",
             "sending": "Lähetetään...",
-            "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}"
+            "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}"
         },
         "alerts": {
             "limitReached": {
@@ -187,17 +187,6 @@
                 "title": "Pyyntö peruutettu",
                 "message": "Yhteystietopyyntö on peruutettu"
             }
-        },
-        "errors": {
-            "loadData": "Tietoja ei voitu ladata",
-            "save": "Yhteystietoja ei voitu tallentaa",
-            "delete": "Yhteystietoa ei voitu poistaa",
-            "sendRequest": "Yhteystietopyyntöä ei voitu lähettää",
-            "search": "Käyttäjää ei voitu hakea",
-            "requestNotFound": "Yhteystietopyyntöä ei löytynyt tai se oli jo käsitelty",
-            "accept": "Yhteystietopyyntöä ei voitu hyväksyä",
-            "reject": "Pyyntöä ei voitu hylätä",
-            "cancel": "Pyyntöä ei voitu peruuttaa"
         }
     },
     "profile": {
@@ -254,8 +243,23 @@
         "information": "Tiedot",
         "language": "Kieli",
         "theme": "Teema",
-        "notifications": "Ilmoitukset",
-        "notificationsDesc": "Ota ilmoitukset käyttöön sisäänkirjautumisia varten",
+        "notifications": {
+            "title": "Ilmoitukset",
+            "preferences": "Ilmoitusasetukset",
+            "summary": {
+                "reminders": "Muistutukset",
+                "activity": "Aktiviteetti",
+                "allOff": "Kaikki ilmoitukset pois päältä"
+            },
+            "stayOnTrack": {
+                "title": "Pysy aikataulussa",
+                "description": "Muistuta minua tekemään päivittäinen turvallisuustarkistus"
+            },
+            "contactActivity": {
+                "title": "Kontaktien aktiivisuus",
+                "description": "Ilmoita minulle kun kontaktini tekevät sisäänkirjautumisen"
+            }
+        },
         "about": "Tietoja",
         "privacy": "Tietosuojakäytäntö",
         "terms": "Käyttöehdot",
@@ -269,8 +273,6 @@
         "norwegian": "Norja",
         "danish": "Tanska",
         "finnish": "Suomi",
-        "chineseSimplified": "Kiina (Yksinkertaistettu)",
-        "chineseTraditional": "Kiina (Perinteinen)",
         "resetWarning": "Oletko varma? Kaikki tietosi poistetaan.",
         "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
         "confirmReset": "Nollaa",
