@@ -86,6 +86,12 @@
         "responseButton": {
             "sendResponse": "👏 Giv high five?",
             "responded": "👏 High five sendt!"
+        },
+        "checkinResponse": {
+            "todayLikes_one": "👋 Du fik {{count}} like i dag:",
+            "todayLikes_other": "👋 Du fik {{count}} likes i dag:",
+            "prefix": "reagerede på din indtjekning",
+            "defaultMessage": "synes godt om 👍 din indtjekning!"
         }
     },
     "contacts": {

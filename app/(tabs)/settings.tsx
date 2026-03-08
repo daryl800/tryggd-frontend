@@ -63,9 +63,10 @@ export default function SettingsScreen() {
 
     const loadSettings = async () => {
         try {
-            // Load notification settings
+            // Load notification settings from AsyncStorage
             const savedCheckInReminder = await AsyncStorage.getItem(STORAGE_KEYS.CHECK_IN_REMINDER);
             const savedContactCheckIn = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
+            const savedLanguage = await AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE);
 
             if (savedCheckInReminder !== null) {
                 setCheckInReminderEnabled(savedCheckInReminder === 'true');
@@ -73,14 +74,65 @@ export default function SettingsScreen() {
             if (savedContactCheckIn !== null) {
                 setContactCheckInEnabled(savedContactCheckIn === 'true');
             }
+
+            // Load language from Supabase and sync with i18n if needed
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: settings, error } = await supabase
+                    .from('user_settings')
+                    .select('language')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (!error && settings?.language) {
+                    // If Supabase has a language setting and it's different from current
+                    if (settings.language !== i18n.language) {
+                        await i18n.changeLanguage(settings.language);
+                        await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, settings.language);
+                    }
+                } else if (savedLanguage) {
+                    // If no Supabase setting but we have AsyncStorage, update Supabase
+                    await supabase
+                        .from('user_settings')
+                        .upsert({
+                            user_id: user.id,
+                            language: savedLanguage,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'user_id' });
+                }
+            }
         } catch (error) {
             console.error("Failed to load settings:", error);
         }
     };
 
     const changeLanguage = async (langCode: string) => {
+        // Update i18n and AsyncStorage
         await i18n.changeLanguage(langCode);
         await AsyncStorage.setItem(STORAGE_KEYS.LANGUAGE, langCode);
+
+        // Update user_settings table in Supabase
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { error } = await supabase
+                    .from('user_settings')
+                    .upsert({
+                        user_id: user.id,
+                        language: langCode,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'user_id'
+                    });
+
+                if (error) {
+                    console.error("Failed to update language in Supabase:", error);
+                }
+            }
+        } catch (error) {
+            console.error("Error updating language in Supabase:", error);
+        }
+
         setIsLanguageExpanded(false);
     };
 
@@ -574,6 +626,11 @@ const styles = StyleSheet.create({
         color: "#6B7280",
         marginTop: 4,
         lineHeight: 20,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: BaseColors.neutral[200],
+        marginHorizontal: 16,
     },
     footer: {
         paddingHorizontal: SCREEN_PADDING.horizontal,

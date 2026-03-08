@@ -86,6 +86,12 @@
         "responseButton": {
             "sendResponse": "👏 Taputa tälle?",
             "responded": "👏 Taputettu!"
+        },
+        "checkinResponse": {
+            "todayLikes_one": "👋 Sait tänään {{count}} tykkäyksen:",
+            "todayLikes_other": "👋 Sait tänään {{count}} tykkäystä:",
+            "prefix": "reagoi kirjautumiseesi",
+            "defaultMessage": "tykkää 👍 kirjautumisestasi!"
         }
     },
     "contacts": {

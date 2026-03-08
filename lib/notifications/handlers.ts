@@ -74,21 +74,23 @@ function handleNotificationNavigation(data: any) {
             console.log('→ Navigated to contacts list');
             break;
 
-        case 'contact_checkin':
-            router.push('/(tabs)/activity');
+        case 'daily_reminder':
+            router.push('/(tabs)');
             console.log('→ Navigated to activity');
             break;
 
-        case 'self_reminder':
-        case 'target_reminder':
-            router.push('/(tabs)/checkin');
-            console.log('→ Navigated to checkin');
+        case 'contact_checkin':
+        case 'checkin_response':
+            router.push('/(tabs)/activity');
+            console.log('→ Default navigation to activity');
             break;
 
         default:
             // Default fallback for any other notification type
-            router.push('/(tabs)/activity');
-            console.log('→ Default navigation to activity');
+            if (data.type) {
+                router.push('/(tabs)/activity');
+                console.log('→ Default navigation to activity');
+            }
             break;
     }
 }

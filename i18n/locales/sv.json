@@ -86,6 +86,12 @@
         "responseButton": {
             "sendResponse": "👏 Ge en high five?",
             "responded": "👏 High five skickad!"
+        },
+        "checkinResponse": {
+            "todayLikes_one": "👋 Du fick {{count}} gilla-markering idag:",
+            "todayLikes_other": "👋 Du fick {{count}} gilla-markeringar idag:",
+            "prefix": "reagerade på din incheckning",
+            "defaultMessage": "gillar 👍 din incheckning!"
         }
     },
     "contacts": {

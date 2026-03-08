@@ -83,6 +83,16 @@ export default function ActivityScreen() {
     Map<string, { email: string; display_name: string }>
   >(new Map());
 
+  const ownerTimezoneRef = useRef<string>(
+    Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  );
+
+  useEffect(() => {
+    if (ownerActivity?.checkin_timezone) {
+      ownerTimezoneRef.current = ownerActivity.checkin_timezone;
+    }
+  }, [ownerActivity]);
+
   // Add a ref to track if this is first mount
   const isFirstMount = useRef(true);
 
@@ -397,16 +407,33 @@ export default function ActivityScreen() {
                   'Someone';
               }
 
-              const newNotification = {
-                ...payload.new,
+              // Create a properly typed notification object that matches ResponseNotification
+              const newNotification: ResponseNotification = {
+                id: payload.new.id,
+                user_id: payload.new.user_id,
+                sender_user_id: payload.new.sender_user_id,
+                type: payload.new.type,
+                title: payload.new.title,
+                body: payload.new.body,
                 data: parsedData,
+                read: payload.new.read,
+                created_at: payload.new.created_at,
                 sender: {
                   display_name: senderName
                 }
               };
 
-              // Update state
+              // Update responses state
               setResponses(prev => [newNotification, ...prev]);
+
+              // Also update todayResponses if this response is from today
+              const userTimezone = ownerTimezoneRef.current;
+
+              if (isTodayLocal(payload.new.created_at, userTimezone)) {
+                setTodayResponses(prev => [newNotification, ...prev]);
+              }
+
+              // Update unread responses
               if (!payload.new.read) {
                 setUnreadResponses(prev => [newNotification, ...prev]);
               }
@@ -418,6 +445,7 @@ export default function ActivityScreen() {
       responsesChannelRef.current = channel;
     });
   };
+
 
   // Update initialize function to use the fixed functions
   const initialize = async (force = false) => {
@@ -834,10 +862,6 @@ export default function ActivityScreen() {
     });
   };
 
-
-
-
-
   const handleScreenBlur = useCallback(() => {
     isFocused.current = false;
   }, []);
@@ -862,10 +886,9 @@ export default function ActivityScreen() {
         supabase.removeChannel(responsesChannelRef.current);
       isInitialized.current = false;
       lastCheckinTimes.current.clear();
+      ownerTimezoneRef.current = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     };
   }, []);
-
-
 
   // ActivityItem Component (reusable within this file)
   const ActivityItem = ({
@@ -1166,35 +1189,32 @@ export default function ActivityScreen() {
             {/* Response button - only for non-owner with valid check-in */}
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
-                {responseSent ? (
-                  <View style={[styles.responseButton]}>
-                    <Text style={styles.responseButtonText}>
-                      {t('activity.responseButton.responded') || 'Sent!'}
+                <TouchableOpacity
+                  style={[
+                    styles.responseButton,
+                    // Apply disabled style when responseSent OR button not enabled
+                    (responseSent || !isButtonEnabled) && styles.responseButtonDisabled,
+                    sendingResponse && styles.responseButtonSending
+                  ]}
+                  onPress={handleSendResponse}
+                  disabled={responseSent || !isButtonEnabled || sendingResponse}
+                  activeOpacity={0.7}
+                >
+                  {sendingResponse ? (
+                    <ActivityIndicator size="small" color={BaseColors.primary} />
+                  ) : (
+                    <Text style={[
+                      styles.responseButtonText,
+                      // Apply disabled text style when responseSent OR button not enabled
+                      (responseSent || !isButtonEnabled) && styles.responseButtonTextDisabled
+                    ]}>
+                      {responseSent
+                        ? (t('activity.responseButton.responded') || 'Sent!')
+                        : (t('activity.responseButton.sendResponse') || 'Good job!')
+                      }
                     </Text>
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    style={[
-                      styles.responseButton,
-                      !isButtonEnabled && styles.responseButtonDisabled,
-                      sendingResponse && styles.responseButtonSending
-                    ]}
-                    onPress={handleSendResponse}
-                    disabled={!isButtonEnabled || sendingResponse}
-                    activeOpacity={0.7}
-                  >
-                    {sendingResponse ? (
-                      <ActivityIndicator size="small" color={BaseColors.primary} />
-                    ) : (
-                      <Text style={[
-                        styles.responseButtonText,
-                        !isButtonEnabled && styles.responseButtonTextDisabled
-                      ]}>
-                        {t('activity.responseButton.sendResponse') || 'Good job!'}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                )}
+                  )}
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -1263,16 +1283,24 @@ export default function ActivityScreen() {
                   {todayResponses.length > 0 && (
                     <View style={styles.todayResponses}>
                       <Text style={styles.todayResponsesTitle}>
-                        👋 {todayResponses.length} {todayResponses.length === 1 ? 'person' : 'people'} cheered you today:
+                        {t("activity.checkinResponse.todayLikes", { count: todayResponses.length })}
                       </Text>
                       {todayResponses.map((response, index) => (
                         <View key={response.id} style={styles.todayResponseItem}>
                           <Ionicons name="heart" size={16} color={BaseColors.primary} />
                           <Text style={styles.todayResponseText}>
                             <Text style={styles.todayResponseName}>
-                              {response.sender?.display_name}
+                              {response.sender?.display_name} {t('activity.checkinResponse.prefix')}:
                             </Text>
-                            {response.body ? ` ${response.body}` : ' cheered for you!'}
+                            {response.body ? ` ${response.body}` : ` ${t('activity.checkinResponse.defaultMessage')}`}
+                          </Text>
+                          {/* Time display - 24 hour format */}
+                          <Text style={styles.responseTimeRight}>
+                            {new Date(response.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false, // This ensures 24-hour format
+                            })}
                           </Text>
                           {!response.read && <View style={styles.smallUnreadDot} />}
                         </View>
@@ -1644,14 +1672,12 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
   },
   responseButtonDisabled: {
-    backgroundColor: BaseColors.neutral[200],
-    borderColor: BaseColors.neutral[400],
+    backgroundColor: BaseColors.neutral[200], // Grey background
+    borderColor: BaseColors.neutral[400],     // Grey border
+    opacity: 0.7,
   },
   responseButtonSending: {
     opacity: 0.7,
-  },
-  buttonIcon: {
-    marginRight: 6,
   },
   responseButtonText: {
     fontSize: 13,
@@ -1659,7 +1685,7 @@ const styles = StyleSheet.create({
     color: BaseColors.primary,
   },
   responseButtonTextDisabled: {
-    color: BaseColors.neutral[400],
+    color: BaseColors.neutral[500], // Darker grey text
   },
   activityItem: {
     paddingVertical: 12,
@@ -1700,10 +1726,19 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   todayResponseItem: {
+    marginLeft: 18,
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 6,
     gap: 8,
+    justifyContent: 'space-between',
+  },
+  responseTimeRight: {
+    fontSize: 15,
+    color: BaseColors.neutral[400],
+    marginLeft: 8,
+    minWidth: 45, // Ensures consistent width for HH:mm
+    textAlign: 'right',
   },
   todayResponseText: {
     flex: 1,

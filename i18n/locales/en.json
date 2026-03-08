@@ -84,8 +84,14 @@
       "other": "{{date, date, MMMM d, yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "👏 Clap for this?",
+      "sendResponse": "Send a Like 👍",
       "responded": "👏 Applauded!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 You got {{count}} like today:",
+      "todayLikes_other": "👋 You got {{count}} likes today:",
+      "prefix": "reacted to your check-in",
+      "defaultMessage": "likes 👍 your checkin!"
     }
   },
   "contacts": {
