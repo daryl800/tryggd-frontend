@@ -32,7 +32,7 @@ export default ({ config }) => ({
             edgeToEdgeEnabled: true,
             predictiveBackGestureEnabled: false,
             package: "com.marcustechnology.tryggd",
-            versionCode: 1,
+            versionCode: 2,
             permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE"],
 
             // 重要：不要 commit google-services.json
