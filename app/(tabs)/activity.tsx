@@ -88,6 +88,16 @@ export default function ActivityScreen() {
   );
 
   useEffect(() => {
+    const initializeService = async () => {
+      await responseService.initialize();
+      // Refresh activities to update button states after initialization
+      fetchActivities();
+    };
+
+    initializeService();
+  }, []);
+
+  useEffect(() => {
     if (ownerActivity?.checkin_timezone) {
       ownerTimezoneRef.current = ownerActivity.checkin_timezone;
     }
@@ -943,18 +953,17 @@ export default function ActivityScreen() {
       useCallback(() => {
         const checkOnFocus = async () => {
           if (!user || !timestamp || isOwner) return;
+
+          // This will now check AsyncStorage cache first, then database
           const alreadyResponded = await responseService.hasResponded(
             userId,
             user.id,
             timestamp
           );
-          setResponseSent(prev => {
-            if (prev !== alreadyResponded) {
-              return alreadyResponded;
-            }
-            return prev;
-          });
+
+          setResponseSent(alreadyResponded);
         };
+
         checkOnFocus();
       }, [userId, user?.id, timestamp, isOwner])
     );

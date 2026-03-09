@@ -7,12 +7,47 @@ import { supabase } from "../supabase";
 const EDGE_FUNCTION_URL = 'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-checkin-response';
 
 const RESPONSES_CACHE_KEY = 'cached_responses';
+const RESPONSE_STATUS_KEY = 'response_status_cache'; // New: for boolean status cache
 const LAST_FETCH_KEY = 'last_responses_fetch';
 
 class ResponseNotificationService {
     private responseCache = new Map<string, boolean>();
     private notificationIdCache = new Map<string, string>();
     private pendingRequests = new Map<string, Promise<boolean>>();
+    private initialized = false;
+
+    // ============================================
+    // Initialize service - load cached statuses
+    // ============================================
+    async initialize() {
+        if (this.initialized) return;
+
+        try {
+            // Load response status cache
+            const cachedStatuses = await AsyncStorage.getItem(RESPONSE_STATUS_KEY);
+            if (cachedStatuses) {
+                const parsed = JSON.parse(cachedStatuses);
+                this.responseCache = new Map(Object.entries(parsed));
+                console.log(`✅ Loaded ${this.responseCache.size} cached response statuses`);
+            }
+
+            this.initialized = true;
+        } catch (error) {
+            console.error('Error initializing response service:', error);
+        }
+    }
+
+    // ============================================
+    // Persist response status cache
+    // ============================================
+    private async persistResponseCache() {
+        try {
+            const obj = Object.fromEntries(this.responseCache);
+            await AsyncStorage.setItem(RESPONSE_STATUS_KEY, JSON.stringify(obj));
+        } catch (error) {
+            console.error('Error persisting response cache:', error);
+        }
+    }
 
     // ============================================
     // Load responses from AsyncStorage
@@ -50,6 +85,8 @@ class ResponseNotificationService {
     // Get responses (cache-first)
     // ============================================
     async getResponses(userId: string, forceRefresh = false): Promise<any[]> {
+        await this.initialize();
+
         const cached = await this.loadCachedResponses();
 
         const lastFetch = await AsyncStorage.getItem(LAST_FETCH_KEY);
@@ -158,6 +195,8 @@ class ResponseNotificationService {
         checkinTime: string;
     }) {
         try {
+            await this.initialize();
+
             const token = await tokenManager.getValidToken();
 
             if (!token) {
@@ -204,7 +243,9 @@ class ResponseNotificationService {
 
             const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
 
+            // Update both memory cache and AsyncStorage
             this.responseCache.set(cacheKey, true);
+            await this.persistResponseCache();
 
             if (data.notificationId) {
                 this.notificationIdCache.set(cacheKey, data.notificationId);
@@ -270,19 +311,23 @@ class ResponseNotificationService {
         senderUserId: string,
         checkinTime: string
     ): Promise<boolean> {
+        await this.initialize();
 
         const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
 
+        // Check memory cache first (fastest)
         if (this.responseCache.has(cacheKey)) {
             console.log('📦 Using cached response status: true');
             return true;
         }
 
+        // Check if there's already a pending request for this key
         if (this.pendingRequests.has(cacheKey)) {
             console.log('⏳ Waiting for pending request...');
             return this.pendingRequests.get(cacheKey)!;
         }
 
+        // Create a new request
         const promise = this.queryDatabase(
             recipientUserId,
             senderUserId,
@@ -372,7 +417,9 @@ class ResponseNotificationService {
 
             if (hasResponse) {
                 console.log('✅ Found response in database');
+                // Cache the result in both memory and AsyncStorage
                 this.responseCache.set(cacheKey, true);
+                await this.persistResponseCache();
             } else {
                 console.log('❌ No response found in database');
             }
@@ -392,9 +439,11 @@ class ResponseNotificationService {
         this.responseCache.clear();
         this.notificationIdCache.clear();
         this.pendingRequests.clear();
+        this.initialized = false;
 
         try {
             await AsyncStorage.removeItem(RESPONSES_CACHE_KEY);
+            await AsyncStorage.removeItem(RESPONSE_STATUS_KEY);
             await AsyncStorage.removeItem(LAST_FETCH_KEY);
 
             console.log('🧹 AsyncStorage cache cleared');

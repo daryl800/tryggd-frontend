@@ -6,7 +6,7 @@ export default ({ config }) => ({
     expo: {
         name: "tryggd",
         slug: "tryggd-frontend",
-        version: "2.3.0",
+        version: "2.3.1",
         orientation: "portrait",
         icon: "./assets/images/tryggd-icon-small.png",
         scheme: "tryggd",
@@ -32,7 +32,7 @@ export default ({ config }) => ({
             edgeToEdgeEnabled: true,
             predictiveBackGestureEnabled: false,
             package: "com.marcustechnology.tryggd",
-            versionCode: 2,
+            versionCode: 3,
             permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE"],
 
             // 重要：不要 commit google-services.json
