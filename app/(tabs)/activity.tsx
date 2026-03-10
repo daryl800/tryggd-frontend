@@ -33,21 +33,14 @@ type Activity = {
   checkin_timezone?: string | null;
 };
 
-// ✅ Define ResponseNotification type using your existing notifications table
 type ResponseNotification = {
   id: string;
-  user_id: string; // recipient
-  sender_user_id: string; // sender
+  user_id: string;
+  sender_user_id: string;
   type: string;
   title: string;
   body: string;
-  data: {
-    responseType?: string;
-    checkinId?: string;
-    checkinTime?: string;
-    fromUserName?: string;
-    toUserId?: string;
-  };
+  data: any;
   read: boolean;
   created_at: string;
   sender?: {
@@ -57,98 +50,41 @@ type ResponseNotification = {
 
 export default function ActivityScreen() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+
+  // State
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [contactMap, setContactMap] = useState<
-    Map<string, { email: string; display_name: string }>
-  >(new Map());
-
-  // State for response notifications
+  const [contactMap, setContactMap] = useState<Map<string, { email: string; display_name: string }>>(new Map());
   const [responses, setResponses] = useState<ResponseNotification[]>([]);
   const [unreadResponses, setUnreadResponses] = useState<ResponseNotification[]>([]);
-  const [showResponses, setShowResponses] = useState(false);
+  const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
 
+  // Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
   const myContactIds = useRef<string[]>([]);
+  const contactMapRef = useRef<Map<string, { email: string; display_name: string }>>(new Map());
+  const ownerTimezoneRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
+  const isInitialized = useRef(false);
+
+  // Channel refs
   const checkinsChannelRef = useRef<any>(null);
   const contactsChannelRef = useRef<any>(null);
   const ownerCheckinsChannelRef = useRef<any>(null);
   const responsesChannelRef = useRef<any>(null);
-  const isInitialized = useRef(false);
-  const isFocused = useRef(false);
-  const contactMapRef = useRef<
-    Map<string, { email: string; display_name: string }>
-  >(new Map());
+  const todayResponsesChannelRef = useRef<any>(null);
 
-  const ownerTimezoneRef = useRef<string>(
-    Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-  );
-
-  useEffect(() => {
-    const initializeService = async () => {
-      await responseService.initialize();
-      // Refresh activities to update button states after initialization
-      fetchActivities();
-    };
-
-    initializeService();
-  }, []);
-
-  useEffect(() => {
-    if (ownerActivity?.checkin_timezone) {
-      ownerTimezoneRef.current = ownerActivity.checkin_timezone;
-    }
-  }, [ownerActivity]);
-
-  // Add a ref to track if this is first mount
-  const isFirstMount = useRef(true);
-
-  // ✅ Add AppState logging to see what's happening
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      console.log('📱 AppState changed to:', state, 'at:', new Date().toLocaleTimeString());
-    });
-    return () => subscription.remove();
-  }, []);
-
-  // ✅ Log when useFocusEffect fires
-  useFocusEffect(
-    useCallback(() => {
-      console.log('🎯 useFocusEffect FIRED at:', new Date().toLocaleTimeString());
-      console.log('📊 Current AppState:', AppState.currentState);
-
-      if (isFirstMount.current) {
-        console.log('📝 This is initial mount');
-        isFirstMount.current = false;
-      } else {
-        console.log('🔄 This is a re-focus (tab switch or unlock?)');
-      }
-
-      fetchActivities();
-      fetchUnreadResponseNotifications(); // Also fetch unread responses
-    }, [])
-  );
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
+  // ============================================
+  // Helper Functions
+  // ============================================
   const isTodayLocal = (dateStr: string, timezone: string): boolean => {
     try {
       const date = new Date(dateStr);
       const now = new Date();
-
-      // Convert both to local date strings in the given timezone
       const dateLocalStr = date.toLocaleDateString('en-CA', { timeZone: timezone });
       const nowLocalStr = now.toLocaleDateString('en-CA', { timeZone: timezone });
-
       return dateLocalStr === nowLocalStr;
     } catch (error) {
       console.error('Error checking if date is today:', error);
@@ -156,386 +92,14 @@ export default function ActivityScreen() {
     }
   };
 
-  // Add state for today's responses
-  const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
-
-  // Update fetchResponseNotifications to also set today's responses
-  const fetchResponseNotifications = async () => {
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      if (!user) return;
-
-      const { data: notifications, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('type', 'checkin_response')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-
-      if (!notifications || notifications.length === 0) {
-        setResponses([]);
-        setUnreadResponses([]);
-        setTodayResponses([]);
-        return;
-      }
-
-      const senderIds = notifications
-        .map(n => n.sender_user_id)
-        .filter(id => id != null);
-
-      let senderMap: Record<string, string> = {};
-
-      if (senderIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, display_name')
-          .in('id', senderIds);
-
-        if (profiles) {
-          profiles.forEach(profile => {
-            senderMap[profile.id] = profile.display_name;
-          });
-        }
-      }
-
-      // Get user's timezone from settings or use default
-      const userTimezone = ownerActivity?.checkin_timezone ||
-        Intl.DateTimeFormat().resolvedOptions().timeZone ||
-        'UTC';
-
-      // Enrich notifications and filter today's
-      const enriched = notifications.map(notification => {
-        let parsedData = {};
-        try {
-          parsedData = typeof notification.data === 'string'
-            ? JSON.parse(notification.data)
-            : notification.data || {};
-        } catch (e) {
-          console.error('Error parsing notification data:', e);
-        }
-
-        return {
-          ...notification,
-          data: parsedData,
-          sender: {
-            display_name: senderMap[notification.sender_user_id] ||
-              (parsedData as any).senderName ||
-              'Someone'
-          }
-        };
-      });
-
-      setResponses(enriched);
-
-      // Filter for today's responses using local time
-      const today = enriched.filter(r =>
-        isTodayLocal(r.created_at, userTimezone)
-      );
-      setTodayResponses(today);
-
-      const unread = enriched.filter(r => !r.read);
-      setUnreadResponses(unread);
-
-    } catch (error) {
-      console.error('Error fetching response notifications:', error);
-    }
-  };
-
-
-  // Fetch only unread response notifications
-  const fetchUnreadResponseNotifications = async () => {
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      if (!user) return;
-
-      // QUERY 1: Get unread notifications with type 'checkin_response'
-      const { data: notifications, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('type', 'checkin_response')  // Changed from 'response' to 'checkin_response'
-        .eq('read', false)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      if (!notifications || notifications.length === 0) {
-        setUnreadResponses([]);
-        return;
-      }
-
-      // QUERY 2: Get sender profiles separately
-      const senderIds = notifications
-        .map(n => n.sender_user_id)
-        .filter(id => id != null);
-
-      let senderMap: Record<string, string> = {};
-
-      if (senderIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, display_name')
-          .in('id', senderIds);
-
-        if (profiles) {
-          profiles.forEach(profile => {
-            senderMap[profile.id] = profile.display_name;
-          });
-        }
-      }
-
-      // Parse JSON data and combine
-      const enriched = notifications.map(notification => {
-        let parsedData = {};
-        try {
-          parsedData = typeof notification.data === 'string'
-            ? JSON.parse(notification.data)
-            : notification.data || {};
-        } catch (e) {
-          console.error('Error parsing notification data:', e);
-        }
-
-        return {
-          ...notification,
-          data: parsedData,
-          sender: {
-            display_name: senderMap[notification.sender_user_id] ||
-              (parsedData as any).senderName ||
-              'Someone'
-          }
-        };
-      });
-
-      setUnreadResponses(enriched);
-
-      if (enriched.length > 0 && !showResponses) {
-        console.log(`📬 You have ${enriched.length} unread responses`);
-      }
-
-    } catch (error) {
-      console.error('Error fetching unread responses:', error);
-    }
-  };
-
-  // Update ResponseItem component to handle the data structure
-  const ResponseItem = ({ response, onPress }: { response: any; onPress: () => void }) => {
-    const formattedTime = new Date(response.created_at).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const formattedDate = new Date(response.created_at).toLocaleDateString();
-
-    // Get sender name from various possible sources
-    const fromName = response.sender?.display_name ||
-      response.data?.senderName ||
-      'Someone';
-
-    // Use the notification body or a default message
-    const message = response.body || 'responded to your check-in';
-
-    return (
-      <TouchableOpacity
-        style={[styles.responseItem, !response.read && styles.responseItemUnread]}
-        onPress={onPress}
-      >
-        <View style={styles.responseIcon}>
-          <Ionicons
-            name="hand-left"
-            size={24}
-            color={response.read ? BaseColors.neutral[400] : BaseColors.primary}
-          />
-        </View>
-        <View style={styles.responseContent}>
-          <Text style={styles.responseText}>
-            <Text style={styles.responseSender}>
-              {fromName}
-            </Text>
-            {' '}{message}
-          </Text>
-          <Text style={styles.responseTime}>
-            {formattedDate} at {formattedTime}
-          </Text>
-        </View>
-        {!response.read && <View style={styles.unreadDot} />}
-      </TouchableOpacity>
-    );
-  };
-
-  // Update the subscription setup
-  const setupResponsesSubscription = () => {
-    if (responsesChannelRef.current) {
-      supabase.removeChannel(responsesChannelRef.current);
-      responsesChannelRef.current = null;
-    }
-
-    supabase.auth.getUser().then(({ data: userData }) => {
-      const user = userData.user;
-      if (!user) return;
-
-      const channel = supabase
-        .channel('response-notifications')
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'notifications',
-            filter: `user_id=eq.${user.id}`,
-          },
-          async (payload) => {
-            // Only process checkin_response type notifications
-            if (payload.new.type === 'checkin_response') {
-              console.log('📬 New response notification received:', payload.new);
-
-              // Parse the data field
-              let parsedData = {};
-              try {
-                parsedData = typeof payload.new.data === 'string'
-                  ? JSON.parse(payload.new.data)
-                  : payload.new.data || {};
-              } catch (e) {
-                console.error('Error parsing notification data:', e);
-              }
-
-              // Get sender name
-              let senderName = 'Someone';
-              if (payload.new.sender_user_id) {
-                const { data: profile } = await supabase
-                  .from('profiles')
-                  .select('display_name')
-                  .eq('id', payload.new.sender_user_id)
-                  .single();
-
-                senderName = profile?.display_name ||
-                  (parsedData as any).senderName ||
-                  'Someone';
-              }
-
-              // Create a properly typed notification object that matches ResponseNotification
-              const newNotification: ResponseNotification = {
-                id: payload.new.id,
-                user_id: payload.new.user_id,
-                sender_user_id: payload.new.sender_user_id,
-                type: payload.new.type,
-                title: payload.new.title,
-                body: payload.new.body,
-                data: parsedData,
-                read: payload.new.read,
-                created_at: payload.new.created_at,
-                sender: {
-                  display_name: senderName
-                }
-              };
-
-              // Update responses state
-              setResponses(prev => [newNotification, ...prev]);
-
-              // Also update todayResponses if this response is from today
-              const userTimezone = ownerTimezoneRef.current;
-
-              if (isTodayLocal(payload.new.created_at, userTimezone)) {
-                setTodayResponses(prev => [newNotification, ...prev]);
-              }
-
-              // Update unread responses
-              if (!payload.new.read) {
-                setUnreadResponses(prev => [newNotification, ...prev]);
-              }
-            }
-          }
-        )
-        .subscribe();
-
-      responsesChannelRef.current = channel;
-    });
-  };
-
-
-  // Update initialize function to use the fixed functions
-  const initialize = async (force = false) => {
-    if (isInitialized.current && !force) return;
-    isInitialized.current = true;
-
-    lastCheckinTimes.current.clear();
-    await fetchActivities();
-    await fetchResponseNotifications(); // Fetch response notifications
-    setupContactsSubscription();
-    setupCheckinsSubscription();
-    setupOwnerCheckinsSubscription();
-    setupResponsesSubscription(); // Setup responses subscription
-  };
-
-  const handleScreenFocus = useCallback(() => {
-    isFocused.current = true;
-    if (isInitialized.current) {
-      fetchActivities();
-      fetchUnreadResponseNotifications(); // Also refresh unread responses
-    } else {
-      initialize();
-    }
-  }, []);
-
-  // ✅ Mark a response notification as read
-  const markResponseAsRead = async (notificationId: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('id', notificationId);
-
-      if (error) throw error;
-
-      // Update local state
-      setResponses(prev =>
-        prev.map(r => r.id === notificationId ? { ...r, read: true } : r)
-      );
-
-      setUnreadResponses(prev => prev.filter(r => r.id !== notificationId));
-    } catch (error) {
-      console.error('Error marking response as read:', error);
-    }
-  };
-
-  // ✅ Mark all response notifications as read
-  const markAllResponsesAsRead = async () => {
-    try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      if (!user || unreadResponses.length === 0) return;
-
-      const unreadIds = unreadResponses.map(r => r.id);
-
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .in('id', unreadIds);
-
-      if (error) throw error;
-
-      // Update local state
-      setResponses(prev =>
-        prev.map(r => unreadIds.includes(r.id) ? { ...r, read: true } : r)
-      );
-
-      setUnreadResponses([]);
-    } catch (error) {
-      console.error('Error marking all responses as read:', error);
-    }
-  };
-
+  // ============================================
+  // Data Fetching Functions
+  // ============================================
   const fetchContacts = async (): Promise<{
     ids: string[];
     map: Map<string, { email: string; display_name: string }>;
   }> => {
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
       if (!user) return { ids: [], map: new Map() };
 
       const { data: contactsData } = await supabase
@@ -561,15 +125,13 @@ export default function ActivityScreen() {
         return { ids, map };
       }
     } catch (err) {
-      console.error(t('activity.errors.fetchContacts'), err);
+      console.error('Error fetching contacts:', err);
     }
     return { ids: [], map: new Map() };
   };
 
   const fetchOwnerActivity = async () => {
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
       if (!user) return;
 
       const { data, error } = await supabase
@@ -579,13 +141,12 @@ export default function ActivityScreen() {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error(t('activity.errors.fetchOwnerActivity' as any), error);
+        console.error('Error fetching owner activity:', error);
         return;
       }
 
       if (data) {
-        const isNew =
-          !lastCheckinTimes.current.has(user.id) ||
+        const isNew = !lastCheckinTimes.current.has(user.id) ||
           lastCheckinTimes.current.get(user.id) !== data.last_checked_in_utc;
 
         lastCheckinTimes.current.set(user.id, data.last_checked_in_utc);
@@ -597,6 +158,10 @@ export default function ActivityScreen() {
           hasNewUpdate: isNew,
           checkin_timezone: data.checkin_timezone,
         });
+
+        if (data.checkin_timezone) {
+          ownerTimezoneRef.current = data.checkin_timezone;
+        }
       } else {
         setOwnerActivity({
           user_id: user.id,
@@ -609,15 +174,13 @@ export default function ActivityScreen() {
         });
       }
     } catch (err) {
-      console.error(t('activity.errors.fetchOwnerActivity'), err);
+      console.error('Error fetching owner activity:', err);
     }
   };
 
   const fetchActivities = async () => {
     try {
       const { ids: contactIds, map: freshContactMap } = await fetchContacts();
-      await fetchOwnerActivity();
-      await fetchUnreadResponseNotifications(); // Also fetch unread responses
 
       if (contactIds.length === 0) {
         setActivities([]);
@@ -635,17 +198,11 @@ export default function ActivityScreen() {
 
       const enriched = (data || []).map((activity) => {
         const contactInfo = freshContactMap.get(activity.user_id);
-
-        const isNew =
-          !lastCheckinTimes.current.has(activity.user_id) ||
-          lastCheckinTimes.current.get(activity.user_id) !==
-          activity.last_checked_in_utc;
+        const isNew = !lastCheckinTimes.current.has(activity.user_id) ||
+          lastCheckinTimes.current.get(activity.user_id) !== activity.last_checked_in_utc;
 
         if (activity.last_checked_in_utc) {
-          lastCheckinTimes.current.set(
-            activity.user_id,
-            activity.last_checked_in_utc
-          );
+          lastCheckinTimes.current.set(activity.user_id, activity.last_checked_in_utc);
         }
 
         return {
@@ -660,111 +217,243 @@ export default function ActivityScreen() {
 
       const sorted = enriched.sort((a, b) => {
         if (b.priority !== a.priority) return b.priority - a.priority;
-        return (b.last_checked_in_utc ?? '').localeCompare(
-          a.last_checked_in_utc ?? ''
-        );
+        return (b.last_checked_in_utc ?? '').localeCompare(a.last_checked_in_utc ?? '');
       });
 
       setActivities(sorted);
     } catch (err) {
-      console.error(t('activity.errors.loadActivities'), err);
+      console.error('Error loading activities:', err);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        console.log('📱 App became active - refreshing activity data');
-        if (isMounted) {
-          fetchActivities();
-        }
-      }
-    };
-
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, []);
-
-  // ... (keep all your existing subscription setup functions)
-
-  const setupOwnerCheckinsSubscription = () => {
-    if (ownerCheckinsChannelRef.current) {
-      supabase.removeChannel(ownerCheckinsChannelRef.current);
-      ownerCheckinsChannelRef.current = null;
-    }
-
-    supabase.auth.getUser().then(({ data: userData }) => {
-      const user = userData.user;
+  const fetchResponseNotifications = async () => {
+    try {
       if (!user) return;
 
-      const channel = supabase
-        .channel('owner-checkins-realtime')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'users_latest_checkin',
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            if (payload.eventType === 'DELETE') {
-              lastCheckinTimes.current.delete(user.id);
-              setOwnerActivity({
-                user_id: user.id,
-                display_name: t('activity.you'),
-                last_checked_in_utc: null,
-                priority: 0,
-                is_owner: true,
-                hasNewUpdate: false,
-                checkin_timezone: null,
-              });
-              return;
-            }
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'checkin_response')
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-            if (payload.new) {
-              const isNew =
-                !lastCheckinTimes.current.has(user.id) ||
-                lastCheckinTimes.current.get(user.id) !==
-                payload.new.last_checked_in_utc;
+      if (error) throw error;
 
-              if (payload.new.last_checked_in_utc) {
-                lastCheckinTimes.current.set(
-                  user.id,
-                  payload.new.last_checked_in_utc
-                );
-              }
+      if (!notifications || notifications.length === 0) {
+        setResponses([]);
+        setUnreadResponses([]);
+        return;
+      }
 
-              setOwnerActivity({
-                user_id: payload.new.user_id,
-                last_checked_in_utc: payload.new.last_checked_in_utc,
-                priority: payload.new.priority,
-                display_name: t('activity.you'),
-                is_owner: true,
-                hasNewUpdate: isNew,
-                checkin_timezone: payload.new.checkin_timezone,
-              });
-            }
+      const senderIds = notifications.map(n => n.sender_user_id).filter(Boolean);
+      let senderMap: Record<string, string> = {};
+
+      if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', senderIds);
+
+        if (profiles) {
+          profiles.forEach(profile => {
+            senderMap[profile.id] = profile.display_name;
+          });
+        }
+      }
+
+      const enriched = notifications.map(notification => {
+        let parsedData = {};
+        try {
+          parsedData = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : notification.data || {};
+        } catch (e) {
+          console.error('Error parsing notification data:', e);
+        }
+
+        return {
+          ...notification,
+          data: parsedData,
+          sender: {
+            display_name: senderMap[notification.sender_user_id] ||
+              (parsedData as any).senderName ||
+              'Someone'
           }
-        )
-        .subscribe();
+        };
+      });
 
-      ownerCheckinsChannelRef.current = channel;
-    });
+      setResponses(enriched);
+      setUnreadResponses(enriched.filter(r => !r.read));
+
+    } catch (error) {
+      console.error('Error fetching response notifications:', error);
+    }
   };
 
+  const fetchUnreadResponseNotifications = async () => {
+    try {
+      if (!user) return;
+
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'checkin_response')
+        .eq('read', false)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!notifications || notifications.length === 0) {
+        setUnreadResponses([]);
+        return;
+      }
+
+      const senderIds = notifications.map(n => n.sender_user_id).filter(Boolean);
+      let senderMap: Record<string, string> = {};
+
+      if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', senderIds);
+
+        if (profiles) {
+          profiles.forEach(profile => {
+            senderMap[profile.id] = profile.display_name;
+          });
+        }
+      }
+
+      const enriched = notifications.map(notification => {
+        let parsedData = {};
+        try {
+          parsedData = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : notification.data || {};
+        } catch (e) {
+          console.error('Error parsing notification data:', e);
+        }
+
+        return {
+          ...notification,
+          data: parsedData,
+          sender: {
+            display_name: senderMap[notification.sender_user_id] ||
+              (parsedData as any).senderName ||
+              'Someone'
+          }
+        };
+      });
+
+      setUnreadResponses(enriched);
+    } catch (error) {
+      console.error('Error fetching unread responses:', error);
+    }
+  };
+
+  const loadInitialTodayResponses = async () => {
+    try {
+      if (!user) return;
+
+      const userTimezone = ownerTimezoneRef.current;
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: userTimezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+
+      const [
+        { value: year },
+        { value: month },
+        { value: day }
+      ] = formatter.formatToParts(now).filter(p => p.type !== 'literal');
+
+      const startOfDayUTC = new Date(Date.UTC(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        0, 0, 0, 0
+      ));
+
+      // First, fetch the notifications
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'checkin_response')
+        .gte('created_at', startOfDayUTC.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!notifications || notifications.length === 0) {
+        setTodayResponses([]);
+        return;
+      }
+
+      // Get unique sender IDs
+      const senderIds = [...new Set(notifications
+        .map(n => n.sender_user_id)
+        .filter(Boolean))];
+
+      // Fetch sender profiles separately
+      let senderMap: Record<string, string> = {};
+
+      if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .in('id', senderIds);
+
+        if (profiles) {
+          profiles.forEach(profile => {
+            senderMap[profile.id] = profile.display_name;
+          });
+        }
+      }
+
+      // Enrich notifications with sender names
+      const enriched = notifications.map(notification => {
+        let parsedData = {};
+        try {
+          parsedData = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : notification.data || {};
+        } catch (e) {
+          console.error('Error parsing notification data:', e);
+        }
+
+        return {
+          ...notification,
+          data: parsedData,
+          sender: {
+            display_name: senderMap[notification.sender_user_id] ||
+              (parsedData as any).senderName ||
+              'Someone'
+          }
+        };
+      });
+
+      setTodayResponses(enriched);
+      console.log(`✅ Loaded ${enriched.length} today's responses`);
+
+    } catch (error) {
+      console.error('Error loading today responses:', error);
+    }
+  };
+
+  // ============================================
+  // Subscription Setup Functions
+  // ============================================
   const setupCheckinsSubscription = () => {
     if (checkinsChannelRef.current) {
       supabase.removeChannel(checkinsChannelRef.current);
-      checkinsChannelRef.current = null;
     }
 
     const contactIds = myContactIds.current;
@@ -783,28 +472,19 @@ export default function ActivityScreen() {
         (payload) => {
           if (!payload.new) return;
 
-          const updated: any = payload.new;
-
           if (payload.eventType === 'DELETE') {
             lastCheckinTimes.current.delete(payload.old.user_id);
-            setActivities((prev) =>
-              prev.filter((a) => a.user_id !== payload.old.user_id)
-            );
+            setActivities((prev) => prev.filter((a) => a.user_id !== payload.old.user_id));
             return;
           }
 
+          const updated = payload.new;
           const contactInfo = contactMapRef.current.get(updated.user_id);
-
-          const isNew =
-            !lastCheckinTimes.current.has(updated.user_id) ||
-            lastCheckinTimes.current.get(updated.user_id) !==
-            updated.last_checked_in_utc;
+          const isNew = !lastCheckinTimes.current.has(updated.user_id) ||
+            lastCheckinTimes.current.get(updated.user_id) !== updated.last_checked_in_utc;
 
           if (updated.last_checked_in_utc) {
-            lastCheckinTimes.current.set(
-              updated.user_id,
-              updated.last_checked_in_utc
-            );
+            lastCheckinTimes.current.set(updated.user_id, updated.last_checked_in_utc);
           }
 
           const enriched = {
@@ -819,18 +499,14 @@ export default function ActivityScreen() {
           setActivities((prev) => {
             const index = prev.findIndex((a) => a.user_id === enriched.user_id);
             const newArray = [...prev];
-
             if (index !== -1) {
               newArray[index] = enriched;
             } else {
               newArray.push(enriched);
             }
-
             return newArray.sort((a, b) => {
               if (b.priority !== a.priority) return b.priority - a.priority;
-              return (b.last_checked_in_utc ?? '').localeCompare(
-                a.last_checked_in_utc ?? ''
-              );
+              return (b.last_checked_in_utc ?? '').localeCompare(a.last_checked_in_utc ?? '');
             });
           });
         }
@@ -840,67 +516,423 @@ export default function ActivityScreen() {
     checkinsChannelRef.current = channel;
   };
 
+  const setupOwnerCheckinsSubscription = () => {
+    if (ownerCheckinsChannelRef.current) {
+      supabase.removeChannel(ownerCheckinsChannelRef.current);
+    }
+
+    if (!user) return;
+
+    const channel = supabase
+      .channel('owner-checkins-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'users_latest_checkin',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (payload.eventType === 'DELETE') {
+            lastCheckinTimes.current.delete(user.id);
+            setOwnerActivity({
+              user_id: user.id,
+              display_name: t('activity.you'),
+              last_checked_in_utc: null,
+              priority: 0,
+              is_owner: true,
+              hasNewUpdate: false,
+              checkin_timezone: null,
+            });
+            return;
+          }
+
+          if (payload.new) {
+            const isNew = !lastCheckinTimes.current.has(user.id) ||
+              lastCheckinTimes.current.get(user.id) !== payload.new.last_checked_in_utc;
+
+            if (payload.new.last_checked_in_utc) {
+              lastCheckinTimes.current.set(user.id, payload.new.last_checked_in_utc);
+            }
+
+            setOwnerActivity({
+              user_id: payload.new.user_id,
+              last_checked_in_utc: payload.new.last_checked_in_utc,
+              priority: payload.new.priority,
+              display_name: t('activity.you'),
+              is_owner: true,
+              hasNewUpdate: isNew,
+              checkin_timezone: payload.new.checkin_timezone,
+            });
+
+            if (payload.new.checkin_timezone) {
+              ownerTimezoneRef.current = payload.new.checkin_timezone;
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    ownerCheckinsChannelRef.current = channel;
+  };
+
   const setupContactsSubscription = () => {
     if (contactsChannelRef.current) {
       supabase.removeChannel(contactsChannelRef.current);
-      contactsChannelRef.current = null;
     }
 
-    supabase.auth.getUser().then(({ data: userData }) => {
-      const user = userData.user;
-      if (!user) return;
+    if (!user) return;
 
-      const channel = supabase
-        .channel('contacts-realtime')
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'contacts',
-            filter: `owner_user_id=eq.${user.id}`,
-          },
-          async () => {
-            await fetchContacts();
-            setupCheckinsSubscription();
-            fetchActivities();
-          }
-        )
-        .subscribe();
+    const channel = supabase
+      .channel('contacts-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contacts',
+          filter: `owner_user_id=eq.${user.id}`,
+        },
+        async () => {
+          await fetchContacts();
+          setupCheckinsSubscription();
+          fetchActivities();
+        }
+      )
+      .subscribe();
 
-      contactsChannelRef.current = channel;
-    });
+    contactsChannelRef.current = channel;
   };
 
-  const handleScreenBlur = useCallback(() => {
-    isFocused.current = false;
-  }, []);
+  const setupResponsesSubscription = () => {
+    if (responsesChannelRef.current) {
+      supabase.removeChannel(responsesChannelRef.current);
+    }
 
-  useFocusEffect(
-    useCallback(() => {
-      handleScreenFocus();
-      return () => handleScreenBlur();
-    }, [handleScreenFocus, handleScreenBlur])
-  );
+    if (!user) return;
 
+    const channel = supabase
+      .channel('response-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          if (payload.new.type === 'checkin_response') {
+            console.log('📬 New response notification received');
+
+            let parsedData = {};
+            try {
+              parsedData = typeof payload.new.data === 'string'
+                ? JSON.parse(payload.new.data)
+                : payload.new.data || {};
+            } catch (e) {
+              console.error('Error parsing notification data:', e);
+            }
+
+            let senderName = 'Someone';
+            if (payload.new.sender_user_id) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('display_name')
+                .eq('id', payload.new.sender_user_id)
+                .single();
+
+              senderName = profile?.display_name || (parsedData as any).senderName || 'Someone';
+            }
+
+            const newNotification: ResponseNotification = {
+              id: payload.new.id,
+              user_id: payload.new.user_id,
+              sender_user_id: payload.new.sender_user_id,
+              type: payload.new.type,
+              title: payload.new.title,
+              body: payload.new.body,
+              data: parsedData,
+              read: payload.new.read,
+              created_at: payload.new.created_at,
+              sender: { display_name: senderName }
+            };
+
+            // Update responses - prevent duplicates
+            setResponses(prev => {
+              if (prev.some(r => r.id === newNotification.id)) {
+                return prev;
+              }
+              return [newNotification, ...prev];
+            });
+
+            // Update unread - prevent duplicates
+            if (!payload.new.read) {
+              setUnreadResponses(prev => {
+                if (prev.some(r => r.id === newNotification.id)) {
+                  return prev;
+                }
+                return [newNotification, ...prev];
+              });
+            }
+
+            // Update today responses - prevent duplicates
+            if (isTodayLocal(payload.new.created_at, ownerTimezoneRef.current)) {
+              setTodayResponses(prev => {
+                if (prev.some(r => r.id === newNotification.id)) {
+                  return prev;
+                }
+                return [newNotification, ...prev];
+              });
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    responsesChannelRef.current = channel;
+  };
+
+  const setupTodayResponsesSubscription = () => {
+    if (todayResponsesChannelRef.current) {
+      supabase.removeChannel(todayResponsesChannelRef.current);
+    }
+
+    if (!user) return;
+
+    const channel = supabase
+      .channel('today-responses-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        async (payload) => {
+          if (payload.new.type === 'checkin_response' &&
+            isTodayLocal(payload.new.created_at, ownerTimezoneRef.current)) {
+
+            // Parse data
+            let parsedData = {};
+            try {
+              parsedData = typeof payload.new.data === 'string'
+                ? JSON.parse(payload.new.data)
+                : payload.new.data || {};
+            } catch (e) {
+              console.error('Error parsing notification data:', e);
+            }
+
+            // Get sender name
+            let senderName = 'Someone';
+            if (payload.new.sender_user_id) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('display_name')
+                .eq('id', payload.new.sender_user_id)
+                .single();
+
+              senderName = profile?.display_name ||
+                (parsedData as any).senderName ||
+                'Someone';
+            }
+
+            const newResponse = {
+              id: payload.new.id,
+              user_id: payload.new.user_id,
+              sender_user_id: payload.new.sender_user_id,
+              type: payload.new.type,
+              title: payload.new.title,
+              body: payload.new.body,
+              data: parsedData,
+              read: payload.new.read,
+              created_at: payload.new.created_at,
+              sender: { display_name: senderName }
+            };
+
+            // Check if response already exists before adding
+            setTodayResponses(prev => {
+              // Don't add if already exists
+              if (prev.some(r => r.id === newResponse.id)) {
+                console.log('⚠️ Duplicate response ignored:', newResponse.id);
+                return prev;
+              }
+              return [newResponse, ...prev];
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    todayResponsesChannelRef.current = channel;
+  };
+
+  // ============================================
+  // Action Functions
+  // ============================================
+  const markResponseAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      setResponses(prev => prev.map(r => r.id === notificationId ? { ...r, read: true } : r));
+      setUnreadResponses(prev => prev.filter(r => r.id !== notificationId));
+    } catch (error) {
+      console.error('Error marking response as read:', error);
+    }
+  };
+
+  const markAllResponsesAsRead = async () => {
+    try {
+      if (!user || unreadResponses.length === 0) return;
+
+      const unreadIds = unreadResponses.map(r => r.id);
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .in('id', unreadIds);
+
+      if (error) throw error;
+
+      setResponses(prev => prev.map(r => unreadIds.includes(r.id) ? { ...r, read: true } : r));
+      setUnreadResponses([]);
+    } catch (error) {
+      console.error('Error marking all responses as read:', error);
+    }
+  };
+
+  // ============================================
+  // Initialization
+  // ============================================
+  const initialize = useCallback(async () => {
+    if (isInitialized.current || !user) return;
+
+    console.log('🚀 Initializing Activity Screen');
+    isInitialized.current = true;
+
+    try {
+      // Load all data
+      await Promise.all([
+        fetchOwnerActivity(),
+        fetchActivities(),
+        fetchResponseNotifications(),
+        loadInitialTodayResponses()
+      ]);
+
+      // Set up all subscriptions
+      setupOwnerCheckinsSubscription();
+      setupCheckinsSubscription();
+      setupContactsSubscription();
+      setupResponsesSubscription();
+      setupTodayResponsesSubscription();
+
+    } catch (error) {
+      console.error('Error during initialization:', error);
+    }
+  }, [user]);
+
+  // ============================================
+  // Effects
+  // ============================================
   useEffect(() => {
+    // Initialize response service
+    responseService.initialize();
+
+    // Initialize the screen
     initialize();
+
+    // Animate fade in
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+
+    // App state listener
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        console.log('📱 App became active - refreshing data');
+        fetchActivities();
+        fetchUnreadResponseNotifications();
+      }
+    });
+
+    // Cleanup
     return () => {
-      if (checkinsChannelRef.current)
-        supabase.removeChannel(checkinsChannelRef.current);
-      if (contactsChannelRef.current)
-        supabase.removeChannel(contactsChannelRef.current);
-      if (ownerCheckinsChannelRef.current)
-        supabase.removeChannel(ownerCheckinsChannelRef.current);
-      if (responsesChannelRef.current)
-        supabase.removeChannel(responsesChannelRef.current);
+      subscription.remove();
+
+      // Remove all channels
+      const channels = [
+        checkinsChannelRef.current,
+        contactsChannelRef.current,
+        ownerCheckinsChannelRef.current,
+        responsesChannelRef.current,
+        todayResponsesChannelRef.current
+      ];
+
+      channels.forEach(channel => {
+        if (channel) supabase.removeChannel(channel);
+      });
+
       isInitialized.current = false;
       lastCheckinTimes.current.clear();
-      ownerTimezoneRef.current = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
     };
-  }, []);
+  }, [initialize]);
 
-  // ActivityItem Component (reusable within this file)
+  // Focus effect for when tab is revisited
+  useFocusEffect(
+    useCallback(() => {
+      console.log('🎯 Screen focused - refreshing data');
+      fetchActivities();
+      fetchUnreadResponseNotifications();
+    }, [])
+  );
+
+  // ============================================
+  // ResponseItem Component
+  // ============================================
+  const ResponseItem = ({ response, onPress }: { response: ResponseNotification; onPress: () => void }) => {
+    const formattedTime = new Date(response.created_at).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const formattedDate = new Date(response.created_at).toLocaleDateString();
+    const fromName = response.sender?.display_name || response.data?.senderName || 'Someone';
+    const message = response.body || 'responded to your check-in';
+
+    return (
+      <TouchableOpacity
+        style={[styles.responseItem, !response.read && styles.responseItemUnread]}
+        onPress={onPress}
+      >
+        <View style={styles.responseIcon}>
+          <Ionicons
+            name="hand-left"
+            size={24}
+            color={response.read ? BaseColors.neutral[400] : BaseColors.primary}
+          />
+        </View>
+        <View style={styles.responseContent}>
+          <Text style={styles.responseText}>
+            <Text style={styles.responseSender}>{fromName}</Text> {message}
+          </Text>
+          <Text style={styles.responseTime}>{formattedDate} at {formattedTime}</Text>
+        </View>
+        {!response.read && <View style={styles.unreadDot} />}
+      </TouchableOpacity>
+    );
+  };
+
+  // ============================================
+  // ActivityItem Component
+  // ============================================
   const ActivityItem = ({
     name,
     email,
@@ -937,14 +969,8 @@ export default function ActivityScreen() {
     useEffect(() => {
       const checkIfResponded = async () => {
         if (!user || !timestamp || isOwner || responseSent) return;
-        const alreadyResponded = await responseService.hasResponded(
-          userId,
-          user.id,
-          timestamp
-        );
-        if (alreadyResponded) {
-          setResponseSent(true);
-        }
+        const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
+        if (alreadyResponded) setResponseSent(true);
       };
       checkIfResponded();
     }, [userId, user?.id, timestamp, isOwner, responseSent]);
@@ -953,28 +979,16 @@ export default function ActivityScreen() {
       useCallback(() => {
         const checkOnFocus = async () => {
           if (!user || !timestamp || isOwner) return;
-
-          // This will now check AsyncStorage cache first, then database
-          const alreadyResponded = await responseService.hasResponded(
-            userId,
-            user.id,
-            timestamp
-          );
-
+          const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
           setResponseSent(alreadyResponded);
         };
-
         checkOnFocus();
       }, [userId, user?.id, timestamp, isOwner])
     );
 
     const getCheckInStatus = useCallback(() => {
       if (!timestamp) {
-        return {
-          icon: 'help-circle-outline',
-          color: BaseColors.warning || '#FFA500',
-          status: 'never'
-        };
+        return { icon: 'help-circle-outline', color: BaseColors.warning || '#FFA500', status: 'never' };
       }
 
       try {
@@ -1002,11 +1016,7 @@ export default function ActivityScreen() {
         }
 
         if (adjustedLastDate === adjustedToday) {
-          return {
-            icon: 'checkmark-circle',
-            color: BaseColors.success || '#4CAF50',
-            status: 'checked-today'
-          };
+          return { icon: 'checkmark-circle', color: BaseColors.success || '#4CAF50', status: 'checked-today' };
         }
 
         const yesterday = new Date(adjustedToday);
@@ -1015,24 +1025,12 @@ export default function ActivityScreen() {
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
         if (adjustedLastDate === yesterdayStr) {
-          return {
-            icon: 'time-outline',
-            color: BaseColors.warning || '#FFA500',
-            status: 'yesterday'
-          };
+          return { icon: 'time-outline', color: BaseColors.warning || '#FFA500', status: 'yesterday' };
         }
 
-        return {
-          icon: 'alert-circle',
-          color: BaseColors.error || '#F44336',
-          status: 'older'
-        };
+        return { icon: 'alert-circle', color: BaseColors.error || '#F44336', status: 'older' };
       } catch (error) {
-        return {
-          icon: 'help-circle-outline',
-          color: BaseColors.neutral[400],
-          status: 'error'
-        };
+        return { icon: 'help-circle-outline', color: BaseColors.neutral[400], status: 'error' };
       }
     }, [timestamp]);
 
@@ -1044,14 +1042,8 @@ export default function ActivityScreen() {
 
       setSendingResponse(true);
       try {
-        const alreadyResponded = await responseService.hasResponded(
-          userId,
-          user.id,
-          timestamp || ''
-        );
-
+        const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp || '');
         if (alreadyResponded) {
-          console.log('Already responded to this check-in');
           setResponseSent(true);
           return;
         }
@@ -1063,10 +1055,7 @@ export default function ActivityScreen() {
         });
 
         if (result.success) {
-          console.log('✅ Response sent successfully!');
           setResponseSent(true);
-        } else {
-          console.error('Failed to send response:', result.error);
         }
       } catch (error) {
         console.error('Error sending response:', error);
@@ -1136,27 +1125,16 @@ export default function ActivityScreen() {
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
         <View style={styles.activityRow}>
-          {/* Left column with person icon and status badge */}
           <View style={styles.leftIconsColumn}>
             <View style={styles.iconContainer}>
-              <Ionicons
-                name="person-circle"
-                size={48}
-                color={BaseColors.primary}
-              />
+              <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
               <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-                <Ionicons
-                  name={status.icon}
-                  size={14}
-                  color="#FFFFFF"
-                />
+                <Ionicons name={status.icon} size={14} color="#FFFFFF" />
               </View>
             </View>
           </View>
 
-          {/* Content area */}
           <View style={styles.contentContainer}>
-            {/* Name and email row */}
             <View style={styles.nameEmailRow}>
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
@@ -1168,7 +1146,6 @@ export default function ActivityScreen() {
               )}
             </View>
 
-            {/* Time info */}
             {isValidTimestamp ? (
               <>
                 <Animated.Text
@@ -1195,13 +1172,11 @@ export default function ActivityScreen() {
               </Text>
             )}
 
-            {/* Response button - only for non-owner with valid check-in */}
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
                     styles.responseButton,
-                    // Apply disabled style when responseSent OR button not enabled
                     (responseSent || !isButtonEnabled) && styles.responseButtonDisabled,
                     sendingResponse && styles.responseButtonSending
                   ]}
@@ -1214,7 +1189,6 @@ export default function ActivityScreen() {
                   ) : (
                     <Text style={[
                       styles.responseButtonText,
-                      // Apply disabled text style when responseSent OR button not enabled
                       (responseSent || !isButtonEnabled) && styles.responseButtonTextDisabled
                     ]}>
                       {responseSent
@@ -1232,10 +1206,12 @@ export default function ActivityScreen() {
     );
   };
 
+  // ============================================
+  // Render
+  // ============================================
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
       <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
-        {/* Screen Header - Fixed at top */}
         <ScreenHeader
           title={t('activity.title')}
           subtitle={t('activity.subtitle')}
@@ -1249,30 +1225,19 @@ export default function ActivityScreen() {
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={BaseColors.primary} />
-              <Text style={styles.loadingText}>
-                {t('activity.loading')}
-              </Text>
+              <Text style={styles.loadingText}>{t('activity.loading')}</Text>
             </View>
           ) : (
             <>
-              {/* Owner Card */}
               {ownerActivity && (
                 <View style={styles.ownerCard}>
                   <View style={styles.cardHeader}>
-                    <Ionicons
-                      name="person-circle"
-                      size={ICON_SIZES.SM}
-                      color={BaseColors.primary}
-                    />
-                    <Text style={styles.cardTitle}>
-                      {t('activity.you')}
-                    </Text>
+                    <Ionicons name="person-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                    <Text style={styles.cardTitle}>{t('activity.you')}</Text>
                     {todayResponses.length > 0 && (
                       <View style={styles.responseBadge}>
                         <Ionicons name="heart" size={14} color={BaseColors.primary} />
-                        <Text style={styles.responseBadgeText}>
-                          {todayResponses.length}
-                        </Text>
+                        <Text style={styles.responseBadgeText}>{todayResponses.length}</Text>
                       </View>
                     )}
                   </View>
@@ -1288,13 +1253,12 @@ export default function ActivityScreen() {
                     isLast
                   />
 
-                  {/* Show today's responses under the owner's check-in */}
                   {todayResponses.length > 0 && (
                     <View style={styles.todayResponses}>
                       <Text style={styles.todayResponsesTitle}>
                         {t("activity.checkinResponse.todayLikes", { count: todayResponses.length })}
                       </Text>
-                      {todayResponses.map((response, index) => (
+                      {todayResponses.map((response) => (
                         <View key={response.id} style={styles.todayResponseItem}>
                           <Ionicons name="heart" size={16} color={BaseColors.primary} />
                           <Text style={styles.todayResponseText}>
@@ -1303,12 +1267,11 @@ export default function ActivityScreen() {
                             </Text>
                             {response.body ? ` ${response.body}` : ` ${t('activity.checkinResponse.defaultMessage')}`}
                           </Text>
-                          {/* Time display - 24 hour format */}
                           <Text style={styles.responseTimeRight}>
                             {new Date(response.created_at).toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit',
-                              hour12: false, // This ensures 24-hour format
+                              hour12: false,
                             })}
                           </Text>
                           {!response.read && <View style={styles.smallUnreadDot} />}
@@ -1319,18 +1282,13 @@ export default function ActivityScreen() {
                 </View>
               )}
 
-              {/* Contacts Card */}
               <View style={styles.contactsCard}>
                 <View style={styles.cardHeader}>
                   <Ionicons name="people" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                  <Text style={styles.cardTitle}>
-                    {t('activity.contacts')}
-                  </Text>
+                  <Text style={styles.cardTitle}>{t('activity.contacts')}</Text>
                   {activities.length > 0 && (
                     <View style={styles.contactCount}>
-                      <Text style={styles.contactCountText}>
-                        {activities.length}
-                      </Text>
+                      <Text style={styles.contactCountText}>{activities.length}</Text>
                     </View>
                   )}
                 </View>
@@ -1352,22 +1310,13 @@ export default function ActivityScreen() {
                   ))
                 ) : (
                   <View style={styles.emptyState}>
-                    <Ionicons
-                      name="people-outline"
-                      size={64}
-                      color={BaseColors.neutral[300]}
-                    />
-                    <Text style={styles.emptyStateTitle}>
-                      {t('activity.emptyState.title')}
-                    </Text>
-                    <Text style={styles.emptyStateText}>
-                      {t('activity.emptyState.message')}
-                    </Text>
+                    <Ionicons name="people-outline" size={64} color={BaseColors.neutral[300]} />
+                    <Text style={styles.emptyStateTitle}>{t('activity.emptyState.title')}</Text>
+                    <Text style={styles.emptyStateText}>{t('activity.emptyState.message')}</Text>
                   </View>
                 )}
               </View>
 
-              {/* Bottom spacing */}
               <View style={styles.bottomSpacing} />
             </>
           )}
@@ -1377,8 +1326,9 @@ export default function ActivityScreen() {
   );
 }
 
-// ==================== STYLES ====================
+// Styles remain exactly as they were in your original code
 const styles = StyleSheet.create({
+  // ... (keep all your existing styles exactly as they were)
   mainContainer: {
     flex: 1,
     backgroundColor: BaseColors.background,
@@ -1422,118 +1372,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 4,
     elevation: 2,
-  },
-  responsesCard: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    backgroundColor: BaseColors.surface,
-    borderRadius: 12,
-    shadowColor: BaseColors.shadowColor,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 4,
-    elevation: 2,
-    overflow: 'hidden',
-  },
-  responsesHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: BaseColors.neutral[200],
-  },
-  responsesHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  responsesHeaderRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  responsesTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-    color: BaseColors.text.dark,
-    flex: 1,
-  },
-  unreadBadge: {
-    backgroundColor: BaseColors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    minWidth: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  unreadBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  markAllReadButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  markAllReadText: {
-    fontSize: 12,
-    color: BaseColors.primary,
-    fontWeight: '500',
-  },
-  responsesList: {
-    padding: 16,
-  },
-  responseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: BaseColors.background,
-  },
-  responseItemUnread: {
-    backgroundColor: BaseColors.primaryLight + '20',
-    borderLeftWidth: 3,
-    borderLeftColor: BaseColors.primary,
-  },
-  responseIcon: {
-    width: 40,
-    alignItems: 'center',
-  },
-  responseContent: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  responseText: {
-    fontSize: 14,
-    color: BaseColors.text.dark,
-    lineHeight: 20,
-  },
-  responseSender: {
-    fontWeight: '600',
-    color: BaseColors.primary,
-  },
-  responseTime: {
-    fontSize: 11,
-    color: BaseColors.neutral[400],
-    marginTop: 2,
-  },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: BaseColors.primary,
-    marginLeft: 8,
-  },
-  noResponsesText: {
-    textAlign: 'center',
-    color: BaseColors.neutral[400],
-    padding: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -1586,16 +1424,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
-  icon: {
-    marginRight: 10,
-    marginTop: 2,
-  },
-  leftIconsStack: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: 30,
-    marginRight: 10,
-  },
   leftIconsColumn: {
     width: 48,
     marginRight: 12,
@@ -1618,10 +1446,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: BaseColors.background,
   },
-  ownerPlaceholder: {
-    width: 48,
-    marginRight: 12,
-  },
   contentContainer: {
     flex: 1,
   },
@@ -1642,12 +1466,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: BaseColors.neutral[400],
     flexShrink: 1,
-  },
-  date: {
-    fontSize: 13,
-    color: BaseColors.primary,
-    marginBottom: 8,
-    fontWeight: '500',
   },
   timezone: {
     fontSize: 15,
@@ -1681,8 +1499,8 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
   },
   responseButtonDisabled: {
-    backgroundColor: BaseColors.neutral[200], // Grey background
-    borderColor: BaseColors.neutral[400],     // Grey border
+    backgroundColor: BaseColors.neutral[200],
+    borderColor: BaseColors.neutral[400],
     opacity: 0.7,
   },
   responseButtonSending: {
@@ -1694,7 +1512,7 @@ const styles = StyleSheet.create({
     color: BaseColors.primary,
   },
   responseButtonTextDisabled: {
-    color: BaseColors.neutral[500], // Darker grey text
+    color: BaseColors.neutral[500],
   },
   activityItem: {
     paddingVertical: 12,
@@ -1707,7 +1525,6 @@ const styles = StyleSheet.create({
   activityRow: {
     flexDirection: 'row',
   },
-  // Add to your StyleSheet
   responseBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1746,7 +1563,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: BaseColors.neutral[400],
     marginLeft: 8,
-    minWidth: 45, // Ensures consistent width for HH:mm
+    minWidth: 45,
     textAlign: 'right',
   },
   todayResponseText: {
@@ -1763,5 +1580,48 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: BaseColors.primary,
+  },
+  responseItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: BaseColors.background,
+  },
+  responseItemUnread: {
+    backgroundColor: BaseColors.primaryLight + '20',
+    borderLeftWidth: 3,
+    borderLeftColor: BaseColors.primary,
+  },
+  responseIcon: {
+    width: 40,
+    alignItems: 'center',
+  },
+  responseContent: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  responseText: {
+    fontSize: 14,
+    color: BaseColors.text.dark,
+    lineHeight: 20,
+  },
+  responseSender: {
+    fontWeight: '600',
+    color: BaseColors.primary,
+  },
+  responseTime: {
+    fontSize: 11,
+    color: BaseColors.neutral[400],
+    marginTop: 2,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: BaseColors.primary,
+    marginLeft: 8,
   },
 });
