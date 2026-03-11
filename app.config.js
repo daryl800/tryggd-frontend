@@ -6,7 +6,7 @@ export default ({ config }) => ({
     expo: {
         name: "tryggd",
         slug: "tryggd-frontend",
-        version: "2.3.1",
+        version: "3.0.0",
         orientation: "portrait",
         icon: "./assets/images/tryggd-icon-small.png",
         scheme: "tryggd",
