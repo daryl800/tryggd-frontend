@@ -220,6 +220,8 @@ export default function HomeScreen() {
   const [showResetButton, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fontScale, setFontScale] = useState(1);
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [contactsCount, setContactsCount] = useState(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -228,12 +230,65 @@ export default function HomeScreen() {
   const successScaleAnim = useRef(new Animated.Value(0)).current;
   const heartBeatAnim = useRef(new Animated.Value(1)).current;
 
-  const [contactsCount, setContactsCount] = useState(0);
-
+  // Font scale on mount
   useEffect(() => {
     setFontScale(PixelRatio.getFontScale());
   }, []);
 
+  // Fade in on mount
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  // Auth redirect
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      router.replace('/(auth)/login');
+    }
+  }, [loading, user]);
+
+  // Load saved state from AsyncStorage
+  useEffect(() => {
+    const loadState = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+          setIsInitialLoad(false);
+          return;
+        }
+
+        const parsed = JSON.parse(saved);
+        const savedLastCheckinUtc = parsed.lastCheckinUtc ?? null;
+
+        if (savedLastCheckinUtc) {
+          const lastCheckinDate = new Date(savedLastCheckinUtc);
+          const today = new Date();
+          const isFromToday = isSameDay(lastCheckinDate, today);
+
+          setCheckedInToday(isFromToday);
+          setShowResetButton(isFromToday);
+          setLastCheckinUtc(savedLastCheckinUtc);
+        } else {
+          setCheckedInToday(false);
+          setShowResetButton(false);
+          setLastCheckinUtc(null);
+        }
+      } catch (err) {
+        console.error(t('home.errors.loadState'), err);
+      } finally {
+        setIsInitialLoad(false);
+      }
+    };
+
+    loadState();
+  }, [t]);
+
+  // Fetch contacts count
   const fetchContactsCount = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
@@ -249,118 +304,7 @@ export default function HomeScreen() {
     }
   }, []);
 
-  // Fade in on mount
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  // Heart beat animation when not checked in
-  useEffect(() => {
-    if (!checkedInToday && !isInitialLoad) {
-      const pulse = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.03,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 2000,
-            useNativeDriver: true,
-          }),
-        ])
-      );
-      pulse.start();
-
-      const heartBeat = Animated.loop(
-        Animated.sequence([
-          Animated.timing(heartBeatAnim, {
-            toValue: 1.15,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-          Animated.timing(heartBeatAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.delay(1000),
-        ])
-      );
-      heartBeat.start();
-
-      return () => {
-        pulse.stop();
-        heartBeat.stop();
-      };
-    }
-  }, [checkedInToday, isInitialLoad]);
-
-  // Success animation when checked in
-  useEffect(() => {
-    if (checkedInToday) {
-      Animated.spring(successScaleAnim, {
-        toValue: 1,
-        friction: 4,
-        tension: 100,
-        useNativeDriver: true,
-      }).start();
-      heartBeatAnim.setValue(1);
-    } else {
-      successScaleAnim.setValue(0);
-    }
-  }, [checkedInToday]);
-
-  const triggerCheckInAnimation = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-    Animated.sequence([
-      Animated.timing(heartBeatAnim, {
-        toValue: 1.3,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(heartBeatAnim, {
-        toValue: 0.9,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.92,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3,
-        tension: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  // Handle notification responses
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(async (response) => {
-      const { type, isBackup } = response.notification.request.content.data;
-
-      if (type === 'self_reminder_backup' && isBackup) {
-        console.log('Backup notification tapped');
-        fetchLastCheckin();
-      }
-    });
-
-    return () => subscription.remove();
-  }, []);
-
+  // Reset all state
   const resetAllState = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setCheckedInToday(false);
@@ -370,6 +314,7 @@ export default function HomeScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
+  // Check if date has changed and reset if needed
   const checkDateAndReset = useCallback(() => {
     if (!lastCheckinUtc) return;
 
@@ -382,6 +327,7 @@ export default function HomeScreen() {
     }
   }, [lastCheckinUtc, resetAllState, refetchStreak]);
 
+  // Fetch last checkin from Supabase
   const fetchLastCheckin = useCallback(async () => {
     if (!user) return;
 
@@ -425,167 +371,46 @@ export default function HomeScreen() {
     }
   }, [user, t]);
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log('📱 Home screen focused - fetching fresh data');
-      fetchLastCheckin();
-      fetchContactsCount();
-    }, [fetchLastCheckin, fetchContactsCount])
-  );
-
-
-  const handleCheckIn = useCallback(async () => {
-    try {
-      if (!user) throw new Error(t('home.errors.noUser'));
-
-      triggerCheckInAnimation();
-
-      const tz = (Localization as any).timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-
-      // Insert checkin to database
-      const { data, error } = await supabase
-        .from('checkins')
-        .insert({
-          user_id: user.id,
-          checkin_timezone: tz,
-        })
-        .select('id, checked_in_at_utc')
-        .single();
-
-      if (error) throw error;
-      if (!data) return;
-
-      // Send notifications to contacts USING TOKENMANAGER
-      await sendCheckinNotification(
-        user.id,
-        data.checked_in_at_utc,
-        tz
-      );
-
-      // Update local state
-      setCheckedInToday(true);
-      setShowResetButton(true);
-      setLastCheckinUtc(data.checked_in_at_utc);
-      setLastCheckinId(data.id);
-
-      await AsyncStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          checkedInToday: true,
-          lastCheckinUtc: data.checked_in_at_utc,
-          checkinTimezone: tz,
-        })
-      );
-
-      await cancelTodayReminderAfterCheckin();
-      refetchStreak();
-
-    } catch (err) {
-      console.error(t('home.errors.checkin'), err);
-    }
-  }, [user, t, triggerCheckInAnimation, refetchStreak]);
-
-  // Lifecycle effects
+  // Fetch initial data when user loads
   useEffect(() => {
     if (!loading && user) {
       fetchLastCheckin();
+      fetchContactsCount();
     }
-  }, [loading, user, fetchLastCheckin]);
+  }, [loading, user, fetchLastCheckin, fetchContactsCount]);
 
+  // Timer and AppState handler (CONSOLIDATED)
   useEffect(() => {
-    if (loading) return;
-    if (!user) {
-      router.replace('/(auth)/login');
-    }
-  }, [loading, user]);
-
-  useEffect(() => {
-    const loadState = async () => {
-      try {
-        const saved = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!saved) {
-          setIsInitialLoad(false);
-          return;
-        }
-
-        const parsed = JSON.parse(saved);
-        const savedLastCheckinUtc = parsed.lastCheckinUtc ?? null;
-
-        if (savedLastCheckinUtc) {
-          const lastCheckinDate = new Date(savedLastCheckinUtc);
-          const today = new Date();
-          const isFromToday = isSameDay(lastCheckinDate, today);
-
-          setCheckedInToday(isFromToday);
-          setShowResetButton(isFromToday);
-          setLastCheckinUtc(savedLastCheckinUtc);
-        } else {
-          setCheckedInToday(false);
-          setShowResetButton(false);
-          setLastCheckinUtc(null);
-        }
-      } catch (err) {
-        console.error(t('home.errors.loadState'), err);
-      } finally {
-        setIsInitialLoad(false);
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        console.log('📱 App became active - refreshing data');
+        // Update time
+        setNow(new Date());
+        // Check date reset
+        checkDateAndReset();
+        // Fetch fresh data
+        fetchLastCheckin();
+        refetchStreak();
+        fetchContactsCount();
       }
     };
 
-    loadState();
-  }, [t]);
-
-  // Main timer and reset interval
-  useEffect(() => {
-    const updateTimeAndCheckReset = () => {
-      const newNow = new Date();
-      setNow(newNow);
-      checkDateAndReset();
-    };
-
-    updateTimeAndCheckReset();
-
     const timeInterval = setInterval(() => {
-      const newNow = new Date();
-      setNow(newNow);
+      setNow(new Date());
     }, 1000);
 
     const resetCheckInterval = setInterval(checkDateAndReset, 30000);
 
-    const subscription = AppState.addEventListener('change', (next) => {
-      if (next === 'active') {
-        console.log('📱 Home screen - app foregrounded - fetching fresh check-in status');
-        updateTimeAndCheckReset();
-      }
-    });
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
       clearInterval(timeInterval);
       clearInterval(resetCheckInterval);
       subscription.remove();
     };
-  }, [checkDateAndReset]);
+  }, [checkDateAndReset, fetchLastCheckin, refetchStreak, fetchContactsCount]);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        console.log('📱 App became active - refreshing home data');
-        if (isMounted) {
-          fetchLastCheckin();
-          refetchStreak();
-        }
-      }
-    };
-
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-
-    return () => {
-      isMounted = false;
-      subscription.remove();
-    };
-  }, [fetchLastCheckin, refetchStreak]);
-
+  // Hourly streak refresh
   useEffect(() => {
     const streakRefreshInterval = setInterval(() => {
       refetchStreak();
@@ -594,18 +419,243 @@ export default function HomeScreen() {
     return () => clearInterval(streakRefreshInterval);
   }, [refetchStreak]);
 
+  // Heartbeat animation
   useEffect(() => {
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active') {
-        refetchStreak();
-      }
-    };
+    if (!checkedInToday && !isInitialLoad) {
+      const pulse = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.03,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      pulse.start();
 
-    const subscription = AppState.addEventListener('change', handleAppStateChange);
-    return () => {
-      subscription.remove();
-    };
-  }, [refetchStreak]);
+      const heartBeat = Animated.loop(
+        Animated.sequence([
+          Animated.timing(heartBeatAnim, {
+            toValue: 1.15,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.timing(heartBeatAnim, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+          Animated.delay(1000),
+        ])
+      );
+      heartBeat.start();
+
+      return () => {
+        pulse.stop();
+        heartBeat.stop();
+      };
+    }
+  }, [checkedInToday, isInitialLoad]);
+
+  // Success animation
+  useEffect(() => {
+    if (checkedInToday) {
+      Animated.spring(successScaleAnim, {
+        toValue: 1,
+        friction: 4,
+        tension: 100,
+        useNativeDriver: true,
+      }).start();
+      heartBeatAnim.setValue(1);
+    } else {
+      successScaleAnim.setValue(0);
+    }
+  }, [checkedInToday]);
+
+  // Notification response handler
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(async (response) => {
+      const { type, isBackup } = response.notification.request.content.data;
+
+      if (type === 'self_reminder_backup' && isBackup) {
+        console.log('Backup notification tapped');
+        fetchLastCheckin();
+      }
+    });
+
+    return () => subscription.remove();
+  }, [fetchLastCheckin]);
+
+  // Focus effect for tab navigation
+  useFocusEffect(
+    useCallback(() => {
+      console.log('📱 Home screen focused - fetching fresh data');
+      fetchLastCheckin();
+      fetchContactsCount();
+    }, [fetchLastCheckin, fetchContactsCount])
+  );
+
+  const triggerCheckInAnimation = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    Animated.sequence([
+      Animated.timing(heartBeatAnim, {
+        toValue: 1.3,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(heartBeatAnim, {
+        toValue: 0.9,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.92,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 3,
+        tension: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  // const handleCheckIn = useCallback(async () => {
+  //   if (isCheckingIn) return;
+
+  //   try {
+  //     if (!user) throw new Error(t('home.errors.noUser'));
+
+  //     setIsCheckingIn(true);
+  //     triggerCheckInAnimation();
+
+  //     const timeZone = Localization.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+  //     // Insert checkin to database
+  //     const { data, error } = await supabase
+  //       .from('checkins')
+  //       .insert({
+  //         user_id: user.id,
+  //         checkin_timezone: timeZone,
+  //       })
+  //       .select('id, checked_in_at_utc')
+  //       .single();
+
+  //     if (error) throw error;
+  //     if (!data) return;
+
+  //     // Send notifications to contacts
+  //     try {
+  //       await sendCheckinNotification(
+  //         user.id,
+  //         data.checked_in_at_utc,
+  //         timeZone
+  //       );
+  //     } catch (notificationError) {
+  //       console.error('Failed to send notifications:', notificationError);
+  //       // Don't throw - continue with check-in even if notifications fail
+  //     }
+
+  //     // Update local state
+  //     setCheckedInToday(true);
+  //     setShowResetButton(true);
+  //     setLastCheckinUtc(data.checked_in_at_utc);
+  //     setLastCheckinId(data.id);
+
+  //     await AsyncStorage.setItem(
+  //       STORAGE_KEY,
+  //       JSON.stringify({
+  //         checkedInToday: true,
+  //         lastCheckinUtc: data.checked_in_at_utc,
+  //         checkinTimezone: timeZone,
+  //       })
+  //     );
+
+  //     await cancelTodayReminderAfterCheckin();
+  //     refetchStreak();
+
+  //   } catch (err) {
+  //     console.error(t('home.errors.checkin'), err);
+  //   } finally {
+  //     setIsCheckingIn(false);
+  //   }
+  // }, [user, t, triggerCheckInAnimation, refetchStreak, isCheckingIn]);
+
+  const handleCheckIn = useCallback(async () => {
+    if (isCheckingIn) return;
+
+    try {
+      if (!user) throw new Error(t('home.errors.noUser'));
+
+      setIsCheckingIn(true);
+
+      // 🚀 OPTIMISTIC UI UPDATE - happens immediately!
+      setCheckedInToday(true);
+      setShowResetButton(true);
+
+      // Trigger animation
+      triggerCheckInAnimation();
+
+      const timeZone = Localization.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+      // Do the actual API calls in the background
+      Promise.all([
+        // Insert checkin to database
+        supabase
+          .from('checkins')
+          .insert({
+            user_id: user.id,
+            checkin_timezone: timeZone,
+          })
+          .select('id, checked_in_at_utc')
+          .single()
+          .then(async ({ data, error }) => {
+            if (error) throw error;
+            if (!data) return;
+
+            // Update with real data
+            setLastCheckinUtc(data.checked_in_at_utc);
+            setLastCheckinId(data.id);
+
+            await AsyncStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({
+                checkedInToday: true,
+                lastCheckinUtc: data.checked_in_at_utc,
+                checkinTimezone: timeZone,
+              })
+            );
+
+            // Send notifications (don't await)
+            sendCheckinNotification(user.id, data.checked_in_at_utc, timeZone)
+              .catch(err => console.error('Failed to send notifications:', err));
+
+            await cancelTodayReminderAfterCheckin();
+            refetchStreak();
+          })
+      ]).catch(err => {
+        // If something fails, revert the optimistic update
+        console.error(t('home.errors.checkin'), err);
+        setCheckedInToday(false);
+        setShowResetButton(false);
+      });
+
+    } finally {
+      setIsCheckingIn(false);
+    }
+  }, [user, t, triggerCheckInAnimation, refetchStreak]);
+
 
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
@@ -662,6 +712,29 @@ export default function HomeScreen() {
         maximumZoomScale={1}
         minimumZoomScale={1}
       >
+        {/* BEGIN - BELOW CODE IS FOR DEBUGGING PURPOSES - enable when needed */}
+        {/* <TouchableOpacity
+          onPress={async () => {
+            await AsyncStorage.removeItem(STORAGE_KEY);
+            setCheckedInToday(false);
+            setShowResetButton(false);
+            setLastCheckinUtc(null);
+            console.log('🧹 Cleared local storage');
+          }}
+        >
+          <View style={styles.warningContainer}>
+            <View style={styles.warningIconContainer}>
+              <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
+            </View>
+            <Text
+              style={styles.warningText}
+            >
+              Clear Storage (DEBUG  ONLY)
+            </Text>
+          </View>
+        </TouchableOpacity> */}
+        {/* END - ABOVE CODE IS FOR DEBUGGING PURPOSES */}
+
         <Animated.View style={{ opacity: fadeAnim }}>
           {/* DATE & TIME */}
           <View style={[styles.dateTimeGroup, styles.groupContainer]}>
@@ -680,6 +753,7 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   onPress={handleCheckIn}
                   activeOpacity={0.9}
+                  disabled={isCheckingIn}
                   style={[
                     styles.checkInButton,
                     {
@@ -907,7 +981,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 
 // ==================== STYLES ====================
 const GROUP_GAP = 18;
