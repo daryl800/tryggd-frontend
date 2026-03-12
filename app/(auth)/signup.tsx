@@ -76,9 +76,25 @@ export default function SignupScreen() {
                 ]
             );
 
-
         } catch (err: any) {
-            Alert.alert(t("auth.signup.error"), err.message || t("auth.unknownError"));
+            // Log everything
+            console.error("Full error object:", err);
+            console.error("Error message:", err.message);
+            console.error("Error status:", err.status);
+            console.error("Error name:", err.name);
+            console.error("Error code:", err.code);
+
+            // Try to stringify the whole object
+            try {
+                console.error("Stringified:", JSON.stringify(err, null, 2));
+            } catch (e) {
+                console.error("Could not stringify error");
+            }
+
+            Alert.alert(
+                t("auth.signup.error"),
+                err.message || err.error_description || t("auth.unknownError")
+            );
         } finally {
             setLoading(false);
         }
