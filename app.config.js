@@ -4,7 +4,7 @@ export default ({ config }) => ({
 
     name: "tryggd",
     slug: "tryggd-frontend",
-    version: "3.1.0",
+    version: "3.0.1",
     orientation: "portrait",
     icon: "./assets/images/tryggd-icon-small.png",
     scheme: "tryggd",
@@ -15,6 +15,7 @@ export default ({ config }) => ({
         policy: "fingerprint",
     },
     updates: {
+        url: "https://u.expo.dev/242a317f-a241-46dc-89ea-cd7857165cc1",
         enabled: true,
     },
 
@@ -37,7 +38,6 @@ export default ({ config }) => ({
         edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
         package: "com.marcustechnology.tryggd",
-        versionCode: 3,
         permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE"],
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     },
