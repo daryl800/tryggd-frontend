@@ -12,6 +12,13 @@
                 "buildType": "apk"
             }
         },
+        "preview": {
+            "distribution": "internal",
+            "android": {
+                "buildType": "apk",
+                "gradleCommand": ":app:assembleRelease"
+            }
+        },
         "closedtest": {
             "distribution": "store",
             "channel": "closedtest",
