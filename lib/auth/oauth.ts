@@ -17,7 +17,7 @@ export function getOAuthRedirectUrl() {
         return new URL(authRedirectPath, window.location.origin).toString();
     }
 
-    return Linking.createURL(authRedirectPath);
+    return Linking.createURL(authRedirectPath, { scheme: "tryggd" });
 }
 
 function extractParamsFromUrl(url: string) {

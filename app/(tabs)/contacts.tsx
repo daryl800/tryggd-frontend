@@ -6,6 +6,7 @@ import { sendContactRequestNotification } from '@/lib/notifications';
 import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { useFocusEffect } from 'expo-router';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -223,12 +224,12 @@ const ContactRequestCard = memo(
                             <Text style={styles.requestName}>
                                 {isOutgoing
                                     ? t('contacts.requests.waiting')
-                                    : request.sender_display_name || request.sender_email}
+                                    : request.sender_display_name || 'User'}
                             </Text>
                             <Text style={styles.requestEmail}>
                                 {isOutgoing
                                     ? request.receiver_username || request.receiver_user_id
-                                    : request.sender_username || request.sender_email}
+                                    : request.sender_username || ''}
                             </Text>
                         </View>
                     </View>
@@ -301,9 +302,64 @@ export default function ContactsScreen() {
     const isMountedRef = useRef(true);
     const lastFetchRef = useRef<number>(0);
     const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const notifiedRequestIdsRef = useRef<Set<string>>(new Set());
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
+
+    const getUserIdentity = useCallback(async (userId: string) => {
+        const { data: rows } = await supabase.rpc(
+            'get_contact_usernames',
+            { contact_ids: [userId] }
+        ) as { data: ContactProfileRow[] | null };
+
+        const row = rows?.[0];
+
+        return {
+            display_name: row?.display_name || '',
+            username: row?.username || '',
+        };
+    }, []);
+
+    const showIncomingRequestNotification = useCallback(async (request: ContactRequest) => {
+        if (AppState.currentState !== 'active') {
+            return;
+        }
+
+        if (!request.id || notifiedRequestIdsRef.current.has(request.id)) {
+            return;
+        }
+
+        notifiedRequestIdsRef.current.add(request.id);
+
+        const senderLabel =
+            request.sender_username ||
+            request.sender_display_name ||
+            request.sender_email ||
+            'Someone';
+
+        try {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: 'Contact Request',
+                    body: `${senderLabel} wants to add you as a contact`,
+                    sound: 'default',
+                    data: {
+                        type: 'contact_request',
+                        requestId: request.id,
+                        senderUserId: request.sender_user_id,
+                        senderName: request.sender_display_name || senderLabel,
+                        senderEmail: request.sender_email,
+                        screen: 'contacts',
+                        tab: 'requests',
+                    },
+                },
+                trigger: null,
+            });
+        } catch (error) {
+            console.error('Failed to show local contact request notification', error);
+        }
+    }, []);
 
     // Single source of truth for data fetching
     const fetchAllData = useCallback(async (showLoadingState = false) => {
@@ -558,11 +614,24 @@ export default function ContactsScreen() {
                     (payload) => {
                         console.log('🔔 New request received!');
                         incrementUnread();
+                        const request = payload.new as ContactRequest;
 
-                        // Instead of full refresh, update state directly
-                        if (isMountedRef.current) {
-                            setIncomingRequests(prev => [payload.new as ContactRequest, ...prev]);
-                        }
+                        void (async () => {
+                            const identity = await getUserIdentity(request.sender_user_id);
+                            const enrichedRequest: ContactRequest = {
+                                ...request,
+                                sender_display_name:
+                                    identity.display_name || request.sender_display_name,
+                                sender_username:
+                                    identity.username || request.sender_username,
+                            };
+
+                            await showIncomingRequestNotification(enrichedRequest);
+
+                            if (isMountedRef.current) {
+                                setIncomingRequests(prev => [enrichedRequest, ...prev]);
+                            }
+                        })();
                     }
                 )
                 .on(
@@ -626,7 +695,7 @@ export default function ContactsScreen() {
                 clearTimeout(fetchTimeoutRef.current);
             }
         };
-    }, []); // Empty dependency - run once
+    }, [fetchAllData, getUserIdentity, incrementUnread, showIncomingRequestNotification]); // Empty dependency - run once
 
     // Pull-to-refresh handler
     const handleManualRefresh = useCallback(async () => {
@@ -891,14 +960,21 @@ export default function ContactsScreen() {
                 }
             }
 
+            const senderIdentity = await getUserIdentity(user.id);
+            const senderDisplayName =
+                senderIdentity.display_name ||
+                user.user_metadata?.display_name ||
+                user.user_metadata?.name ||
+                user.email?.split('@')[0] ||
+                'User';
+
             const { data, error } = await supabase
                 .from('contact_requests')
                 .insert({
                     sender_user_id: user.id,
                     receiver_user_id: contact.user_id,
                     sender_email: user.email || '',
-                    sender_display_name:
-                        user.user_metadata?.display_name || user.email?.split('@')[0],
+                    sender_display_name: senderDisplayName,
                     status: 'pending',
                 })
                 .select()
@@ -924,12 +1000,10 @@ export default function ContactsScreen() {
 
                 throw error;
             }
-
             await sendContactRequestNotification({
                 receiverUserId: contact.user_id,
                 senderUserId: user.id,
-                senderName:
-                    user.user_metadata?.display_name || user.email?.split('@')[0],
+                senderName: senderDisplayName,
                 senderEmail: user.email || '',
                 requestId: data.id,
             });
@@ -1107,11 +1181,18 @@ export default function ContactsScreen() {
 
             setIncomingRequests((prev) => prev.filter((req) => req.id !== requestId));
             await fetchAllData();
+            setActiveSection('contacts');
+
+            const senderIdentity = await getUserIdentity(requestData.sender_user_id);
 
             Alert.alert(
                 t('contacts.success.contactAdded.title'),
                 t('contacts.success.contactAdded.message', {
-                    name: requestData.sender_display_name || requestData.sender_email,
+                    name:
+                        senderIdentity.display_name ||
+                        requestData.sender_display_name ||
+                        requestData.sender_username ||
+                        'User',
                 })
             );
         } catch (error: any) {

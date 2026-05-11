@@ -1,7 +1,6 @@
 // app/(auth)/login.tsx
 import BaseColors from "@/constants/colors";
 import { signInWithSocial } from "@/lib/auth/oauth";
-import { registerAndSavePushToken } from "@/lib/notifications/core";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useRef, useState } from "react";
@@ -43,12 +42,6 @@ export default function LoginScreen() {
             });
 
             if (error) throw error;
-
-            const user = data.user;
-            if (!user) return;
-
-            // ✅ ONLY register push token, NO sending from client
-            await registerAndSavePushToken(user.id);
 
         } catch (err: any) {
             Alert.alert(t("auth.login.error"), err.message || t("auth.unknownError"));

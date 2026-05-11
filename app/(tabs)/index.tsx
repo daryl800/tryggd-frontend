@@ -1032,6 +1032,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
+    paddingTop: Platform.OS === 'ios' ? 10 : 2,
   },
   timeText: {
     fontSize: 36,
@@ -1162,9 +1163,9 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
       },
       android: {
         elevation: 3,
