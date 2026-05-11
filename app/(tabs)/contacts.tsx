@@ -28,7 +28,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 
 type ContactSlot = {
+    identifier?: string;
     email: string;
+    username?: string;
     user_id?: string;
     display_name?: string;
     id?: string;
@@ -40,6 +42,8 @@ type ContactRequest = {
     receiver_user_id: string;
     sender_email: string;
     sender_display_name?: string;
+    sender_username?: string;
+    receiver_username?: string;
     message?: string;
     status: 'pending' | 'accepted' | 'rejected';
     created_at: string;
@@ -49,7 +53,14 @@ interface UserSearchResult {
     user_id: string;
     email: string;
     display_name: string;
+    username?: string | null;
 }
+
+type ContactProfileRow = {
+    id: string;
+    username?: string | null;
+    display_name?: string | null;
+};
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -67,7 +78,7 @@ const ContactCard = memo(
         contact,
         index,
         isActive,
-        onEmailChange,
+        onIdentifierChange,
         onFocus,
         onBlur,
         onRemove,
@@ -77,7 +88,7 @@ const ContactCard = memo(
         contact: ContactSlot;
         index: number;
         isActive: boolean;
-        onEmailChange: (text: string) => void;
+        onIdentifierChange: (text: string) => void;
         onFocus: () => void;
         onBlur: () => void;
         onRemove: () => void;
@@ -118,14 +129,13 @@ const ContactCard = memo(
                     <>
                         <TextInput
                             ref={inputRef}
-                            placeholder={t('contacts.placeholders.email')}
+                            placeholder="Enter Tryggd ID"
                             placeholderTextColor={BaseColors.neutral[400]}
-                            value={contact.email}
-                            onChangeText={onEmailChange}
+                            value={contact.identifier || ''}
+                            onChangeText={onIdentifierChange}
                             onFocus={onFocus}
                             onBlur={onBlur}
                             autoCapitalize="none"
-                            keyboardType="email-address"
                             autoCorrect={false}
                             spellCheck={false}
                             style={styles.input}
@@ -153,11 +163,15 @@ const ContactCard = memo(
                                 <Text style={styles.displayNameMain}>{contact.display_name}</Text>
                             </View>
                         )}
-                        {/* Email with lighter color and smaller font - now second */}
-                        <View style={styles.existingContactRow}>
-                            <Ionicons name="mail-outline" size={16} color={BaseColors.neutral[400]} />
-                            <Text style={styles.emailSubdued}>{contact.email}</Text>
-                        </View>
+                        {/* Tryggd ID with lighter color and smaller font - now second */}
+                        {(contact.username || contact.identifier) ? (
+                            <View style={styles.existingContactRow}>
+                                <Ionicons name="at-outline" size={16} color={BaseColors.neutral[400]} />
+                                <Text style={styles.emailSubdued}>
+                                    {contact.username || contact.identifier}
+                                </Text>
+                            </View>
+                        ) : null}
                     </View>
                 )}
             </View>
@@ -212,7 +226,9 @@ const ContactRequestCard = memo(
                                     : request.sender_display_name || request.sender_email}
                             </Text>
                             <Text style={styles.requestEmail}>
-                                {isOutgoing ? request.receiver_user_id : request.sender_email}
+                                {isOutgoing
+                                    ? request.receiver_username || request.receiver_user_id
+                                    : request.sender_username || request.sender_email}
                             </Text>
                         </View>
                     </View>
@@ -331,18 +347,72 @@ export default function ContactsScreen() {
             ]);
 
             if (isMountedRef.current) {
+                const contactUserIds =
+                    contactsResult.data
+                        ?.map((row) => row.contact_user_id)
+                        .filter(Boolean) || [];
+                const requestUserIds = [
+                    ...(incomingResult.data?.map((row) => row.sender_user_id).filter(Boolean) || []),
+                    ...(outgoingResult.data?.map((row) => row.receiver_user_id).filter(Boolean) || []),
+                ];
+                const uniqueUserIds = [...new Set([...contactUserIds, ...requestUserIds])];
+
+                let usernameMap = new Map<string, string>();
+                let displayNameMap = new Map<string, string>();
+
+                if (uniqueUserIds.length > 0) {
+                    const { data: profileRows } = await supabase.rpc(
+                        'get_contact_usernames',
+                        { contact_ids: uniqueUserIds }
+                    ) as { data: ContactProfileRow[] | null };
+
+                    usernameMap = new Map(
+                        (profileRows || [])
+                            .filter((row) => row.username)
+                            .map((row) => [row.id, row.username as string])
+                    );
+                    displayNameMap = new Map(
+                        (profileRows || [])
+                            .filter((row) => row.display_name && row.display_name.trim() !== '')
+                            .map((row) => [row.id, row.display_name as string])
+                    );
+                }
+
                 // Transform contacts
                 const contacts: ContactSlot[] =
                     contactsResult.data?.map((row) => ({
                         id: row.id,
                         user_id: row.contact_user_id,
+                        identifier:
+                            usernameMap.get(row.contact_user_id) ||
+                            '',
                         email: row.contact_email || '',
-                        display_name: row.contact_display_name || '',
+                        username: usernameMap.get(row.contact_user_id),
+                        display_name:
+                            displayNameMap.get(row.contact_user_id) ||
+                            row.contact_display_name ||
+                            '',
                     })) || [];
 
                 setExistingContacts(contacts);
-                setIncomingRequests(incomingResult.data || []);
-                setOutgoingRequests(outgoingResult.data || []);
+                setIncomingRequests(
+                    (incomingResult.data || []).map((request) => ({
+                        ...request,
+                        sender_display_name:
+                            displayNameMap.get(request.sender_user_id) ||
+                            request.sender_display_name,
+                        sender_username: usernameMap.get(request.sender_user_id),
+                    }))
+                );
+                setOutgoingRequests(
+                    (outgoingResult.data || []).map((request) => ({
+                        ...request,
+                        sender_display_name:
+                            displayNameMap.get(request.sender_user_id) ||
+                            request.sender_display_name,
+                        receiver_username: usernameMap.get(request.receiver_user_id),
+                    }))
+                );
 
                 lastFetchRef.current = Date.now();
             }
@@ -590,7 +660,7 @@ export default function ContactsScreen() {
         }
 
         const newContactIndex = totalContactsCount;
-        setNewContacts((prev) => [...prev, { email: '' }]);
+        setNewContacts((prev) => [...prev, { identifier: '', email: '' }]);
 
         setTimeout(() => {
             const inputRef = inputRefs.current[newContactIndex];
@@ -600,11 +670,11 @@ export default function ContactsScreen() {
         }, 150);
     };
 
-    const updateNewContact = useCallback((index: number, email: string) => {
+    const updateNewContact = useCallback((index: number, identifier: string) => {
         setNewContacts((prev) =>
             prev.map((contact, i) =>
                 i === index
-                    ? { ...contact, email, display_name: undefined, user_id: undefined }
+                    ? { ...contact, identifier, display_name: undefined, user_id: undefined, username: undefined }
                     : contact
             )
         );
@@ -650,7 +720,7 @@ export default function ContactsScreen() {
                 const newContactIndex = index - existingContacts.length;
                 setNewContacts((prev) => {
                     const contact = prev[newContactIndex];
-                    if (contact && (!contact.email || contact.email.trim() === '')) {
+                    if (contact && (!contact.identifier || contact.identifier.trim() === '')) {
                         return prev.filter((_, i) => i !== newContactIndex);
                     }
                     return prev;
@@ -671,7 +741,7 @@ export default function ContactsScreen() {
             Alert.alert(
                 t('contacts.alerts.delete.title'),
                 t('contacts.alerts.delete.message', {
-                    name: contact.display_name || contact.email,
+                    name: contact.display_name || contact.username || contact.identifier || contact.email,
                 }),
                 [
                     { text: t('common.cancel'), style: 'cancel' },
@@ -706,7 +776,7 @@ export default function ContactsScreen() {
                                 Alert.alert(
                                     t('contacts.success.deleted.title'),
                                     t('contacts.success.deleted.message', {
-                                        name: contact.display_name || contact.email,
+                                        name: contact.display_name || contact.username || contact.identifier || contact.email,
                                     })
                                 );
                             } catch (error: any) {
@@ -771,7 +841,7 @@ export default function ContactsScreen() {
                 Alert.alert(
                     t('contacts.alerts.contactExists.title'),
                     t('contacts.alerts.contactExists.message', {
-                        name: contact.display_name || contact.email,
+                        name: contact.display_name || contact.username || contact.identifier || contact.email,
                     })
                 );
                 return;
@@ -804,7 +874,7 @@ export default function ContactsScreen() {
                     Alert.alert(
                         t('contacts.alerts.requestReceived.title'),
                         t('contacts.alerts.requestReceived.message', {
-                            email: contact.email,
+                            email: contact.username || contact.identifier || contact.email,
                         })
                     );
                     return;
@@ -868,7 +938,7 @@ export default function ContactsScreen() {
             Alert.alert(
                 t('contacts.success.requestSent.title'),
                 t('contacts.success.requestSent.message', {
-                    name: contact.display_name || contact.email,
+                    name: contact.display_name || contact.username || contact.identifier || contact.email,
                 })
             );
         } catch (error) {
@@ -881,7 +951,7 @@ export default function ContactsScreen() {
         inputRefs.current.forEach((ref) => ref?.blur());
 
         const validNewContacts = newContacts.filter(
-            (contact) => contact.email && contact.email.trim() !== ''
+            (contact) => contact.identifier && contact.identifier.trim() !== ''
         );
 
         if (validNewContacts.length === 0) {
@@ -902,12 +972,12 @@ export default function ContactsScreen() {
             const resolved: ContactSlot[] = [];
 
             for (const c of validNewContacts) {
-                const emailToSearch = c.email.trim();
-                if (!emailToSearch) continue;
+                const usernameToSearch = c.identifier!.trim().replace(/^@/, '');
+                if (!usernameToSearch) continue;
 
                 const { data: userResult, error } = (await supabase
-                    .rpc('find_contact_by_email', {
-                        search_email: emailToSearch,
+                    .rpc('find_contact_by_username', {
+                        search_username: usernameToSearch.toLowerCase(),
                     })
                     .single()) as { data: UserSearchResult | null; error: any };
 
@@ -918,8 +988,8 @@ export default function ContactsScreen() {
 
                 if (!userResult) {
                     Alert.alert(
-                        t('contacts.alerts.invalidEmail.title'),
-                        t('contacts.alerts.invalidEmail.message', { email: emailToSearch })
+                        'Tryggd ID not found',
+                        `We could not find ${usernameToSearch}.`
                     );
                     return;
                 }
@@ -942,7 +1012,7 @@ export default function ContactsScreen() {
                 if (existingContact) {
                     Alert.alert(
                         t('contacts.alerts.contactExists.title'),
-                        t('contacts.alerts.contactExists.message', { email: emailToSearch })
+                        `${userResult.username || usernameToSearch} is already in your contact circle.`
                     );
                     return;
                 }
@@ -965,9 +1035,7 @@ export default function ContactsScreen() {
                     } else {
                         Alert.alert(
                             t('contacts.alerts.requestReceived.title'),
-                            t('contacts.alerts.requestReceived.message', {
-                                email: emailToSearch,
-                            })
+                            `${userResult.username || usernameToSearch} has already sent you a request.`
                         );
                     }
                     return;
@@ -975,8 +1043,10 @@ export default function ContactsScreen() {
 
                 resolved.push({
                     user_id: userResult.user_id,
+                    identifier: userResult.username || usernameToSearch,
                     email: userResult.email,
                     display_name: userResult.display_name,
+                    username: userResult.username || undefined,
                 });
             }
 
@@ -1363,7 +1433,7 @@ export default function ContactsScreen() {
                                             contact={contact}
                                             index={index}
                                             isActive={activeInputIndex === index}
-                                            onEmailChange={() => { }} // No email change for existing contacts
+                                            onIdentifierChange={() => { }} // No editing for existing contacts
                                             onFocus={() => handleInputFocus(index)}
                                             onBlur={() => handleInputBlur(index)}
                                             onRemove={() => removeExistingContact(index)}
@@ -1381,7 +1451,7 @@ export default function ContactsScreen() {
                                                 contact={contact}
                                                 index={actualIndex}
                                                 isActive={activeInputIndex === actualIndex}
-                                                onEmailChange={(text) =>
+                                                onIdentifierChange={(text) =>
                                                     updateNewContact(newIndex, text)
                                                 }
                                                 onFocus={() => handleInputFocus(actualIndex)}

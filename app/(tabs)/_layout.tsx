@@ -21,13 +21,14 @@ const NotificationBadge = ({ count }: { count: number }) => {
 };
 
 export default function TabsLayout() {
-  const { user, initialized } = useAuth();
+  const { user, initialized, loading, needsUsername } = useAuth();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const unreadCount = useContactStore((state) => state.unreadCount);
 
-  if (!initialized) return null;
+  if (!initialized || loading) return null;
   if (!user) return <Redirect href="/(auth)/login" />;
+  if (needsUsername) return <Redirect href="/complete-profile" />;
 
   return (
     <Tabs

@@ -2,6 +2,7 @@ import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { clearPushTokens, updateContactCheckInPreference } from '@/lib/notifications/core';
+import Constants from 'expo-constants';
 import {
     disableSelfReminder,
     enableSelfReminder
@@ -56,6 +57,11 @@ export default function SettingsScreen() {
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
+    const appVersion = Constants.expoConfig?.version || 'Unknown';
+    const buildNumber = Constants.nativeBuildVersion;
+    const versionLabel = buildNumber
+        ? `Version ${appVersion} (${buildNumber})`
+        : `Version ${appVersion}`;
 
     useEffect(() => {
         loadSettings();
@@ -462,6 +468,10 @@ export default function SettingsScreen() {
 
             {/* Fixed bottom logout */}
             <View style={styles.footer}>
+                <View style={styles.versionCard}>
+                    <Text style={styles.versionTitle}>App Version</Text>
+                    <Text style={styles.versionValue}>{versionLabel}</Text>
+                </View>
                 <TouchableOpacity
                     style={styles.logoutButton}
                     onPress={handleLogout}
@@ -484,6 +494,8 @@ export default function SettingsScreen() {
 // ==================== STYLES ====================
 
 const GAP = 16;
+const CARD_HORIZONTAL_PADDING = 16;
+const CARD_ITEM_VERTICAL_PADDING = 12;
 
 const styles = StyleSheet.create({
     mainContainer: {
@@ -492,13 +504,13 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
-        paddingTop: 14
+        paddingTop: 12,
     },
     section: {
-        marginBottom: GAP,
+        marginBottom: 14,
     },
     sectionLabel: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: '600',
         color: BaseColors.text.dark,
         marginBottom: 6,
@@ -526,8 +538,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 14,
-        paddingHorizontal: GAP,
+        paddingVertical: CARD_ITEM_VERTICAL_PADDING,
+        paddingHorizontal: CARD_HORIZONTAL_PADDING,
     },
     settingContent: {
         flexDirection: 'row',
@@ -535,36 +547,36 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     settingIcon: {
-        width: 36,
-        height: 36,
-        borderRadius: 10,
+        width: 34,
+        height: 34,
+        borderRadius: 9,
         backgroundColor: BaseColors.primaryLight,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 12,
+        marginRight: 10,
     },
     settingText: {
         flex: 1,
     },
     settingTitle: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '500',
         color: BaseColors.text.dark,
     },
     settingSubtitle: {
-        fontSize: 14,
+        fontSize: 13,
         color: BaseColors.neutral[500],
         marginTop: 2,
     },
     expandedSection: {
-        marginTop: 8,
+        marginTop: 4,
     },
     languageOption: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 16,
-        paddingHorizontal: 16,
+        paddingVertical: CARD_ITEM_VERTICAL_PADDING,
+        paddingHorizontal: CARD_HORIZONTAL_PADDING,
     },
     selectedOption: {
         backgroundColor: BaseColors.primaryLight + '20',
@@ -575,11 +587,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     languageFlag: {
-        fontSize: 20,
-        marginRight: 12,
+        fontSize: 18,
+        marginRight: 10,
     },
     languageName: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '500',
         color: BaseColors.text.dark,
     },
@@ -609,11 +621,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingVertical: 16,
-        paddingHorizontal: 16,
+        paddingVertical: CARD_ITEM_VERTICAL_PADDING,
+        paddingHorizontal: CARD_HORIZONTAL_PADDING,
     },
     switchLabel: {
-        fontSize: 16,
+        fontSize: 15,
         color: "#1F2937",
         fontWeight: "500",
     },
@@ -622,21 +634,44 @@ const styles = StyleSheet.create({
         marginRight: 16,
     },
     notificationDescription: {
-        fontSize: 14,
+        fontSize: 13,
         color: "#6B7280",
         marginTop: 4,
-        lineHeight: 20,
+        lineHeight: 18,
     },
     divider: {
         height: 1,
         backgroundColor: BaseColors.neutral[200],
-        marginHorizontal: 16,
+        marginHorizontal: CARD_HORIZONTAL_PADDING,
     },
     footer: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
         paddingBottom: 16,
-        paddingTop: 8,
+        paddingTop: 6,
         backgroundColor: BaseColors.background,
+    },
+    versionCard: {
+        alignItems: 'center',
+        backgroundColor: BaseColors.surface,
+        borderColor: BaseColors.neutral[200],
+        borderRadius: 14,
+        borderWidth: 1,
+        marginBottom: 8,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+    },
+    versionTitle: {
+        color: BaseColors.neutral[500],
+        fontSize: 11,
+        fontWeight: '600',
+        letterSpacing: 0.4,
+        marginBottom: 2,
+        textTransform: 'uppercase',
+    },
+    versionValue: {
+        color: BaseColors.text.dark,
+        fontSize: 13,
+        fontWeight: '600',
     },
     logoutButton: {
         flexDirection: 'row',

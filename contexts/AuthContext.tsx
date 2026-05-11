@@ -1,11 +1,13 @@
 // contexts/AuthContext.tsx
 import { Session } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { deriveDisplayName, isLikelyGeneratedDisplayName } from "../lib/profile/displayName";
 import { supabase } from "../lib/supabase";
 
 type Profile = {
     id: string;
     display_name: string;
+    username?: string | null;
     avatar_url?: string;
 };
 
@@ -15,6 +17,8 @@ type AuthContextType = {
     profile: Profile | null;
     loading: boolean;
     initialized: boolean;
+    needsUsername: boolean;
+    refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,6 +27,8 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     loading: true,
     initialized: false,
+    needsUsername: false,
+    refreshProfile: async () => { },
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -31,6 +37,71 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [initialized, setInitialized] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
+
+    const refreshProfile = useCallback(async () => {
+        if (!user) {
+            setProfile(null);
+            return;
+        }
+
+        try {
+            setProfileLoading(true);
+
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+
+            console.log("[AuthContext] Profile loaded:", data, error);
+
+            if (error) {
+                console.warn("[AuthContext] Profile error:", error.message);
+                if (error.code === "PGRST116") {
+                    const { data: newProfile } = await supabase
+                        .from("profiles")
+                        .insert({
+                            id: user.id,
+                            display_name: deriveDisplayName(user),
+                        })
+                        .select()
+                        .single();
+
+                    setProfile(newProfile ?? null);
+                    return;
+                }
+
+                setProfile(null);
+                return;
+            }
+
+            const betterDisplayName = deriveDisplayName(user, data.display_name || "User");
+
+            if (
+                data.display_name &&
+                isLikelyGeneratedDisplayName(data.display_name) &&
+                betterDisplayName !== data.display_name
+            ) {
+                const { data: updatedProfile, error: updateError } = await supabase
+                    .from("profiles")
+                    .update({ display_name: betterDisplayName })
+                    .eq("id", user.id)
+                    .select("*")
+                    .single();
+
+                if (!updateError && updatedProfile) {
+                    setProfile(updatedProfile);
+                    return;
+                }
+            }
+
+            setProfile(data);
+        } catch (error) {
+            console.error("[AuthContext] Error loading profile:", error);
+        } finally {
+            setProfileLoading(false);
+        }
+    }, [user]);
 
     // Initialize auth state
     useEffect(() => {
@@ -66,58 +137,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             return;
         }
 
-        let isActive = true;
-
-        const loadProfile = async () => {
-            try {
-                setProfileLoading(true);
-
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", user.id)
-                    .single();
-
-                console.log("[AuthContext] Profile loaded:", data, error);
-
-                if (error) {
-                    console.warn("[AuthContext] Profile error:", error.message);
-                    // If profile doesn't exist, you might want to create one here
-                    if (error.code === "PGRST116") { // No rows returned
-                        // Create default profile
-                        const { data: newProfile } = await supabase
-                            .from("profiles")
-                            .insert({
-                                id: user.id,
-                                display_name: user.email?.split("@")[0] || "User",
-                            })
-                            .select()
-                            .single();
-
-                        if (newProfile && isActive) {
-                            setProfile(newProfile);
-                        }
-                    }
-                } else if (data && isActive) {
-                    setProfile(data);
-                }
-            } catch (error) {
-                console.error("[AuthContext] Error loading profile:", error);
-            } finally {
-                if (isActive) {
-                    setProfileLoading(false);
-                }
-            }
-        };
-
-        loadProfile();
-
-        return () => {
-            isActive = false;
-        };
-    }, [user?.id]);
+        void refreshProfile();
+    }, [refreshProfile, user]);
 
     const loading = !initialized || profileLoading;
+    const hasValidDisplayName = Boolean(
+        profile?.display_name?.trim() &&
+        !isLikelyGeneratedDisplayName(profile.display_name)
+    );
+    const needsUsername = Boolean(user) && !loading && (!profile?.username || !hasValidDisplayName);
 
     return (
         <AuthContext.Provider value={{
@@ -125,7 +153,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             session,
             profile,
             loading,
-            initialized
+            initialized,
+            needsUsername,
+            refreshProfile,
         }}>
             {children}
         </AuthContext.Provider>

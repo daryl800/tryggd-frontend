@@ -23,12 +23,15 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { deriveDisplayName, isAppleRelayEmail as isAppleRelayEmailAddress } from '../../lib/profile/displayName';
 import { supabase } from '../../lib/supabase';
 
 type UserProfile = {
     id: string;
     display_name: string;
+    username?: string | null;
     email?: string;
+    auth_provider?: string;
     phone?: string;
     avatar_url?: string;
 };
@@ -47,10 +50,20 @@ export default function ProfileScreen() {
     const [profile, setProfile] = useState<UserProfile>({
         id: '',
         display_name: '',
+        username: '',
         email: '',
+        auth_provider: '',
         phone: '',
         avatar_url: '',
     });
+
+    const isAppleRelayEmail = isAppleRelayEmailAddress(profile.email);
+    const providerLabel =
+        profile.auth_provider === 'apple'
+            ? 'Apple'
+            : profile.auth_provider === 'google'
+                ? 'Google'
+                : 'Email';
 
     // ✅ 1. Define loadProfile with useCallback
     const loadProfile = useCallback(async () => {
@@ -84,7 +97,9 @@ export default function ProfileScreen() {
                 setProfile({
                     id: data.id,
                     display_name: data.display_name || '',
+                    username: data.username || '',
                     email: user.email || '',
+                    auth_provider: user.app_metadata?.provider || 'email',
                     phone: data.phone || '',
                     avatar_url: data.avatar_url || '',
                 });
@@ -93,7 +108,9 @@ export default function ProfileScreen() {
                     '@user_profile',
                     JSON.stringify({
                         display_name: data.display_name || '',
+                        username: data.username || '',
                         email: user.email || '',
+                        auth_provider: user.app_metadata?.provider || 'email',
                         phone: data.phone || '',
                     })
                 );
@@ -150,11 +167,7 @@ export default function ProfileScreen() {
         try {
             const { error } = await supabase.from('profiles').insert({
                 id: user.id,
-                display_name:
-                    user.user_metadata?.display_name ||
-                    user.email?.split('@')[0] ||
-                    t('profile.defaultName'),
-                email: user.email || '',
+                display_name: deriveDisplayName(user, t('profile.defaultName')),
                 avatar_url: '',
             });
 
@@ -188,7 +201,6 @@ export default function ProfileScreen() {
                 .update({
                     display_name: profile.display_name.trim(),
                     phone: profile.phone?.trim() || '',
-                    updated_at: new Date().toISOString(),
                 })
                 .eq('id', user.id);
 
@@ -198,25 +210,13 @@ export default function ProfileScreen() {
                 return;
             }
 
-            if (profile.email !== user.email) {
-                const { error: emailError } = await supabase.auth.updateUser({
-                    email: profile.email,
-                });
-
-                if (emailError) {
-                    console.error('Error updating email:', emailError);
-                    Alert.alert(
-                        t('profile.notices.title'),
-                        t('profile.notices.emailConfirmation')
-                    );
-                }
-            }
-
             await AsyncStorage.setItem(
                 '@user_profile',
                 JSON.stringify({
                     display_name: profile.display_name,
+                    username: profile.username,
                     email: profile.email,
+                    auth_provider: profile.auth_provider,
                     phone: profile.phone,
                 })
             );
@@ -435,13 +435,25 @@ export default function ProfileScreen() {
                 {/* Profile Info Card */}
                 <View style={styles.infoCard}>
                     {renderField(
+                        'Sign-in method',
+                        providerLabel,
+                        'auth_provider',
+                        false
+                    )}
+                    {renderField(
+                        'Tryggd ID',
+                        profile.username || '',
+                        'username',
+                        false
+                    )}
+                    {renderField(
                         t('profile.fields.name'),
                         profile.display_name || '',
                         'display_name'
                     )}
                     {renderField(
                         t('profile.fields.email'),
-                        profile.email || '',
+                        isAppleRelayEmail ? 'Hidden by Apple' : profile.email || '',
                         'email',
                         false
                     )}
