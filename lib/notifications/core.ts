@@ -26,6 +26,15 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             return false;
         }
 
+        const projectId =
+            Constants?.expoConfig?.extra?.eas?.projectId ??
+            Constants?.easConfig?.projectId;
+
+        if (!projectId) {
+            console.log('❌ Expo project ID not found for push token registration');
+            return false;
+        }
+
         // Get existing permissions
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
@@ -43,7 +52,7 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         }
 
         // Get the Expo push token
-        const tokenData = await Notifications.getExpoPushTokenAsync();
+        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
         const token = tokenData.data;
         console.log('✅ Expo Push Token obtained');
 

@@ -23,6 +23,7 @@ export default ({ config }) => ({
         supportsTablet: true,
         infoPlist: {
             UIBackgroundModes: ["remote-notification"],
+            ITSAppUsesNonExemptEncryption: false,
         },
         bundleIdentifier: "com.marcustechnology.tryggd",
     },
