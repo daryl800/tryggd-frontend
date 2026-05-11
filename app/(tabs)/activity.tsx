@@ -26,11 +26,21 @@ type Activity = {
   display_name: string;
   last_checked_in_utc: string | null;
   priority: number;
-  email?: string | null;
-  contact_display_name?: string;
+  username?: string | null;
   is_owner?: boolean;
   hasNewUpdate?: boolean;
   checkin_timezone?: string | null;
+};
+
+type ContactIdentity = {
+  username: string;
+  display_name: string;
+};
+
+type ContactProfileRow = {
+  id: string;
+  username?: string | null;
+  display_name?: string | null;
 };
 
 type ResponseNotification = {
@@ -56,7 +66,7 @@ export default function ActivityScreen() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [contactMap, setContactMap] = useState<Map<string, { email: string; display_name: string }>>(new Map());
+  const [contactMap, setContactMap] = useState<Map<string, ContactIdentity>>(new Map());
   const [responses, setResponses] = useState<ResponseNotification[]>([]);
   const [unreadResponses, setUnreadResponses] = useState<ResponseNotification[]>([]);
   const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
@@ -65,7 +75,7 @@ export default function ActivityScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
   const myContactIds = useRef<string[]>([]);
-  const contactMapRef = useRef<Map<string, { email: string; display_name: string }>>(new Map());
+  const contactMapRef = useRef<Map<string, ContactIdentity>>(new Map());
   const ownerTimezoneRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
   const isInitialized = useRef(false);
 
@@ -97,7 +107,7 @@ export default function ActivityScreen() {
   // ============================================
   const fetchContacts = async (): Promise<{
     ids: string[];
-    map: Map<string, { email: string; display_name: string }>;
+    map: Map<string, ContactIdentity>;
   }> => {
     try {
       if (!user) return { ids: [], map: new Map() };
@@ -108,21 +118,41 @@ export default function ActivityScreen() {
         .eq('owner_user_id', user.id);
 
       if (contactsData) {
-        const map = new Map<string, { email: string; display_name: string }>();
-        const ids: string[] = [];
+        const ids: string[] = contactsData
+          .map((c) => c.contact_user_id)
+          .filter(Boolean);
+
+        const { data: profileRows } = await supabase.rpc(
+          'get_contact_usernames',
+          { contact_ids: ids }
+        ) as { data: ContactProfileRow[] | null };
+
+        const profileMap = new Map(
+          (profileRows || []).map((row) => [
+            row.id,
+            {
+              username: row.username || '',
+              display_name: row.display_name || '',
+            },
+          ])
+        );
+
+        const map = new Map<string, ContactIdentity>();
+        const resolvedIds: string[] = [];
 
         contactsData.forEach((c) => {
+          const liveProfile = profileMap.get(c.contact_user_id);
           map.set(c.contact_user_id, {
-            email: c.contact_email || '',
-            display_name: c.contact_display_name || '',
+            username: liveProfile?.username || '',
+            display_name: liveProfile?.display_name || c.contact_display_name || '',
           });
-          ids.push(c.contact_user_id);
+          resolvedIds.push(c.contact_user_id);
         });
 
         setContactMap(map);
         contactMapRef.current = map;
-        myContactIds.current = ids;
-        return { ids, map };
+        myContactIds.current = resolvedIds;
+        return { ids: resolvedIds, map };
       }
     } catch (err) {
       console.error('Error fetching contacts:', err);
@@ -208,8 +238,7 @@ export default function ActivityScreen() {
         return {
           ...activity,
           display_name: contactInfo?.display_name || activity.display_name,
-          email: contactInfo?.email || null,
-          contact_display_name: contactInfo?.display_name,
+          username: contactInfo?.username || null,
           hasNewUpdate: isNew,
           checkin_timezone: activity.checkin_timezone,
         };
@@ -490,8 +519,7 @@ export default function ActivityScreen() {
           const enriched = {
             ...updated,
             display_name: contactInfo?.display_name || updated.display_name,
-            email: contactInfo?.email || null,
-            contact_display_name: contactInfo?.display_name,
+            username: contactInfo?.username || null,
             hasNewUpdate: isNew,
             checkin_timezone: updated.checkin_timezone,
           };
@@ -935,7 +963,7 @@ export default function ActivityScreen() {
   // ============================================
   const ActivityItem = ({
     name,
-    email,
+    username,
     timestamp,
     priority,
     isOwner = false,
@@ -945,7 +973,7 @@ export default function ActivityScreen() {
     checkin_timezone,
   }: {
     name: string;
-    email?: string | null;
+    username?: string | null;
     timestamp: string | null;
     priority: number;
     isOwner?: boolean;
@@ -1139,9 +1167,9 @@ export default function ActivityScreen() {
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
               </Text>
-              {!isOwner && email && (
+              {!isOwner && username && (
                 <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
-                  {email}
+                  {username}
                 </Text>
               )}
             </View>
@@ -1298,7 +1326,7 @@ export default function ActivityScreen() {
                     <ActivityItem
                       key={item.user_id}
                       name={item.display_name}
-                      email={item.email}
+                      username={item.username}
                       timestamp={item.last_checked_in_utc}
                       priority={item.priority}
                       isOwner={false}

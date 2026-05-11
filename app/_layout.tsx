@@ -16,6 +16,7 @@ import i18n from '../i18n';
 
 // Services & utilities
 import { tokenManager } from '@/lib/auth/tokenManager';
+import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { registerAndSavePushToken } from '@/lib/notifications/core';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
@@ -128,12 +129,27 @@ function useNotifications(user: any) {
 // ============================================
 function useDeepLinking(router: any) {
   useEffect(() => {
-    const handleUrl = (url: string | null) => {
+    const handleUrl = async (url: string | null) => {
       if (!url) return;
+
+      try {
+        const session = await createSessionFromUrl(url);
+        if (session) {
+          router.replace("/(tabs)");
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to create session from deep link", error);
+      }
 
       const parsed = Linking.parse(url);
 
-      if (parsed.path === "auth/callback") {
+      if (
+        parsed.path === authRedirectPath &&
+        (parsed.queryParams?.type === "signup" ||
+          parsed.queryParams?.type === "email" ||
+          parsed.queryParams?.token_hash)
+      ) {
         alert("Email confirmed. Please login.");
         router.replace("/(auth)/login");
         return;
@@ -149,7 +165,9 @@ function useDeepLinking(router: any) {
     };
 
     Linking.getInitialURL().then(handleUrl);
-    const subscription = Linking.addEventListener("url", ({ url }) => handleUrl(url));
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      void handleUrl(url);
+    });
 
     return () => subscription.remove();
   }, [router]);
