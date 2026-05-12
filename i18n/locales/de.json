@@ -1,0 +1,364 @@
+{
+  "home": {
+    "title": "Startseite",
+    "welcome": "Willkommen",
+    "greetings": {
+      "morning": "Guten Morgen",
+      "afternoon": "Guten Tag",
+      "evening": "Guten Abend",
+      "night": "Gute Nacht"
+    },
+    "everythingIsFine": "Alles ist in Ordnung!!",
+    "dontForget": "Vergiss nicht, heute einzuchecken!",
+    "youCheckedInTodayAt": "Du hast heute um {{time}} eingecheckt",
+    "pressMeToCheckIn": "HIER EINCHECKEN",
+    "reset": "Zurücksetzen",
+    "timer": "Timer",
+    "timeLeftToday": "Verbleibende Zeit",
+    "activity": "Aktivität",
+    "contacts_one": "{{count}} Kontakt",
+    "contacts_other": "{{count}} Kontakte",
+    "streak": "Serie",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage",
+    "dateFormats": {
+      "weekdays": ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+      "months": ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
+    },
+    "errors": {
+      "fetchLastCheckin": "Letzter Check-in konnte nicht geladen werden",
+      "noUser": "Kein Benutzer gefunden",
+      "checkin": "Check-in fehlgeschlagen",
+      "loadState": "Status konnte nicht geladen werden"
+    }
+  },
+  "activity": {
+    "title": "Aktivität",
+    "subtitle": "Deine neuesten Check-ins und die deiner Kontakte",
+    "you": "Du",
+    "yourActivity": "Du selbst",
+    "contacts": "Kontakte",
+    "loading": "Aktivitäten werden geladen...",
+    "noCheckIn": "Noch kein Check-in",
+    "emptyState": {
+      "title": "Keine Kontakte",
+      "message": "Füge Kontakte hinzu, um ihre Aktivitäten zu sehen"
+    },
+    "priority": {
+      "failed": "Fehlgeschlagen",
+      "ongoing": "Läuft",
+      "successful": "Erfolgreich"
+    },
+    "time": {
+      "locale": "de-DE"
+    },
+    "errors": {
+      "loadActivities": "Aktivitäten konnten nicht geladen werden",
+      "fetchContacts": "Kontakte konnten nicht geladen werden",
+      "fetchOwnerActivity": "Eigene Aktivität konnte nicht geladen werden"
+    },
+    "day": {
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "other": "{{date, date, d. MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "Ein Like senden 👍",
+      "responded": "👏 Reagiert!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 Du hast heute {{count}} Like erhalten:",
+      "todayLikes_other": "👋 Du hast heute {{count}} Likes erhalten:",
+      "prefix": "hat auf deinen Check-in reagiert",
+      "defaultMessage": "mag 👍 deinen Check-in!"
+    }
+  },
+  "contacts": {
+    "title": "Kontakte",
+    "contact": "Kontakt",
+    "newContact": "Neuer Kontakt",
+    "displayingAs": "Angezeigt als",
+    "loading": "Kontakte werden geladen...",
+    "subtitle": {
+      "withContacts": "Du hast {{count}} von 3 möglichen Kontakten",
+      "noContacts": "Füge Kontakte hinzu, um zu teilen"
+    },
+    "emptyState": {
+      "title": "Keine Kontakte",
+      "message": "Drücke die + Taste, um deinen ersten Kontakt hinzuzufügen"
+    },
+    "tabs": {
+      "contacts": "Kontakte",
+      "requests": "Anfragen"
+    },
+    "requests": {
+      "received": "Erhaltene Anfragen",
+      "sent": "Gesendete Anfragen",
+      "waiting": "Warten auf Antwort",
+      "loading": "Anfragen werden geladen...",
+      "emptyState": {
+        "title": "Keine Anfragen",
+        "message": "Wenn dir jemand eine Kontaktanfrage sendet, erscheint sie hier"
+      }
+    },
+    "placeholders": {
+      "email": "Tryggd ID eingeben"
+    },
+    "buttons": {
+      "accept": "Annehmen",
+      "reject": "Ablehnen",
+      "delete": "Löschen",
+      "cancelRequest": "Anfrage abbrechen",
+      "sending": "Wird gesendet...",
+      "sendRequests_one": "Anfrage senden",
+      "sendRequests_other": "Anfragen senden"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Limit erreicht",
+        "message": "Du kannst nur bis zu 3 Kontakte hinzufügen."
+      },
+      "delete": {
+        "title": "Kontakt löschen",
+        "message": "Möchtest du {{name}} wirklich löschen?"
+      },
+      "contactExists": {
+        "title": "Kontakt existiert bereits",
+        "message": "{{name}} ist bereits in deinen Kontakten"
+      },
+      "requestExists": {
+        "title": "Anfrage bereits gesendet",
+        "message": "Du hast diesem Benutzer bereits eine Anfrage gesendet."
+      },
+      "requestReceived": {
+        "title": "Anfrage erhalten",
+        "message": "Du hast bereits eine Anfrage von {{email}}. Sieh unter \"Anfragen\" nach."
+      },
+      "invalidEmail": {
+        "title": "Ungültige Tryggd ID",
+        "message": "{{email}} ist nicht registriert oder nicht verifiziert"
+      },
+      "selfContact": {
+        "title": "Ungültiger Kontakt",
+        "message": "Du kannst dich nicht selbst als Kontakt hinzufügen"
+      },
+      "noChanges": {
+        "title": "Keine Änderungen",
+        "message": "Keine neuen Kontakte zum Speichern."
+      },
+      "alreadyInContacts": "Dieser Benutzer ist bereits in deinen Kontakten",
+      "requestHandled": {
+        "title": "Anfrage bereits bearbeitet",
+        "message": "Diese Anfrage wurde bereits bearbeitet"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Anfrage gesendet",
+        "message": "Kontaktanfrage an {{name}} gesendet"
+      },
+      "contactAdded": {
+        "title": "Kontakt hinzugefügt",
+        "message": "{{name}} wurde zu deinen Kontakten hinzugefügt"
+      },
+      "deleted": {
+        "title": "Kontakt entfernt",
+        "message": "{{name}} wurde entfernt. Alle Verbindungen wurden gelöscht."
+      },
+      "requestRejected": {
+        "title": "Anfrage abgelehnt",
+        "message": "Kontaktanfrage wurde abgelehnt"
+      },
+      "requestCancelled": {
+        "title": "Anfrage abgebrochen",
+        "message": "Kontaktanfrage wurde abgebrochen"
+      }
+    },
+    "errors": {
+      "loadData": "Daten konnten nicht geladen werden",
+      "save": "Kontakte konnten nicht gespeichert werden",
+      "delete": "Kontakt konnte nicht gelöscht werden",
+      "sendRequest": "Kontaktanfrage konnte nicht gesendet werden",
+      "search": "Benutzer konnte nicht gesucht werden",
+      "requestNotFound": "Kontaktanfrage konnte nicht gefunden werden oder wurde bereits bearbeitet",
+      "accept": "Kontaktanfrage konnte nicht angenommen werden",
+      "reject": "Anfrage konnte nicht abgelehnt werden",
+      "cancel": "Anfrage konnte nicht abgebrochen werden"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "defaultName": "Benutzer",
+    "loading": "Profil wird geladen...",
+    "buttons": {
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "saving": "Speichern...",
+      "logout": "Abmelden"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "notSpecified": "Nicht angegeben"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "App-Einstellungen und Benachrichtigungen"
+    },
+    "avatarModal": {
+      "title": "Profilbild ändern",
+      "takePhoto": "Foto aufnehmen",
+      "chooseFromLibrary": "Aus Bibliothek wählen"
+    },
+    "logout": {
+      "title": "Abmelden",
+      "confirm": "Bist du sicher?",
+      "button": "Abmelden"
+    },
+    "permissions": {
+      "camera": "Kamerazugriff ist erforderlich"
+    },
+    "notices": {
+      "title": "Hinweis",
+      "emailConfirmation": "Profil gespeichert, aber die E-Mail-Änderung muss bestätigt werden"
+    },
+    "success": {
+      "title": "Gespeichert",
+      "saved": "Dein Profil wurde aktualisiert."
+    },
+    "errors": {
+      "loadProfile": "Profil konnte nicht geladen werden",
+      "notLoggedIn": "Du bist nicht angemeldet",
+      "updateProfile": "Profil konnte nicht aktualisiert werden",
+      "saveProfile": "Profil konnte nicht gespeichert werden"
+    }
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "account": "Konto",
+    "information": "Informationen",
+    "language": "Sprache",
+    "theme": "Design",
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "preferences": "Benachrichtigungseinstellungen",
+      "summary": {
+        "reminders": "Erinnerungen",
+        "activity": "Aktivität",
+        "allOff": "Alle Benachrichtigungen aus"
+      },
+      "stayOnTrack": {
+        "title": "Dranbleiben",
+        "description": "Erinnere mich daran, meine täglichen Sicherheits-Check-ins zu erledigen"
+      },
+      "contactActivity": {
+        "title": "Kontaktaktivität",
+        "description": "Benachrichtige mich, wenn meine Kontakte ihre Check-ins abschließen"
+      }
+    },
+    "about": "Über",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "logout": "Abmelden",
+    "resetData": "Daten zurücksetzen",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "systemDefault": "Systemeinstellung verwenden",
+    "english": "Englisch",
+    "swedish": "Schwedisch",
+    "norwegian": "Norwegisch",
+    "danish": "Dänisch",
+    "finnish": "Finnisch",
+    "chineseSimplified": "Chinesisch (vereinfacht)",
+    "chineseTraditional": "Chinesisch (traditionell)",
+    "resetWarning": "Bist du sicher? Alle deine Daten werden gelöscht.",
+    "logoutConfirm": "Möchtest du dich wirklich abmelden?",
+    "confirmReset": "Zurücksetzen",
+    "cancel": "Abbrechen",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "loading": "Laden...",
+    "refreshing": "Aktualisieren...",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Senden",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "time": {
+    "justNow": "Gerade eben",
+    "minutesAgo": "Vor {{count}} Min.",
+    "hoursAgo_one": "Vor {{count}} Stunde",
+    "hoursAgo_other": "Vor {{count}} Stunden",
+    "daysAgo_one": "Vor {{count}} Tag",
+    "daysAgo_other": "Vor {{count}} Tagen"
+  },
+  "errors": {
+    "title": "Fehler",
+    "notAuthenticated": "Nicht authentifiziert"
+  },
+  "permissions": {
+    "title": "Berechtigung"
+  },
+  "auth": {
+    "signup": {
+      "title": "Konto erstellen",
+      "create": "Konto erstellen",
+      "creating": "Konto wird erstellt...",
+      "success": {
+        "title": "Konto erstellt 🎉",
+        "message": "Dein Konto ist bereit. Du kannst dich jetzt anmelden."
+      },
+      "verifyEmail": {
+        "title": "Bitte bestätige deine E-Mail!",
+        "message": "Wir haben eine Bestätigungs-E-Mail gesendet. Bitte melde dich nach der Bestätigung an."
+      },
+      "error": "Registrierung fehlgeschlagen"
+    },
+    "login": {
+      "title": "Anmelden",
+      "signIn": "Anmelden",
+      "loggingIn": "Anmeldung...",
+      "error": "Anmeldung fehlgeschlagen"
+    },
+    "email": "E-Mail",
+    "displayName": "Name",
+    "password": {
+      "placeholder": "Passwort (mindestens 6 Zeichen)"
+    },
+    "confirmPassword": "Passwort bestätigen",
+    "passwordsMatch": "✔ Passwörter stimmen überein",
+    "passwordsNoMatch": "✖ Passwörter stimmen nicht überein",
+    "alreadyHaveAccount": "Du hast bereits ein Konto? Anmelden",
+    "noAccount": "Du hast noch kein Konto? Registrieren",
+    "unknownError": "Unbekannter Fehler",
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "instructions": "Gib deine E-Mail-Adresse ein",
+      "send": "E-Mail zum Zurücksetzen senden",
+      "sending": "Senden...",
+      "sentTitle": "Prüfe deine E-Mails",
+      "sentMessage": "Wir haben dir einen Link zum Zurücksetzen des Passworts geschickt.",
+      "login": "Zur Anmeldung",
+      "error": "Fehler beim Senden der Zurücksetzen-E-Mail"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "instructions": "Gib unten dein neues Passwort ein.",
+      "save": "Neues Passwort speichern",
+      "saving": "Speichern...",
+      "successTitle": "Passwort zurückgesetzt!",
+      "successMessage": "Du kannst dich jetzt mit deinem neuen Passwort anmelden.",
+      "login": "Zur Anmeldung",
+      "error": "Fehler beim Zurücksetzen des Passworts",
+      "passwordPlaceholder": "Neues Passwort"
+    }
+  }
+}

@@ -6,7 +6,7 @@ export default ({ config }) => ({
     slug: "tryggd-frontend",
     version: "3.0.3",
     orientation: "portrait",
-    icon: "./assets/images/tryggd-icon-small.png",
+    icon: "./assets/images/tryggd-app-icon-1024.png",
     scheme: "tryggd",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -53,7 +53,7 @@ export default ({ config }) => ({
         [
             "expo-splash-screen",
             {
-                image: "./assets/images/tryggd-app-icon-1024.png",
+                image: "./assets/images/tryggd-splash-icon-rounded.png",
                 imageWidth: 200,
                 resizeMode: "contain",
                 backgroundColor: "#ffffff",

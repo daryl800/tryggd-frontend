@@ -33,13 +33,21 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// Define our 5 supported languages
+// Supported languages shown in Settings
 const SUPPORTED_LANGUAGES = [
     { code: "da", label: "Dansk", flag: "🇩🇰" },
+    { code: "de", label: "Deutsch", flag: "🇩🇪" },
     { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "es", label: "Español", flag: "🇪🇸" },
     { code: "fi", label: "Suomi", flag: "🇫🇮" },
+    { code: "fr", label: "Français", flag: "🇫🇷" },
+    { code: "it", label: "Italiano", flag: "🇮🇹" },
     { code: "no", label: "Norsk", flag: "🇳🇴" },
     { code: "sv", label: "Svenska", flag: "🇸🇪" },
+    { code: "zh-Hans", label: "简体中文", flag: "🇭🇰" },
+    { code: "zh-Hant", label: "繁體中文", flag: "🇨🇳" },
+    { code: "ja", label: "日本語", flag: "🇯🇵" },
+    { code: "ko", label: "한국어", flag: "🇰🇷" },
 ];
 
 const STORAGE_KEYS = {

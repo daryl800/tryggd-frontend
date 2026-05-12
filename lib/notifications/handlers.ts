@@ -7,7 +7,6 @@ export async function setupNotificationHandler() {
     // ✅ Configure how notifications appear
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
-            shouldShowAlert: true,      // Shows banners/alerts (critical for banners)
             shouldPlaySound: true,      // Plays sound
             shouldSetBadge: true,
             shouldShowBanner: true,     // Shows banner (iOS specific)

@@ -1,0 +1,385 @@
+{
+  "home": {
+    "title": "홈",
+    "welcome": "환영합니다",
+    "greetings": {
+      "morning": "좋은 아침입니다",
+      "afternoon": "안녕하세요",
+      "evening": "좋은 저녁입니다",
+      "night": "안녕히 주무세요"
+    },
+    "everythingIsFine": "모든 것이 괜찮습니다!!",
+    "dontForget": "오늘 체크인을 잊지 마세요!",
+    "youCheckedInTodayAt": "오늘 {{time}} 에 체크인했습니다",
+    "pressMeToCheckIn": "여기를 눌러 체크인",
+    "reset": "초기화",
+    "timer": "타이머",
+    "timeLeftToday": "남은 시간",
+    "activity": "활동",
+    "contacts_one": "연락처 {{count}}명",
+    "contacts_other": "연락처 {{count}}명",
+    "streak": "연속 기록",
+    "days_one": "{{count}}일",
+    "days_other": "{{count}}일",
+    "dateFormats": {
+      "weekdays": [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일"
+      ],
+      "months": [
+        "1월",
+        "2월",
+        "3월",
+        "4월",
+        "5월",
+        "6월",
+        "7월",
+        "8월",
+        "9월",
+        "10월",
+        "11월",
+        "12월"
+      ]
+    },
+    "errors": {
+      "fetchLastCheckin": "마지막 체크인 불러오기에 실패했습니다",
+      "noUser": "사용자를 찾을 수 없습니다",
+      "checkin": "체크인에 실패했습니다",
+      "loadState": "상태를 불러오지 못했습니다"
+    }
+  },
+  "activity": {
+    "title": "활동",
+    "subtitle": "나와 연락처의 최근 체크인",
+    "you": "나",
+    "yourActivity": "본인",
+    "contacts": "연락처",
+    "loading": "활동을 불러오는 중...",
+    "noCheckIn": "아직 체크인이 없습니다",
+    "emptyState": {
+      "title": "연락처 없음",
+      "message": "활동을 보려면 연락처를 추가하세요"
+    },
+    "priority": {
+      "failed": "실패",
+      "ongoing": "진행 중",
+      "successful": "완료"
+    },
+    "time": {
+      "locale": "ko-KR"
+    },
+    "errors": {
+      "loadActivities": "활동을 불러오지 못했습니다",
+      "fetchContacts": "연락처를 가져오지 못했습니다",
+      "fetchOwnerActivity": "내 활동을 가져오지 못했습니다"
+    },
+    "day": {
+      "today": "오늘",
+      "yesterday": "어제",
+      "other": "{{date, date, yyyy년 M월 d일}}"
+    },
+    "responseButton": {
+      "sendResponse": "좋아요 👍 보내기",
+      "responded": "👏 반응 완료!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 오늘 받은 좋아요 {{count}}개:",
+      "todayLikes_other": "👋 오늘 받은 좋아요 {{count}}개:",
+      "prefix": "당신의 체크인에 반응했습니다",
+      "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
+    }
+  },
+  "contacts": {
+    "title": "연락처",
+    "contact": "연락처",
+    "newContact": "새 연락처",
+    "displayingAs": "표시 이름",
+    "loading": "연락처를 불러오는 중...",
+    "subtitle": {
+      "withContacts": "가능한 3명 중 {{count}}명의 연락처가 있습니다",
+      "noContacts": "공유하려면 연락처를 추가하세요"
+    },
+    "emptyState": {
+      "title": "연락처 없음",
+      "message": "+ 버튼을 눌러 첫 연락처를 추가하세요"
+    },
+    "tabs": {
+      "contacts": "연락처",
+      "requests": "요청"
+    },
+    "requests": {
+      "received": "받은 요청",
+      "sent": "보낸 요청",
+      "waiting": "응답 대기 중",
+      "loading": "요청을 불러오는 중...",
+      "emptyState": {
+        "title": "요청 없음",
+        "message": "누군가 연락처 요청을 보내면 여기에 표시됩니다"
+      }
+    },
+    "placeholders": {
+      "email": "Tryggd ID 입력"
+    },
+    "buttons": {
+      "accept": "수락",
+      "reject": "거절",
+      "delete": "삭제",
+      "cancelRequest": "요청 취소",
+      "sending": "보내는 중...",
+      "sendRequests_one": "요청 보내기",
+      "sendRequests_other": "요청 보내기"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "한도 초과",
+        "message": "연락처는 최대 3명까지만 추가할 수 있습니다."
+      },
+      "delete": {
+        "title": "연락처 삭제",
+        "message": "{{name}} 을(를) 삭제하시겠습니까?"
+      },
+      "contactExists": {
+        "title": "이미 연락처에 있습니다",
+        "message": "{{name}} 은(는) 이미 연락처에 있습니다"
+      },
+      "requestExists": {
+        "title": "이미 요청을 보냈습니다",
+        "message": "이 사용자에게 이미 요청을 보냈습니다."
+      },
+      "requestReceived": {
+        "title": "요청을 받았습니다",
+        "message": "{{email}} 로부터 이미 요청이 있습니다. \"요청\" 탭을 확인하세요."
+      },
+      "invalidEmail": {
+        "title": "잘못된 Tryggd ID",
+        "message": "{{email}} 은(는) 등록되지 않았거나 확인되지 않았습니다"
+      },
+      "selfContact": {
+        "title": "잘못된 연락처",
+        "message": "자기 자신을 연락처로 추가할 수 없습니다"
+      },
+      "noChanges": {
+        "title": "변경 사항 없음",
+        "message": "저장할 새 연락처가 없습니다."
+      },
+      "alreadyInContacts": "이 사용자는 이미 연락처에 있습니다",
+      "requestHandled": {
+        "title": "이미 처리된 요청",
+        "message": "이 요청은 이미 처리되었습니다"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "요청을 보냈습니다",
+        "message": "{{name}} 에게 연락처 요청을 보냈습니다"
+      },
+      "contactAdded": {
+        "title": "연락처가 추가되었습니다",
+        "message": "{{name}} 이(가) 연락처에 추가되었습니다"
+      },
+      "deleted": {
+        "title": "연락처가 삭제되었습니다",
+        "message": "{{name}} 이(가) 삭제되었습니다. 모든 관계도 함께 삭제되었습니다."
+      },
+      "requestRejected": {
+        "title": "요청이 거절되었습니다",
+        "message": "연락처 요청이 거절되었습니다"
+      },
+      "requestCancelled": {
+        "title": "요청이 취소되었습니다",
+        "message": "연락처 요청이 취소되었습니다"
+      }
+    },
+    "errors": {
+      "loadData": "데이터를 불러오지 못했습니다",
+      "save": "연락처 저장에 실패했습니다",
+      "delete": "연락처 삭제에 실패했습니다",
+      "sendRequest": "연락처 요청 전송에 실패했습니다",
+      "search": "사용자를 검색할 수 없습니다",
+      "requestNotFound": "연락처 요청을 찾을 수 없거나 이미 처리되었습니다",
+      "accept": "연락처 요청 수락에 실패했습니다",
+      "reject": "요청 거절에 실패했습니다",
+      "cancel": "요청 취소에 실패했습니다"
+    }
+  },
+  "profile": {
+    "title": "프로필",
+    "defaultName": "사용자",
+    "loading": "프로필을 불러오는 중...",
+    "buttons": {
+      "edit": "편집",
+      "save": "저장",
+      "saving": "저장 중...",
+      "logout": "로그아웃"
+    },
+    "fields": {
+      "name": "이름",
+      "email": "이메일",
+      "phone": "전화번호",
+      "notSpecified": "미입력"
+    },
+    "settings": {
+      "title": "설정",
+      "subtitle": "앱 설정 및 알림"
+    },
+    "avatarModal": {
+      "title": "프로필 사진 변경",
+      "takePhoto": "사진 촬영",
+      "chooseFromLibrary": "라이브러리에서 선택"
+    },
+    "logout": {
+      "title": "로그아웃",
+      "confirm": "정말 로그아웃하시겠습니까?",
+      "button": "로그아웃"
+    },
+    "permissions": {
+      "camera": "카메라 접근 권한이 필요합니다"
+    },
+    "notices": {
+      "title": "알림",
+      "emailConfirmation": "프로필은 저장되었지만 이메일 변경에는 확인이 필요합니다"
+    },
+    "success": {
+      "title": "저장됨",
+      "saved": "프로필이 업데이트되었습니다."
+    },
+    "errors": {
+      "loadProfile": "프로필을 불러오지 못했습니다",
+      "notLoggedIn": "로그인되어 있지 않습니다",
+      "updateProfile": "프로필을 업데이트할 수 없습니다",
+      "saveProfile": "프로필을 저장할 수 없습니다"
+    }
+  },
+  "settings": {
+    "title": "설정",
+    "account": "계정",
+    "information": "정보",
+    "language": "언어",
+    "theme": "테마",
+    "notifications": {
+      "title": "알림",
+      "preferences": "알림 설정",
+      "summary": {
+        "reminders": "리마인더",
+        "activity": "활동",
+        "allOff": "모든 알림 꺼짐"
+      },
+      "stayOnTrack": {
+        "title": "계속 진행하기",
+        "description": "개인 안전 일일 체크인을 완료하도록 알려줍니다"
+      },
+      "contactActivity": {
+        "title": "연락처 활동",
+        "description": "연락처가 체크인을 완료하면 알려줍니다"
+      }
+    },
+    "about": "앱 정보",
+    "privacy": "개인정보 처리방침",
+    "terms": "서비스 약관",
+    "logout": "로그아웃",
+    "resetData": "데이터 초기화",
+    "light": "라이트",
+    "dark": "다크",
+    "systemDefault": "시스템 설정 사용",
+    "english": "영어",
+    "swedish": "스웨덴어",
+    "norwegian": "노르웨이어",
+    "danish": "덴마크어",
+    "finnish": "핀란드어",
+    "chineseSimplified": "중국어(간체)",
+    "chineseTraditional": "중국어(번체)",
+    "resetWarning": "정말 진행하시겠습니까? 모든 데이터가 삭제됩니다.",
+    "logoutConfirm": "정말 로그아웃하시겠습니까?",
+    "confirmReset": "초기화",
+    "cancel": "취소",
+    "ok": "확인"
+  },
+  "common": {
+    "ok": "확인",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "loading": "불러오는 중...",
+    "refreshing": "새로 고치는 중...",
+    "back": "뒤로",
+    "next": "다음",
+    "submit": "제출",
+    "yes": "예",
+    "no": "아니요"
+  },
+  "time": {
+    "justNow": "방금 전",
+    "minutesAgo": "{{count}}분 전",
+    "hoursAgo_one": "{{count}}시간 전",
+    "hoursAgo_other": "{{count}}시간 전",
+    "daysAgo_one": "{{count}}일 전",
+    "daysAgo_other": "{{count}}일 전"
+  },
+  "errors": {
+    "title": "오류",
+    "notAuthenticated": "인증되지 않았습니다"
+  },
+  "permissions": {
+    "title": "권한"
+  },
+  "auth": {
+    "signup": {
+      "title": "계정 만들기",
+      "create": "계정 만들기",
+      "creating": "계정을 만드는 중...",
+      "success": {
+        "title": "계정이 생성되었습니다 🎉",
+        "message": "계정이 준비되었습니다. 이제 로그인할 수 있습니다."
+      },
+      "verifyEmail": {
+        "title": "이메일을 확인해 주세요!",
+        "message": "이메일로 확인 메일을 보냈습니다. 확인 후 로그인해 주세요."
+      },
+      "error": "회원가입에 실패했습니다"
+    },
+    "login": {
+      "title": "로그인",
+      "signIn": "로그인",
+      "loggingIn": "로그인 중...",
+      "error": "로그인에 실패했습니다"
+    },
+    "email": "이메일",
+    "displayName": "이름",
+    "password": {
+      "placeholder": "비밀번호(최소 6자)"
+    },
+    "confirmPassword": "비밀번호 확인",
+    "passwordsMatch": "✔ 비밀번호가 일치합니다",
+    "passwordsNoMatch": "✖ 비밀번호가 일치하지 않습니다",
+    "alreadyHaveAccount": "이미 계정이 있나요? 로그인",
+    "noAccount": "계정이 없나요? 회원가입",
+    "unknownError": "알 수 없는 오류",
+    "forgotPassword": {
+      "title": "비밀번호를 잊으셨나요",
+      "instructions": "이메일 주소를 입력하세요",
+      "send": "재설정 이메일 보내기",
+      "sending": "보내는 중...",
+      "sentTitle": "이메일을 확인하세요",
+      "sentMessage": "비밀번호 재설정 링크를 이메일로 보냈습니다.",
+      "login": "로그인으로 이동",
+      "error": "재설정 이메일 전송 오류"
+    },
+    "resetPassword": {
+      "title": "비밀번호 재설정",
+      "instructions": "아래에 새 비밀번호를 입력하세요.",
+      "save": "새 비밀번호 저장",
+      "saving": "저장 중...",
+      "successTitle": "비밀번호가 재설정되었습니다!",
+      "successMessage": "이제 새 비밀번호로 로그인할 수 있습니다.",
+      "login": "로그인으로 이동",
+      "error": "비밀번호 재설정 오류",
+      "passwordPlaceholder": "새 비밀번호"
+    }
+  }
+}

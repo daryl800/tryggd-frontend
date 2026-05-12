@@ -1,0 +1,364 @@
+{
+  "home": {
+    "title": "Inicio",
+    "welcome": "Bienvenido",
+    "greetings": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches",
+      "night": "Buenas noches"
+    },
+    "everythingIsFine": "¡Todo está bien!",
+    "dontForget": "No olvides hacer tu check-in hoy!",
+    "youCheckedInTodayAt": "Hoy hiciste check-in a las {{time}}",
+    "pressMeToCheckIn": "HAZ CHECK-IN AQUÍ",
+    "reset": "Restablecer",
+    "timer": "Temporizador",
+    "timeLeftToday": "Tiempo restante",
+    "activity": "Actividad",
+    "contacts_one": "{{count}} contacto",
+    "contacts_other": "{{count}} contactos",
+    "streak": "Racha",
+    "days_one": "{{count}} día",
+    "days_other": "{{count}} días",
+    "dateFormats": {
+      "weekdays": ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"],
+      "months": ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    },
+    "errors": {
+      "fetchLastCheckin": "No se pudo obtener el último check-in",
+      "noUser": "No se encontró ningún usuario",
+      "checkin": "El check-in falló",
+      "loadState": "No se pudo cargar el estado"
+    }
+  },
+  "activity": {
+    "title": "Actividad",
+    "subtitle": "Tus últimos check-ins y los de tus contactos",
+    "you": "Tú",
+    "yourActivity": "Tú mismo",
+    "contacts": "Contactos",
+    "loading": "Cargando actividades...",
+    "noCheckIn": "Aún no hay check-in",
+    "emptyState": {
+      "title": "Sin contactos",
+      "message": "Agrega contactos para ver sus actividades"
+    },
+    "priority": {
+      "failed": "Fallido",
+      "ongoing": "En curso",
+      "successful": "Correcto"
+    },
+    "time": {
+      "locale": "es-ES"
+    },
+    "errors": {
+      "loadActivities": "No se pudieron cargar las actividades",
+      "fetchContacts": "No se pudieron obtener los contactos",
+      "fetchOwnerActivity": "No se pudo obtener tu actividad"
+    },
+    "day": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "other": "{{date, date, d 'de' MMMM 'de' yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "Enviar un me gusta 👍",
+      "responded": "👏 ¡Reaccionaste!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 Hoy recibiste {{count}} me gusta:",
+      "todayLikes_other": "👋 Hoy recibiste {{count}} me gusta:",
+      "prefix": "reaccionó a tu check-in",
+      "defaultMessage": "le gusta 👍 tu check-in!"
+    }
+  },
+  "contacts": {
+    "title": "Contactos",
+    "contact": "Contacto",
+    "newContact": "Nuevo contacto",
+    "displayingAs": "Mostrado como",
+    "loading": "Cargando contactos...",
+    "subtitle": {
+      "withContacts": "Tienes {{count}} de 3 contactos posibles",
+      "noContacts": "Agrega contactos para compartir"
+    },
+    "emptyState": {
+      "title": "Sin contactos",
+      "message": "Pulsa el botón + para agregar tu primer contacto"
+    },
+    "tabs": {
+      "contacts": "Contactos",
+      "requests": "Solicitudes"
+    },
+    "requests": {
+      "received": "Solicitudes recibidas",
+      "sent": "Solicitudes enviadas",
+      "waiting": "Esperando respuesta",
+      "loading": "Cargando solicitudes...",
+      "emptyState": {
+        "title": "Sin solicitudes",
+        "message": "Cuando alguien te envíe una solicitud de contacto, aparecerá aquí"
+      }
+    },
+    "placeholders": {
+      "email": "Introduce un Tryggd ID"
+    },
+    "buttons": {
+      "accept": "Aceptar",
+      "reject": "Rechazar",
+      "delete": "Eliminar",
+      "cancelRequest": "Cancelar solicitud",
+      "sending": "Enviando...",
+      "sendRequests_one": "Enviar solicitud",
+      "sendRequests_other": "Enviar solicitudes"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Límite alcanzado",
+        "message": "Solo puedes agregar hasta 3 contactos."
+      },
+      "delete": {
+        "title": "Eliminar contacto",
+        "message": "¿Seguro que quieres eliminar a {{name}}?"
+      },
+      "contactExists": {
+        "title": "El contacto ya existe",
+        "message": "{{name}} ya está en tus contactos"
+      },
+      "requestExists": {
+        "title": "Solicitud ya enviada",
+        "message": "Ya has enviado una solicitud a este usuario."
+      },
+      "requestReceived": {
+        "title": "Solicitud recibida",
+        "message": "Ya tienes una solicitud de {{email}}. Revisa la pestaña \"Solicitudes\"."
+      },
+      "invalidEmail": {
+        "title": "Tryggd ID no válido",
+        "message": "{{email}} no está registrado o no ha sido verificado"
+      },
+      "selfContact": {
+        "title": "Contacto no válido",
+        "message": "No puedes agregarte a ti mismo como contacto"
+      },
+      "noChanges": {
+        "title": "Sin cambios",
+        "message": "No hay nuevos contactos para guardar."
+      },
+      "alreadyInContacts": "Este usuario ya está en tus contactos",
+      "requestHandled": {
+        "title": "Solicitud ya gestionada",
+        "message": "Esta solicitud ya ha sido gestionada"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Solicitud enviada",
+        "message": "Solicitud de contacto enviada a {{name}}"
+      },
+      "contactAdded": {
+        "title": "Contacto agregado",
+        "message": "{{name}} se ha agregado a tus contactos"
+      },
+      "deleted": {
+        "title": "Contacto eliminado",
+        "message": "{{name}} ha sido eliminado. Todas las relaciones han sido eliminadas."
+      },
+      "requestRejected": {
+        "title": "Solicitud rechazada",
+        "message": "La solicitud de contacto ha sido rechazada"
+      },
+      "requestCancelled": {
+        "title": "Solicitud cancelada",
+        "message": "La solicitud de contacto ha sido cancelada"
+      }
+    },
+    "errors": {
+      "loadData": "No se pudieron cargar los datos",
+      "save": "No se pudieron guardar los contactos",
+      "delete": "No se pudo eliminar el contacto",
+      "sendRequest": "No se pudo enviar la solicitud de contacto",
+      "search": "No se pudo buscar el usuario",
+      "requestNotFound": "No se pudo encontrar la solicitud de contacto o ya fue gestionada",
+      "accept": "No se pudo aceptar la solicitud de contacto",
+      "reject": "No se pudo rechazar la solicitud",
+      "cancel": "No se pudo cancelar la solicitud"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "defaultName": "Usuario",
+    "loading": "Cargando perfil...",
+    "buttons": {
+      "edit": "Editar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "logout": "Cerrar sesión"
+    },
+    "fields": {
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "phone": "Número de teléfono",
+      "notSpecified": "No especificado"
+    },
+    "settings": {
+      "title": "Configuración",
+      "subtitle": "Configuración de la app y notificaciones"
+    },
+    "avatarModal": {
+      "title": "Cambiar foto de perfil",
+      "takePhoto": "Tomar foto",
+      "chooseFromLibrary": "Elegir de la biblioteca"
+    },
+    "logout": {
+      "title": "Cerrar sesión",
+      "confirm": "¿Estás seguro?",
+      "button": "Cerrar sesión"
+    },
+    "permissions": {
+      "camera": "Se requiere acceso a la cámara"
+    },
+    "notices": {
+      "title": "Aviso",
+      "emailConfirmation": "Perfil guardado, pero el cambio de correo requiere confirmación"
+    },
+    "success": {
+      "title": "Guardado",
+      "saved": "Tu perfil ha sido actualizado."
+    },
+    "errors": {
+      "loadProfile": "No se pudo cargar el perfil",
+      "notLoggedIn": "No has iniciado sesión",
+      "updateProfile": "No se pudo actualizar el perfil",
+      "saveProfile": "No se pudo guardar el perfil"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "account": "Cuenta",
+    "information": "Información",
+    "language": "Idioma",
+    "theme": "Tema",
+    "notifications": {
+      "title": "Notificaciones",
+      "preferences": "Preferencias de notificación",
+      "summary": {
+        "reminders": "Recordatorios",
+        "activity": "Actividad",
+        "allOff": "Todas las notificaciones desactivadas"
+      },
+      "stayOnTrack": {
+        "title": "Mantente al día",
+        "description": "Recuérdame completar mis check-ins diarios de seguridad"
+      },
+      "contactActivity": {
+        "title": "Actividad de contactos",
+        "description": "Avísame cuando mis contactos completen sus check-ins"
+      }
+    },
+    "about": "Acerca de",
+    "privacy": "Política de privacidad",
+    "terms": "Términos del servicio",
+    "logout": "Cerrar sesión",
+    "resetData": "Restablecer datos",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "systemDefault": "Usar ajuste del sistema",
+    "english": "Inglés",
+    "swedish": "Sueco",
+    "norwegian": "Noruego",
+    "danish": "Danés",
+    "finnish": "Finés",
+    "chineseSimplified": "Chino (simplificado)",
+    "chineseTraditional": "Chino (tradicional)",
+    "resetWarning": "¿Estás seguro? Todos tus datos serán eliminados.",
+    "logoutConfirm": "¿Seguro que quieres cerrar sesión?",
+    "confirmReset": "Restablecer",
+    "cancel": "Cancelar",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Cargando...",
+    "refreshing": "Actualizando...",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "time": {
+    "justNow": "Ahora mismo",
+    "minutesAgo": "Hace {{count}} min",
+    "hoursAgo_one": "Hace {{count}} hora",
+    "hoursAgo_other": "Hace {{count}} horas",
+    "daysAgo_one": "Hace {{count}} día",
+    "daysAgo_other": "Hace {{count}} días"
+  },
+  "errors": {
+    "title": "Error",
+    "notAuthenticated": "No autenticado"
+  },
+  "permissions": {
+    "title": "Permiso"
+  },
+  "auth": {
+    "signup": {
+      "title": "Crear cuenta",
+      "create": "Crear cuenta",
+      "creating": "Creando cuenta...",
+      "success": {
+        "title": "Cuenta creada 🎉",
+        "message": "Tu cuenta está lista. Ahora puedes iniciar sesión."
+      },
+      "verifyEmail": {
+        "title": "¡Verifica tu correo electrónico!",
+        "message": "Te enviamos un correo de confirmación. Después de confirmarlo, inicia sesión."
+      },
+      "error": "El registro falló"
+    },
+    "login": {
+      "title": "Iniciar sesión",
+      "signIn": "Iniciar sesión",
+      "loggingIn": "Iniciando sesión...",
+      "error": "Error al iniciar sesión"
+    },
+    "email": "Correo electrónico",
+    "displayName": "Nombre",
+    "password": {
+      "placeholder": "Contraseña (al menos 6 caracteres)"
+    },
+    "confirmPassword": "Confirmar contraseña",
+    "passwordsMatch": "✔ Las contraseñas coinciden",
+    "passwordsNoMatch": "✖ Las contraseñas no coinciden",
+    "alreadyHaveAccount": "¿Ya tienes cuenta? Inicia sesión",
+    "noAccount": "¿No tienes cuenta? Regístrate",
+    "unknownError": "Error desconocido",
+    "forgotPassword": {
+      "title": "Olvidé mi contraseña",
+      "instructions": "Introduce tu correo electrónico",
+      "send": "Enviar correo de restablecimiento",
+      "sending": "Enviando...",
+      "sentTitle": "Revisa tu correo",
+      "sentMessage": "Te enviamos un enlace para restablecer tu contraseña.",
+      "login": "Ir al inicio de sesión",
+      "error": "Error al enviar el correo de restablecimiento"
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "instructions": "Introduce tu nueva contraseña abajo.",
+      "save": "Guardar nueva contraseña",
+      "saving": "Guardando...",
+      "successTitle": "¡Contraseña restablecida!",
+      "successMessage": "Ahora puedes iniciar sesión con tu nueva contraseña.",
+      "login": "Ir al inicio de sesión",
+      "error": "Error al restablecer la contraseña",
+      "passwordPlaceholder": "Nueva contraseña"
+    }
+  }
+}
