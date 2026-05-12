@@ -49,19 +49,6 @@ export default ({ config }) => ({
     },
 
     plugins: [
-        "expo-router",
-        [
-            "expo-splash-screen",
-            {
-                image: "./assets/images/tryggd-splash-icon-rounded.png",
-                imageWidth: 200,
-                resizeMode: "contain",
-                backgroundColor: "#ffffff",
-                dark: {
-                    backgroundColor: "#000000",
-                },
-            },
-        ],
         "expo-font",
         [
             "expo-notifications",

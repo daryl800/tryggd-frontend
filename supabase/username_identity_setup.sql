@@ -40,6 +40,31 @@ $$;
 
 grant execute on function public.find_contact_by_username(text) to authenticated;
 
+create or replace function public.find_contact_by_email(search_email text)
+returns table (
+    user_id uuid,
+    email text,
+    display_name text,
+    username text
+)
+language sql
+security definer
+set search_path = public
+as $$
+    select
+        p.id as user_id,
+        au.email,
+        p.display_name,
+        p.username
+    from public.profiles p
+    join auth.users au
+      on au.id = p.id
+    where lower(au.email) = lower(trim(search_email))
+    limit 1;
+$$;
+
+grant execute on function public.find_contact_by_email(text) to authenticated;
+
 create or replace function public.get_contact_usernames(contact_ids uuid[])
 returns table (
     id uuid,
