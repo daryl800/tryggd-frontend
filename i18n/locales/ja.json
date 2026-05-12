@@ -1,0 +1,385 @@
+{
+  "home": {
+    "title": "ホーム",
+    "welcome": "ようこそ",
+    "greetings": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは",
+      "night": "おやすみなさい"
+    },
+    "everythingIsFine": "すべて順調です!!",
+    "dontForget": "今日のチェックインをお忘れなく!",
+    "youCheckedInTodayAt": "今日は {{time}} にチェックインしました",
+    "pressMeToCheckIn": "ここを押してチェックイン",
+    "reset": "リセット",
+    "timer": "タイマー",
+    "timeLeftToday": "残り時間",
+    "activity": "アクティビティ",
+    "contacts_one": "連絡先 {{count}} 件",
+    "contacts_other": "連絡先 {{count}} 件",
+    "streak": "連続記録",
+    "days_one": "{{count}} 日",
+    "days_other": "{{count}} 日",
+    "dateFormats": {
+      "weekdays": [
+        "日曜日",
+        "月曜日",
+        "火曜日",
+        "水曜日",
+        "木曜日",
+        "金曜日",
+        "土曜日"
+      ],
+      "months": [
+        "1月",
+        "2月",
+        "3月",
+        "4月",
+        "5月",
+        "6月",
+        "7月",
+        "8月",
+        "9月",
+        "10月",
+        "11月",
+        "12月"
+      ]
+    },
+    "errors": {
+      "fetchLastCheckin": "最新のチェックイン取得に失敗しました",
+      "noUser": "ユーザーが見つかりません",
+      "checkin": "チェックインに失敗しました",
+      "loadState": "状態の読み込みに失敗しました"
+    }
+  },
+  "activity": {
+    "title": "アクティビティ",
+    "subtitle": "あなたと連絡先の最新チェックイン",
+    "you": "あなた",
+    "yourActivity": "自分",
+    "contacts": "連絡先",
+    "loading": "アクティビティを読み込み中...",
+    "noCheckIn": "まだチェックインがありません",
+    "emptyState": {
+      "title": "連絡先がありません",
+      "message": "連絡先を追加するとアクティビティが表示されます"
+    },
+    "priority": {
+      "failed": "失敗",
+      "ongoing": "進行中",
+      "successful": "完了"
+    },
+    "time": {
+      "locale": "ja-JP"
+    },
+    "errors": {
+      "loadActivities": "アクティビティの読み込みに失敗しました",
+      "fetchContacts": "連絡先の取得に失敗しました",
+      "fetchOwnerActivity": "自分のアクティビティ取得に失敗しました"
+    },
+    "day": {
+      "today": "今日",
+      "yesterday": "昨日",
+      "other": "{{date, date, yyyy年M月d日}}"
+    },
+    "responseButton": {
+      "sendResponse": "いいね 👍 を送る",
+      "responded": "👏 リアクション済み!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 今日のいいね {{count}} 件:",
+      "todayLikes_other": "👋 今日のいいね {{count}} 件:",
+      "prefix": "あなたのチェックインにリアクションしました",
+      "defaultMessage": "があなたのチェックインに 👍 しました!"
+    }
+  },
+  "contacts": {
+    "title": "連絡先",
+    "contact": "連絡先",
+    "newContact": "新しい連絡先",
+    "displayingAs": "表示名",
+    "loading": "連絡先を読み込み中...",
+    "subtitle": {
+      "withContacts": "{{count}} / 3 件の連絡先があります",
+      "noContacts": "共有するには連絡先を追加してください"
+    },
+    "emptyState": {
+      "title": "連絡先がありません",
+      "message": "+ ボタンを押して最初の連絡先を追加してください"
+    },
+    "tabs": {
+      "contacts": "連絡先",
+      "requests": "リクエスト"
+    },
+    "requests": {
+      "received": "受信したリクエスト",
+      "sent": "送信したリクエスト",
+      "waiting": "返答待ち",
+      "loading": "リクエストを読み込み中...",
+      "emptyState": {
+        "title": "リクエストがありません",
+        "message": "誰かが連絡先リクエストを送るとここに表示されます"
+      }
+    },
+    "placeholders": {
+      "email": "Tryggd ID を入力"
+    },
+    "buttons": {
+      "accept": "承認",
+      "reject": "拒否",
+      "delete": "削除",
+      "cancelRequest": "リクエストを取り消す",
+      "sending": "送信中...",
+      "sendRequests_one": "リクエストを送信",
+      "sendRequests_other": "リクエストを送信"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "上限に達しました",
+        "message": "追加できる連絡先は最大 3 件です。"
+      },
+      "delete": {
+        "title": "連絡先を削除",
+        "message": "{{name}} を削除してもよろしいですか?"
+      },
+      "contactExists": {
+        "title": "すでに追加されています",
+        "message": "{{name}} はすでに連絡先に登録されています"
+      },
+      "requestExists": {
+        "title": "リクエスト送信済み",
+        "message": "このユーザーにはすでにリクエストを送信しています。"
+      },
+      "requestReceived": {
+        "title": "リクエスト受信済み",
+        "message": "{{email}} からのリクエストがあります。\"リクエスト\" タブを確認してください。"
+      },
+      "invalidEmail": {
+        "title": "無効な Tryggd ID",
+        "message": "{{email}} は登録されていないか、確認されていません"
+      },
+      "selfContact": {
+        "title": "無効な連絡先",
+        "message": "自分自身を連絡先に追加することはできません"
+      },
+      "noChanges": {
+        "title": "変更はありません",
+        "message": "保存する新しい連絡先はありません。"
+      },
+      "alreadyInContacts": "このユーザーはすでに連絡先にいます",
+      "requestHandled": {
+        "title": "リクエストは処理済みです",
+        "message": "このリクエストはすでに処理されています"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "リクエストを送信しました",
+        "message": "{{name}} に連絡先リクエストを送信しました"
+      },
+      "contactAdded": {
+        "title": "連絡先を追加しました",
+        "message": "{{name}} を連絡先に追加しました"
+      },
+      "deleted": {
+        "title": "連絡先を削除しました",
+        "message": "{{name}} を削除しました。関連する接続も削除されました。"
+      },
+      "requestRejected": {
+        "title": "リクエストを拒否しました",
+        "message": "連絡先リクエストを拒否しました"
+      },
+      "requestCancelled": {
+        "title": "リクエストを取り消しました",
+        "message": "連絡先リクエストを取り消しました"
+      }
+    },
+    "errors": {
+      "loadData": "データの読み込みに失敗しました",
+      "save": "連絡先の保存に失敗しました",
+      "delete": "連絡先の削除に失敗しました",
+      "sendRequest": "連絡先リクエストの送信に失敗しました",
+      "search": "ユーザーを検索できませんでした",
+      "requestNotFound": "連絡先リクエストが見つからないか、すでに処理されています",
+      "accept": "連絡先リクエストの承認に失敗しました",
+      "reject": "リクエストの拒否に失敗しました",
+      "cancel": "リクエストの取り消しに失敗しました"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "defaultName": "ユーザー",
+    "loading": "プロフィールを読み込み中...",
+    "buttons": {
+      "edit": "編集",
+      "save": "保存",
+      "saving": "保存中...",
+      "logout": "ログアウト"
+    },
+    "fields": {
+      "name": "名前",
+      "email": "メール",
+      "phone": "電話番号",
+      "notSpecified": "未設定"
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "アプリ設定と通知"
+    },
+    "avatarModal": {
+      "title": "プロフィール画像を変更",
+      "takePhoto": "写真を撮る",
+      "chooseFromLibrary": "ライブラリから選択"
+    },
+    "logout": {
+      "title": "ログアウト",
+      "confirm": "よろしいですか?",
+      "button": "ログアウト"
+    },
+    "permissions": {
+      "camera": "カメラへのアクセスが必要です"
+    },
+    "notices": {
+      "title": "お知らせ",
+      "emailConfirmation": "プロフィールは保存されましたが、メール変更には確認が必要です"
+    },
+    "success": {
+      "title": "保存しました",
+      "saved": "プロフィールを更新しました。"
+    },
+    "errors": {
+      "loadProfile": "プロフィールを読み込めませんでした",
+      "notLoggedIn": "ログインしていません",
+      "updateProfile": "プロフィールを更新できませんでした",
+      "saveProfile": "プロフィールを保存できませんでした"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "account": "アカウント",
+    "information": "情報",
+    "language": "言語",
+    "theme": "テーマ",
+    "notifications": {
+      "title": "通知",
+      "preferences": "通知設定",
+      "summary": {
+        "reminders": "リマインダー",
+        "activity": "アクティビティ",
+        "allOff": "すべての通知がオフ"
+      },
+      "stayOnTrack": {
+        "title": "継続をサポート",
+        "description": "毎日の安全チェックインを完了するよう通知する"
+      },
+      "contactActivity": {
+        "title": "連絡先のアクティビティ",
+        "description": "連絡先がチェックインを完了したときに通知する"
+      }
+    },
+    "about": "このアプリについて",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "logout": "ログアウト",
+    "resetData": "データをリセット",
+    "light": "ライト",
+    "dark": "ダーク",
+    "systemDefault": "システム設定を使用",
+    "english": "英語",
+    "swedish": "スウェーデン語",
+    "norwegian": "ノルウェー語",
+    "danish": "デンマーク語",
+    "finnish": "フィンランド語",
+    "chineseSimplified": "中国語（簡体字）",
+    "chineseTraditional": "中国語（繁体字）",
+    "resetWarning": "よろしいですか? すべてのデータが削除されます。",
+    "logoutConfirm": "本当にログアウトしますか?",
+    "confirmReset": "リセット",
+    "cancel": "キャンセル",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "loading": "読み込み中...",
+    "refreshing": "更新中...",
+    "back": "戻る",
+    "next": "次へ",
+    "submit": "送信",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{{count}} 分前",
+    "hoursAgo_one": "{{count}} 時間前",
+    "hoursAgo_other": "{{count}} 時間前",
+    "daysAgo_one": "{{count}} 日前",
+    "daysAgo_other": "{{count}} 日前"
+  },
+  "errors": {
+    "title": "エラー",
+    "notAuthenticated": "認証されていません"
+  },
+  "permissions": {
+    "title": "権限"
+  },
+  "auth": {
+    "signup": {
+      "title": "アカウント作成",
+      "create": "アカウントを作成",
+      "creating": "アカウントを作成中...",
+      "success": {
+        "title": "アカウントを作成しました 🎉",
+        "message": "アカウントの準備ができました。ログインできます。"
+      },
+      "verifyEmail": {
+        "title": "メールアドレスを確認してください!",
+        "message": "確認メールを送信しました。確認後にログインしてください。"
+      },
+      "error": "サインアップに失敗しました"
+    },
+    "login": {
+      "title": "ログイン",
+      "signIn": "ログイン",
+      "loggingIn": "ログイン中...",
+      "error": "ログインに失敗しました"
+    },
+    "email": "メール",
+    "displayName": "名前",
+    "password": {
+      "placeholder": "パスワード（6文字以上）"
+    },
+    "confirmPassword": "パスワードを確認",
+    "passwordsMatch": "✔ パスワードが一致しています",
+    "passwordsNoMatch": "✖ パスワードが一致しません",
+    "alreadyHaveAccount": "すでにアカウントをお持ちですか? ログイン",
+    "noAccount": "アカウントをお持ちでないですか? 新規登録",
+    "unknownError": "不明なエラー",
+    "forgotPassword": {
+      "title": "パスワードをお忘れですか",
+      "instructions": "メールアドレスを入力してください",
+      "send": "リセットメールを送信",
+      "sending": "送信中...",
+      "sentTitle": "メールを確認してください",
+      "sentMessage": "パスワード再設定リンクをメールで送信しました。",
+      "login": "ログインへ",
+      "error": "リセットメールの送信エラー"
+    },
+    "resetPassword": {
+      "title": "パスワードを再設定",
+      "instructions": "新しいパスワードを入力してください。",
+      "save": "新しいパスワードを保存",
+      "saving": "保存中...",
+      "successTitle": "パスワードを再設定しました!",
+      "successMessage": "新しいパスワードでログインできます。",
+      "login": "ログインへ",
+      "error": "パスワード再設定エラー",
+      "passwordPlaceholder": "新しいパスワード"
+    }
+  }
+}
