@@ -130,7 +130,7 @@ const ContactCard = memo(
                     <>
                         <TextInput
                             ref={inputRef}
-                            placeholder="Enter Tryggd ID"
+                            placeholder="Enter Tryggd ID or email"
                             placeholderTextColor={BaseColors.neutral[400]}
                             value={contact.identifier || ''}
                             onChangeText={onIdentifierChange}
@@ -1046,13 +1046,17 @@ export default function ContactsScreen() {
             const resolved: ContactSlot[] = [];
 
             for (const c of validNewContacts) {
-                const usernameToSearch = c.identifier!.trim().replace(/^@/, '');
-                if (!usernameToSearch) continue;
+                const rawInput = c.identifier!.trim();
+                if (!rawInput) continue;
+
+                const isEmailLookup = rawInput.includes('@');
+                const usernameToSearch = rawInput.replace(/^@/, '');
+                const lookupValue = isEmailLookup ? rawInput.toLowerCase() : usernameToSearch.toLowerCase();
 
                 const { data: userResult, error } = (await supabase
-                    .rpc('find_contact_by_username', {
-                        search_username: usernameToSearch.toLowerCase(),
-                    })
+                    .rpc(isEmailLookup ? 'find_contact_by_email' : 'find_contact_by_username', isEmailLookup
+                        ? { search_email: lookupValue }
+                        : { search_username: lookupValue })
                     .single()) as { data: UserSearchResult | null; error: any };
 
                 if (error) {
@@ -1062,8 +1066,8 @@ export default function ContactsScreen() {
 
                 if (!userResult) {
                     Alert.alert(
-                        'Tryggd ID not found',
-                        `We could not find ${usernameToSearch}.`
+                        isEmailLookup ? 'Email not found' : 'Tryggd ID not found',
+                        `We could not find ${rawInput}.`
                     );
                     return;
                 }
@@ -1109,7 +1113,7 @@ export default function ContactsScreen() {
                     } else {
                         Alert.alert(
                             t('contacts.alerts.requestReceived.title'),
-                            `${userResult.username || usernameToSearch} has already sent you a request.`
+                            `${userResult.username || userResult.email || rawInput} has already sent you a request.`
                         );
                     }
                     return;
@@ -1117,7 +1121,7 @@ export default function ContactsScreen() {
 
                 resolved.push({
                     user_id: userResult.user_id,
-                    identifier: userResult.username || usernameToSearch,
+                    identifier: userResult.username || userResult.email || rawInput,
                     email: userResult.email,
                     display_name: userResult.display_name,
                     username: userResult.username || undefined,

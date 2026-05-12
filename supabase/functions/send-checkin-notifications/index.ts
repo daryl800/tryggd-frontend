@@ -67,7 +67,7 @@ function buildContactCheckinNotification(
 ): NotificationPayload {
   return {
     title: `🎯 ${contactDisplayName} checked in.`,
-    body: `Everything is fine! - ${formattedTime}`,
+    body: `All is well! - ${formattedTime}`,
     type: 'contact_checkin',
     data: {
       contactUserId: user_id,

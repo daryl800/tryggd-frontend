@@ -91,7 +91,7 @@
             "todayLikes_one": "👋 Du fikk {{count}} like i dag:",
             "todayLikes_other": "👋 Du fikk {{count}} likes i dag:",
             "prefix": "reagerte på innsjekkingen din",
-            "defaultMessage": "liker 👍 innsjekkingen din!",
+            "defaultMessage": "liker 👍 innsjekkingen din!"
         }
     },
     "contacts": {

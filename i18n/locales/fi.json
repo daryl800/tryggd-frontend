@@ -1,368 +1,368 @@
 {
-    "home": {
-        "title": "Koti",
-        "welcome": "Tervetuloa",
-        "greetings": {
-            "morning": "Hyvää huomenta",
-            "afternoon": "Hyvää päivää",
-            "evening": "Hyvää iltaa",
-            "night": "Hyvää yötä"
-        },
-        "everythingIsFine": "Kaikki on kunnossa!!",
-        "dontForget": "Älä unohda kirjautua sisään tänään!",
-        "youCheckedInTodayAt": "Kirjauduit sisään tänään klo {{time}}",
-        "pressMeToCheckIn": "KIRJAUDU TÄÄLLÄ",
-        "reset": "Nollaa",
-        "timer": "Ajastin",
-        "timeLeftToday": "Aikaa jäljellä",
-        "activity": "Toiminta",
-        "contacts_one": "{{count}} yhteystieto",
-        "contacts_other": "{{count}} yhteystietoa",
-        "streak": "Putki",
-        "days_one": "{{count}} päivä",
-        "days_other": "{{count}} päivää",
-        "dateFormats": {
-            "weekdays": [
-                "Sunnuntai",
-                "Maanantai",
-                "Tiistai",
-                "Keskiviikko",
-                "Torstai",
-                "Perjantai",
-                "Lauantai"
-            ],
-            "months": [
-                "Tammikuu",
-                "Helmikuu",
-                "Maaliskuu",
-                "Huhtikuu",
-                "Toukokuu",
-                "Kesäkuu",
-                "Heinäkuu",
-                "Elokuu",
-                "Syyskuu",
-                "Lokakuu",
-                "Marraskuu",
-                "Joulukuu"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "Viimeistä sisäänkirjautumista ei voitu hakea",
-            "noUser": "Käyttäjää ei löytynyt",
-            "checkin": "Sisäänkirjautuminen epäonnistui",
-            "loadState": "Tilaa ei voitu ladata"
-        }
+  "home": {
+    "title": "Koti",
+    "welcome": "Tervetuloa",
+    "greetings": {
+      "morning": "Hyvää huomenta",
+      "afternoon": "Hyvää päivää",
+      "evening": "Hyvää iltaa",
+      "night": "Hyvää yötä"
     },
-    "activity": {
-        "title": "Toiminta",
-        "subtitle": "Sinun ja yhteystietojesi viimeisimmät sisäänkirjautumiset",
-        "you": "Sinä",
-        "yourActivity": "Sinä itse",
-        "contacts": "Yhteystiedot",
-        "loading": "Ladataan toimintoja...",
-        "noCheckIn": "Ei sisäänkirjautumista vielä",
-        "emptyState": {
-            "title": "Ei yhteystietoja",
-            "message": "Lisää yhteystietoja nähdäksesi niiden toiminnot"
-        },
-        "priority": {
-            "failed": "Epäonnistui",
-            "ongoing": "Käynnissä",
-            "successful": "Onnistui"
-        },
-        "time": {
-            "locale": "fi-FI"
-        },
-        "errors": {
-            "loadActivities": "Toimintoja ei voitu ladata",
-            "fetchContacts": "Yhteystietoja ei voitu hakea",
-            "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea"
-        },
-        "day": {
-            "today": "Tänään",
-            "yesterday": "Eilen",
-            "other": "{{date, date, d. MMMM yyyy}}"
-        },
-        "responseButton": {
-            "sendResponse": "👏 Taputa tälle?",
-            "responded": "👏 Taputettu!"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "👋 Sait tänään {{count}} tykkäyksen:",
-            "todayLikes_other": "👋 Sait tänään {{count}} tykkäystä:",
-            "prefix": "reagoi kirjautumiseesi",
-            "defaultMessage": "tykkää 👍 kirjautumisestasi!"
-        }
-    },
-    "contacts": {
-        "title": "Yhteystiedot",
-        "contact": "Yhteystieto",
-        "newContact": "Uusi yhteystieto",
-        "displayingAs": "Näytetään nimellä",
-        "loading": "Ladataan yhteystietoja...",
-        "subtitle": {
-            "withContacts": "Sinulla on {{count}}/3 mahdollisesta yhteystiedosta",
-            "noContacts": "Lisää yhteystietoja jakamiseen"
-        },
-        "emptyState": {
-            "title": "Ei yhteystietoja",
-            "message": "Paina + lisätäksesi ensimmäinen yhteystietosi"
-        },
-        "tabs": {
-            "contacts": "Yhteystiedot",
-            "requests": "Pyynnöt"
-        },
-        "requests": {
-            "received": "Vastaanotetut pyynnöt",
-            "sent": "Lähetetyt pyynnöt",
-            "waiting": "Odotetaan vastausta",
-            "loading": "Ladataan pyyntöjä...",
-            "emptyState": {
-                "title": "Ei pyyntöjä",
-                "message": "Kun joku lähettää yhteystietopyynnön, se näkyy täällä"
-            }
-        },
-        "placeholders": {
-            "email": "Syötä sähköpostiosoite"
-        },
-        "buttons": {
-            "accept": "Hyväksy",
-            "reject": "Hylkää",
-            "delete": "Poista",
-            "cancelRequest": "Peruuta pyyntö",
-            "sending": "Lähetetään...",
-            "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "Raja saavutettu",
-                "message": "Voit lisätä vain enintään 3 yhteystietoa."
-            },
-            "delete": {
-                "title": "Poista yhteystieto",
-                "message": "Haluatko varmasti poistaa {{name}}?"
-            },
-            "contactExists": {
-                "title": "Yhteystieto on jo olemassa",
-                "message": "{{name}} on jo yhteystiedoissasi"
-            },
-            "requestExists": {
-                "title": "Pyyntö on jo lähetetty",
-                "message": "Olet jo lähettänyt pyynnön tälle käyttäjälle."
-            },
-            "requestReceived": {
-                "title": "Pyyntö vastaanotettu",
-                "message": "Sinulla on jo pyyntö käyttäjältä {{email}}. Tarkista \"Pyynnöt\"-kohdasta."
-            },
-            "invalidEmail": {
-                "title": "Virheellinen sähköposti",
-                "message": "{{email}} ei ole rekisteröity tai vahvistettu"
-            },
-            "selfContact": {
-                "title": "Virheellinen yhteystieto",
-                "message": "Et voi lisätä itseäsi yhteystietona"
-            },
-            "noChanges": {
-                "title": "Ei muutoksia",
-                "message": "Ei uusia yhteystietoja tallennettavaksi."
-            },
-            "alreadyInContacts": "Tämä käyttäjä on jo yhteystiedoissasi",
-            "requestHandled": {
-                "title": "Pyyntö on jo käsitelty",
-                "message": "Tämä pyyntö on jo käsitelty"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "Pyyntö lähetetty",
-                "message": "Yhteystietopyyntö lähetetty käyttäjälle {{name}}"
-            },
-            "contactAdded": {
-                "title": "Yhteystieto lisätty",
-                "message": "{{name}} on lisätty yhteystietoihisi"
-            },
-            "deleted": {
-                "title": "Yhteystieto poistettu",
-                "message": "{{name}} on poistettu. Kaikki suhteet on poistettu."
-            },
-            "requestRejected": {
-                "title": "Pyyntö hylätty",
-                "message": "Yhteystietopyyntö on hylätty"
-            },
-            "requestCancelled": {
-                "title": "Pyyntö peruutettu",
-                "message": "Yhteystietopyyntö on peruutettu"
-            }
-        }
-    },
-    "profile": {
-        "title": "Profiili",
-        "defaultName": "Käyttäjä",
-        "loading": "Ladataan profiilia...",
-        "buttons": {
-            "edit": "Muokkaa",
-            "save": "Tallenna",
-            "saving": "Tallennetaan...",
-            "logout": "Kirjaudu ulos"
-        },
-        "fields": {
-            "name": "Nimi",
-            "email": "Sähköposti",
-            "phone": "Puhelinnumero",
-            "notSpecified": "Ei määritetty"
-        },
-        "settings": {
-            "title": "Asetukset",
-            "subtitle": "Sovelluksen asetukset ja ilmoitukset"
-        },
-        "avatarModal": {
-            "title": "Vaihda profiilikuvaa",
-            "takePhoto": "Ota kuva",
-            "chooseFromLibrary": "Valitse kirjastosta"
-        },
-        "logout": {
-            "title": "Kirjaudu ulos",
-            "confirm": "Oletko varma?",
-            "button": "Kirjaudu ulos"
-        },
-        "permissions": {
-            "camera": "Kameran käyttöoikeus vaaditaan"
-        },
-        "notices": {
-            "title": "Huomio",
-            "emailConfirmation": "Profiili tallennettu, mutta sähköpostin muutos vaatii vahvistuksen"
-        },
-        "success": {
-            "title": "Tallennettu",
-            "saved": "Profiilisi on päivitetty."
-        },
-        "errors": {
-            "loadProfile": "Profiilia ei voitu ladata",
-            "notLoggedIn": "Et ole kirjautunut sisään",
-            "updateProfile": "Profiilia ei voitu päivittää",
-            "saveProfile": "Profiilia ei voitu tallentaa"
-        }
-    },
-    "settings": {
-        "title": "Asetukset",
-        "account": "Tili",
-        "information": "Tiedot",
-        "language": "Kieli",
-        "theme": "Teema",
-        "notifications": {
-            "title": "Ilmoitukset",
-            "preferences": "Ilmoitusasetukset",
-            "summary": {
-                "reminders": "Muistutukset",
-                "activity": "Aktiviteetti",
-                "allOff": "Kaikki ilmoitukset pois päältä"
-            },
-            "stayOnTrack": {
-                "title": "Pysy aikataulussa",
-                "description": "Muistuta minua tekemään päivittäinen turvallisuustarkistus"
-            },
-            "contactActivity": {
-                "title": "Kontaktien aktiivisuus",
-                "description": "Ilmoita minulle kun kontaktini tekevät sisäänkirjautumisen"
-            }
-        },
-        "about": "Tietoja",
-        "privacy": "Tietosuojakäytäntö",
-        "terms": "Käyttöehdot",
-        "logout": "Kirjaudu ulos",
-        "resetData": "Nollaa tiedot",
-        "light": "Vaalea",
-        "dark": "Tumma",
-        "systemDefault": "Käytä järjestelmän asetusta",
-        "english": "Englanti",
-        "swedish": "Ruotsi",
-        "norwegian": "Norja",
-        "danish": "Tanska",
-        "finnish": "Suomi",
-        "resetWarning": "Oletko varma? Kaikki tietosi poistetaan.",
-        "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
-        "confirmReset": "Nollaa",
-        "cancel": "Peruuta",
-        "ok": "OK"
-    },
-    "common": {
-        "ok": "OK",
-        "cancel": "Peruuta",
-        "save": "Tallenna",
-        "delete": "Poista",
-        "edit": "Muokkaa",
-        "loading": "Ladataan...",
-        "back": "Takaisin",
-        "next": "Seuraava",
-        "submit": "Lähetä",
-        "yes": "Kyllä",
-        "no": "Ei"
-    },
-    "time": {
-        "justNow": "Juuri nyt",
-        "minutesAgo": "{{count}} min sitten",
-        "hoursAgo": "{{count}} tunti{{count, plural, =1 {} other {a}}} sitten",
-        "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten"
+    "everythingIsFine": "Kaikki on hyvin!!",
+    "dontForget": "Älä unohda kirjautua sisään tänään!",
+    "youCheckedInTodayAt": "Kirjauduit sisään tänään klo {{time}}",
+    "pressMeToCheckIn": "KIRJAUDU TÄÄLLÄ",
+    "reset": "Nollaa",
+    "timer": "Ajastin",
+    "timeLeftToday": "Aikaa jäljellä",
+    "activity": "Toiminta",
+    "contacts_one": "{{count}} yhteystieto",
+    "contacts_other": "{{count}} yhteystietoa",
+    "streak": "Putki",
+    "days_one": "{{count}} päivä",
+    "days_other": "{{count}} päivää",
+    "dateFormats": {
+      "weekdays": [
+        "Sunnuntai",
+        "Maanantai",
+        "Tiistai",
+        "Keskiviikko",
+        "Torstai",
+        "Perjantai",
+        "Lauantai"
+      ],
+      "months": [
+        "Tammikuu",
+        "Helmikuu",
+        "Maaliskuu",
+        "Huhtikuu",
+        "Toukokuu",
+        "Kesäkuu",
+        "Heinäkuu",
+        "Elokuu",
+        "Syyskuu",
+        "Lokakuu",
+        "Marraskuu",
+        "Joulukuu"
+      ]
     },
     "errors": {
-        "title": "Virhe",
-        "notAuthenticated": "Ei todennettu"
+      "fetchLastCheckin": "Viimeistä sisäänkirjautumista ei voitu hakea",
+      "noUser": "Käyttäjää ei löytynyt",
+      "checkin": "Sisäänkirjautuminen epäonnistui",
+      "loadState": "Tilaa ei voitu ladata"
+    }
+  },
+  "activity": {
+    "title": "Toiminta",
+    "subtitle": "Sinun ja yhteystietojesi viimeisimmät sisäänkirjautumiset",
+    "you": "Sinä",
+    "yourActivity": "Sinä itse",
+    "contacts": "Yhteystiedot",
+    "loading": "Ladataan toimintoja...",
+    "noCheckIn": "Ei sisäänkirjautumista vielä",
+    "emptyState": {
+      "title": "Ei yhteystietoja",
+      "message": "Lisää yhteystietoja nähdäksesi niiden toiminnot"
+    },
+    "priority": {
+      "failed": "Epäonnistui",
+      "ongoing": "Käynnissä",
+      "successful": "Onnistui"
+    },
+    "time": {
+      "locale": "fi-FI"
+    },
+    "errors": {
+      "loadActivities": "Toimintoja ei voitu ladata",
+      "fetchContacts": "Yhteystietoja ei voitu hakea",
+      "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea"
+    },
+    "day": {
+      "today": "Tänään",
+      "yesterday": "Eilen",
+      "other": "{{date, date, d. MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👏 Taputa tälle?",
+      "responded": "👏 Taputettu!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 Sait tänään {{count}} tykkäyksen:",
+      "todayLikes_other": "👋 Sait tänään {{count}} tykkäystä:",
+      "prefix": "reagoi kirjautumiseesi",
+      "defaultMessage": "tykkää 👍 kirjautumisestasi!"
+    }
+  },
+  "contacts": {
+    "title": "Yhteystiedot",
+    "contact": "Yhteystieto",
+    "newContact": "Uusi yhteystieto",
+    "displayingAs": "Näytetään nimellä",
+    "loading": "Ladataan yhteystietoja...",
+    "subtitle": {
+      "withContacts": "Sinulla on {{count}}/3 mahdollisesta yhteystiedosta",
+      "noContacts": "Lisää yhteystietoja jakamiseen"
+    },
+    "emptyState": {
+      "title": "Ei yhteystietoja",
+      "message": "Paina + lisätäksesi ensimmäinen yhteystietosi"
+    },
+    "tabs": {
+      "contacts": "Yhteystiedot",
+      "requests": "Pyynnöt"
+    },
+    "requests": {
+      "received": "Vastaanotetut pyynnöt",
+      "sent": "Lähetetyt pyynnöt",
+      "waiting": "Odotetaan vastausta",
+      "loading": "Ladataan pyyntöjä...",
+      "emptyState": {
+        "title": "Ei pyyntöjä",
+        "message": "Kun joku lähettää yhteystietopyynnön, se näkyy täällä"
+      }
+    },
+    "placeholders": {
+      "email": "Syötä sähköpostiosoite"
+    },
+    "buttons": {
+      "accept": "Hyväksy",
+      "reject": "Hylkää",
+      "delete": "Poista",
+      "cancelRequest": "Peruuta pyyntö",
+      "sending": "Lähetetään...",
+      "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Raja saavutettu",
+        "message": "Voit lisätä vain enintään 3 yhteystietoa."
+      },
+      "delete": {
+        "title": "Poista yhteystieto",
+        "message": "Haluatko varmasti poistaa {{name}}?"
+      },
+      "contactExists": {
+        "title": "Yhteystieto on jo olemassa",
+        "message": "{{name}} on jo yhteystiedoissasi"
+      },
+      "requestExists": {
+        "title": "Pyyntö on jo lähetetty",
+        "message": "Olet jo lähettänyt pyynnön tälle käyttäjälle."
+      },
+      "requestReceived": {
+        "title": "Pyyntö vastaanotettu",
+        "message": "Sinulla on jo pyyntö käyttäjältä {{email}}. Tarkista \"Pyynnöt\"-kohdasta."
+      },
+      "invalidEmail": {
+        "title": "Virheellinen sähköposti",
+        "message": "{{email}} ei ole rekisteröity tai vahvistettu"
+      },
+      "selfContact": {
+        "title": "Virheellinen yhteystieto",
+        "message": "Et voi lisätä itseäsi yhteystietona"
+      },
+      "noChanges": {
+        "title": "Ei muutoksia",
+        "message": "Ei uusia yhteystietoja tallennettavaksi."
+      },
+      "alreadyInContacts": "Tämä käyttäjä on jo yhteystiedoissasi",
+      "requestHandled": {
+        "title": "Pyyntö on jo käsitelty",
+        "message": "Tämä pyyntö on jo käsitelty"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Pyyntö lähetetty",
+        "message": "Yhteystietopyyntö lähetetty käyttäjälle {{name}}"
+      },
+      "contactAdded": {
+        "title": "Yhteystieto lisätty",
+        "message": "{{name}} on lisätty yhteystietoihisi"
+      },
+      "deleted": {
+        "title": "Yhteystieto poistettu",
+        "message": "{{name}} on poistettu. Kaikki suhteet on poistettu."
+      },
+      "requestRejected": {
+        "title": "Pyyntö hylätty",
+        "message": "Yhteystietopyyntö on hylätty"
+      },
+      "requestCancelled": {
+        "title": "Pyyntö peruutettu",
+        "message": "Yhteystietopyyntö on peruutettu"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profiili",
+    "defaultName": "Käyttäjä",
+    "loading": "Ladataan profiilia...",
+    "buttons": {
+      "edit": "Muokkaa",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "logout": "Kirjaudu ulos"
+    },
+    "fields": {
+      "name": "Nimi",
+      "email": "Sähköposti",
+      "phone": "Puhelinnumero",
+      "notSpecified": "Ei määritetty"
+    },
+    "settings": {
+      "title": "Asetukset",
+      "subtitle": "Sovelluksen asetukset ja ilmoitukset"
+    },
+    "avatarModal": {
+      "title": "Vaihda profiilikuvaa",
+      "takePhoto": "Ota kuva",
+      "chooseFromLibrary": "Valitse kirjastosta"
+    },
+    "logout": {
+      "title": "Kirjaudu ulos",
+      "confirm": "Oletko varma?",
+      "button": "Kirjaudu ulos"
     },
     "permissions": {
-        "title": "Käyttöoikeus"
+      "camera": "Kameran käyttöoikeus vaaditaan"
     },
-    "auth": {
-        "signup": {
-            "title": "Luo tili",
-            "create": "Luo tili",
-            "creating": "Luodaan tiliä...",
-            "success": {
-                "title": "Tili luotu 🎉",
-                "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
-            },
-            "verifyEmail": {
-                "title": "Vahvista sähköpostiosoitteesi!",
-                "message": "Olemme lähettäneet vahvistussähköpostin sähköpostiisi. Vahvistamisen jälkeen kirjaudu sisään."
-            },
-            "error": "Rekisteröinti epäonnistui"
-        },
-        "login": {
-            "title": "Kirjaudu sisään",
-            "signIn": "Kirjaudu sisään",
-            "loggingIn": "Kirjaudutaan sisään...",
-            "error": "Kirjautuminen epäonnistui"
-        },
-        "email": "Sähköposti",
-        "displayName": "Nimi",
-        "password": {
-            "placeholder": "Salasana (vähintään 6 merkkiä)"
-        },
-        "confirmPassword": "Vahvista salasana",
-        "passwordsMatch": "✔ Salasanat täsmäävät",
-        "passwordsNoMatch": "✖ Salasanat eivät täsmää",
-        "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
-        "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
-        "unknownError": "Tuntematon virhe",
-        "forgotPassword": {
-            "title": "Unohditko salasanan",
-            "instructions": "Syötä sähköpostiosoitteesi",
-            "send": "Lähetä nollaussähköposti",
-            "sending": "Lähetetään...",
-            "sentTitle": "Tarkista sähköpostisi",
-            "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
-            "login": "Siirry kirjautumiseen",
-            "error": "Virhe lähetettäessä nollaussähköpostia"
-        },
-        "resetPassword": {
-            "title": "Nollaa salasana",
-            "instructions": "Syötä uusi salasanasi alla.",
-            "save": "Tallenna uusi salasana",
-            "saving": "Tallennetaan...",
-            "successTitle": "Salasana nollattu!",
-            "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
-            "login": "Siirry kirjautumiseen",
-            "error": "Virhe salasanan nollauksessa",
-            "passwordPlaceholder": "Uusi salasana"
-        }
+    "notices": {
+      "title": "Huomio",
+      "emailConfirmation": "Profiili tallennettu, mutta sähköpostin muutos vaatii vahvistuksen"
+    },
+    "success": {
+      "title": "Tallennettu",
+      "saved": "Profiilisi on päivitetty."
+    },
+    "errors": {
+      "loadProfile": "Profiilia ei voitu ladata",
+      "notLoggedIn": "Et ole kirjautunut sisään",
+      "updateProfile": "Profiilia ei voitu päivittää",
+      "saveProfile": "Profiilia ei voitu tallentaa"
     }
+  },
+  "settings": {
+    "title": "Asetukset",
+    "account": "Tili",
+    "information": "Tiedot",
+    "language": "Kieli",
+    "theme": "Teema",
+    "notifications": {
+      "title": "Ilmoitukset",
+      "preferences": "Ilmoitusasetukset",
+      "summary": {
+        "reminders": "Muistutukset",
+        "activity": "Aktiviteetti",
+        "allOff": "Kaikki ilmoitukset pois päältä"
+      },
+      "stayOnTrack": {
+        "title": "Pysy aikataulussa",
+        "description": "Muistuta minua tekemään päivittäinen turvallisuustarkistus"
+      },
+      "contactActivity": {
+        "title": "Kontaktien aktiivisuus",
+        "description": "Ilmoita minulle kun kontaktini tekevät sisäänkirjautumisen"
+      }
+    },
+    "about": "Tietoja",
+    "privacy": "Tietosuojakäytäntö",
+    "terms": "Käyttöehdot",
+    "logout": "Kirjaudu ulos",
+    "resetData": "Nollaa tiedot",
+    "light": "Vaalea",
+    "dark": "Tumma",
+    "systemDefault": "Käytä järjestelmän asetusta",
+    "english": "Englanti",
+    "swedish": "Ruotsi",
+    "norwegian": "Norja",
+    "danish": "Tanska",
+    "finnish": "Suomi",
+    "resetWarning": "Oletko varma? Kaikki tietosi poistetaan.",
+    "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
+    "confirmReset": "Nollaa",
+    "cancel": "Peruuta",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "delete": "Poista",
+    "edit": "Muokkaa",
+    "loading": "Ladataan...",
+    "back": "Takaisin",
+    "next": "Seuraava",
+    "submit": "Lähetä",
+    "yes": "Kyllä",
+    "no": "Ei"
+  },
+  "time": {
+    "justNow": "Juuri nyt",
+    "minutesAgo": "{{count}} min sitten",
+    "hoursAgo": "{{count}} tunti{{count, plural, =1 {} other {a}}} sitten",
+    "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten"
+  },
+  "errors": {
+    "title": "Virhe",
+    "notAuthenticated": "Ei todennettu"
+  },
+  "permissions": {
+    "title": "Käyttöoikeus"
+  },
+  "auth": {
+    "signup": {
+      "title": "Luo tili",
+      "create": "Luo tili",
+      "creating": "Luodaan tiliä...",
+      "success": {
+        "title": "Tili luotu 🎉",
+        "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
+      },
+      "verifyEmail": {
+        "title": "Vahvista sähköpostiosoitteesi!",
+        "message": "Olemme lähettäneet vahvistussähköpostin sähköpostiisi. Vahvistamisen jälkeen kirjaudu sisään."
+      },
+      "error": "Rekisteröinti epäonnistui"
+    },
+    "login": {
+      "title": "Kirjaudu sisään",
+      "signIn": "Kirjaudu sisään",
+      "loggingIn": "Kirjaudutaan sisään...",
+      "error": "Kirjautuminen epäonnistui"
+    },
+    "email": "Sähköposti",
+    "displayName": "Nimi",
+    "password": {
+      "placeholder": "Salasana (vähintään 6 merkkiä)"
+    },
+    "confirmPassword": "Vahvista salasana",
+    "passwordsMatch": "✔ Salasanat täsmäävät",
+    "passwordsNoMatch": "✖ Salasanat eivät täsmää",
+    "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
+    "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
+    "unknownError": "Tuntematon virhe",
+    "forgotPassword": {
+      "title": "Unohditko salasanan",
+      "instructions": "Syötä sähköpostiosoitteesi",
+      "send": "Lähetä nollaussähköposti",
+      "sending": "Lähetetään...",
+      "sentTitle": "Tarkista sähköpostisi",
+      "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
+      "login": "Siirry kirjautumiseen",
+      "error": "Virhe lähetettäessä nollaussähköpostia"
+    },
+    "resetPassword": {
+      "title": "Nollaa salasana",
+      "instructions": "Syötä uusi salasanasi alla.",
+      "save": "Tallenna uusi salasana",
+      "saving": "Tallennetaan...",
+      "successTitle": "Salasana nollattu!",
+      "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
+      "login": "Siirry kirjautumiseen",
+      "error": "Virhe salasanan nollauksessa",
+      "passwordPlaceholder": "Uusi salasana"
+    }
+  }
 }
