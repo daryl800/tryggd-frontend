@@ -92,6 +92,10 @@
       "todayLikes_other": "👋 Du fik {{count}} likes i dag:",
       "prefix": "reagerede på din indtjekning",
       "defaultMessage": "synes godt om 👍 din indtjekning!"
+    },
+    "welfareButton": {
+      "send": "Har du det godt?",
+      "sent": "Sendt ✓"
     }
   },
   "contacts": {

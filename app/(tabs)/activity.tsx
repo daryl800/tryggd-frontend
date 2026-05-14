@@ -3,6 +3,7 @@ import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
+import { hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -11,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Animated,
+  Alert,
   AppState,
   ScrollView,
   StyleSheet,
@@ -20,6 +22,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+
+const ENABLE_WELFARE_CHECK = false;
 
 type Activity = {
   user_id: string;
@@ -988,11 +992,13 @@ export default function ActivityScreen() {
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
     const [sendingResponse, setSendingResponse] = useState(false);
+    const [sendingWelfareCheck, setSendingWelfareCheck] = useState(false);
     const [responseSent, setResponseSent] = useState(() => {
       if (!user || !timestamp || isOwner) return false;
       const cacheKey = `${userId}_${user.id}_${timestamp}`;
       return responseService.hasCachedResponse(cacheKey);
     });
+    const [welfareCheckSent, setWelfareCheckSent] = useState<boolean | null>(null);
 
     useEffect(() => {
       const checkIfResponded = async () => {
@@ -1003,16 +1009,29 @@ export default function ActivityScreen() {
       checkIfResponded();
     }, [userId, user?.id, timestamp, isOwner, responseSent]);
 
+    useEffect(() => {
+      const checkIfWelfareSent = async () => {
+        if (!user || !timestamp || isOwner) return;
+        const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp);
+        setWelfareCheckSent(alreadySent);
+      };
+      checkIfWelfareSent();
+    }, [userId, user?.id, timestamp, isOwner]);
+
     useFocusEffect(
       useCallback(() => {
         const checkOnFocus = async () => {
           if (!user || !timestamp || isOwner) return;
           const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
           setResponseSent(alreadyResponded);
+          const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp);
+          setWelfareCheckSent(alreadySent);
         };
         checkOnFocus();
       }, [userId, user?.id, timestamp, isOwner])
     );
+
+    const isOverdue = !!timestamp && (Date.now() - new Date(timestamp).getTime()) > 24 * 60 * 60 * 1000;
 
     const getCheckInStatus = useCallback(() => {
       if (!timestamp) {
@@ -1063,7 +1082,12 @@ export default function ActivityScreen() {
     }, [timestamp]);
 
     const status = getCheckInStatus();
-    const isButtonEnabled = status.status === 'checked-today' && !isOwner && !responseSent;
+    const isLikeMode = status.status === 'checked-today';
+    const isWelfareMode = ENABLE_WELFARE_CHECK && !isLikeMode && isOverdue;
+    const isWelfareResolved = welfareCheckSent !== null;
+    const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
+    const isSingleActionEnabled =
+      (isLikeMode && !responseSent) || (isWelfareMode && isWelfareResolved && !welfareCheckSent);
 
     const handleSendResponse = async () => {
       if (sendingResponse || !isButtonEnabled || !user) return;
@@ -1089,6 +1113,31 @@ export default function ActivityScreen() {
         console.error('Error sending response:', error);
       } finally {
         setSendingResponse(false);
+      }
+    };
+
+    const handleSendWelfareCheck = async () => {
+      if (sendingWelfareCheck || !isWelfareMode || welfareCheckSent || !user || !timestamp) return;
+
+      setSendingWelfareCheck(true);
+      try {
+        const result = await sendWelfareCheckNotification({
+          receiverUserId: userId,
+          senderUserId: user.id,
+          senderName: user.user_metadata?.display_name || user.user_metadata?.name,
+          checkinTime: timestamp,
+        });
+
+        if (result.success) {
+          setWelfareCheckSent(true);
+        } else if (result.error) {
+          Alert.alert(t('errors.title'), result.error);
+        }
+      } catch (error) {
+        console.error('Error sending welfare check:', error);
+        Alert.alert(t('errors.title'), 'Failed to send welfare check');
+      } finally {
+        setSendingWelfareCheck(false);
       }
     };
 
@@ -1204,25 +1253,35 @@ export default function ActivityScreen() {
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
-                    styles.responseButton,
-                    (responseSent || !isButtonEnabled) && styles.responseButtonDisabled,
-                    sendingResponse && styles.responseButtonSending
+                    isWelfareMode ? styles.welfareButton : styles.responseButton,
+                    !isSingleActionEnabled && styles.responseButtonDisabled,
+                    (sendingResponse || sendingWelfareCheck) && styles.responseButtonSending
                   ]}
-                  onPress={handleSendResponse}
-                  disabled={responseSent || !isButtonEnabled || sendingResponse}
+                  onPress={isWelfareMode ? handleSendWelfareCheck : handleSendResponse}
+                  disabled={!isSingleActionEnabled || sendingResponse || sendingWelfareCheck}
                   activeOpacity={0.7}
                 >
-                  {sendingResponse ? (
-                    <ActivityIndicator size="small" color={BaseColors.primary} />
+                  {(sendingResponse || sendingWelfareCheck) ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={isWelfareMode ? BaseColors.error : BaseColors.primary}
+                    />
+                  ) : isWelfareMode ? (
+                    <View style={styles.welfareButtonContent}>
+                      <Text style={[
+                        styles.welfareButtonText,
+                        !isSingleActionEnabled && styles.responseButtonTextDisabled
+                      ]}>
+                        {t('activity.welfareButton.send') || 'Are you alright?'}
+                      </Text>
+                      <Text style={styles.welfareButtonEmoji}>💛</Text>
+                    </View>
                   ) : (
                     <Text style={[
                       styles.responseButtonText,
-                      (responseSent || !isButtonEnabled) && styles.responseButtonTextDisabled
+                      !isSingleActionEnabled && styles.responseButtonTextDisabled
                     ]}>
-                      {responseSent
-                        ? (t('activity.responseButton.responded') || 'Sent!')
-                        : (t('activity.responseButton.sendResponse') || 'Good job!')
-                      }
+                      {t('activity.responseButton.sendResponse') || 'Send a Like'}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -1541,6 +1600,31 @@ const styles = StyleSheet.create({
   },
   responseButtonTextDisabled: {
     color: BaseColors.neutral[500],
+  },
+  welfareButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FDECEA',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: BaseColors.error,
+    marginBottom: 8,
+  },
+  welfareButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: BaseColors.error,
+  },
+  welfareButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  welfareButtonEmoji: {
+    fontSize: 13,
+    marginLeft: 4,
   },
   activityItem: {
     paddingVertical: 12,

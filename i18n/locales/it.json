@@ -22,8 +22,29 @@
     "days_one": "{{count}} giorno",
     "days_other": "{{count}} giorni",
     "dateFormats": {
-      "weekdays": ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"],
-      "months": ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"]
+      "weekdays": [
+        "domenica",
+        "lunedì",
+        "martedì",
+        "mercoledì",
+        "giovedì",
+        "venerdì",
+        "sabato"
+      ],
+      "months": [
+        "gennaio",
+        "febbraio",
+        "marzo",
+        "aprile",
+        "maggio",
+        "giugno",
+        "luglio",
+        "agosto",
+        "settembre",
+        "ottobre",
+        "novembre",
+        "dicembre"
+      ]
     },
     "errors": {
       "fetchLastCheckin": "Impossibile recuperare l'ultimo check-in",
@@ -71,6 +92,10 @@
       "todayLikes_other": "👋 Hai ricevuto {{count}} like oggi:",
       "prefix": "ha reagito al tuo check-in",
       "defaultMessage": "mette 👍 al tuo check-in!"
+    },
+    "welfareButton": {
+      "send": "Stai bene?",
+      "sent": "Inviato ✓"
     }
   },
   "contacts": {

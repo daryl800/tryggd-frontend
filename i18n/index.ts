@@ -1,5 +1,6 @@
 // i18n/index.ts - WITH TYPE ASSERTION
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -19,25 +20,54 @@ const resources = {
     'zh-Hant': { translation: require('./locales/zh-Hant.json') },
 };
 
+export const LANGUAGE_STORAGE_KEY = '@app_language';
+const SUPPORTED_LANGUAGES = Object.keys(resources);
+
+export function resolveSupportedLanguage(language?: string | null): string {
+    if (!language) return 'en';
+
+    if (SUPPORTED_LANGUAGES.includes(language)) {
+        return language;
+    }
+
+    const normalized = language.toLowerCase();
+
+    if (normalized.startsWith('zh')) {
+        if (normalized.includes('hant') || normalized.includes('tw') || normalized.includes('hk') || normalized.includes('mo')) {
+            return 'zh-Hant';
+        }
+        return 'zh-Hans';
+    }
+
+    const base = normalized.split('-')[0];
+    return SUPPORTED_LANGUAGES.includes(base) ? base : 'en';
+}
+
+export function getDevicePreferredLanguage(): string {
+    const locales = Localization.getLocales();
+    const preferred = locales[0]?.languageTag ?? locales[0]?.languageCode ?? 'en';
+    return resolveSupportedLanguage(preferred);
+}
+
 const languageDetector = {
     type: 'languageDetector' as const,
     async: true,
     detect: async (callback: (lang: string) => void) => {
         try {
-            const savedLanguage = await AsyncStorage.getItem('@app_language');
+            const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
             if (savedLanguage) {
-                callback(savedLanguage);
+                callback(resolveSupportedLanguage(savedLanguage));
                 return;
             }
-            callback('en');
+            callback(getDevicePreferredLanguage());
         } catch (error) {
-            callback('en');
+            callback(getDevicePreferredLanguage());
         }
     },
     init: () => { },
     cacheUserLanguage: async (language: string) => {
         try {
-            await AsyncStorage.setItem('@app_language', language);
+            await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, resolveSupportedLanguage(language));
         } catch (error) {
             console.error('Failed to save language:', error);
         }

@@ -92,6 +92,10 @@
       "todayLikes_other": "👋 今日のいいね {{count}} 件:",
       "prefix": "あなたのチェックインにリアクションしました",
       "defaultMessage": "があなたのチェックインに 👍 しました!"
+    },
+    "welfareButton": {
+      "send": "大丈夫ですか？",
+      "sent": "送信済み ✓"
     }
   },
   "contacts": {

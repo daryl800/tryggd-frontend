@@ -92,6 +92,10 @@
       "todayLikes_other": "👋 You got {{count}} likes today:",
       "prefix": "reacted to your check-in",
       "defaultMessage": "likes 👍 your checkin!"
+    },
+    "welfareButton": {
+      "send": "Are you alright?",
+      "sent": "Sent ✓"
     }
   },
   "contacts": {

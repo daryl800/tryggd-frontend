@@ -92,6 +92,10 @@
       "todayLikes_other": "👋 오늘 받은 좋아요 {{count}}개:",
       "prefix": "당신의 체크인에 반응했습니다",
       "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
+    },
+    "welfareButton": {
+      "send": "괜찮으세요?",
+      "sent": "전송됨 ✓"
     }
   },
   "contacts": {

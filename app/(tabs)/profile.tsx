@@ -1,6 +1,7 @@
 // screens/ProfileScreen.tsx
 import HeaderWithBack from '@/components/common/HeaderWithBack';
 import { BaseColors } from '@/constants/colors';
+import { clearPushTokens } from '@/lib/notifications/core';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -295,9 +296,30 @@ export default function ProfileScreen() {
                 text: t('profile.logout.button'),
                 style: 'destructive',
                 onPress: async () => {
-                    await supabase.auth.signOut();
-                    await AsyncStorage.removeItem('@user_profile');
-                    router.replace('/(auth)/login');
+                    try {
+                        const { data: { user } } = await supabase.auth.getUser();
+
+                        if (user) {
+                            await clearPushTokens(user.id);
+                        }
+
+                        await AsyncStorage.multiRemove([
+                            '@expo_push_token',
+                            '@user_profile',
+                            '@app_language',
+                            '@settings_notifications',
+                            '@settings_check_in_reminder',
+                            '@settings_contact_check_in',
+                        ]);
+
+                        const { error } = await supabase.auth.signOut();
+                        if (error) throw error;
+
+                        router.replace('/(auth)/login');
+                    } catch (error) {
+                        console.error('Error during logout:', error);
+                        Alert.alert(t('errors.title'), t('profile.errors.loadProfile'));
+                    }
                 },
             },
         ]);
@@ -457,12 +479,22 @@ export default function ProfileScreen() {
                         'email',
                         false
                     )}
-                    {renderField(
-                        t('profile.fields.phone'),
-                        profile.phone || '',
-                        'phone'
-                    )}
                 </View>
+
+                <TouchableOpacity
+                    style={styles.logoutButton}
+                    onPress={handleLogout}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons
+                        name="log-out-outline"
+                        size={20}
+                        color={BaseColors.error}
+                    />
+                    <Text style={styles.logoutText}>
+                        {t('profile.buttons.logout')}
+                    </Text>
+                </TouchableOpacity>
             </ScrollView>
 
             {/* Avatar Selection Modal */}
@@ -548,7 +580,8 @@ const styles = StyleSheet.create({
     },
     avatarSection: {
         alignItems: 'center',
-        marginVertical: GAP,
+        marginTop: 8,
+        marginBottom: GAP,
         paddingHorizontal: 20,
     },
     avatarTouchable: {
@@ -746,6 +779,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 18,
         marginHorizontal: 20,
+        marginBottom: GAP,
         borderWidth: 1,
         borderColor: BaseColors.errorBorder,
         gap: 10,

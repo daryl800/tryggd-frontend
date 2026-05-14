@@ -6,7 +6,6 @@ import { sendContactRequestNotification } from '@/lib/notifications';
 import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
 import { useFocusEffect } from 'expo-router';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -302,7 +301,6 @@ export default function ContactsScreen() {
     const isMountedRef = useRef(true);
     const lastFetchRef = useRef<number>(0);
     const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const notifiedRequestIdsRef = useRef<Set<string>>(new Set());
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
@@ -319,46 +317,6 @@ export default function ContactsScreen() {
             display_name: row?.display_name || '',
             username: row?.username || '',
         };
-    }, []);
-
-    const showIncomingRequestNotification = useCallback(async (request: ContactRequest) => {
-        if (AppState.currentState !== 'active') {
-            return;
-        }
-
-        if (!request.id || notifiedRequestIdsRef.current.has(request.id)) {
-            return;
-        }
-
-        notifiedRequestIdsRef.current.add(request.id);
-
-        const senderLabel =
-            request.sender_username ||
-            request.sender_display_name ||
-            request.sender_email ||
-            'Someone';
-
-        try {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: 'Contact Request',
-                    body: `${senderLabel} wants to add you as a contact`,
-                    sound: 'default',
-                    data: {
-                        type: 'contact_request',
-                        requestId: request.id,
-                        senderUserId: request.sender_user_id,
-                        senderName: request.sender_display_name || senderLabel,
-                        senderEmail: request.sender_email,
-                        screen: 'contacts',
-                        tab: 'requests',
-                    },
-                },
-                trigger: null,
-            });
-        } catch (error) {
-            console.error('Failed to show local contact request notification', error);
-        }
     }, []);
 
     // Single source of truth for data fetching
@@ -626,8 +584,6 @@ export default function ContactsScreen() {
                                     identity.username || request.sender_username,
                             };
 
-                            await showIncomingRequestNotification(enrichedRequest);
-
                             if (isMountedRef.current) {
                                 setIncomingRequests(prev => [enrichedRequest, ...prev]);
                             }
@@ -695,7 +651,7 @@ export default function ContactsScreen() {
                 clearTimeout(fetchTimeoutRef.current);
             }
         };
-    }, [fetchAllData, getUserIdentity, incrementUnread, showIncomingRequestNotification]); // Empty dependency - run once
+    }, [fetchAllData, getUserIdentity, incrementUnread]); // Empty dependency - run once
 
     // Pull-to-refresh handler
     const handleManualRefresh = useCallback(async () => {

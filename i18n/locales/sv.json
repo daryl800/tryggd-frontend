@@ -1,368 +1,372 @@
 {
-    "home": {
-        "title": "Hem",
-        "welcome": "Välkommen",
-        "greetings": {
-            "morning": "God morgon",
-            "afternoon": "God dag",
-            "evening": "God kväll",
-            "night": "God natt"
-        },
-        "everythingIsFine": "Allt är väl!!",
-        "dontForget": "Glöm inte att checka in idag!",
-        "youCheckedInTodayAt": "Du checkade in idag kl {{time}}",
-        "pressMeToCheckIn": "CHECKA IN HÄR",
-        "reset": "Återställ",
-        "timer": "Timer",
-        "timeLeftToday": "Tid kvar idag",
-        "activity": "Aktivitet",
-        "contacts_one": "{{count}} kontakt",
-        "contacts_other": "{{count}} kontakter",
-        "streak": "Streak",
-        "days_one": "{{count}} dag",
-        "days_other": "{{count}} dagar",
-        "dateFormats": {
-            "weekdays": [
-                "Söndag",
-                "Måndag",
-                "Tisdag",
-                "Onsdag",
-                "Torsdag",
-                "Fredag",
-                "Lördag"
-            ],
-            "months": [
-                "Januari",
-                "Februari",
-                "Mars",
-                "April",
-                "Maj",
-                "Juni",
-                "Juli",
-                "Augusti",
-                "September",
-                "Oktober",
-                "November",
-                "December"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "Kunde inte hämta senaste incheckningen",
-            "noUser": "Ingen användare hittades",
-            "checkin": "Incheckning misslyckades",
-            "loadState": "Kunde inte ladda tillståndet"
-        }
+  "home": {
+    "title": "Hem",
+    "welcome": "Välkommen",
+    "greetings": {
+      "morning": "God morgon",
+      "afternoon": "God dag",
+      "evening": "God kväll",
+      "night": "God natt"
     },
-    "activity": {
-        "title": "Aktivitet",
-        "subtitle": "Senaste incheckningarna för dig och dina kontakter",
-        "you": "Du",
-        "yourActivity": "Din aktivitet",
-        "contacts": "Kontakter",
-        "loading": "Laddar aktivitet...",
-        "noCheckIn": "Ingen incheckning än",
-        "emptyState": {
-            "title": "Inga kontakter",
-            "message": "Lägg till kontakter för att se deras aktivitet"
-        },
-        "priority": {
-            "failed": "Misslyckades",
-            "ongoing": "Pågående",
-            "successful": "Lyckades"
-        },
-        "time": {
-            "locale": "sv-SE"
-        },
-        "errors": {
-            "loadActivities": "Kunde inte ladda aktivitet",
-            "fetchContacts": "Kunde inte hämta kontakter",
-            "fetchOwnerActivity": "Kunde inte hämta användarens aktivitet"
-        },
-        "day": {
-            "today": "Idag",
-            "yesterday": "Igår",
-            "other": "{{date, date, d. MMMM yyyy}}"
-        },
-        "responseButton": {
-            "sendResponse": "👏 Ge en high five?",
-            "responded": "👏 High five skickad!"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "👋 Du fick {{count}} gilla-markering idag:",
-            "todayLikes_other": "👋 Du fick {{count}} gilla-markeringar idag:",
-            "prefix": "reagerade på din incheckning",
-            "defaultMessage": "gillar 👍 din incheckning!"
-        }
-    },
-    "contacts": {
-        "title": "Kontakter",
-        "contact": "Kontakt",
-        "newContact": "Ny kontakt",
-        "displayingAs": "Visas som",
-        "loading": "Laddar kontakter...",
-        "subtitle": {
-            "withContacts": "Du har {{count}}/3 möjliga kontakter",
-            "noContacts": "Lägg till kontakter för att dela"
-        },
-        "emptyState": {
-            "title": "Inga kontakter",
-            "message": "Tryck på + för att lägga till din första kontakt"
-        },
-        "tabs": {
-            "contacts": "Kontakter",
-            "requests": "Förfrågningar"
-        },
-        "requests": {
-            "received": "Mottagna förfrågningar",
-            "sent": "Skickade förfrågningar",
-            "waiting": "Väntar på svar",
-            "loading": "Laddar förfrågningar...",
-            "emptyState": {
-                "title": "Inga förfrågningar",
-                "message": "När någon skickar en kontaktförfrågan visas den här"
-            }
-        },
-        "placeholders": {
-            "email": "Ange e-postadress"
-        },
-        "buttons": {
-            "accept": "Acceptera",
-            "reject": "Avvisa",
-            "delete": "Ta bort",
-            "cancelRequest": "Avbryt förfrågan",
-            "sending": "Skickar...",
-            "sendRequests": "Skicka förfrågan{{count, plural, =1 {} other {er}}}"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "Gräns uppnådd",
-                "message": "Du kan lägga till max 3 kontakter."
-            },
-            "delete": {
-                "title": "Ta bort kontakt",
-                "message": "Vill du verkligen ta bort {{name}}?"
-            },
-            "contactExists": {
-                "title": "Kontakten finns redan",
-                "message": "{{name}} finns redan bland dina kontakter"
-            },
-            "requestExists": {
-                "title": "Förfrågan redan skickad",
-                "message": "Du har redan skickat en förfrågan till denna användare."
-            },
-            "requestReceived": {
-                "title": "Förfrågan mottagen",
-                "message": "Du har redan en förfrågan från {{email}}. Kolla 'Förfrågningar'."
-            },
-            "invalidEmail": {
-                "title": "Ogiltig e-post",
-                "message": "{{email}} är inte registrerad eller verifierad"
-            },
-            "selfContact": {
-                "title": "Ogiltig kontakt",
-                "message": "Du kan inte lägga till dig själv som kontakt"
-            },
-            "noChanges": {
-                "title": "Inga ändringar",
-                "message": "Inga nya kontakter att spara."
-            },
-            "alreadyInContacts": "Denna användare finns redan bland dina kontakter",
-            "requestHandled": {
-                "title": "Förfrågan hanterad",
-                "message": "Denna förfrågan har redan hanterats"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "Förfrågan skickad",
-                "message": "Kontaktförfrågan skickad till {{name}}"
-            },
-            "contactAdded": {
-                "title": "Kontakt tillagd",
-                "message": "{{name}} har lagts till bland dina kontakter"
-            },
-            "deleted": {
-                "title": "Kontakt borttagen",
-                "message": "{{name}} har tagits bort. Alla relationer är raderade."
-            },
-            "requestRejected": {
-                "title": "Förfrågan avvisad",
-                "message": "Kontaktförfrågan har avvisats"
-            },
-            "requestCancelled": {
-                "title": "Förfrågan avbruten",
-                "message": "Kontaktförfrågan har avbrutits"
-            }
-        }
-    },
-    "profile": {
-        "title": "Profil",
-        "defaultName": "Användare",
-        "loading": "Laddar profil...",
-        "buttons": {
-            "edit": "Redigera",
-            "save": "Spara",
-            "saving": "Sparar...",
-            "logout": "Logga ut"
-        },
-        "fields": {
-            "name": "Namn",
-            "email": "E-post",
-            "phone": "Telefon",
-            "notSpecified": "Ej angivet"
-        },
-        "settings": {
-            "title": "Inställningar",
-            "subtitle": "App-inställningar och notiser"
-        },
-        "avatarModal": {
-            "title": "Byt profilbild",
-            "takePhoto": "Ta foto",
-            "chooseFromLibrary": "Välj från bibliotek"
-        },
-        "logout": {
-            "title": "Logga ut",
-            "confirm": "Är du säker?",
-            "button": "Logga ut"
-        },
-        "permissions": {
-            "camera": "Kameratillstånd krävs"
-        },
-        "notices": {
-            "title": "Meddelande",
-            "emailConfirmation": "Profil sparad, men ändring av e-post kräver bekräftelse"
-        },
-        "success": {
-            "title": "Sparat",
-            "saved": "Din profil har uppdaterats."
-        },
-        "errors": {
-            "loadProfile": "Kunde inte ladda profil",
-            "notLoggedIn": "Du är inte inloggad",
-            "updateProfile": "Kunde inte uppdatera profil",
-            "saveProfile": "Kunde inte spara profil"
-        }
-    },
-    "settings": {
-        "title": "Inställningar",
-        "account": "Konto",
-        "information": "Information",
-        "language": "Språk",
-        "theme": "Tema",
-        "notifications": {
-            "title": "Notiser",
-            "preferences": "Notisinställningar",
-            "summary": {
-                "reminders": "Påminnelser",
-                "activity": "Aktivitet",
-                "allOff": "Alla notiser av"
-            },
-            "stayOnTrack": {
-                "title": "Håll dig på rätt spår",
-                "description": "Påminn mig att göra daglig säkerhetscheck"
-            },
-            "contactActivity": {
-                "title": "Kontaktaktivitet",
-                "description": "Meddela mig när mina kontakter checkar in"
-            }
-        },
-        "about": "Om",
-        "privacy": "Integritetspolicy",
-        "terms": "Användarvillkor",
-        "logout": "Logga ut",
-        "resetData": "Återställ data",
-        "light": "Ljus",
-        "dark": "Mörk",
-        "systemDefault": "Följ systeminställning",
-        "english": "Engelska",
-        "swedish": "Svenska",
-        "norwegian": "Norska",
-        "danish": "Danska",
-        "finnish": "Finska",
-        "resetWarning": "Är du säker? All data raderas.",
-        "logoutConfirm": "Vill du verkligen logga ut?",
-        "confirmReset": "Återställ",
-        "cancel": "Avbryt",
-        "ok": "OK"
-    },
-    "common": {
-        "ok": "OK",
-        "cancel": "Avbryt",
-        "save": "Spara",
-        "delete": "Ta bort",
-        "edit": "Redigera",
-        "loading": "Laddar...",
-        "back": "Tillbaka",
-        "next": "Nästa",
-        "submit": "Skicka",
-        "yes": "Ja",
-        "no": "Nej"
-    },
-    "time": {
-        "justNow": "Precis nu",
-        "minutesAgo": "{{count}} min sedan",
-        "hoursAgo": "{{count}} timme{{count, plural, =1 {} other {ar}}} sedan",
-        "daysAgo": "{{count}} dag{{count, plural, =1 {} other {ar}}} sedan"
+    "everythingIsFine": "Allt är väl!!",
+    "dontForget": "Glöm inte att checka in idag!",
+    "youCheckedInTodayAt": "Du checkade in idag kl {{time}}",
+    "pressMeToCheckIn": "CHECKA IN HÄR",
+    "reset": "Återställ",
+    "timer": "Timer",
+    "timeLeftToday": "Tid kvar idag",
+    "activity": "Aktivitet",
+    "contacts_one": "{{count}} kontakt",
+    "contacts_other": "{{count}} kontakter",
+    "streak": "Streak",
+    "days_one": "{{count}} dag",
+    "days_other": "{{count}} dagar",
+    "dateFormats": {
+      "weekdays": [
+        "Söndag",
+        "Måndag",
+        "Tisdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lördag"
+      ],
+      "months": [
+        "Januari",
+        "Februari",
+        "Mars",
+        "April",
+        "Maj",
+        "Juni",
+        "Juli",
+        "Augusti",
+        "September",
+        "Oktober",
+        "November",
+        "December"
+      ]
     },
     "errors": {
-        "title": "Fel",
-        "notAuthenticated": "Inte autentiserad"
+      "fetchLastCheckin": "Kunde inte hämta senaste incheckningen",
+      "noUser": "Ingen användare hittades",
+      "checkin": "Incheckning misslyckades",
+      "loadState": "Kunde inte ladda tillståndet"
+    }
+  },
+  "activity": {
+    "title": "Aktivitet",
+    "subtitle": "Senaste incheckningarna för dig och dina kontakter",
+    "you": "Du",
+    "yourActivity": "Din aktivitet",
+    "contacts": "Kontakter",
+    "loading": "Laddar aktivitet...",
+    "noCheckIn": "Ingen incheckning än",
+    "emptyState": {
+      "title": "Inga kontakter",
+      "message": "Lägg till kontakter för att se deras aktivitet"
+    },
+    "priority": {
+      "failed": "Misslyckades",
+      "ongoing": "Pågående",
+      "successful": "Lyckades"
+    },
+    "time": {
+      "locale": "sv-SE"
+    },
+    "errors": {
+      "loadActivities": "Kunde inte ladda aktivitet",
+      "fetchContacts": "Kunde inte hämta kontakter",
+      "fetchOwnerActivity": "Kunde inte hämta användarens aktivitet"
+    },
+    "day": {
+      "today": "Idag",
+      "yesterday": "Igår",
+      "other": "{{date, date, d. MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👏 Ge en high five?",
+      "responded": "👏 High five skickad!"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "👋 Du fick {{count}} gilla-markering idag:",
+      "todayLikes_other": "👋 Du fick {{count}} gilla-markeringar idag:",
+      "prefix": "reagerade på din incheckning",
+      "defaultMessage": "gillar 👍 din incheckning!"
+    },
+    "welfareButton": {
+      "send": "Är du okej?",
+      "sent": "Skickat ✓"
+    }
+  },
+  "contacts": {
+    "title": "Kontakter",
+    "contact": "Kontakt",
+    "newContact": "Ny kontakt",
+    "displayingAs": "Visas som",
+    "loading": "Laddar kontakter...",
+    "subtitle": {
+      "withContacts": "Du har {{count}}/3 möjliga kontakter",
+      "noContacts": "Lägg till kontakter för att dela"
+    },
+    "emptyState": {
+      "title": "Inga kontakter",
+      "message": "Tryck på + för att lägga till din första kontakt"
+    },
+    "tabs": {
+      "contacts": "Kontakter",
+      "requests": "Förfrågningar"
+    },
+    "requests": {
+      "received": "Mottagna förfrågningar",
+      "sent": "Skickade förfrågningar",
+      "waiting": "Väntar på svar",
+      "loading": "Laddar förfrågningar...",
+      "emptyState": {
+        "title": "Inga förfrågningar",
+        "message": "När någon skickar en kontaktförfrågan visas den här"
+      }
+    },
+    "placeholders": {
+      "email": "Ange e-postadress"
+    },
+    "buttons": {
+      "accept": "Acceptera",
+      "reject": "Avvisa",
+      "delete": "Ta bort",
+      "cancelRequest": "Avbryt förfrågan",
+      "sending": "Skickar...",
+      "sendRequests": "Skicka förfrågan{{count, plural, =1 {} other {er}}}"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Gräns uppnådd",
+        "message": "Du kan lägga till max 3 kontakter."
+      },
+      "delete": {
+        "title": "Ta bort kontakt",
+        "message": "Vill du verkligen ta bort {{name}}?"
+      },
+      "contactExists": {
+        "title": "Kontakten finns redan",
+        "message": "{{name}} finns redan bland dina kontakter"
+      },
+      "requestExists": {
+        "title": "Förfrågan redan skickad",
+        "message": "Du har redan skickat en förfrågan till denna användare."
+      },
+      "requestReceived": {
+        "title": "Förfrågan mottagen",
+        "message": "Du har redan en förfrågan från {{email}}. Kolla 'Förfrågningar'."
+      },
+      "invalidEmail": {
+        "title": "Ogiltig e-post",
+        "message": "{{email}} är inte registrerad eller verifierad"
+      },
+      "selfContact": {
+        "title": "Ogiltig kontakt",
+        "message": "Du kan inte lägga till dig själv som kontakt"
+      },
+      "noChanges": {
+        "title": "Inga ändringar",
+        "message": "Inga nya kontakter att spara."
+      },
+      "alreadyInContacts": "Denna användare finns redan bland dina kontakter",
+      "requestHandled": {
+        "title": "Förfrågan hanterad",
+        "message": "Denna förfrågan har redan hanterats"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Förfrågan skickad",
+        "message": "Kontaktförfrågan skickad till {{name}}"
+      },
+      "contactAdded": {
+        "title": "Kontakt tillagd",
+        "message": "{{name}} har lagts till bland dina kontakter"
+      },
+      "deleted": {
+        "title": "Kontakt borttagen",
+        "message": "{{name}} har tagits bort. Alla relationer är raderade."
+      },
+      "requestRejected": {
+        "title": "Förfrågan avvisad",
+        "message": "Kontaktförfrågan har avvisats"
+      },
+      "requestCancelled": {
+        "title": "Förfrågan avbruten",
+        "message": "Kontaktförfrågan har avbrutits"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "defaultName": "Användare",
+    "loading": "Laddar profil...",
+    "buttons": {
+      "edit": "Redigera",
+      "save": "Spara",
+      "saving": "Sparar...",
+      "logout": "Logga ut"
+    },
+    "fields": {
+      "name": "Namn",
+      "email": "E-post",
+      "phone": "Telefon",
+      "notSpecified": "Ej angivet"
+    },
+    "settings": {
+      "title": "Inställningar",
+      "subtitle": "App-inställningar och notiser"
+    },
+    "avatarModal": {
+      "title": "Byt profilbild",
+      "takePhoto": "Ta foto",
+      "chooseFromLibrary": "Välj från bibliotek"
+    },
+    "logout": {
+      "title": "Logga ut",
+      "confirm": "Är du säker?",
+      "button": "Logga ut"
     },
     "permissions": {
-        "title": "Behörighet"
+      "camera": "Kameratillstånd krävs"
     },
-    "auth": {
-        "signup": {
-            "title": "Skapa konto",
-            "create": "Skapa konto",
-            "creating": "Skapar konto...",
-            "success": {
-                "title": "Konto skapat 🎉",
-                "message": "Ditt konto är klart. Du kan nu logga in."
-            },
-            "verifyEmail": {
-                "title": "Verifiera din e-post!",
-                "message": "Vi har skickat ett verifieringsmail. Bekräfta och logga in."
-            },
-            "error": "Registrering misslyckades"
-        },
-        "login": {
-            "title": "Logga in",
-            "signIn": "Logga in",
-            "loggingIn": "Loggar in...",
-            "error": "Inloggning misslyckades"
-        },
-        "email": "E-post",
-        "displayName": "Namn",
-        "password": {
-            "placeholder": "Lösenord (minst 6 tecken)"
-        },
-        "confirmPassword": "Bekräfta lösenord",
-        "passwordsMatch": "✔ Lösenord matchar",
-        "passwordsNoMatch": "✖ Lösenord matchar inte",
-        "alreadyHaveAccount": "Har du redan ett konto? Logga in",
-        "noAccount": "Har du inget konto? Registrera",
-        "unknownError": "Okänt fel",
-        "forgotPassword": {
-            "title": "Glömt lösenord",
-            "instructions": "Ange din e-postadress",
-            "send": "Skicka återställningsmail",
-            "sending": "Skickar...",
-            "sentTitle": "Kolla din e-post",
-            "sentMessage": "Vi har skickat en återställningslänk till din e-post.",
-            "login": "Gå till inloggning",
-            "error": "Fel vid sändning av återställningsmail"
-        },
-        "resetPassword": {
-            "title": "Återställ lösenord",
-            "instructions": "Ange ditt nya lösenord nedan.",
-            "save": "Spara nytt lösenord",
-            "saving": "Sparar...",
-            "successTitle": "Lösenord återställt!",
-            "successMessage": "Du kan nu logga in med ditt nya lösenord.",
-            "login": "Gå till inloggning",
-            "error": "Fel vid återställning",
-            "passwordPlaceholder": "Nytt lösenord"
-        }
+    "notices": {
+      "title": "Meddelande",
+      "emailConfirmation": "Profil sparad, men ändring av e-post kräver bekräftelse"
+    },
+    "success": {
+      "title": "Sparat",
+      "saved": "Din profil har uppdaterats."
+    },
+    "errors": {
+      "loadProfile": "Kunde inte ladda profil",
+      "notLoggedIn": "Du är inte inloggad",
+      "updateProfile": "Kunde inte uppdatera profil",
+      "saveProfile": "Kunde inte spara profil"
     }
+  },
+  "settings": {
+    "title": "Inställningar",
+    "account": "Konto",
+    "information": "Information",
+    "language": "Språk",
+    "theme": "Tema",
+    "notifications": {
+      "title": "Notiser",
+      "preferences": "Notisinställningar",
+      "summary": {
+        "reminders": "Påminnelser",
+        "activity": "Aktivitet",
+        "allOff": "Alla notiser av"
+      },
+      "stayOnTrack": {
+        "title": "Håll dig på rätt spår",
+        "description": "Påminn mig att göra daglig säkerhetscheck"
+      },
+      "contactActivity": {
+        "title": "Kontaktaktivitet",
+        "description": "Meddela mig när mina kontakter checkar in"
+      }
+    },
+    "about": "Om",
+    "privacy": "Integritetspolicy",
+    "terms": "Användarvillkor",
+    "logout": "Logga ut",
+    "resetData": "Återställ data",
+    "light": "Ljus",
+    "dark": "Mörk",
+    "systemDefault": "Följ systeminställning",
+    "english": "Engelska",
+    "swedish": "Svenska",
+    "norwegian": "Norska",
+    "danish": "Danska",
+    "finnish": "Finska",
+    "resetWarning": "Är du säker? All data raderas.",
+    "logoutConfirm": "Vill du verkligen logga ut?",
+    "confirmReset": "Återställ",
+    "cancel": "Avbryt",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "loading": "Laddar...",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "submit": "Skicka",
+    "yes": "Ja",
+    "no": "Nej"
+  },
+  "time": {
+    "justNow": "Precis nu",
+    "minutesAgo": "{{count}} min sedan",
+    "hoursAgo": "{{count}} timme{{count, plural, =1 {} other {ar}}} sedan",
+    "daysAgo": "{{count}} dag{{count, plural, =1 {} other {ar}}} sedan"
+  },
+  "errors": {
+    "title": "Fel",
+    "notAuthenticated": "Inte autentiserad"
+  },
+  "permissions": {
+    "title": "Behörighet"
+  },
+  "auth": {
+    "signup": {
+      "title": "Skapa konto",
+      "create": "Skapa konto",
+      "creating": "Skapar konto...",
+      "success": {
+        "title": "Konto skapat 🎉",
+        "message": "Ditt konto är klart. Du kan nu logga in."
+      },
+      "verifyEmail": {
+        "title": "Verifiera din e-post!",
+        "message": "Vi har skickat ett verifieringsmail. Bekräfta och logga in."
+      },
+      "error": "Registrering misslyckades"
+    },
+    "login": {
+      "title": "Logga in",
+      "signIn": "Logga in",
+      "loggingIn": "Loggar in...",
+      "error": "Inloggning misslyckades"
+    },
+    "email": "E-post",
+    "displayName": "Namn",
+    "password": {
+      "placeholder": "Lösenord (minst 6 tecken)"
+    },
+    "confirmPassword": "Bekräfta lösenord",
+    "passwordsMatch": "✔ Lösenord matchar",
+    "passwordsNoMatch": "✖ Lösenord matchar inte",
+    "alreadyHaveAccount": "Har du redan ett konto? Logga in",
+    "noAccount": "Har du inget konto? Registrera",
+    "unknownError": "Okänt fel",
+    "forgotPassword": {
+      "title": "Glömt lösenord",
+      "instructions": "Ange din e-postadress",
+      "send": "Skicka återställningsmail",
+      "sending": "Skickar...",
+      "sentTitle": "Kolla din e-post",
+      "sentMessage": "Vi har skickat en återställningslänk till din e-post.",
+      "login": "Gå till inloggning",
+      "error": "Fel vid sändning av återställningsmail"
+    },
+    "resetPassword": {
+      "title": "Återställ lösenord",
+      "instructions": "Ange ditt nya lösenord nedan.",
+      "save": "Spara nytt lösenord",
+      "saving": "Sparar...",
+      "successTitle": "Lösenord återställt!",
+      "successMessage": "Du kan nu logga in med ditt nya lösenord.",
+      "login": "Gå till inloggning",
+      "error": "Fel vid återställning",
+      "passwordPlaceholder": "Nytt lösenord"
+    }
+  }
 }

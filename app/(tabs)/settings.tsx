@@ -1,7 +1,7 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
-import { clearPushTokens, updateContactCheckInPreference } from '@/lib/notifications/core';
+import { updateContactCheckInPreference } from '@/lib/notifications/core';
 import Constants from 'expo-constants';
 import {
     disableSelfReminder,
@@ -10,7 +10,6 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -59,7 +58,6 @@ const STORAGE_KEYS = {
 };
 
 export default function SettingsScreen() {
-    const router = useRouter();
     const { t, i18n } = useTranslation();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
@@ -198,76 +196,6 @@ export default function SettingsScreen() {
         );
     };
 
-
-
-    const handleLogout = async () => {
-        Alert.alert(t('profile.logout.title'), t('profile.logout.confirm'), [
-            {
-                text: t('common.cancel'),
-                style: 'cancel',
-            },
-            {
-                text: t('profile.logout.button'),
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        // 1. Get the current user before signing out
-                        const { data: { user } } = await supabase.auth.getUser();
-
-                        if (user) {
-                            // 2. Clear push tokens from Supabase (sets expo_push_token to null)
-                            await clearPushTokens(user.id);
-
-                            // 3. Get and potentially invalidate the push token from Expo
-                            const pushToken = await AsyncStorage.getItem('@expo_push_token');
-                            if (pushToken) {
-                                // Optional: Tell Expo this token is no longer valid
-                                // This helps with cleanup on Expo's side
-                                try {
-                                    await fetch('https://exp.host/--/api/v2/push/delete', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                            token: pushToken
-                                        }),
-                                    });
-                                } catch (e) {
-                                    console.log('Note: Could not delete token from Expo', e);
-                                }
-                            }
-                        }
-
-                        // 4. Clear ALL AsyncStorage items
-                        const keysToRemove = [
-                            '@expo_push_token',                    // Push notification token
-                            '@user_profile',                       // User profile data
-                            '@app_language',                       // Language setting
-                            '@settings_notifications',             // Notification settings
-                            '@settings_check_in_reminder',         // Check-in reminder setting
-                            '@settings_contact_check_in',          // Contact check-in setting
-                            // Add any other keys your app uses
-                        ];
-
-                        await AsyncStorage.multiRemove(keysToRemove);
-
-                        // 5. Sign out from Supabase
-                        const { error } = await supabase.auth.signOut();
-                        if (error) throw error;
-
-                        // 6. Navigate to login
-                        router.replace('/(auth)/login');
-
-                    } catch (error) {
-                        console.error('Error during logout:', error);
-                        // Even if cleanup fails, try to navigate to login
-                        router.replace('/(auth)/login');
-                    }
-                },
-            },
-        ]);
-    };
 
     return (
         <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -474,26 +402,11 @@ export default function SettingsScreen() {
                 </View>
             </ScrollView>
 
-            {/* Fixed bottom logout */}
             <View style={styles.footer}>
                 <View style={styles.versionCard}>
                     <Text style={styles.versionTitle}>App Version</Text>
                     <Text style={styles.versionValue}>{versionLabel}</Text>
                 </View>
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                    activeOpacity={0.7}
-                >
-                    <Ionicons
-                        name="log-out-outline"
-                        size={20}
-                        color={BaseColors.error}
-                    />
-                    <Text style={styles.logoutText}>
-                        {t('profile.buttons.logout')}
-                    </Text>
-                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -680,21 +593,5 @@ const styles = StyleSheet.create({
         color: BaseColors.text.dark,
         fontSize: 13,
         fontWeight: '600',
-    },
-    logoutButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: BaseColors.errorLight,
-        borderRadius: 16,
-        padding: 18,
-        borderWidth: 1,
-        borderColor: BaseColors.errorBorder,
-        gap: 10,
-    },
-    logoutText: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: BaseColors.error,
     },
 });

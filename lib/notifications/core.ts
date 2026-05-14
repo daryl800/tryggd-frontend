@@ -6,9 +6,13 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { supabase } from '../supabase';
 
+const CONTACT_REQUEST_FUNCTION_URL =
+    'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-contact-request';
+
 // Storage keys
 const STORAGE_KEYS = {
     CONTACT_CHECK_IN: '@settings_contact_check_in',
+    WELFARE_SENT_CACHE: '@welfare_sent_cache',
 };
 
 // Check environment
@@ -82,6 +86,17 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         // Get notification preference from AsyncStorage
         const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
         const isEnabled = contactCheckInPref !== 'false'; // default to true
+
+        // Ensure this device token is owned by only one user row before upserting.
+        const { error: cleanupError } = await supabase
+            .from('user_push_tokens')
+            .delete()
+            .eq('expo_push_token', token)
+            .neq('user_id', userId);
+
+        if (cleanupError) {
+            throw cleanupError;
+        }
 
         // Save to user_push_tokens table
         const { error } = await supabase
@@ -254,125 +269,38 @@ export async function sendContactRequestNotification({
 }): Promise<boolean> {
     try {
         console.log('📤 Sending contact request notification...');
-
-        // 1. Check if receiver wants notifications
-        const { data: tokenData, error: tokenError } = await supabase
-            .from('user_push_tokens')
-            .select('expo_push_token, contact_checkin_notifications')
-            .eq('user_id', receiverUserId)
-            .maybeSingle();
-
-        if (tokenError) throw tokenError;
-
-        // Skip if no token or notifications disabled
-        if (!tokenData?.expo_push_token) {
-            console.log('⏩ No push token found for receiver:', receiverUserId);
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) {
+            console.error('❌ No valid session for contact request notification');
             return false;
         }
 
-        if (tokenData.contact_checkin_notifications === false) {
-            console.log('⏩ Receiver has disabled contact notifications');
-            return false;
-        }
-
-        // 2. Get sender's profile for display name
-        const { data: senderProfile } = await supabase
-            .from('profiles')
-            .select('display_name, avatar_url')
-            .eq('id', senderUserId)
-            .maybeSingle();
-
-        const displayName = senderProfile?.display_name || senderName || senderEmail.split('@')[0];
-
-        // 3. Save notification to database for history
-        const { error: dbError } = await supabase
-            .from('notifications')
-            .insert({
-                user_id: receiverUserId,
-                type: 'contact_request',
-                title: '📩 Contact Request',
-                body: `${displayName} wants to add you as a contact`,
-                data: {
-                    requestId,
-                    senderUserId,
-                    senderName: displayName,
-                    senderEmail,
-                    senderAvatar: senderProfile?.avatar_url,
-                    screen: 'contacts',
-                    tab: 'requests'
-                },
-                sender_user_id: senderUserId,
-                read: false,
-                created_at: new Date().toISOString()
-            });
-
-        if (dbError) {
-            console.error('❌ Error saving notification to DB:', dbError);
-            // Continue anyway - try to send push
-        }
-
-        // 4. Send push notification via Expo
-        const message = {
-            to: tokenData.expo_push_token,
-            sound: 'default',
-            title: '📩 Contact Request',
-            body: `${displayName} wants to add you as a contact`,
-            data: {
-                type: 'contact_request',
-                requestId,
-                senderUserId,
-                senderName: displayName,
-                senderEmail,
-                senderAvatar: senderProfile?.avatar_url,
-                screen: 'contacts',
-                tab: 'requests'
-            },
-            channelId: 'default',
-            priority: 'high' as const,
-        };
-
-        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        const response = await fetch(CONTACT_REQUEST_FUNCTION_URL, {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
-                'Accept-encoding': 'gzip, deflate',
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(message),
+            body: JSON.stringify({
+                receiverUserId,
+                senderUserId,
+                senderName,
+                senderEmail,
+                requestId,
+            }),
         });
 
         const result = await response.json();
+        console.log('📥 Contact request push response:', {
+            ok: response.ok,
+            status: response.status,
+            result,
+        });
 
         if (!response.ok) {
-            console.error('❌ Expo push failed:', result);
+            console.error('❌ Contact request notification failed:', result);
             return false;
-        }
-
-        // ✅ Check for DeviceNotRegistered error in the response
-        if (result.data && Array.isArray(result.data)) {
-            for (const receipt of result.data) {
-                if (receipt.status === 'error' && receipt.details?.error === 'DeviceNotRegistered') {
-                    console.log('📱 Device not registered, cleaning up token for user:', receiverUserId);
-
-                    // Clear the invalid token from your database
-                    const { error: updateError } = await supabase
-                        .from('user_push_tokens')
-                        .update({
-                            expo_push_token: null,
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq('user_id', receiverUserId);
-
-                    if (updateError) {
-                        console.error('❌ Error cleaning up invalid token:', updateError);
-                    } else {
-                        console.log('✅ Invalid token cleaned up for user:', receiverUserId);
-                    }
-
-                    // Still return false since notification wasn't delivered
-                    return false;
-                }
-            }
         }
 
         console.log('✅ Contact request notification sent successfully');
@@ -381,6 +309,123 @@ export async function sendContactRequestNotification({
     } catch (error) {
         console.error('❌ Error sending contact request notification:', error);
         return false;
+    }
+}
+
+export async function hasSentWelfareCheck(
+    recipientUserId: string,
+    senderUserId: string,
+    checkinTime: string
+): Promise<boolean> {
+    try {
+        const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
+        const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
+        if (cached) {
+            const parsed = JSON.parse(cached) as Record<string, boolean>;
+            if (parsed[cacheKey]) {
+                return true;
+            }
+        }
+
+        const { data, error } = await supabase
+            .from('notifications')
+            .select('id')
+            .eq('user_id', recipientUserId)
+            .eq('sender_user_id', senderUserId)
+            .eq('type', 'welfare_check')
+            .filter('data->>checkinTime', 'eq', checkinTime)
+            .limit(1);
+
+        if (error) throw error;
+        const hasSent = !!data && data.length > 0;
+        if (hasSent) {
+            await cacheWelfareCheckStatus(cacheKey);
+        }
+        return hasSent;
+    } catch (error) {
+        console.error('❌ Error checking welfare notification status:', error);
+        return false;
+    }
+}
+
+async function cacheWelfareCheckStatus(cacheKey: string): Promise<void> {
+    const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
+    const parsed = cached ? JSON.parse(cached) as Record<string, boolean> : {};
+    parsed[cacheKey] = true;
+    await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_CACHE, JSON.stringify(parsed));
+}
+
+export async function sendWelfareCheckNotification({
+    receiverUserId,
+    senderUserId,
+    senderName,
+    checkinTime,
+}: {
+    receiverUserId: string;
+    senderUserId: string;
+    senderName?: string;
+    checkinTime: string;
+}): Promise<{ success: boolean; alreadySent?: boolean; error?: string }> {
+    try {
+        console.log('📤 Sending welfare check notification...', {
+            receiverUserId,
+            senderUserId,
+            checkinTime,
+        });
+
+        const cacheKey = `${receiverUserId}_${senderUserId}_${checkinTime}`;
+        const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime);
+        if (alreadySent) {
+            console.log('⏩ Welfare check already sent for this overdue check-in');
+            return { success: true, alreadySent: true };
+        }
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
+        const response = await fetch(
+            'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-welfare-check',
+            {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                receiverUserId,
+                senderUserId,
+                senderName,
+                checkinTime,
+            }),
+        });
+
+        const result = await response.json();
+        console.log('📥 Welfare Expo push response:', {
+            ok: response.ok,
+            status: response.status,
+            result,
+        });
+
+        if (!response.ok) {
+            console.error('❌ Expo push failed:', result);
+            return { success: false, error: result?.error || 'Welfare check failed' };
+        }
+
+        await cacheWelfareCheckStatus(cacheKey);
+
+        console.log('✅ Welfare check notification sent successfully');
+        return {
+            success: true,
+            alreadySent: result?.alreadySent === true,
+        };
+    } catch (error) {
+        console.error('❌ Error sending welfare check notification:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown welfare notification error',
+        };
     }
 }
 /**

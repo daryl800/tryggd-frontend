@@ -1097,7 +1097,7 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
   },
   iconContainer: {
-    marginBottom: 4,
+    marginBottom: Platform.OS === 'ios' ? 8 : 4,
     marginTop: 4,
   },
   textContainer: {
@@ -1105,7 +1105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     maxWidth: '100%',
     width: '100%',
-    marginTop: -4,
+    marginTop: Platform.OS === 'ios' ? 0 : -4,
   },
   ctaText: {
     color: BaseColors.text.dark,
@@ -1179,13 +1179,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: 6,
     color: BaseColors.text.dark,
   },
   cardSubtext: {
     fontSize: 18,
     fontWeight: '600',
-    marginTop: 6,
+    marginTop: 10,
     color: BaseColors.primary,
     textAlign: 'center',
   },

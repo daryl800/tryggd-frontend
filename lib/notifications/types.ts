@@ -4,6 +4,7 @@ export type NotificationType =
     | 'contact_accepted'
     | 'checkin_alert'
     | 'checkin_response'
+    | 'welfare_check'
     | 'system';
 
 export interface NotificationData {

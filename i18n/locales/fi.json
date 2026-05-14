@@ -92,6 +92,10 @@
       "todayLikes_other": "👋 Sait tänään {{count}} tykkäystä:",
       "prefix": "reagoi kirjautumiseesi",
       "defaultMessage": "tykkää 👍 kirjautumisestasi!"
+    },
+    "welfareButton": {
+      "send": "Oletko kunnossa?",
+      "sent": "Lähetetty ✓"
     }
   },
   "contacts": {

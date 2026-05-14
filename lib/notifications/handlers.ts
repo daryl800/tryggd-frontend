@@ -73,6 +73,11 @@ function handleNotificationNavigation(data: any) {
             console.log('→ Navigated to contacts list');
             break;
 
+        case 'welfare_check':
+            router.push('/(tabs)/activity');
+            console.log('→ Navigated to activity from welfare check');
+            break;
+
         case 'daily_reminder':
             router.push('/(tabs)');
             console.log('→ Navigated to activity');

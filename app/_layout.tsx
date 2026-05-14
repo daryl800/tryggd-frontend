@@ -20,6 +20,8 @@ import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { registerAndSavePushToken } from '@/lib/notifications/core';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
+import { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from '../i18n';
+import { supabase } from '../lib/supabase';
 
 // Make custom components available globally
 (global as any).Text = CustomText;
@@ -191,6 +193,53 @@ function RootLayoutNav() {
   const isNavReady = useNavigationPersistence(navigationRef);
   useNotifications(user);
   useDeepLinking(router);
+
+  useEffect(() => {
+    const syncLanguagePreference = async () => {
+      if (!user) return;
+
+      try {
+        const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+        const currentLanguage = resolveSupportedLanguage(savedLanguage || i18n.language || getDevicePreferredLanguage());
+
+        if (!savedLanguage) {
+          await i18n.changeLanguage(currentLanguage);
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
+        }
+
+        const { data: settings } = await supabase
+          .from('user_settings')
+          .select('language')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        const serverLanguage = resolveSupportedLanguage(settings?.language);
+        const shouldPreferLocal =
+          !settings?.language ||
+          (!savedLanguage && currentLanguage !== 'en' && serverLanguage === 'en');
+
+        if (shouldPreferLocal) {
+          await supabase
+            .from('user_settings')
+            .upsert({
+              user_id: user.id,
+              language: currentLanguage,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id' });
+          return;
+        }
+
+        if (settings?.language && serverLanguage !== currentLanguage) {
+          await i18n.changeLanguage(serverLanguage);
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, serverLanguage);
+        }
+      } catch (error) {
+        console.error('Failed to sync language preference', error);
+      }
+    };
+
+    void syncLanguagePreference();
+  }, [user?.id]);
 
   if (!initialized || !isNavReady) {
     return (
