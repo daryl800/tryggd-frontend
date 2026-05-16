@@ -351,7 +351,13 @@
       "title": "Accedi",
       "signIn": "Accedi",
       "loggingIn": "Accesso in corso...",
-      "error": "Accesso non riuscito"
+      "error": "Accesso non riuscito",
+      "continueWithGoogle": "Continua con Google",
+      "connectingToGoogle": "Connessione a Google...",
+      "continueWithApple": "Continua con Apple",
+      "connectingToApple": "Connessione a Apple...",
+      "orContinueWithEmail": "oppure continua con e-mail",
+      "socialError": "Accesso non riuscito"
     },
     "email": "Email",
     "displayName": "Nome",
@@ -384,6 +390,30 @@
       "login": "Vai al login",
       "error": "Errore nella reimpostazione della password",
       "passwordPlaceholder": "Nuova password"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Ancora un passaggio",
+    "title": "Completa il tuo profilo",
+    "description": "Aggiungi il nome che vedranno gli altri e il tuo Tryggd ID per la ricerca contatti.",
+    "nameLabel": "Nome",
+    "namePlaceholder": "es. Emily Cooper",
+    "nameHelperEmpty": "Questo è il nome che vedranno i tuoi contatti.",
+    "nameHelper": "Questo è il nome che vedranno i tuoi contatti.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "es. emilycooper",
+    "tryggdIdHelper": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
+    "continue": "Continua",
+    "saving": "Salvataggio...",
+    "saveErrorTitle": "Impossibile salvare il profilo",
+    "saveErrorBody": "Riprova.",
+    "duplicateTitle": "Prova un altro Tryggd ID",
+    "duplicateBody": "Questo Tryggd ID è già in uso.",
+    "validation": {
+      "required": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
+      "min": "Il Tryggd ID deve contenere almeno 3 caratteri.",
+      "max": "Il Tryggd ID deve contenere al massimo 24 caratteri.",
+      "chars": "Usa solo lettere minuscole, numeri, punti o trattini bassi."
     }
   }
 }

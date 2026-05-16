@@ -387,7 +387,13 @@
       "title": "登录",
       "signIn": "登录",
       "loggingIn": "登录中...",
-      "error": "登录失败"
+      "error": "登录失败",
+      "continueWithGoogle": "使用 Google 继续",
+      "connectingToGoogle": "正在连接 Google...",
+      "continueWithApple": "使用 Apple 继续",
+      "connectingToApple": "正在连接 Apple...",
+      "orContinueWithEmail": "或使用电子邮箱继续",
+      "socialError": "登录失败"
     },
     "email": "邮箱",
     "displayName": "姓名",
@@ -420,6 +426,30 @@
       "login": "前往登录",
       "error": "重置密码时出错",
       "passwordPlaceholder": "新密码"
+    }
+  },
+  "completeProfile": {
+    "kicker": "还差一步",
+    "title": "完善你的资料",
+    "description": "添加别人会看到的姓名，以及用于联系人搜索的 Tryggd ID。",
+    "nameLabel": "姓名",
+    "namePlaceholder": "例如 Emily Cooper",
+    "nameHelperEmpty": "这是联系人会看到的姓名。",
+    "nameHelper": "这是联系人会看到的姓名。",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "例如 emilycooper",
+    "tryggdIdHelper": "别人会用它在 Tryggd 中找到并添加你。",
+    "continue": "继续",
+    "saving": "保存中...",
+    "saveErrorTitle": "无法保存资料",
+    "saveErrorBody": "请再试一次。",
+    "duplicateTitle": "请换一个 Tryggd ID",
+    "duplicateBody": "这个 Tryggd ID 已被使用。",
+    "validation": {
+      "required": "别人会用它在 Tryggd 中找到并添加你。",
+      "min": "Tryggd ID 至少需要 3 个字符。",
+      "max": "Tryggd ID 不能超过 24 个字符。",
+      "chars": "只能使用小写字母、数字、点或下划线。"
     }
   }
 }

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import { Slot, useNavigationContainerRef, useRouter } from "expo-router";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { ActivityIndicator, AppState, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -137,7 +137,7 @@ function useDeepLinking(router: any) {
       try {
         const session = await createSessionFromUrl(url);
         if (session) {
-          router.replace("/(tabs)");
+          router.replace("/(tabs)/index");
           return;
         }
       } catch (error) {
@@ -179,9 +179,10 @@ function useDeepLinking(router: any) {
 // Main Navigation Component
 // ============================================
 function RootLayoutNav() {
-  const { initialized, user } = useAuth();
+  const { initialized, user, needsUsername } = useAuth();
   const router = useRouter();
   const navigationRef = useNavigationContainerRef();
+  const [languageReady, setLanguageReady] = useState(false);
 
   // Initialize services
   useEffect(() => {
@@ -195,10 +196,21 @@ function RootLayoutNav() {
   useDeepLinking(router);
 
   useEffect(() => {
-    const syncLanguagePreference = async () => {
-      if (!user) return;
+    const syncLanguage = async () => {
+      if (!initialized) return;
+
+      setLanguageReady(false);
 
       try {
+        if (!user) {
+          const deviceLanguage = getDevicePreferredLanguage();
+          if (resolveSupportedLanguage(i18n.language) !== deviceLanguage) {
+            await i18n.changeLanguage(deviceLanguage);
+          }
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, deviceLanguage);
+          return;
+        }
+
         const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
         const currentLanguage = resolveSupportedLanguage(savedLanguage || i18n.language || getDevicePreferredLanguage());
 
@@ -216,7 +228,7 @@ function RootLayoutNav() {
         const serverLanguage = resolveSupportedLanguage(settings?.language);
         const shouldPreferLocal =
           !settings?.language ||
-          (!savedLanguage && currentLanguage !== 'en' && serverLanguage === 'en');
+          (currentLanguage !== 'en' && serverLanguage === 'en' && needsUsername);
 
         if (shouldPreferLocal) {
           await supabase
@@ -235,13 +247,15 @@ function RootLayoutNav() {
         }
       } catch (error) {
         console.error('Failed to sync language preference', error);
+      } finally {
+        setLanguageReady(true);
       }
     };
 
-    void syncLanguagePreference();
-  }, [user?.id]);
+    void syncLanguage();
+  }, [initialized, needsUsername, user?.id]);
 
-  if (!initialized || !isNavReady) {
+  if (!initialized || !isNavReady || !languageReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />

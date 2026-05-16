@@ -334,7 +334,13 @@
       "title": "Log ind",
       "signIn": "Log ind",
       "loggingIn": "Logger ind...",
-      "error": "Login mislykkedes"
+      "error": "Login mislykkedes",
+      "continueWithGoogle": "Fortsæt med Google",
+      "connectingToGoogle": "Opretter forbindelse til Google...",
+      "continueWithApple": "Fortsæt med Apple",
+      "connectingToApple": "Opretter forbindelse til Apple...",
+      "orContinueWithEmail": "eller fortsæt med e-mail",
+      "socialError": "Login mislykkedes"
     },
     "email": "E-mail",
     "displayName": "Navn",
@@ -367,6 +373,30 @@
       "login": "Gå til login",
       "error": "Fejl ved nulstilling",
       "passwordPlaceholder": "Ny adgangskode"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Et sidste trin",
+    "title": "Fuldfør din profil",
+    "description": "Tilføj det navn folk skal se og dit Tryggd ID til kontaktsøgning.",
+    "nameLabel": "Navn",
+    "namePlaceholder": "f.eks. Emily Cooper",
+    "nameHelperEmpty": "Dette er navnet, dine kontakter vil se.",
+    "nameHelper": "Dette er navnet, dine kontakter vil se.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "f.eks. emilycooper",
+    "tryggdIdHelper": "Folk bruger dette til at finde og tilføje dig i Tryggd.",
+    "continue": "Fortsæt",
+    "saving": "Gemmer...",
+    "saveErrorTitle": "Kunne ikke gemme profil",
+    "saveErrorBody": "Prøv igen.",
+    "duplicateTitle": "Prøv et andet Tryggd ID",
+    "duplicateBody": "Det Tryggd ID er allerede optaget.",
+    "validation": {
+      "required": "Folk bruger dette til at finde og tilføje dig i Tryggd.",
+      "min": "Tryggd ID skal være mindst 3 tegn.",
+      "max": "Tryggd ID må højst være 24 tegn.",
+      "chars": "Brug kun små bogstaver, tal, punktummer eller understregninger."
     }
   }
 }

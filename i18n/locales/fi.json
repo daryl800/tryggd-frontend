@@ -334,7 +334,13 @@
       "title": "Kirjaudu sisään",
       "signIn": "Kirjaudu sisään",
       "loggingIn": "Kirjaudutaan sisään...",
-      "error": "Kirjautuminen epäonnistui"
+      "error": "Kirjautuminen epäonnistui",
+      "continueWithGoogle": "Jatka Googlella",
+      "connectingToGoogle": "Yhdistetään Googleen...",
+      "continueWithApple": "Jatka Applella",
+      "connectingToApple": "Yhdistetään Appleen...",
+      "orContinueWithEmail": "tai jatka sähköpostilla",
+      "socialError": "Kirjautuminen epäonnistui"
     },
     "email": "Sähköposti",
     "displayName": "Nimi",
@@ -367,6 +373,30 @@
       "login": "Siirry kirjautumiseen",
       "error": "Virhe salasanan nollauksessa",
       "passwordPlaceholder": "Uusi salasana"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Vielä yksi vaihe",
+    "title": "Viimeistele profiilisi",
+    "description": "Lisää nimi, jonka muut näkevät, sekä Tryggd ID yhteystietohakua varten.",
+    "nameLabel": "Nimi",
+    "namePlaceholder": "esim. Emily Cooper",
+    "nameHelperEmpty": "Yhteystietosi näkevät tämän nimen.",
+    "nameHelper": "Yhteystietosi näkevät tämän nimen.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "esim. emilycooper",
+    "tryggdIdHelper": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
+    "continue": "Jatka",
+    "saving": "Tallennetaan...",
+    "saveErrorTitle": "Profiilia ei voitu tallentaa",
+    "saveErrorBody": "Yritä uudelleen.",
+    "duplicateTitle": "Kokeile toista Tryggd ID:tä",
+    "duplicateBody": "Tämä Tryggd ID on jo varattu.",
+    "validation": {
+      "required": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
+      "min": "Tryggd ID:n on oltava vähintään 3 merkkiä.",
+      "max": "Tryggd ID saa olla enintään 24 merkkiä.",
+      "chars": "Käytä vain pieniä kirjaimia, numeroita, pisteitä tai alaviivoja."
     }
   }
 }

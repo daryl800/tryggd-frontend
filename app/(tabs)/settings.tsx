@@ -403,10 +403,7 @@ export default function SettingsScreen() {
             </ScrollView>
 
             <View style={styles.footer}>
-                <View style={styles.versionCard}>
-                    <Text style={styles.versionTitle}>App Version</Text>
-                    <Text style={styles.versionValue}>{versionLabel}</Text>
-                </View>
+                <Text style={styles.versionText}>{versionLabel}</Text>
             </View>
         </SafeAreaView>
     );
@@ -566,32 +563,13 @@ const styles = StyleSheet.create({
         marginHorizontal: CARD_HORIZONTAL_PADDING,
     },
     footer: {
-        paddingHorizontal: SCREEN_PADDING.horizontal,
+        alignItems: 'center',
         paddingBottom: 16,
         paddingTop: 6,
-        backgroundColor: BaseColors.background,
     },
-    versionCard: {
-        alignItems: 'center',
-        backgroundColor: BaseColors.surface,
-        borderColor: BaseColors.neutral[200],
-        borderRadius: 14,
-        borderWidth: 1,
-        marginBottom: 8,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-    },
-    versionTitle: {
+    versionText: {
         color: BaseColors.neutral[500],
-        fontSize: 11,
-        fontWeight: '600',
-        letterSpacing: 0.4,
-        marginBottom: 2,
-        textTransform: 'uppercase',
-    },
-    versionValue: {
-        color: BaseColors.text.dark,
-        fontSize: 13,
-        fontWeight: '600',
+        fontSize: 12,
+        fontWeight: '500',
     },
 });

@@ -3,8 +3,10 @@ import BaseColors from "@/constants/colors";
 import { signInWithSocial } from "@/lib/auth/oauth";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from "../../i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
     Alert,
     KeyboardAvoidingView,
@@ -20,13 +22,36 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginScreen() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
     const passwordRef = useRef<TextInput>(null);
+
+    useEffect(() => {
+        const syncLoginLanguage = async () => {
+            try {
+                const deviceLanguage = getDevicePreferredLanguage();
+                const currentLanguage = resolveSupportedLanguage(i18n.language);
+                console.log('[LoginScreen] language sync', {
+                    rawI18nLanguage: i18n.language,
+                    currentLanguage,
+                    deviceLanguage,
+                });
+                if (currentLanguage !== deviceLanguage) {
+                    await i18n.changeLanguage(deviceLanguage);
+                    console.log('[LoginScreen] changed language to', deviceLanguage);
+                }
+                await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, deviceLanguage);
+            } catch (error) {
+                console.error('Failed to sync login language', error);
+            }
+        };
+
+        void syncLoginLanguage();
+    }, [i18n]);
 
     const canSubmit = email && password.length >= 6 && !loading;
 
@@ -58,10 +83,10 @@ export default function LoginScreen() {
         try {
             const result = await signInWithSocial(provider);
             if (result) {
-                router.replace("/(tabs)");
+                router.replace("/(tabs)/index");
             }
         } catch (err: any) {
-            Alert.alert("Sign-in failed", err.message || t("auth.unknownError"));
+            Alert.alert(t("auth.login.socialError"), err.message || t("auth.unknownError"));
         } finally {
             setSocialLoading(null);
         }
@@ -95,7 +120,7 @@ export default function LoginScreen() {
                             >
                                 <Ionicons name="logo-google" size={18} color="#111827" />
                                 <Text style={socialButtonText} allowFontScaling={false}>
-                                    {socialLoading === "google" ? "Connecting to Google..." : "Continue with Google"}
+                                    {socialLoading === "google" ? t("auth.login.connectingToGoogle") : t("auth.login.continueWithGoogle")}
                                 </Text>
                             </TouchableOpacity>
 
@@ -106,7 +131,7 @@ export default function LoginScreen() {
                             >
                                 <Ionicons name="logo-apple" size={20} color="#111827" />
                                 <Text style={socialButtonText} allowFontScaling={false}>
-                                    {socialLoading === "apple" ? "Connecting to Apple..." : "Continue with Apple"}
+                                    {socialLoading === "apple" ? t("auth.login.connectingToApple") : t("auth.login.continueWithApple")}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -114,7 +139,7 @@ export default function LoginScreen() {
                         <View style={dividerRow}>
                             <View style={dividerLine} />
                             <Text style={dividerText} allowFontScaling={false}>
-                                or continue with email
+                                {t("auth.login.orContinueWithEmail")}
                             </Text>
                             <View style={dividerLine} />
                         </View>

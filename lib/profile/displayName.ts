@@ -1,4 +1,19 @@
 const APPLE_RELAY_DOMAIN = '@privaterelay.appleid.com';
+const GENERIC_PLACEHOLDER_NAMES = new Set([
+    'user',
+    'användare',
+    'bruker',
+    'bruger',
+    'käyttäjä',
+    'utilisateur',
+    'usuario',
+    'utente',
+    'benutzer',
+    'ユーザー',
+    '사용자',
+    '用户',
+    '使用者',
+]);
 
 const normalizeValue = (value: unknown): string | null => {
     if (typeof value !== 'string') {
@@ -21,6 +36,10 @@ export const isLikelyGeneratedDisplayName = (value?: string | null) => {
     }
 
     const trimmed = value.trim();
+
+    if (GENERIC_PLACEHOLDER_NAMES.has(trimmed.toLowerCase())) {
+        return true;
+    }
 
     return /^[a-z0-9]{8,}$/i.test(trimmed) && /[a-z]/i.test(trimmed) && /\d/.test(trimmed);
 };

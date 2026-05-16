@@ -9,6 +9,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     ActivityIndicator,
     Alert,
@@ -22,6 +23,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CompleteProfileScreen() {
+    const { t } = useTranslation();
     const { user, profile, loading, needsUsername, refreshProfile } = useAuth();
     const [username, setUsername] = useState("");
     const [displayName, setDisplayName] = useState("");
@@ -34,24 +36,32 @@ export default function CompleteProfileScreen() {
         }
 
         if (user && !needsUsername) {
-            router.replace("/(tabs)");
+            router.replace("/(tabs)/index");
         }
     }, [user, loading, needsUsername]);
 
     useEffect(() => {
-        if (profile?.username) {
+        if (profile?.username && profile.username.trim().toLowerCase() !== "user") {
             setUsername(profile.username);
             return;
         }
 
-        setUsername(
-            suggestUsername(
-                profile?.display_name ||
-                user?.user_metadata?.preferred_username ||
-                user?.user_metadata?.name ||
-                user?.email?.split("@")[0]
-            )
-        );
+        const usernameSeedCandidates = [
+            profile?.display_name,
+            user?.user_metadata?.preferred_username,
+            user?.user_metadata?.name,
+            user?.email?.split("@")[0],
+        ];
+
+        const usernameSeed = usernameSeedCandidates.find((candidate) => {
+            if (!candidate || typeof candidate !== "string") {
+                return false;
+            }
+
+            return !isLikelyGeneratedDisplayName(candidate);
+        });
+
+        setUsername(suggestUsername(usernameSeed));
     }, [profile?.display_name, profile?.username, user?.email, user?.user_metadata]);
 
     useEffect(() => {
@@ -62,8 +72,7 @@ export default function CompleteProfileScreen() {
             return;
         }
 
-        const suggestedName = deriveDisplayName(user, "");
-        setDisplayName(isLikelyGeneratedDisplayName(suggestedName) ? "" : suggestedName);
+        setDisplayName("");
     }, [profile?.display_name, user]);
 
     const normalizedUsername = useMemo(
@@ -71,9 +80,14 @@ export default function CompleteProfileScreen() {
         [username]
     );
     const trimmedDisplayName = useMemo(() => displayName.trim(), [displayName]);
-    const validationMessage = getUsernameValidationMessage(username);
-    const displayNameValidationMessage =
-        trimmedDisplayName.length === 0 ? "Enter the name you want people to see." : "";
+    const suggestedDisplayNamePlaceholder = useMemo(() => {
+        const derivedName = deriveDisplayName(user, "").trim();
+        return derivedName && !isLikelyGeneratedDisplayName(derivedName)
+            ? derivedName
+            : t("completeProfile.namePlaceholder");
+    }, [t, user]);
+    const validationMessage = getUsernameValidationMessage(username, t);
+    const displayNameValidationMessage = null;
     const canSubmit =
         Boolean(user) &&
         !saving &&
@@ -98,7 +112,7 @@ export default function CompleteProfileScreen() {
 
             if (error) {
                 if (error.code === "23505") {
-                    Alert.alert("Try another Tryggd ID", "That Tryggd ID is already taken.");
+                    Alert.alert(t("completeProfile.duplicateTitle"), t("completeProfile.duplicateBody"));
                     return;
                 }
 
@@ -122,15 +136,15 @@ export default function CompleteProfileScreen() {
                 refreshedProfile?.display_name?.trim() !== trimmedDisplayName
             ) {
                 Alert.alert(
-                    "Could not save profile",
-                    "Your profile could not be updated. Please try again."
+                    t("completeProfile.saveErrorTitle"),
+                    t("completeProfile.saveErrorBody")
                 );
                 return;
             }
 
-            router.replace("/(tabs)");
+            router.replace("/(tabs)/index");
         } catch (error: any) {
-            Alert.alert("Could not save profile", error.message || "Please try again.");
+            Alert.alert(t("completeProfile.saveErrorTitle"), error.message || t("completeProfile.saveErrorBody"));
         } finally {
             setSaving(false);
         }
@@ -151,42 +165,42 @@ export default function CompleteProfileScreen() {
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
                 <View style={styles.content}>
-                    <Text style={styles.kicker}>One more step</Text>
-                    <Text style={styles.title}>Complete your profile</Text>
+                    <Text style={styles.kicker}>{t("completeProfile.kicker")}</Text>
+                    <Text style={styles.title}>{t("completeProfile.title")}</Text>
                     <Text style={styles.description}>
-                        Add the name people will see and your Tryggd ID for contact search.
+                        {t("completeProfile.description")}
                     </Text>
 
                     <View style={styles.inputBlock}>
-                        <Text style={styles.label}>Name</Text>
+                        <Text style={styles.label}>{t("completeProfile.nameLabel")}</Text>
                         <TextInput
                             value={displayName}
                             onChangeText={setDisplayName}
                             autoCapitalize="words"
                             autoCorrect={false}
-                            placeholder="e.g. Daryl Ng"
+                            placeholder={suggestedDisplayNamePlaceholder}
                             placeholderTextColor="#9CA3AF"
                             style={styles.input}
                         />
                         <Text style={styles.helper}>
-                            {displayNameValidationMessage || "This is the name your contacts will see."}
+                            {displayNameValidationMessage || t("completeProfile.nameHelper")}
                         </Text>
                     </View>
 
                     <View style={styles.inputBlock}>
-                        <Text style={styles.label}>Tryggd ID</Text>
+                        <Text style={styles.label}>{t("completeProfile.tryggdIdLabel")}</Text>
                         <TextInput
                             value={username}
                             onChangeText={setUsername}
                             autoCapitalize="none"
                             autoCorrect={false}
                             spellCheck={false}
-                            placeholder="e.g. daryl.tryggd"
+                            placeholder={t("completeProfile.tryggdIdPlaceholder")}
                             placeholderTextColor="#9CA3AF"
                             style={styles.input}
                         />
                         <Text style={styles.helper}>
-                            {validationMessage || "Use 3-24 lowercase letters, numbers, dots, or underscores."}
+                            {validationMessage || t("completeProfile.tryggdIdHelper")}
                         </Text>
                     </View>
 
@@ -196,7 +210,7 @@ export default function CompleteProfileScreen() {
                         style={[styles.button, !canSubmit && styles.buttonDisabled]}
                     >
                         <Text style={styles.buttonText}>
-                            {saving ? "Saving..." : "Continue"}
+                            {saving ? t("completeProfile.saving") : t("completeProfile.continue")}
                         </Text>
                     </TouchableOpacity>
                 </View>

@@ -351,7 +351,13 @@
       "title": "Anmelden",
       "signIn": "Anmelden",
       "loggingIn": "Anmeldung...",
-      "error": "Anmeldung fehlgeschlagen"
+      "error": "Anmeldung fehlgeschlagen",
+      "continueWithGoogle": "Mit Google fortfahren",
+      "connectingToGoogle": "Verbindung mit Google wird hergestellt...",
+      "continueWithApple": "Mit Apple fortfahren",
+      "connectingToApple": "Verbindung mit Apple wird hergestellt...",
+      "orContinueWithEmail": "oder mit E-Mail fortfahren",
+      "socialError": "Anmeldung fehlgeschlagen"
     },
     "email": "E-Mail",
     "displayName": "Name",
@@ -384,6 +390,30 @@
       "login": "Zur Anmeldung",
       "error": "Fehler beim Zurücksetzen des Passworts",
       "passwordPlaceholder": "Neues Passwort"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Noch ein Schritt",
+    "title": "Vervollständige dein Profil",
+    "description": "Füge den Namen hinzu, den andere sehen, und deine Tryggd ID für die Kontaktsuche.",
+    "nameLabel": "Name",
+    "namePlaceholder": "z. B. Emily Cooper",
+    "nameHelperEmpty": "Diesen Namen sehen deine Kontakte.",
+    "nameHelper": "Diesen Namen sehen deine Kontakte.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "z. B. emilycooper",
+    "tryggdIdHelper": "Darüber finden und hinzufügen dich andere in Tryggd.",
+    "continue": "Weiter",
+    "saving": "Wird gespeichert...",
+    "saveErrorTitle": "Profil konnte nicht gespeichert werden",
+    "saveErrorBody": "Bitte versuche es erneut.",
+    "duplicateTitle": "Wähle eine andere Tryggd ID",
+    "duplicateBody": "Diese Tryggd ID ist bereits vergeben.",
+    "validation": {
+      "required": "Darüber finden und hinzufügen dich andere in Tryggd.",
+      "min": "Die Tryggd ID muss mindestens 3 Zeichen lang sein.",
+      "max": "Die Tryggd ID darf höchstens 24 Zeichen lang sein.",
+      "chars": "Verwende nur Kleinbuchstaben, Zahlen, Punkte oder Unterstriche."
     }
   }
 }

@@ -4,6 +4,9 @@ import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
+const zhHans = require('./locales/zh-Hans.json');
+const zhHant = require('./locales/zh-Hant.json');
+
 const resources = {
     da: { translation: require('./locales/da.json') },
     en: { translation: require('./locales/en.json') },
@@ -16,12 +19,23 @@ const resources = {
     no: { translation: require('./locales/no.json') },
     es: { translation: require('./locales/es.json') },
     sv: { translation: require('./locales/sv.json') },
-    'zh-Hans': { translation: require('./locales/zh-Hans.json') },
-    'zh-Hant': { translation: require('./locales/zh-Hant.json') },
+    zh: { translation: zhHant },
+    'zh-Hans': { translation: zhHans },
+    'zh-Hant': { translation: zhHant },
+    'zh-hans': { translation: zhHans },
+    'zh-hant': { translation: zhHant },
+    'zh-CN': { translation: zhHans },
+    'zh-SG': { translation: zhHans },
+    'zh-TW': { translation: zhHant },
+    'zh-HK': { translation: zhHant },
+    'zh-MO': { translation: zhHant },
 };
 
 export const LANGUAGE_STORAGE_KEY = '@app_language';
-const SUPPORTED_LANGUAGES = Object.keys(resources);
+const SUPPORTED_LANGUAGES = [
+    'da', 'en', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'es', 'sv',
+    'zh', 'zh-Hans', 'zh-Hant', 'zh-hans', 'zh-hant', 'zh-CN', 'zh-SG', 'zh-TW', 'zh-HK', 'zh-MO'
+];
 
 export function resolveSupportedLanguage(language?: string | null): string {
     if (!language) return 'en';
@@ -77,7 +91,10 @@ const languageDetector = {
 // Use type assertion to bypass TypeScript error
 const initOptions = {
     resources,
+    lng: getDevicePreferredLanguage(),
     fallbackLng: 'en',
+    supportedLngs: SUPPORTED_LANGUAGES,
+    nonExplicitSupportedLngs: true,
     interpolation: {
         escapeValue: false,
     },

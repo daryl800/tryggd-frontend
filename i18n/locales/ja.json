@@ -351,7 +351,13 @@
       "title": "ログイン",
       "signIn": "ログイン",
       "loggingIn": "ログイン中...",
-      "error": "ログインに失敗しました"
+      "error": "ログインに失敗しました",
+      "continueWithGoogle": "Google で続ける",
+      "connectingToGoogle": "Google に接続中...",
+      "continueWithApple": "Apple で続ける",
+      "connectingToApple": "Apple に接続中...",
+      "orContinueWithEmail": "またはメールで続ける",
+      "socialError": "サインインに失敗しました"
     },
     "email": "メール",
     "displayName": "名前",
@@ -384,6 +390,30 @@
       "login": "ログインへ",
       "error": "パスワード再設定エラー",
       "passwordPlaceholder": "新しいパスワード"
+    }
+  },
+  "completeProfile": {
+    "kicker": "あともう一歩",
+    "title": "プロフィールを完成させましょう",
+    "description": "連絡先に表示する名前と、検索に使う Tryggd ID を追加してください。",
+    "nameLabel": "名前",
+    "namePlaceholder": "例: Emily Cooper",
+    "nameHelperEmpty": "連絡先にはこの名前が表示されます。",
+    "nameHelper": "連絡先にはこの名前が表示されます。",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "例: emilycooper",
+    "tryggdIdHelper": "Tryggd であなたを見つけて追加するときに使われます。",
+    "continue": "続ける",
+    "saving": "保存中...",
+    "saveErrorTitle": "プロフィールを保存できませんでした",
+    "saveErrorBody": "もう一度お試しください。",
+    "duplicateTitle": "別の Tryggd ID を試してください",
+    "duplicateBody": "その Tryggd ID はすでに使われています。",
+    "validation": {
+      "required": "Tryggd であなたを見つけて追加するときに使われます。",
+      "min": "Tryggd ID は3文字以上で入力してください。",
+      "max": "Tryggd ID は24文字以内で入力してください。",
+      "chars": "使用できるのは小文字、数字、ドット、アンダースコアのみです。"
     }
   }
 }

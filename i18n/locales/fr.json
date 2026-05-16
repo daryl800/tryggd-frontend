@@ -351,7 +351,13 @@
       "title": "Connexion",
       "signIn": "Se connecter",
       "loggingIn": "Connexion...",
-      "error": "Échec de la connexion"
+      "error": "Échec de la connexion",
+      "continueWithGoogle": "Continuer avec Google",
+      "connectingToGoogle": "Connexion à Google...",
+      "continueWithApple": "Continuer avec Apple",
+      "connectingToApple": "Connexion à Apple...",
+      "orContinueWithEmail": "ou continuer avec e-mail",
+      "socialError": "Échec de la connexion"
     },
     "email": "E-mail",
     "displayName": "Nom",
@@ -384,6 +390,30 @@
       "login": "Aller à la connexion",
       "error": "Erreur lors de la réinitialisation du mot de passe",
       "passwordPlaceholder": "Nouveau mot de passe"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Encore une étape",
+    "title": "Complétez votre profil",
+    "description": "Ajoutez le nom que les autres verront et votre Tryggd ID pour la recherche de contacts.",
+    "nameLabel": "Nom",
+    "namePlaceholder": "ex. Emily Cooper",
+    "nameHelperEmpty": "C’est le nom que vos contacts verront.",
+    "nameHelper": "C’est le nom que vos contacts verront.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "ex. emilycooper",
+    "tryggdIdHelper": "Les autres l’utilisent pour vous trouver et vous ajouter dans Tryggd.",
+    "continue": "Continuer",
+    "saving": "Enregistrement...",
+    "saveErrorTitle": "Impossible d’enregistrer le profil",
+    "saveErrorBody": "Veuillez réessayer.",
+    "duplicateTitle": "Essayez un autre Tryggd ID",
+    "duplicateBody": "Ce Tryggd ID est déjà pris.",
+    "validation": {
+      "required": "Les autres l’utilisent pour vous trouver et vous ajouter dans Tryggd.",
+      "min": "Le Tryggd ID doit contenir au moins 3 caractères.",
+      "max": "Le Tryggd ID doit contenir 24 caractères ou moins.",
+      "chars": "Utilisez uniquement des lettres minuscules, des chiffres, des points ou des underscores."
     }
   }
 }

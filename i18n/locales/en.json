@@ -351,7 +351,13 @@
       "title": "Log In",
       "signIn": "Log In",
       "loggingIn": "Logging in...",
-      "error": "Login failed"
+      "error": "Login failed",
+      "continueWithGoogle": "Continue with Google",
+      "connectingToGoogle": "Connecting to Google...",
+      "continueWithApple": "Continue with Apple",
+      "connectingToApple": "Connecting to Apple...",
+      "orContinueWithEmail": "or continue with email",
+      "socialError": "Sign-in failed"
     },
     "email": "Email",
     "displayName": "Name",
@@ -384,6 +390,30 @@
       "login": "Go to Login",
       "error": "Error resetting password",
       "passwordPlaceholder": "New password"
+    }
+  },
+  "completeProfile": {
+    "kicker": "One more step",
+    "title": "Complete your profile",
+    "description": "Add the name people will see and your Tryggd ID for contact search.",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Emily Cooper",
+    "nameHelperEmpty": "This is the name your contacts will see.",
+    "nameHelper": "This is the name your contacts will see.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "e.g. emilycooper",
+    "tryggdIdHelper": "People use this to find and add you in Tryggd.",
+    "continue": "Continue",
+    "saving": "Saving...",
+    "saveErrorTitle": "Could not save profile",
+    "saveErrorBody": "Please try again.",
+    "duplicateTitle": "Try another Tryggd ID",
+    "duplicateBody": "That Tryggd ID is already taken.",
+    "validation": {
+      "required": "People use this to find and add you in Tryggd.",
+      "min": "Tryggd ID must be at least 3 characters.",
+      "max": "Tryggd ID must be 24 characters or fewer.",
+      "chars": "Use only lowercase letters, numbers, dots, or underscores."
     }
   }
 }

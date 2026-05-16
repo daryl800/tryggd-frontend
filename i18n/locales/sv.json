@@ -334,7 +334,13 @@
       "title": "Logga in",
       "signIn": "Logga in",
       "loggingIn": "Loggar in...",
-      "error": "Inloggning misslyckades"
+      "error": "Inloggning misslyckades",
+      "continueWithGoogle": "Fortsätt med Google",
+      "connectingToGoogle": "Ansluter till Google...",
+      "continueWithApple": "Fortsätt med Apple",
+      "connectingToApple": "Ansluter till Apple...",
+      "orContinueWithEmail": "eller fortsätt med e-post",
+      "socialError": "Inloggning misslyckades"
     },
     "email": "E-post",
     "displayName": "Namn",
@@ -367,6 +373,30 @@
       "login": "Gå till inloggning",
       "error": "Fel vid återställning",
       "passwordPlaceholder": "Nytt lösenord"
+    }
+  },
+  "completeProfile": {
+    "kicker": "Ett steg till",
+    "title": "Slutför din profil",
+    "description": "Lägg till namnet folk ska se och ditt Tryggd ID för kontaktsökning.",
+    "nameLabel": "Namn",
+    "namePlaceholder": "t.ex. Emily Cooper",
+    "nameHelperEmpty": "Detta är namnet dina kontakter kommer att se.",
+    "nameHelper": "Detta är namnet dina kontakter kommer att se.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "t.ex. emilycooper",
+    "tryggdIdHelper": "Folk använder detta för att hitta och lägga till dig i Tryggd.",
+    "continue": "Fortsätt",
+    "saving": "Sparar...",
+    "saveErrorTitle": "Kunde inte spara profilen",
+    "saveErrorBody": "Försök igen.",
+    "duplicateTitle": "Prova ett annat Tryggd ID",
+    "duplicateBody": "Det Tryggd ID:t används redan.",
+    "validation": {
+      "required": "Folk använder detta för att hitta och lägga till dig i Tryggd.",
+      "min": "Tryggd ID måste vara minst 3 tecken.",
+      "max": "Tryggd ID får vara högst 24 tecken.",
+      "chars": "Använd bara små bokstäver, siffror, punkter eller understreck."
     }
   }
 }

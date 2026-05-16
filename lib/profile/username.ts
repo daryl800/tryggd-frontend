@@ -1,3 +1,5 @@
+type TranslateFn = (key: string) => string;
+
 const USERNAME_PATTERN = /^[a-z0-9._]{3,24}$/;
 
 export function normalizeUsername(value: string) {
@@ -16,23 +18,24 @@ export function isValidUsername(value: string) {
     return USERNAME_PATTERN.test(normalizeUsername(value));
 }
 
-export function getUsernameValidationMessage(value: string) {
+export function getUsernameValidationMessage(value: string, t?: TranslateFn) {
     const normalized = normalizeUsername(value);
+    const translate = (key: string, fallback: string) => (t ? t(key) : fallback);
 
     if (!normalized) {
-        return "Choose a Tryggd ID to continue.";
+        return null;
     }
 
     if (normalized.length < 3) {
-        return "Tryggd ID must be at least 3 characters.";
+        return translate("completeProfile.validation.min", "Tryggd ID must be at least 3 characters.");
     }
 
     if (normalized.length > 24) {
-        return "Tryggd ID must be 24 characters or fewer.";
+        return translate("completeProfile.validation.max", "Tryggd ID must be 24 characters or fewer.");
     }
 
     if (!USERNAME_PATTERN.test(normalized)) {
-        return "Use only lowercase letters, numbers, dots, or underscores.";
+        return translate("completeProfile.validation.chars", "Use only lowercase letters, numbers, dots, or underscores.");
     }
 
     return null;
