@@ -21,6 +21,7 @@ import {
     View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { iosFontSize } from '@/constants/typography';
 
 export default function CompleteProfileScreen() {
     const { t } = useTranslation();
@@ -36,7 +37,7 @@ export default function CompleteProfileScreen() {
         }
 
         if (user && !needsUsername) {
-            router.replace("/(tabs)/index");
+            router.replace("/");
         }
     }, [user, loading, needsUsername]);
 
@@ -142,7 +143,7 @@ export default function CompleteProfileScreen() {
                 return;
             }
 
-            router.replace("/(tabs)/index");
+            router.replace("/");
         } catch (error: any) {
             Alert.alert(t("completeProfile.saveErrorTitle"), error.message || t("completeProfile.saveErrorBody"));
         } finally {
@@ -237,7 +238,7 @@ const styles = {
     },
     kicker: {
         color: "#5FA893",
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         fontWeight: "700" as const,
         letterSpacing: 0.6,
         marginBottom: 12,
@@ -245,13 +246,13 @@ const styles = {
     },
     title: {
         color: "#0F172A",
-        fontSize: 34,
+        fontSize: iosFontSize(34),
         fontWeight: "800" as const,
         marginBottom: 12,
     },
     description: {
         color: "#475569",
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         lineHeight: 24,
         marginBottom: 28,
     },
@@ -260,7 +261,7 @@ const styles = {
     },
     label: {
         color: "#0F172A",
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         fontWeight: "600" as const,
         marginBottom: 8,
     },
@@ -270,13 +271,13 @@ const styles = {
         borderRadius: 14,
         borderWidth: 1,
         color: "#0F172A",
-        fontSize: 18,
+        fontSize: iosFontSize(18),
         paddingHorizontal: 16,
         paddingVertical: 16,
     },
     helper: {
         color: "#64748B",
-        fontSize: 13,
+        fontSize: iosFontSize(13),
         marginTop: 10,
     },
     button: {
@@ -290,7 +291,7 @@ const styles = {
     },
     buttonText: {
         color: "#FFFFFF",
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: "700" as const,
     },
 };

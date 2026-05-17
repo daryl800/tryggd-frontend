@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+import { iosFontSize } from '@/constants/typography';
 
 const ENABLE_WELFARE_CHECK = false;
 
@@ -1434,7 +1435,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.text.light,
   },
   ownerCard: {
@@ -1470,7 +1471,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     marginLeft: 6,
     flex: 1,
     color: BaseColors.text.dark,
@@ -1485,7 +1486,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   contactCountText: {
-    fontSize: 11,
+    fontSize: iosFontSize(11),
     fontWeight: '600',
     color: BaseColors.primary,
   },
@@ -1499,14 +1500,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   emptyStateTitle: {
-    fontSize: 18,
+    fontSize: iosFontSize(18),
     fontWeight: '600',
     color: BaseColors.text.dark,
     marginTop: 16,
     marginBottom: 8,
   },
   emptyStateText: {
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.text.light,
     textAlign: 'center',
     lineHeight: 20,
@@ -1543,32 +1544,32 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   name: {
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     fontWeight: '600',
     color: BaseColors.text.dark,
     flex: 1,
     marginRight: 8,
   },
   email: {
-    fontSize: 12,
+    fontSize: iosFontSize(12),
     color: BaseColors.neutral[400],
     flexShrink: 1,
   },
   timezone: {
-    fontSize: 15,
+    fontSize: iosFontSize(15),
     color: BaseColors.primary,
     marginBottom: 8,
     fontWeight: '500',
   },
   time: {
-    fontSize: 15,
+    fontSize: iosFontSize(15),
     fontWeight: '600',
     color: BaseColors.text.dark,
     marginBottom: 2,
   },
   noCheckIn: {
     color: BaseColors.text.light,
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     fontStyle: 'italic',
   },
   responseButtonContainer: {
@@ -1594,7 +1595,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   responseButtonText: {
-    fontSize: 13,
+    fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.primary,
   },
@@ -1614,7 +1615,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   welfareButtonText: {
-    fontSize: 13,
+    fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.error,
   },
@@ -1623,7 +1624,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welfareButtonEmoji: {
-    fontSize: 13,
+    fontSize: iosFontSize(13),
     marginLeft: 4,
   },
   activityItem: {
@@ -1647,7 +1648,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   responseBadgeText: {
-    fontSize: 12,
+    fontSize: iosFontSize(12),
     fontWeight: '600',
     color: BaseColors.primary,
   },
@@ -1658,7 +1659,7 @@ const styles = StyleSheet.create({
     borderTopColor: BaseColors.neutral[200],
   },
   todayResponsesTitle: {
-    fontSize: 13,
+    fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.text.dark,
     marginBottom: 8,
@@ -1672,7 +1673,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   responseTimeRight: {
-    fontSize: 15,
+    fontSize: iosFontSize(15),
     color: BaseColors.neutral[400],
     marginLeft: 8,
     minWidth: 45,
@@ -1680,7 +1681,7 @@ const styles = StyleSheet.create({
   },
   todayResponseText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.text.dark,
   },
   todayResponseName: {
@@ -1716,7 +1717,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   responseText: {
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.text.dark,
     lineHeight: 20,
   },
@@ -1725,7 +1726,7 @@ const styles = StyleSheet.create({
     color: BaseColors.primary,
   },
   responseTime: {
-    fontSize: 11,
+    fontSize: iosFontSize(11),
     color: BaseColors.neutral[400],
     marginTop: 2,
   },

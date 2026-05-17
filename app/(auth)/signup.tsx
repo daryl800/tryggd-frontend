@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
+import { iosFontSize } from '@/constants/typography';
 
 export default function SignupScreen() {
     const { t } = useTranslation();
@@ -113,7 +114,7 @@ export default function SignupScreen() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={{ padding: 24 }}>
-                        <Text style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}>
+                        <Text style={{ fontSize: iosFontSize(32), fontWeight: "700", marginBottom: 24 }}>
                             {t("auth.signup.title")}
                         </Text>
 
@@ -223,7 +224,7 @@ export default function SignupScreen() {
                                 style={{
                                     color: "white",
                                     textAlign: "center",
-                                    fontSize: 16,
+                                    fontSize: iosFontSize(16),
                                 }}
                                 allowFontScaling={false}
                             >
@@ -251,7 +252,7 @@ const inputStyle = {
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     color: "#1F2937",
 };
 
@@ -268,5 +269,5 @@ const passwordWrapper = {
 const passwordInput = {
     flex: 1,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: iosFontSize(16),
 };

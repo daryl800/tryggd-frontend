@@ -20,6 +20,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
+import { iosFontSize } from '@/constants/typography';
 
 export default function LoginScreen() {
     const { t, i18n } = useTranslation();
@@ -83,7 +84,7 @@ export default function LoginScreen() {
         try {
             const result = await signInWithSocial(provider);
             if (result) {
-                router.replace("/(tabs)/index");
+                router.replace("/");
             }
         } catch (err: any) {
             Alert.alert(t("auth.login.socialError"), err.message || t("auth.unknownError"));
@@ -106,7 +107,7 @@ export default function LoginScreen() {
                 >
                     <View style={{ padding: 24 }}>
                         <Text
-                            style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}
+                            style={{ fontSize: iosFontSize(32), fontWeight: "700", marginBottom: 24 }}
                             allowFontScaling={false}
                         >
                             {t("auth.login.title")}
@@ -196,7 +197,7 @@ export default function LoginScreen() {
                                 style={{
                                     color: "white",
                                     textAlign: "center",
-                                    fontSize: 16,
+                                    fontSize: iosFontSize(16),
                                     fontWeight: "600",
                                 }}
                                 allowFontScaling={false}
@@ -208,7 +209,7 @@ export default function LoginScreen() {
                         {/* Forgot password */}
                         <Link href="/(auth)/forgot-password" style={{ marginBottom: 12 }}>
                             <Text
-                                style={{ textAlign: "center", color: "#5FA893", fontSize: 15 }}
+                                style={{ textAlign: "center", color: "#5FA893", fontSize: iosFontSize(15) }}
                                 allowFontScaling={false}
                             >
                                 {t("auth.forgotPassword.title")}
@@ -218,7 +219,7 @@ export default function LoginScreen() {
                         {/* Sign up link */}
                         <Link href="/(auth)/signup" style={{ marginBottom: 20 }}>
                             <Text
-                                style={{ textAlign: "center", color: "#5FA893", fontSize: 15 }}
+                                style={{ textAlign: "center", color: "#5FA893", fontSize: iosFontSize(15) }}
                                 allowFontScaling={false}
                             >
                                 {t("auth.noAccount")}
@@ -238,7 +239,7 @@ const inputStyle = {
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     color: "#1F2937",
 };
 
@@ -255,7 +256,7 @@ const passwordWrapper = {
 const passwordInput = {
     flex: 1,
     paddingVertical: 12,
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     color: "#1F2937",
 };
 
@@ -279,7 +280,7 @@ const socialButton = {
 
 const socialButtonText = {
     color: "#111827",
-    fontSize: 15,
+    fontSize: iosFontSize(15),
     fontWeight: "600" as const,
 };
 
@@ -298,5 +299,5 @@ const dividerLine = {
 
 const dividerText = {
     color: "#6B7280",
-    fontSize: 13,
+    fontSize: iosFontSize(13),
 };

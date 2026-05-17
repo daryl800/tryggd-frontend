@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../lib/supabase";
+import { iosFontSize } from '@/constants/typography';
 
 export default function ForgotPasswordScreen() {
     const { t } = useTranslation();
@@ -61,13 +62,13 @@ export default function ForgotPasswordScreen() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={{ padding: 24 }}>
-                        <Text style={{ fontSize: 32, fontWeight: "700", marginBottom: 24 }}>
+                        <Text style={{ fontSize: iosFontSize(32), fontWeight: "700", marginBottom: 24 }}>
                             {t("auth.forgotPassword.title")}
                         </Text>
 
                         <Text
                             style={{
-                                fontSize: 15,
+                                fontSize: iosFontSize(15),
                                 color: "#6B7280",
                                 marginBottom: 24,
                                 lineHeight: 20
@@ -100,7 +101,7 @@ export default function ForgotPasswordScreen() {
                                 style={{
                                     color: "white",
                                     textAlign: "center",
-                                    fontSize: 16,
+                                    fontSize: iosFontSize(16),
                                     fontWeight: "600"
                                 }}
                             >
@@ -129,6 +130,6 @@ const inputStyle = {
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     color: "#1F2937",
 };

@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { ReactNode } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { iosFontSize } from '@/constants/typography';
 
 interface HeaderWithBackProps {
     title: string;
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
         marginRight: 5, // Increased gap between < and icon
     },
     backButtonStyle: {
-        fontSize: 26,
+        fontSize: iosFontSize(26),
         fontWeight: '800',
         color: BaseColors.text.dark,
         marginLeft: 8, // Increased gap between icon and title
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
         width: 36,
     },
     title: {
-        fontSize: 32,
+        fontSize: iosFontSize(32),
         fontWeight: '800',
         color: BaseColors.text.dark,
         marginLeft: 8, // Increased gap between icon and title

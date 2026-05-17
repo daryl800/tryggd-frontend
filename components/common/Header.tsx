@@ -4,6 +4,7 @@ import { ICON_SIZES } from '@/constants/ui';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { iosFontSize } from '@/constants/typography';
 
 interface HeaderProps {
     title: string;
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     headerTitle: {
-        fontSize: 20,
+        fontSize: iosFontSize(20),
         fontWeight: '700',
         color: BaseColors.text.dark,
         marginLeft: 12,

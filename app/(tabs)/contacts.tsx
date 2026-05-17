@@ -26,6 +26,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+import { iosFontSize } from '@/constants/typography';
 
 type ContactSlot = {
     identifier?: string;
@@ -1660,7 +1661,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     tabText: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         fontWeight: '600',
         color: BaseColors.text.light,
         marginLeft: 6,
@@ -1705,7 +1706,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     loadingText: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.text.light,
     },
     emptyState: {
@@ -1715,14 +1716,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     emptyStateTitle: {
-        fontSize: 20,
+        fontSize: iosFontSize(20),
         fontWeight: '600',
         color: BaseColors.text.dark,
         marginTop: 16,
         marginBottom: 8,
     },
     emptyStateText: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.text.light,
         textAlign: 'center',
         lineHeight: 20,
@@ -1773,10 +1774,10 @@ const styles = StyleSheet.create({
     cardNumberText: {
         color: BaseColors.surface,
         fontWeight: '600',
-        fontSize: 12,
+        fontSize: iosFontSize(12),
     },
     cardTitleText: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
         color: BaseColors.text.dark,
         flex: 1, // Allow text to take available space
@@ -1789,7 +1790,7 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.surface,
         borderRadius: 12,
         padding: 12,
-        fontSize: 15,
+        fontSize: iosFontSize(15),
         color: BaseColors.text.dark,
         borderWidth: 1,
         borderColor: BaseColors.neutral[200],
@@ -1805,7 +1806,7 @@ const styles = StyleSheet.create({
     },
     displayNameText: {
         marginLeft: 6,
-        fontSize: 13,
+        fontSize: iosFontSize(13),
         color: BaseColors.primaryDark,
         fontWeight: '500',
         flex: 1, // Allow text to wrap
@@ -1824,7 +1825,7 @@ const styles = StyleSheet.create({
     },
     existingContactText: {
         marginLeft: 10,
-        fontSize: 15,
+        fontSize: iosFontSize(15),
         color: BaseColors.text.dark,
         flex: 1, // This prevents icon spillover
     },
@@ -1865,7 +1866,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: BaseColors.surface,
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
     },
     requestCard: {
@@ -1904,17 +1905,17 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     requestName: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
         color: BaseColors.text.dark,
         marginBottom: 2,
     },
     requestEmail: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.neutral[500],
     },
     requestTime: {
-        fontSize: 12,
+        fontSize: iosFontSize(12),
         color: BaseColors.neutral[400],
     },
     requestMessage: {
@@ -1926,7 +1927,7 @@ const styles = StyleSheet.create({
         borderLeftColor: BaseColors.primary,
     },
     requestMessageText: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.neutral[600],
         fontStyle: 'italic',
     },
@@ -1955,13 +1956,13 @@ const styles = StyleSheet.create({
     acceptButtonText: {
         color: BaseColors.surface,
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         marginLeft: 6,
     },
     rejectButtonText: {
         color: BaseColors.neutral[600],
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         marginLeft: 6,
     },
     cancelButton: {
@@ -1976,28 +1977,28 @@ const styles = StyleSheet.create({
     cancelButtonText: {
         color: BaseColors.neutral[400],
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         marginLeft: 6,
     },
     section: {
         marginBottom: 24,
     },
     sectionTitle: {
-        fontSize: 18,
+        fontSize: iosFontSize(18),
         fontWeight: '700',
         color: BaseColors.text.dark,
         marginBottom: 12,
     },
     displayNameMain: {
         marginLeft: 10,
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
         color: BaseColors.text.dark,
         flex: 1,
     },
     emailSubdued: {
         marginLeft: 10,
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.neutral[500],
         flex: 1,
     },
@@ -2009,7 +2010,7 @@ const styles = StyleSheet.create({
     },
     initialLoadingText: {
         marginTop: 12,
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.neutral[500],
     },
     headerActions: {

@@ -32,6 +32,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { iosFontSize } from '@/constants/typography';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -1035,13 +1036,13 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 10 : 2,
   },
   timeText: {
-    fontSize: 36,
+    fontSize: iosFontSize(36),
     fontWeight: '700',
     color: BaseColors.text.dark,
     textAlign: 'center',
   },
   dateText: {
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     color: BaseColors.neutral[500],
     marginTop: 6,
     textTransform: 'capitalize',
@@ -1063,7 +1064,7 @@ const styles = StyleSheet.create({
   },
   checkedInText: {
     color: BaseColors.surface,
-    fontSize: 24,
+    fontSize: iosFontSize(24),
     fontWeight: '800',
     textAlign: 'center',
   },
@@ -1109,7 +1110,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: BaseColors.text.dark,
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
@@ -1117,29 +1118,29 @@ const styles = StyleSheet.create({
   },
   countdownText: {
     color: BaseColors.primary,
-    fontSize: 24,
+    fontSize: iosFontSize(24),
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 2,
   },
   timeLeftText: {
     color: BaseColors.text.light,
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     fontWeight: '600',
     textAlign: 'center',
     marginTop: 2,
   },
   compactCtaText: {
-    fontSize: 12,
+    fontSize: iosFontSize(12),
     letterSpacing: 0.3,
     marginBottom: 1,
   },
   compactCountdownText: {
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     marginTop: 2,
   },
   compactTimeLeftText: {
-    fontSize: 9,
+    fontSize: iosFontSize(9),
     marginTop: 0,
   },
   cardsGroup: {
@@ -1176,14 +1177,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardLabel: {
-    fontSize: 16,
+    fontSize: iosFontSize(16),
     fontWeight: '800',
     textAlign: 'center',
     marginTop: 6,
     color: BaseColors.text.dark,
   },
   cardSubtext: {
-    fontSize: 18,
+    fontSize: iosFontSize(18),
     fontWeight: '600',
     marginTop: 10,
     color: BaseColors.primary,
@@ -1242,7 +1243,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.primary,
     lineHeight: 18,
   },
@@ -1250,7 +1251,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: iosFontSize(14),
     color: BaseColors.error,
     lineHeight: 18,
   }

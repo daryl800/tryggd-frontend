@@ -137,7 +137,7 @@ function useDeepLinking(router: any) {
       try {
         const session = await createSessionFromUrl(url);
         if (session) {
-          router.replace("/(tabs)/index");
+          router.replace("/");
           return;
         }
       } catch (error) {

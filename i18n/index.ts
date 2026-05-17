@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { NativeModules, Platform } from 'react-native';
 
 const zhHans = require('./locales/zh-Hans.json');
 const zhHant = require('./locales/zh-Hant.json');
@@ -46,7 +47,10 @@ export function resolveSupportedLanguage(language?: string | null): string {
 
     const normalized = language.toLowerCase();
 
-    if (normalized.startsWith('zh')) {
+    if (normalized.startsWith('zh') || normalized.startsWith('yue') || normalized.startsWith('cmn')) {
+        if (normalized.includes('hans')) {
+            return 'zh-Hans';
+        }
         if (normalized.includes('hant') || normalized.includes('tw') || normalized.includes('hk') || normalized.includes('mo')) {
             return 'zh-Hant';
         }
@@ -59,8 +63,44 @@ export function resolveSupportedLanguage(language?: string | null): string {
 
 export function getDevicePreferredLanguage(): string {
     const locales = Localization.getLocales();
-    const preferred = locales[0]?.languageTag ?? locales[0]?.languageCode ?? 'en';
-    return resolveSupportedLanguage(preferred);
+    const expoPreferred = locales[0]?.languageTag ?? locales[0]?.languageCode ?? 'en';
+
+    if (Platform.OS === 'ios') {
+        const settings = NativeModules.SettingsManager?.settings ?? {};
+        const appleLanguages = settings.AppleLanguages;
+        const applePreferred = Array.isArray(appleLanguages) ? appleLanguages[0] : null;
+        const appleLocale = typeof settings.AppleLocale === 'string' ? settings.AppleLocale : null;
+        const resolvedExpo = resolveSupportedLanguage(expoPreferred);
+        const resolvedApple = resolveSupportedLanguage(applePreferred);
+        const resolvedLocale = resolveSupportedLanguage(appleLocale);
+        const resolved =
+            resolvedExpo !== 'en' ? resolvedExpo :
+            resolvedApple !== 'en' ? resolvedApple :
+            resolvedLocale !== 'en' ? resolvedLocale :
+            resolvedExpo;
+
+        console.log('[i18n] iOS locale sources', {
+            expoLocales: locales,
+            expoPreferred,
+            appleLanguages,
+            appleLocale,
+            resolvedExpo,
+            resolvedApple,
+            resolvedLocale,
+            resolved,
+        });
+
+        return resolved;
+    }
+
+    const resolved = resolveSupportedLanguage(expoPreferred);
+    console.log('[i18n] locale sources', {
+        expoLocales: locales,
+        expoPreferred,
+        resolved,
+        platform: Platform.OS,
+    });
+    return resolved;
 }
 
 const languageDetector = {

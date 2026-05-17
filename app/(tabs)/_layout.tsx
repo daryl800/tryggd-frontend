@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthContext";
+import { iosFontSize } from '@/constants/typography';
 
 // Notification Badge Component
 const NotificationBadge = ({ count }: { count: number }) => {
@@ -47,7 +48,7 @@ export default function TabsLayout() {
           paddingTop: 4,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: iosFontSize(10),
           fontWeight: '600',
           marginTop: 2,
         },
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: iosFontSize(10),
     fontWeight: 'bold',
   },
 });

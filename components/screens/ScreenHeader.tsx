@@ -5,6 +5,7 @@ import { ICON_SIZES } from '@/constants/ui';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet, Text, View, ViewProps } from 'react-native';
+import { iosFontSize } from '@/constants/typography';
 
 interface ScreenHeaderProps extends ViewProps {
     title: string;
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     title: {
-        fontSize: 32,
+        fontSize: iosFontSize(32),
         fontWeight: '800',
         color: BaseColors.text.dark,
         marginLeft: 12,
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
         }),
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.text.light,
         marginTop: 8,
         marginLeft: 40, // Align with title (icon width + margin)
@@ -124,14 +125,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     greetingText: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.neutral[500],
         fontWeight: '500',
         textTransform: 'capitalize',
         marginLeft: 8,
     },
     titleLarge: {
-        fontSize: 32,
+        fontSize: iosFontSize(32),
         fontWeight: '800',
         color: BaseColors.text.dark,
         // Platform-specific optimizations

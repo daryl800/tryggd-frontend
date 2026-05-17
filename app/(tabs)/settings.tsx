@@ -26,6 +26,7 @@ import {
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { iosFontSize } from '@/constants/typography';
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -428,7 +429,7 @@ const styles = StyleSheet.create({
         marginBottom: 14,
     },
     sectionLabel: {
-        fontSize: 17,
+        fontSize: iosFontSize(17),
         fontWeight: '600',
         color: BaseColors.text.dark,
         marginBottom: 6,
@@ -477,12 +478,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     settingTitle: {
-        fontSize: 15,
+        fontSize: iosFontSize(15),
         fontWeight: '500',
         color: BaseColors.text.dark,
     },
     settingSubtitle: {
-        fontSize: 13,
+        fontSize: iosFontSize(13),
         color: BaseColors.neutral[500],
         marginTop: 2,
     },
@@ -505,11 +506,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     languageFlag: {
-        fontSize: 18,
+        fontSize: iosFontSize(18),
         marginRight: 10,
     },
     languageName: {
-        fontSize: 15,
+        fontSize: iosFontSize(15),
         fontWeight: '500',
         color: BaseColors.text.dark,
     },
@@ -543,7 +544,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: CARD_HORIZONTAL_PADDING,
     },
     switchLabel: {
-        fontSize: 15,
+        fontSize: iosFontSize(15),
         color: "#1F2937",
         fontWeight: "500",
     },
@@ -552,7 +553,7 @@ const styles = StyleSheet.create({
         marginRight: 16,
     },
     notificationDescription: {
-        fontSize: 13,
+        fontSize: iosFontSize(13),
         color: "#6B7280",
         marginTop: 4,
         lineHeight: 18,
@@ -569,7 +570,7 @@ const styles = StyleSheet.create({
     },
     versionText: {
         color: BaseColors.neutral[500],
-        fontSize: 12,
+        fontSize: iosFontSize(12),
         fontWeight: '500',
     },
 });

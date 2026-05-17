@@ -26,6 +26,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { deriveDisplayName, isAppleRelayEmail as isAppleRelayEmailAddress } from '../../lib/profile/displayName';
 import { supabase } from '../../lib/supabase';
+import { iosFontSize } from '@/constants/typography';
 
 type UserProfile = {
     id: string;
@@ -572,7 +573,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     loadingText: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.neutral[500],
     },
     scrollContent: {
@@ -628,7 +629,7 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         color: BaseColors.primary,
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
     },
     editActions: {
         flexDirection: 'row',
@@ -648,7 +649,7 @@ const styles = StyleSheet.create({
     cancelButtonText: {
         color: BaseColors.neutral[600],
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
     },
     saveButton: {
         backgroundColor: BaseColors.primary,
@@ -671,7 +672,7 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         color: BaseColors.surface,
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: iosFontSize(14),
     },
     infoCard: {
         backgroundColor: BaseColors.surface,
@@ -697,13 +698,13 @@ const styles = StyleSheet.create({
         marginBottom: GAP,
     },
     fieldLabel: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.text.dark,
         marginBottom: 8,
         fontWeight: '500',
     },
     fieldValue: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '500',
         color: BaseColors.text.light,
         marginLeft: 10,
@@ -716,7 +717,7 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.surface,
         borderRadius: 12,
         padding: 14,
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.text.dark,
         borderWidth: 1,
         borderColor: BaseColors.neutral[200],
@@ -762,13 +763,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     settingsTitle: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
         color: BaseColors.text.dark,
         marginBottom: 2,
     },
     settingsSubtitle: {
-        fontSize: 14,
+        fontSize: iosFontSize(14),
         color: BaseColors.neutral[500],
     },
     logoutButton: {
@@ -785,7 +786,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     logoutText: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         fontWeight: '600',
         color: BaseColors.error,
     },
@@ -810,7 +811,7 @@ const styles = StyleSheet.create({
         borderBottomColor: BaseColors.neutral[200],
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: iosFontSize(18),
         fontWeight: '600',
         color: BaseColors.text.dark,
     },
@@ -822,7 +823,7 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     modalOptionText: {
-        fontSize: 16,
+        fontSize: iosFontSize(16),
         color: BaseColors.text.dark,
     },
 });
