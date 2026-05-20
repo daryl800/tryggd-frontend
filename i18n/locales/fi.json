@@ -244,7 +244,18 @@
       "loadProfile": "Profiilia ei voitu ladata",
       "notLoggedIn": "Et ole kirjautunut sisään",
       "updateProfile": "Profiilia ei voitu päivittää",
-      "saveProfile": "Profiilia ei voitu tallentaa"
+      "saveProfile": "Profiilia ei voitu tallentaa",
+      "deleteAccount": "Tilin poistaminen epäonnistui"
+    },
+    "deleteAccount": {
+      "title": "Poista tili",
+      "confirm": "Tämä poistaa tilisi ja tietosi pysyvästi. Toimintoa ei voi perua.",
+      "finalTitle": "Poistetaanko tili pysyvästi?",
+      "finalConfirm": "Tilisi, yhteystietosi, check-init ja asetuksesi poistetaan pysyvästi.",
+      "button": "Poista tili",
+      "deleting": "Poistetaan...",
+      "successTitle": "Tili poistettu",
+      "successMessage": "Tilisi on poistettu pysyvästi."
     }
   },
   "settings": {

@@ -256,7 +256,18 @@
       "loadProfile": "프로필을 불러오지 못했습니다",
       "notLoggedIn": "로그인되어 있지 않습니다",
       "updateProfile": "프로필을 업데이트할 수 없습니다",
-      "saveProfile": "프로필을 저장할 수 없습니다"
+      "saveProfile": "프로필을 저장할 수 없습니다",
+      "deleteAccount": "계정을 삭제할 수 없습니다"
+    },
+    "deleteAccount": {
+      "title": "계정 삭제",
+      "confirm": "이 작업은 계정과 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
+      "finalTitle": "계정을 영구적으로 삭제할까요?",
+      "finalConfirm": "계정, 연락처, 체크인, 설정이 영구적으로 삭제됩니다.",
+      "button": "계정 삭제",
+      "deleting": "삭제 중...",
+      "successTitle": "계정 삭제 완료",
+      "successMessage": "계정이 영구적으로 삭제되었습니다."
     }
   },
   "settings": {

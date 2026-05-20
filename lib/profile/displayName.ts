@@ -41,7 +41,9 @@ export const isLikelyGeneratedDisplayName = (value?: string | null) => {
         return true;
     }
 
-    return /^[a-z0-9]{8,}$/i.test(trimmed) && /[a-z]/i.test(trimmed) && /\d/.test(trimmed);
+    const compact = trimmed.replace(/[\s._-]+/g, '');
+
+    return compact.length >= 12 && /^[a-z0-9]+$/i.test(compact) && /[a-z]/i.test(compact) && /\d/.test(compact);
 };
 
 const getPreferredMetadataName = (user: any): string | null => {

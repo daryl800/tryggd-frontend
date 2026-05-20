@@ -1,12 +1,15 @@
 // app/(tabs)/_layout.tsx
 import { useContactStore } from "@/stores/contactStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
+import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { AppState, Platform, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../contexts/AuthContext";
 import { iosFontSize } from '@/constants/typography';
+import { supabase } from "@/lib/supabase";
 
 // Notification Badge Component
 const NotificationBadge = ({ count }: { count: number }) => {
@@ -26,6 +29,85 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const unreadCount = useContactStore((state) => state.unreadCount);
+  const setUnreadCount = useContactStore((state) => state.setUnreadCount);
+  const incrementUnread = useContactStore((state) => state.incrementUnread);
+
+  const syncUnreadRequests = useCallback(async () => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    try {
+      const { data: requests } = await supabase
+        .from('contact_requests')
+        .select('id, created_at')
+        .eq('receiver_user_id', user.id)
+        .eq('status', 'pending')
+        .gte(
+          'created_at',
+          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        );
+
+      const lastViewed = await AsyncStorage.getItem('last_viewed_requests');
+      const count =
+        requests?.filter((request) => {
+          if (!lastViewed) return true;
+          return new Date(request.created_at) > new Date(lastViewed);
+        }).length || 0;
+
+      setUnreadCount(count);
+    } catch (error) {
+      console.error('Failed to sync unread contact requests:', error);
+    }
+  }, [setUnreadCount, user]);
+
+  useEffect(() => {
+    void syncUnreadRequests();
+  }, [syncUnreadRequests]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const requestsSubscription = supabase
+      .channel(`tabs:contact_requests:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'contact_requests',
+          filter: `receiver_user_id=eq.${user.id}`,
+        },
+        () => {
+          incrementUnread();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contact_requests',
+          filter: `receiver_user_id=eq.${user.id}`,
+        },
+        () => {
+          void syncUnreadRequests();
+        }
+      )
+      .subscribe();
+
+    const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        void syncUnreadRequests();
+      }
+    });
+
+    return () => {
+      requestsSubscription.unsubscribe();
+      appStateSubscription.remove();
+    };
+  }, [incrementUnread, syncUnreadRequests, user]);
 
   if (!initialized || loading) return null;
   if (!user) return <Redirect href="/(auth)/login" />;

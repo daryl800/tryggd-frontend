@@ -256,7 +256,18 @@
       "loadProfile": "No se pudo cargar el perfil",
       "notLoggedIn": "No has iniciado sesión",
       "updateProfile": "No se pudo actualizar el perfil",
-      "saveProfile": "No se pudo guardar el perfil"
+      "saveProfile": "No se pudo guardar el perfil",
+      "deleteAccount": "No se pudo eliminar la cuenta"
+    },
+    "deleteAccount": {
+      "title": "Eliminar cuenta",
+      "confirm": "Esto eliminará permanentemente tu cuenta y tus datos. Esta acción no se puede deshacer.",
+      "finalTitle": "¿Eliminar cuenta permanentemente?",
+      "finalConfirm": "Tu cuenta, contactos, check-ins y ajustes se eliminarán permanentemente.",
+      "button": "Eliminar cuenta",
+      "deleting": "Eliminando...",
+      "successTitle": "Cuenta eliminada",
+      "successMessage": "Tu cuenta se ha eliminado permanentemente."
     }
   },
   "settings": {

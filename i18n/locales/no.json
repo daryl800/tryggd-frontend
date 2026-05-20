@@ -244,7 +244,18 @@
       "loadProfile": "Kunne ikke laste profil",
       "notLoggedIn": "Du er ikke logget inn",
       "updateProfile": "Kunne ikke oppdatere profil",
-      "saveProfile": "Kunne ikke lagre profil"
+      "saveProfile": "Kunne ikke lagre profil",
+      "deleteAccount": "Kunne ikke slette konto"
+    },
+    "deleteAccount": {
+      "title": "Slett konto",
+      "confirm": "Dette sletter kontoen og dataene dine permanent. Handlingen kan ikke angres.",
+      "finalTitle": "Slette kontoen permanent?",
+      "finalConfirm": "Kontoen, kontaktene, innsjekkingene og innstillingene dine blir permanent fjernet.",
+      "button": "Slett konto",
+      "deleting": "Sletter...",
+      "successTitle": "Konto slettet",
+      "successMessage": "Kontoen din er slettet permanent."
     }
   },
   "settings": {

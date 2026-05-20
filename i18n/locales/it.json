@@ -256,7 +256,18 @@
       "loadProfile": "Impossibile caricare il profilo",
       "notLoggedIn": "Non hai effettuato l'accesso",
       "updateProfile": "Impossibile aggiornare il profilo",
-      "saveProfile": "Impossibile salvare il profilo"
+      "saveProfile": "Impossibile salvare il profilo",
+      "deleteAccount": "Impossibile eliminare l’account"
+    },
+    "deleteAccount": {
+      "title": "Elimina account",
+      "confirm": "Questo eliminerà definitivamente il tuo account e i tuoi dati. L’azione non può essere annullata.",
+      "finalTitle": "Eliminare definitivamente l’account?",
+      "finalConfirm": "Il tuo account, i contatti, i check-in e le impostazioni verranno rimossi definitivamente.",
+      "button": "Elimina account",
+      "deleting": "Eliminazione...",
+      "successTitle": "Account eliminato",
+      "successMessage": "Il tuo account è stato eliminato definitivamente."
     }
   },
   "settings": {

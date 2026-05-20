@@ -73,6 +73,12 @@ export default function CompleteProfileScreen() {
             return;
         }
 
+        const derivedName = deriveDisplayName(user, "").trim();
+        if (derivedName && !isLikelyGeneratedDisplayName(derivedName)) {
+            setDisplayName(derivedName);
+            return;
+        }
+
         setDisplayName("");
     }, [profile?.display_name, user]);
 
@@ -103,13 +109,18 @@ export default function CompleteProfileScreen() {
         setSaving(true);
 
         try {
-            const { error } = await supabase
+            const { data: savedProfile, error } = await supabase
                 .from("profiles")
-                .update({
-                    username: normalizedUsername,
-                    display_name: trimmedDisplayName,
-                })
-                .eq("id", user.id);
+                .upsert(
+                    {
+                        id: user.id,
+                        username: normalizedUsername,
+                        display_name: trimmedDisplayName,
+                    },
+                    { onConflict: "id" }
+                )
+                .select("username, display_name")
+                .single();
 
             if (error) {
                 if (error.code === "23505") {
@@ -122,19 +133,9 @@ export default function CompleteProfileScreen() {
 
             await refreshProfile();
 
-            const { data: refreshedProfile, error: refreshError } = await supabase
-                .from("profiles")
-                .select("username, display_name")
-                .eq("id", user.id)
-                .maybeSingle();
-
-            if (refreshError) {
-                throw refreshError;
-            }
-
             if (
-                refreshedProfile?.username !== normalizedUsername ||
-                refreshedProfile?.display_name?.trim() !== trimmedDisplayName
+                savedProfile?.username !== normalizedUsername ||
+                savedProfile?.display_name?.trim() !== trimmedDisplayName
             ) {
                 Alert.alert(
                     t("completeProfile.saveErrorTitle"),

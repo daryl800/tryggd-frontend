@@ -292,7 +292,18 @@
       "loadProfile": "无法加载个人资料",
       "notLoggedIn": "您未登录",
       "updateProfile": "无法更新个人资料",
-      "saveProfile": "无法保存个人资料"
+      "saveProfile": "无法保存个人资料",
+      "deleteAccount": "无法删除账户"
+    },
+    "deleteAccount": {
+      "title": "删除账户",
+      "confirm": "这将永久删除你的账户和数据，此操作无法撤销。",
+      "finalTitle": "永久删除账户？",
+      "finalConfirm": "你的账户、联系人、check-in 和设置都将被永久删除。",
+      "button": "删除账户",
+      "deleting": "正在删除...",
+      "successTitle": "账户已删除",
+      "successMessage": "你的账户已被永久删除。"
     }
   },
   "settings": {

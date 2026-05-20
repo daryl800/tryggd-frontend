@@ -256,7 +256,18 @@
       "loadProfile": "Could not load profile",
       "notLoggedIn": "You are not logged in",
       "updateProfile": "Could not update profile",
-      "saveProfile": "Could not save profile"
+      "saveProfile": "Could not save profile",
+      "deleteAccount": "Could not delete account"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "confirm": "This permanently deletes your account and your data. This action cannot be undone.",
+      "finalTitle": "Delete Account Permanently?",
+      "finalConfirm": "Your account, contacts, check-ins, and settings will be permanently removed.",
+      "button": "Delete Account",
+      "deleting": "Deleting...",
+      "successTitle": "Account Deleted",
+      "successMessage": "Your account has been permanently deleted."
     }
   },
   "settings": {

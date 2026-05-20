@@ -256,7 +256,18 @@
       "loadProfile": "プロフィールを読み込めませんでした",
       "notLoggedIn": "ログインしていません",
       "updateProfile": "プロフィールを更新できませんでした",
-      "saveProfile": "プロフィールを保存できませんでした"
+      "saveProfile": "プロフィールを保存できませんでした",
+      "deleteAccount": "アカウントを削除できませんでした"
+    },
+    "deleteAccount": {
+      "title": "アカウントを削除",
+      "confirm": "アカウントとデータは完全に削除されます。この操作は元に戻せません。",
+      "finalTitle": "アカウントを完全に削除しますか？",
+      "finalConfirm": "アカウント、連絡先、チェックイン、設定が完全に削除されます。",
+      "button": "アカウントを削除",
+      "deleting": "削除中...",
+      "successTitle": "アカウントを削除しました",
+      "successMessage": "アカウントは完全に削除されました。"
     }
   },
   "settings": {

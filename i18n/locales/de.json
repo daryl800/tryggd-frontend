@@ -256,7 +256,18 @@
       "loadProfile": "Profil konnte nicht geladen werden",
       "notLoggedIn": "Du bist nicht angemeldet",
       "updateProfile": "Profil konnte nicht aktualisiert werden",
-      "saveProfile": "Profil konnte nicht gespeichert werden"
+      "saveProfile": "Profil konnte nicht gespeichert werden",
+      "deleteAccount": "Konto konnte nicht gelöscht werden"
+    },
+    "deleteAccount": {
+      "title": "Konto löschen",
+      "confirm": "Dadurch werden dein Konto und deine Daten dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "finalTitle": "Konto dauerhaft löschen?",
+      "finalConfirm": "Dein Konto, deine Kontakte, Check-ins und Einstellungen werden dauerhaft entfernt.",
+      "button": "Konto löschen",
+      "deleting": "Wird gelöscht...",
+      "successTitle": "Konto gelöscht",
+      "successMessage": "Dein Konto wurde dauerhaft gelöscht."
     }
   },
   "settings": {

@@ -256,7 +256,18 @@
       "loadProfile": "Impossible de charger le profil",
       "notLoggedIn": "Vous n'êtes pas connecté",
       "updateProfile": "Impossible de mettre à jour le profil",
-      "saveProfile": "Impossible d'enregistrer le profil"
+      "saveProfile": "Impossible d'enregistrer le profil",
+      "deleteAccount": "Impossible de supprimer le compte"
+    },
+    "deleteAccount": {
+      "title": "Supprimer le compte",
+      "confirm": "Cela supprimera définitivement votre compte et vos données. Cette action est irréversible.",
+      "finalTitle": "Supprimer définitivement le compte ?",
+      "finalConfirm": "Votre compte, vos contacts, vos check-ins et vos réglages seront supprimés définitivement.",
+      "button": "Supprimer le compte",
+      "deleting": "Suppression...",
+      "successTitle": "Compte supprimé",
+      "successMessage": "Votre compte a été supprimé définitivement."
     }
   },
   "settings": {

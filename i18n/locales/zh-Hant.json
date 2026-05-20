@@ -292,7 +292,18 @@
       "loadProfile": "無法載入個人資料",
       "notLoggedIn": "您未登入",
       "updateProfile": "無法更新個人資料",
-      "saveProfile": "無法保存個人資料"
+      "saveProfile": "無法保存個人資料",
+      "deleteAccount": "無法刪除帳戶"
+    },
+    "deleteAccount": {
+      "title": "刪除帳戶",
+      "confirm": "這將永久刪除你的帳戶和資料，此操作無法復原。",
+      "finalTitle": "永久刪除帳戶？",
+      "finalConfirm": "你的帳戶、聯絡人、check-in 和設定都將被永久刪除。",
+      "button": "刪除帳戶",
+      "deleting": "正在刪除...",
+      "successTitle": "帳戶已刪除",
+      "successMessage": "你的帳戶已被永久刪除。"
     }
   },
   "settings": {

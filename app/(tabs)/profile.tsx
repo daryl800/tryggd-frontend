@@ -47,6 +47,7 @@ export default function ProfileScreen() {
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const isMountedRef = useRef(true);
 
     const [profile, setProfile] = useState<UserProfile>({
@@ -304,14 +305,7 @@ export default function ProfileScreen() {
                             await clearPushTokens(user.id);
                         }
 
-                        await AsyncStorage.multiRemove([
-                            '@expo_push_token',
-                            '@user_profile',
-                            '@app_language',
-                            '@settings_notifications',
-                            '@settings_check_in_reminder',
-                            '@settings_contact_check_in',
-                        ]);
+                        await clearLocalSessionState();
 
                         const { error } = await supabase.auth.signOut();
                         if (error) throw error;
@@ -324,6 +318,75 @@ export default function ProfileScreen() {
                 },
             },
         ]);
+    };
+
+    const clearLocalSessionState = async () => {
+        await AsyncStorage.multiRemove([
+            '@expo_push_token',
+            '@user_profile',
+            '@app_language',
+            '@settings_notifications',
+            '@settings_check_in_reminder',
+            '@settings_contact_check_in',
+        ]);
+    };
+
+    const deleteAccount = async () => {
+        try {
+            setDeleting(true);
+
+            const { data, error } = await supabase.functions.invoke('delete-account');
+            if (error) throw error;
+            if (!data?.success) throw new Error('Account deletion did not complete');
+
+            await clearLocalSessionState();
+
+            const { error: signOutError } = await supabase.auth.signOut();
+            if (signOutError) {
+                console.warn('Sign out after account deletion failed:', signOutError);
+            }
+
+            Alert.alert(
+                t('profile.deleteAccount.successTitle'),
+                t('profile.deleteAccount.successMessage'),
+                [{ text: t('common.ok'), onPress: () => router.replace('/(auth)/login') }]
+            );
+        } catch (error) {
+            console.error('Error deleting account:', error);
+            Alert.alert(t('errors.title'), t('profile.errors.deleteAccount'));
+        } finally {
+            setDeleting(false);
+        }
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert(
+            t('profile.deleteAccount.title'),
+            t('profile.deleteAccount.confirm'),
+            [
+                { text: t('common.cancel'), style: 'cancel' },
+                {
+                    text: t('profile.deleteAccount.button'),
+                    style: 'destructive',
+                    onPress: () => {
+                        Alert.alert(
+                            t('profile.deleteAccount.finalTitle'),
+                            t('profile.deleteAccount.finalConfirm'),
+                            [
+                                { text: t('common.cancel'), style: 'cancel' },
+                                {
+                                    text: t('profile.deleteAccount.button'),
+                                    style: 'destructive',
+                                    onPress: () => {
+                                        void deleteAccount();
+                                    },
+                                },
+                            ]
+                        );
+                    },
+                },
+            ]
+        );
     };
 
     const renderField = (
@@ -496,6 +559,22 @@ export default function ProfileScreen() {
                         {t('profile.buttons.logout')}
                     </Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.logoutButton, styles.deleteAccountButton, deleting && styles.deleteAccountButtonDisabled]}
+                    onPress={handleDeleteAccount}
+                    disabled={deleting}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color={BaseColors.error}
+                    />
+                    <Text style={[styles.logoutText, styles.deleteAccountText]}>
+                        {deleting ? t('profile.deleteAccount.deleting') : t('profile.deleteAccount.button')}
+                    </Text>
+                </TouchableOpacity>
             </ScrollView>
 
             {/* Avatar Selection Modal */}
@@ -577,11 +656,11 @@ const styles = StyleSheet.create({
         color: BaseColors.neutral[500],
     },
     scrollContent: {
-        paddingBottom: 40,
+        paddingBottom: Platform.OS === 'android' ? 132 : 48,
     },
     avatarSection: {
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 2,
         marginBottom: GAP,
         paddingHorizontal: 20,
     },
@@ -677,7 +756,9 @@ const styles = StyleSheet.create({
     infoCard: {
         backgroundColor: BaseColors.surface,
         borderRadius: 20,
-        padding: 20,
+        paddingTop: 18,
+        paddingHorizontal: 20,
+        paddingBottom: 10,
         marginHorizontal: 20,
         marginBottom: GAP,
         borderWidth: 1,
@@ -695,12 +776,12 @@ const styles = StyleSheet.create({
         }),
     },
     fieldContainer: {
-        marginBottom: GAP,
+        marginBottom: 8,
     },
     fieldLabel: {
         fontSize: iosFontSize(14),
         color: BaseColors.text.dark,
-        marginBottom: 8,
+        marginBottom: 4,
         fontWeight: '500',
     },
     fieldValue: {
@@ -776,19 +857,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: BaseColors.errorLight,
+        backgroundColor: BaseColors.surface,
         borderRadius: 16,
         padding: 18,
         marginHorizontal: 20,
         marginBottom: GAP,
         borderWidth: 1,
-        borderColor: BaseColors.errorBorder,
+        borderColor: BaseColors.neutral[300],
         gap: 10,
     },
     logoutText: {
         fontSize: iosFontSize(16),
         fontWeight: '600',
+        color: BaseColors.text.dark,
+    },
+    deleteAccountButton: {
+        backgroundColor: BaseColors.errorLight,
+        borderColor: BaseColors.errorBorder,
+    },
+    deleteAccountText: {
         color: BaseColors.error,
+    },
+    deleteAccountButtonDisabled: {
+        opacity: 0.6,
     },
     modalOverlay: {
         flex: 1,

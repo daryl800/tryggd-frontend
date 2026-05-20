@@ -244,7 +244,18 @@
       "loadProfile": "Kunde inte ladda profil",
       "notLoggedIn": "Du är inte inloggad",
       "updateProfile": "Kunde inte uppdatera profil",
-      "saveProfile": "Kunde inte spara profil"
+      "saveProfile": "Kunde inte spara profil",
+      "deleteAccount": "Det gick inte att radera kontot"
+    },
+    "deleteAccount": {
+      "title": "Radera konto",
+      "confirm": "Detta raderar ditt konto och dina data permanent. Åtgärden kan inte ångras.",
+      "finalTitle": "Radera kontot permanent?",
+      "finalConfirm": "Ditt konto, dina kontakter, check-ins och inställningar tas bort permanent.",
+      "button": "Radera konto",
+      "deleting": "Raderar...",
+      "successTitle": "Kontot raderat",
+      "successMessage": "Ditt konto har raderats permanent."
     }
   },
   "settings": {
