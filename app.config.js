@@ -24,6 +24,10 @@ export default ({ config }) => ({
         infoPlist: {
             UIBackgroundModes: ["remote-notification"],
             ITSAppUsesNonExemptEncryption: false,
+            NSCameraUsageDescription:
+                "Tryggd uses the camera so you can take a profile photo, for example when updating your account picture in Profile.",
+            NSPhotoLibraryUsageDescription:
+                "Tryggd uses your photo library so you can choose a profile photo, for example when selecting an account picture in Profile.",
             CFBundleLocalizations: [
                 "en",
                 "da",
