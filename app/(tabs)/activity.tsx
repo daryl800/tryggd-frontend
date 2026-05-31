@@ -14,6 +14,7 @@ import {
   Animated,
   Alert,
   AppState,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +33,7 @@ type Activity = {
   last_checked_in_utc: string | null;
   priority: number;
   username?: string | null;
+  avatar_url?: string | null;
   is_owner?: boolean;
   hasNewUpdate?: boolean;
   checkin_timezone?: string | null;
@@ -40,12 +42,14 @@ type Activity = {
 type ContactIdentity = {
   username: string;
   display_name: string;
+  avatar_url?: string | null;
 };
 
 type ContactProfileRow = {
   id: string;
   username?: string | null;
   display_name?: string | null;
+  avatar_url?: string | null;
 };
 
 type ResponseNotification = {
@@ -127,10 +131,10 @@ export default function ActivityScreen() {
           .map((c) => c.contact_user_id)
           .filter(Boolean);
 
-        const { data: profileRows } = await supabase.rpc(
-          'get_contact_usernames',
-          { contact_ids: ids }
-        ) as { data: ContactProfileRow[] | null };
+        const { data: profileRows } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, avatar_url')
+          .in('id', ids) as { data: ContactProfileRow[] | null };
 
         const profileMap = new Map(
           (profileRows || []).map((row) => [
@@ -138,6 +142,7 @@ export default function ActivityScreen() {
             {
               username: row.username || '',
               display_name: row.display_name || '',
+              avatar_url: row.avatar_url || '',
             },
           ])
         );
@@ -150,6 +155,7 @@ export default function ActivityScreen() {
           map.set(c.contact_user_id, {
             username: liveProfile?.username || '',
             display_name: liveProfile?.display_name || c.contact_display_name || '',
+            avatar_url: liveProfile?.avatar_url || '',
           });
           resolvedIds.push(c.contact_user_id);
         });
@@ -169,16 +175,28 @@ export default function ActivityScreen() {
     try {
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('users_latest_checkin')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      const [{ data, error }, { data: profileData, error: profileError }] = await Promise.all([
+        supabase
+          .from('users_latest_checkin')
+          .select('*')
+          .eq('user_id', user.id)
+          .single(),
+        supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single(),
+      ]);
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching owner activity:', error);
         return;
       }
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('Error fetching owner avatar:', profileError);
+      }
+
+      const ownerAvatarUrl = profileData?.avatar_url || '';
 
       if (data) {
         const isNew = !lastCheckinTimes.current.has(user.id) ||
@@ -189,6 +207,7 @@ export default function ActivityScreen() {
         setOwnerActivity({
           ...data,
           display_name: t('activity.you'),
+          avatar_url: ownerAvatarUrl,
           is_owner: true,
           hasNewUpdate: isNew,
           checkin_timezone: data.checkin_timezone,
@@ -203,6 +222,7 @@ export default function ActivityScreen() {
           display_name: t('activity.you'),
           last_checked_in_utc: null,
           priority: 0,
+          avatar_url: ownerAvatarUrl,
           is_owner: true,
           hasNewUpdate: false,
           checkin_timezone: null,
@@ -244,6 +264,7 @@ export default function ActivityScreen() {
           ...activity,
           display_name: contactInfo?.display_name || activity.display_name,
           username: contactInfo?.username || null,
+          avatar_url: contactInfo?.avatar_url || null,
           hasNewUpdate: isNew,
           checkin_timezone: activity.checkin_timezone,
         };
@@ -525,6 +546,7 @@ export default function ActivityScreen() {
             ...updated,
             display_name: contactInfo?.display_name || updated.display_name,
             username: contactInfo?.username || null,
+            avatar_url: contactInfo?.avatar_url || null,
             hasNewUpdate: isNew,
             checkin_timezone: updated.checkin_timezone,
           };
@@ -569,15 +591,16 @@ export default function ActivityScreen() {
         (payload) => {
           if (payload.eventType === 'DELETE') {
             lastCheckinTimes.current.delete(user.id);
-            setOwnerActivity({
+            setOwnerActivity((prev) => ({
               user_id: user.id,
               display_name: t('activity.you'),
               last_checked_in_utc: null,
               priority: 0,
+              avatar_url: prev?.avatar_url || null,
               is_owner: true,
               hasNewUpdate: false,
               checkin_timezone: null,
-            });
+            }));
             return;
           }
 
@@ -589,15 +612,16 @@ export default function ActivityScreen() {
               lastCheckinTimes.current.set(user.id, payload.new.last_checked_in_utc);
             }
 
-            setOwnerActivity({
+            setOwnerActivity((prev) => ({
               user_id: payload.new.user_id,
               last_checked_in_utc: payload.new.last_checked_in_utc,
               priority: payload.new.priority,
               display_name: t('activity.you'),
+              avatar_url: prev?.avatar_url || null,
               is_owner: true,
               hasNewUpdate: isNew,
               checkin_timezone: payload.new.checkin_timezone,
-            });
+            }));
 
             if (payload.new.checkin_timezone) {
               ownerTimezoneRef.current = payload.new.checkin_timezone;
@@ -969,6 +993,7 @@ export default function ActivityScreen() {
   const ActivityItem = ({
     name,
     username,
+    avatarUrl,
     timestamp,
     priority,
     isOwner = false,
@@ -979,6 +1004,7 @@ export default function ActivityScreen() {
   }: {
     name: string;
     username?: string | null;
+    avatarUrl?: string | null;
     timestamp: string | null;
     priority: number;
     isOwner?: boolean;
@@ -1205,7 +1231,11 @@ export default function ActivityScreen() {
         <View style={styles.activityRow}>
           <View style={styles.leftIconsColumn}>
             <View style={styles.iconContainer}>
-              <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
+              {avatarUrl ? (
+                <Image source={{ uri: avatarUrl }} style={styles.activityAvatar} />
+              ) : (
+                <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
+              )}
               <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
                 <Ionicons name={status.icon} size={14} color="#FFFFFF" />
               </View>
@@ -1332,6 +1362,7 @@ export default function ActivityScreen() {
 
                   <ActivityItem
                     name={ownerActivity.display_name}
+                    avatarUrl={ownerActivity.avatar_url}
                     timestamp={ownerActivity.last_checked_in_utc}
                     priority={ownerActivity.priority}
                     isOwner
@@ -1386,6 +1417,7 @@ export default function ActivityScreen() {
                     <ActivityItem
                       key={item.user_id}
                       name={item.display_name}
+                      avatarUrl={item.avatar_url}
                       username={item.username}
                       timestamp={item.last_checked_in_utc}
                       priority={item.priority}
@@ -1521,6 +1553,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: 48,
     height: 48,
+  },
+  activityAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: BaseColors.primaryLight,
+    backgroundColor: BaseColors.neutral[100],
   },
   statusBadge: {
     position: 'absolute',

@@ -115,6 +115,7 @@ export default function ProfileScreen() {
                         email: user.email || '',
                         auth_provider: user.app_metadata?.provider || 'email',
                         phone: data.phone || '',
+                        avatar_url: data.avatar_url || '',
                     })
                 );
             }
@@ -141,9 +142,10 @@ export default function ProfileScreen() {
     // ✅ 3. FOCUS EFFECT - triggers when switching to this tab
     useFocusEffect(
         useCallback(() => {
+            if (isEditing || saving) return;
             console.log('🎯 Profile screen focused - fetching fresh profile data');
             loadProfile();
-        }, [loadProfile])
+        }, [isEditing, loadProfile, saving])
     );
 
     // ✅ 4. APP STATE EFFECT - triggers on lock/unlock and background/foreground
@@ -152,6 +154,7 @@ export default function ProfileScreen() {
 
         const handleAppStateChange = (nextAppState: string) => {
             if (nextAppState === 'active' && isActive) {
+                if (isEditing || saving) return;
                 console.log('📱 App became active - refreshing profile data');
                 loadProfile();
             }
@@ -163,7 +166,7 @@ export default function ProfileScreen() {
             isActive = false;
             subscription.remove();
         };
-    }, [loadProfile]);
+    }, [isEditing, loadProfile, saving]);
 
     // ✅ 5. Keep createProfile as is
     const createProfile = async (user: any) => {
@@ -204,6 +207,7 @@ export default function ProfileScreen() {
                 .update({
                     display_name: profile.display_name.trim(),
                     phone: profile.phone?.trim() || '',
+                    avatar_url: profile.avatar_url?.trim() || '',
                 })
                 .eq('id', user.id);
 
@@ -221,6 +225,7 @@ export default function ProfileScreen() {
                     email: profile.email,
                     auth_provider: profile.auth_provider,
                     phone: profile.phone,
+                    avatar_url: profile.avatar_url,
                 })
             );
 
@@ -255,7 +260,7 @@ export default function ProfileScreen() {
             });
 
             if (!result.canceled) {
-                setProfile({ ...profile, avatar_url: result.assets[0].uri });
+                setProfile((current) => ({ ...current, avatar_url: result.assets[0].uri }));
                 setShowAvatarModal(false);
                 // TODO: Upload to Supabase Storage
             }
@@ -279,7 +284,7 @@ export default function ProfileScreen() {
             });
 
             if (!result.canceled) {
-                setProfile({ ...profile, avatar_url: result.assets[0].uri });
+                setProfile((current) => ({ ...current, avatar_url: result.assets[0].uri }));
                 setShowAvatarModal(false);
                 // TODO: Upload to Supabase Storage
             }
