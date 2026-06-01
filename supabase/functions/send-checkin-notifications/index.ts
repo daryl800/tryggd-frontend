@@ -15,6 +15,8 @@ type SharedLocation = {
   accuracyMeters: number | null
 }
 
+type UserPlan = 'free' | 'plus'
+
 type AuthorizedRequest =
   | { kind: 'user'; userId: string }
   | { kind: 'internal' }
@@ -32,6 +34,24 @@ function getInternalTriggerKey() {
     Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ??
     null
   )
+}
+
+async function getUserPlan(
+  supabase: ReturnType<typeof createClient>,
+  userId: string
+): Promise<UserPlan> {
+  const { data, error } = await supabase
+    .from('user_entitlements')
+    .select('plan')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load user entitlements, defaulting to free:', error.message)
+    return 'free'
+  }
+
+  return data?.plan === 'plus' ? 'plus' : 'free'
 }
 
 // ============================================
@@ -157,6 +177,10 @@ serve(async (req) => {
 
     console.log('🕒 Rate limit row:', rateLimit)
 
+    const senderPlan = await getUserPlan(supabase, user_id)
+    const isPlusSender = senderPlan === 'plus'
+    console.log('💳 Sender plan:', senderPlan)
+
     if (rateLimit?.last_contact_checkin_push_at) {
       const lastPush = new Date(rateLimit.last_contact_checkin_push_at)
       const diffSeconds = (now.getTime() - lastPush.getTime()) / 1000
@@ -176,19 +200,25 @@ serve(async (req) => {
     // ============================================
     const { data: contactRelationships, error: contactsError } = await supabase
       .from('contacts')
-      .select('contact_user_id, location_sharing_enabled')
+      .select('contact_user_id, checkin_notifications_enabled, location_sharing_enabled')
       .eq('owner_user_id', user_id)
-      .neq('checkin_notifications_enabled', false)
+
+    const eligibleContacts =
+      isPlusSender
+        ? (contactRelationships || []).filter(
+            (relationship: any) => relationship.checkin_notifications_enabled !== false
+          )
+        : (contactRelationships || [])
 
     if (contactsError) throw contactsError
 
-    if (!contactRelationships?.length) {
+    if (!eligibleContacts.length) {
       console.log('⏩ No eligible contacts selected by sender')
       return new Response(JSON.stringify({ message: 'No eligible contacts selected by sender' }), { status: 200 })
     }
 
-    console.log(`✅ Found ${contactRelationships.length} contacts`)
-    console.log('📋 Eligible contact relationships:', contactRelationships)
+    console.log(`✅ Found ${eligibleContacts.length} contacts`)
+    console.log('📋 Eligible contact relationships:', eligibleContacts)
 
     const { data: latestCheckinRow, error: latestCheckinError } = await supabase
       .from('checkins')
@@ -203,7 +233,9 @@ serve(async (req) => {
     }
 
     const sharedLocation: SharedLocation | null =
-      latestCheckinRow?.location_latitude != null && latestCheckinRow?.location_longitude != null
+      isPlusSender &&
+      latestCheckinRow?.location_latitude != null &&
+      latestCheckinRow?.location_longitude != null
         ? {
             latitude: latestCheckinRow.location_latitude,
             longitude: latestCheckinRow.location_longitude,
@@ -212,7 +244,7 @@ serve(async (req) => {
         : null
 
     const locationRecipientIds = new Set(
-      (contactRelationships || [])
+      eligibleContacts
         .filter((relationship) => relationship.location_sharing_enabled === true)
         .map((relationship) => relationship.contact_user_id)
     )
@@ -236,7 +268,7 @@ serve(async (req) => {
     // ============================================
     // 7. Get push tokens
     // ============================================
-    const recipientIds = contactRelationships.map(rel => rel.contact_user_id)
+    const recipientIds = eligibleContacts.map(rel => rel.contact_user_id)
     console.log('📋 Recipient IDs:', recipientIds)
 
     const { data: existingNotifications, error: existingNotificationsError } = await supabase

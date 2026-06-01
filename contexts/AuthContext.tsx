@@ -1,6 +1,11 @@
 // contexts/AuthContext.tsx
 import { Session } from "@supabase/supabase-js";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import {
+    getCapabilities,
+    type UserCapabilities,
+    type UserPlan,
+} from "../lib/entitlements/capabilities";
 import { deriveDisplayName, isLikelyGeneratedDisplayName } from "../lib/profile/displayName";
 import { supabase } from "../lib/supabase";
 
@@ -15,16 +20,23 @@ type AuthContextType = {
     user: any | null;
     session: Session | null;
     profile: Profile | null;
+    plan: UserPlan;
+    capabilities: UserCapabilities;
     loading: boolean;
     initialized: boolean;
     needsUsername: boolean;
     refreshProfile: () => Promise<void>;
 };
 
+const DEFAULT_PLAN: UserPlan = "free";
+const DEFAULT_CAPABILITIES = getCapabilities(DEFAULT_PLAN);
+
 const AuthContext = createContext<AuthContextType>({
     user: null,
     session: null,
     profile: null,
+    plan: DEFAULT_PLAN,
+    capabilities: DEFAULT_CAPABILITIES,
     loading: true,
     initialized: false,
     needsUsername: false,
@@ -35,6 +47,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [user, setUser] = useState<any | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
+    const [plan, setPlan] = useState<UserPlan>(DEFAULT_PLAN);
     const [initialized, setInitialized] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
 
@@ -47,11 +60,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setProfileLoading(true);
 
-            const { data, error } = await supabase
-                .from("profiles")
-                .select("*")
-                .eq("id", user.id)
-                .single();
+            const [profileResult, entitlementResult] = await Promise.all([
+                supabase
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", user.id)
+                    .single(),
+                supabase
+                    .from("user_entitlements")
+                    .select("plan")
+                    .eq("user_id", user.id)
+                    .maybeSingle(),
+            ]);
+
+            const { data, error } = profileResult;
+            const {
+                data: entitlementData,
+                error: entitlementError,
+            } = entitlementResult;
+
+            if (entitlementError) {
+                console.warn("[AuthContext] Entitlement error, defaulting to free:", entitlementError.message);
+                setPlan(DEFAULT_PLAN);
+            } else {
+                setPlan(entitlementData?.plan === "plus" ? "plus" : DEFAULT_PLAN);
+            }
 
             console.log("[AuthContext] Profile loaded:", data, error);
 
@@ -134,6 +167,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!user) {
             setProfile(null);
+            setPlan(DEFAULT_PLAN);
             return;
         }
 
@@ -141,6 +175,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [refreshProfile, user]);
 
     const loading = !initialized || profileLoading;
+    const capabilities = getCapabilities(plan);
     const hasValidDisplayName = Boolean(
         profile?.display_name?.trim() &&
         !isLikelyGeneratedDisplayName(profile.display_name)
@@ -152,6 +187,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             user,
             session,
             profile,
+            plan,
+            capabilities,
             loading,
             initialized,
             needsUsername,

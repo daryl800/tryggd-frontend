@@ -24,8 +24,14 @@ async function hasAnyLocationRecipients(userId: string) {
 }
 
 export async function getOptionalCheckinLocation(
-  userId: string
+  userId: string,
+  canShareLocation: boolean
 ): Promise<CheckinLocationPayload | null> {
+  if (!canShareLocation) {
+    console.log('📍 Skipping location capture because Tryggd Plus is not enabled');
+    return null;
+  }
+
   const hasRecipients = await hasAnyLocationRecipients(userId);
   if (!hasRecipients) {
     console.log('📍 Skipping location capture because no contacts have location sharing enabled');

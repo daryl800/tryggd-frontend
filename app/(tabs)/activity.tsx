@@ -78,7 +78,7 @@ type ResponseNotification = {
 
 export default function ActivityScreen() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, capabilities } = useAuth();
 
   // State
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -1170,7 +1170,7 @@ export default function ActivityScreen() {
     shared_location?: SharedLocationInfo | null;
   }) => {
     const { t } = useTranslation();
-    const { user } = useAuth();
+    const { user, capabilities } = useAuth();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
 
@@ -1266,7 +1266,11 @@ export default function ActivityScreen() {
 
     const status = getCheckInStatus();
     const isLikeMode = status.status === 'checked-today';
-    const isWelfareMode = ENABLE_WELFARE_CHECK && !isLikeMode && isOverdue;
+    const isWelfareMode =
+      ENABLE_WELFARE_CHECK &&
+      capabilities.canUseWelfareGreeting &&
+      !isLikeMode &&
+      isOverdue;
     const isWelfareResolved = welfareCheckSent !== null;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
@@ -1449,7 +1453,7 @@ export default function ActivityScreen() {
               </Text>
             )}
 
-            {!isOwner && shared_location && (
+            {!isOwner && capabilities.canShareLocation && shared_location && (
               <TouchableOpacity
                 style={styles.locationLink}
                 onPress={openSharedLocation}
