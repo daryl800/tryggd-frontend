@@ -36,7 +36,9 @@ type ContactSlot = {
     display_name?: string;
     id?: string;
     checkin_notifications_enabled?: boolean;
+    location_sharing_enabled?: boolean;
     toggling_notifications?: boolean;
+    toggling_location?: boolean;
 };
 
 type ContactRequest = {
@@ -86,6 +88,7 @@ const ContactCard = memo(
         onBlur,
         onRemove,
         onToggleCheckinNotifications,
+        onToggleLocationSharing,
         inputRef,
         isNewContact,
     }: {
@@ -97,6 +100,7 @@ const ContactCard = memo(
         onBlur: () => void;
         onRemove: () => void;
         onToggleCheckinNotifications?: (value: boolean) => void;
+        onToggleLocationSharing?: (value: boolean) => void;
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
@@ -178,34 +182,73 @@ const ContactCard = memo(
                             </View>
                         ) : null}
 
-                        <TouchableOpacity
-                            style={[
-                                styles.notificationToggle,
-                                contact.checkin_notifications_enabled === false &&
-                                    styles.notificationToggleDisabled,
-                            ]}
-                            onPress={() =>
-                                onToggleCheckinNotifications?.(
-                                    !(contact.checkin_notifications_enabled !== false)
-                                )
-                            }
-                            disabled={contact.toggling_notifications}
-                            activeOpacity={0.7}
-                        >
-                            <Ionicons
-                                name={
-                                    contact.checkin_notifications_enabled !== false
-                                        ? 'notifications-outline'
-                                        : 'notifications-off-outline'
+                        <View style={styles.contactToggleStack}>
+                            <TouchableOpacity
+                                style={[
+                                    styles.locationToggle,
+                                    contact.location_sharing_enabled === true &&
+                                        styles.locationToggleEnabled,
+                                    contact.location_sharing_enabled !== true &&
+                                        styles.locationToggleDisabled,
+                                ]}
+                                onPress={() =>
+                                    onToggleLocationSharing?.(
+                                        !(contact.location_sharing_enabled === true)
+                                    )
                                 }
-                                size={20}
-                                color={
-                                    contact.checkin_notifications_enabled !== false
-                                        ? BaseColors.primary
-                                        : BaseColors.error
+                                disabled={contact.toggling_location}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons
+                                    name={
+                                        contact.location_sharing_enabled === true
+                                            ? 'location'
+                                            : 'location-outline'
+                                    }
+                                    size={18}
+                                    color={
+                                        contact.location_sharing_enabled === true
+                                            ? BaseColors.primaryDark
+                                            : BaseColors.error
+                                    }
+                                />
+                                {contact.location_sharing_enabled !== true && (
+                                    <View style={styles.locationToggleSlash} />
+                                )}
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.notificationToggle,
+                                    contact.checkin_notifications_enabled === false &&
+                                        styles.notificationToggleDisabled,
+                                ]}
+                                onPress={() =>
+                                    onToggleCheckinNotifications?.(
+                                        !(contact.checkin_notifications_enabled !== false)
+                                    )
                                 }
-                            />
-                        </TouchableOpacity>
+                                disabled={contact.toggling_notifications}
+                                activeOpacity={0.7}
+                            >
+                                <Ionicons
+                                    name={
+                                        contact.checkin_notifications_enabled !== false
+                                            ? 'notifications'
+                                            : 'notifications-outline'
+                                    }
+                                    size={20}
+                                    color={
+                                        contact.checkin_notifications_enabled !== false
+                                            ? BaseColors.primary
+                                            : BaseColors.error
+                                    }
+                                />
+                                {contact.checkin_notifications_enabled === false && (
+                                    <View style={styles.notificationToggleSlash} />
+                                )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 )}
             </View>
@@ -375,7 +418,7 @@ export default function ContactsScreen() {
             const [contactsResult, incomingResult, outgoingResult] = await Promise.all([
                 supabase
                     .from('contacts')
-                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled')
+                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled, location_sharing_enabled')
                     .eq('owner_user_id', user.id)
                     .order('created_at'),
 
@@ -442,6 +485,8 @@ export default function ContactsScreen() {
                             '',
                         checkin_notifications_enabled:
                             row.checkin_notifications_enabled !== false,
+                        location_sharing_enabled:
+                            row.location_sharing_enabled === true,
                     })) || [];
 
                 setExistingContacts(contacts);
@@ -931,6 +976,92 @@ export default function ContactsScreen() {
                 data.checkin_notifications_enabled !== false
                     ? `${contact.display_name || contact.username || 'This contact'} will receive your check-ins`
                     : `${contact.display_name || contact.username || 'This contact'} will not receive your check-ins`
+            );
+
+            await fetchAllData();
+        },
+        [existingContacts, fetchAllData, t]
+    );
+
+    const toggleContactLocationSharing = useCallback(
+        async (index: number, enabled: boolean) => {
+            const contact = existingContacts[index];
+            if (!contact?.id) return;
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? {
+                            ...item,
+                            location_sharing_enabled: enabled,
+                            toggling_location: true,
+                        }
+                        : item
+                )
+            );
+
+            const { data, error } = await supabase
+                .from('contacts')
+                .update({ location_sharing_enabled: enabled })
+                .eq('id', contact.id)
+                .select('id, location_sharing_enabled')
+                .single();
+
+            if (error) {
+                console.error('Toggle location sharing error:', error);
+                setExistingContacts((prev) =>
+                    prev.map((item, itemIndex) =>
+                        itemIndex === index
+                            ? {
+                                ...item,
+                                location_sharing_enabled:
+                                    contact.location_sharing_enabled === true,
+                                toggling_location: false,
+                            }
+                            : item
+                    )
+                );
+                Alert.alert(
+                    t('errors.title'),
+                    error.message || 'Failed to update location sharing.'
+                );
+                return;
+            }
+
+            if (!data) {
+                setExistingContacts((prev) =>
+                    prev.map((item, itemIndex) =>
+                        itemIndex === index
+                            ? {
+                                ...item,
+                                location_sharing_enabled:
+                                    contact.location_sharing_enabled === true,
+                                toggling_location: false,
+                            }
+                            : item
+                    )
+                );
+                Alert.alert(t('errors.title'), 'No contact row was updated.');
+                return;
+            }
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? {
+                            ...item,
+                            location_sharing_enabled:
+                                data.location_sharing_enabled === true,
+                            toggling_location: false,
+                        }
+                        : item
+                )
+            );
+
+            Alert.alert(
+                data.location_sharing_enabled === true
+                    ? `${contact.display_name || contact.username || 'This contact'} will see your location in Activity`
+                    : `${contact.display_name || contact.username || 'This contact'} will not see your location in Activity`
             );
 
             await fetchAllData();
@@ -1603,6 +1734,9 @@ export default function ContactsScreen() {
                                             onToggleCheckinNotifications={(value) =>
                                                 toggleContactCheckinNotifications(index, value)
                                             }
+                                            onToggleLocationSharing={(value) =>
+                                                toggleContactLocationSharing(index, value)
+                                            }
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
                                             isNewContact={false}
                                         />
@@ -2126,10 +2260,39 @@ const styles = StyleSheet.create({
         color: BaseColors.neutral[500],
         flex: 1,
     },
-    notificationToggle: {
+    contactToggleStack: {
         position: 'absolute',
         top: 0,
         right: 0,
+        gap: 8,
+    },
+    locationToggle: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.neutral[50],
+    },
+    locationToggleEnabled: {
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
+    locationToggleDisabled: {
+        backgroundColor: BaseColors.errorLight,
+        borderWidth: 1,
+        borderColor: BaseColors.errorBorder,
+    },
+    locationToggleSlash: {
+        position: 'absolute',
+        width: 22,
+        height: 1.75,
+        backgroundColor: BaseColors.error,
+        transform: [{ rotate: '45deg' }],
+        borderRadius: 1,
+    },
+    notificationToggle: {
         width: 36,
         height: 36,
         borderRadius: 18,
@@ -2141,6 +2304,14 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.errorLight,
         borderWidth: 1,
         borderColor: BaseColors.errorBorder,
+    },
+    notificationToggleSlash: {
+        position: 'absolute',
+        width: 22,
+        height: 1.75,
+        backgroundColor: BaseColors.error,
+        transform: [{ rotate: '45deg' }],
+        borderRadius: 1,
     },
     initialLoadingContainer: {
         flex: 1,

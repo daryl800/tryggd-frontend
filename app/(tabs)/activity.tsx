@@ -15,6 +15,7 @@ import {
   Alert,
   AppState,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -37,6 +38,14 @@ type Activity = {
   is_owner?: boolean;
   hasNewUpdate?: boolean;
   checkin_timezone?: string | null;
+  shared_location?: SharedLocationInfo | null;
+};
+
+type SharedLocationInfo = {
+  latitude: number;
+  longitude: number;
+  accuracyMeters?: number | null;
+  checkinTimeIso?: string | null;
 };
 
 type ContactIdentity = {
@@ -83,6 +92,7 @@ export default function ActivityScreen() {
   // Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
+  const locationShareMapRef = useRef<Map<string, SharedLocationInfo>>(new Map());
   const myContactIds = useRef<string[]>([]);
   const contactMapRef = useRef<Map<string, ContactIdentity>>(new Map());
   const ownerTimezoneRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
@@ -94,6 +104,7 @@ export default function ActivityScreen() {
   const ownerCheckinsChannelRef = useRef<any>(null);
   const responsesChannelRef = useRef<any>(null);
   const todayResponsesChannelRef = useRef<any>(null);
+  const checkinNotificationsChannelRef = useRef<any>(null);
 
   // ============================================
   // Helper Functions
@@ -233,6 +244,68 @@ export default function ActivityScreen() {
     }
   };
 
+  const fetchLocationShares = async (contactIds: string[]): Promise<Map<string, SharedLocationInfo>> => {
+    try {
+      if (!user || contactIds.length === 0) {
+        locationShareMapRef.current = new Map();
+        return new Map();
+      }
+
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('sender_user_id, data, created_at')
+        .eq('user_id', user.id)
+        .eq('type', 'contact_checkin')
+        .in('sender_user_id', contactIds)
+        .order('created_at', { ascending: false })
+        .limit(200);
+
+      if (error) throw error;
+
+      const locationMap = new Map<string, SharedLocationInfo>();
+
+      for (const notification of notifications || []) {
+        let payload: any = {};
+        try {
+          payload = typeof notification.data === 'string'
+            ? JSON.parse(notification.data)
+            : (notification.data || {});
+        } catch (error) {
+          console.error('Error parsing location share notification:', error);
+          continue;
+        }
+
+        const location = payload.location;
+        const checkinTimeIso = payload.checkinTimeIso;
+
+        if (
+          !notification.sender_user_id ||
+          !checkinTimeIso ||
+          location?.latitude == null ||
+          location?.longitude == null
+        ) {
+          continue;
+        }
+
+        const key = `${notification.sender_user_id}:${checkinTimeIso}`;
+        if (!locationMap.has(key)) {
+          locationMap.set(key, {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            accuracyMeters: location.accuracyMeters ?? null,
+            checkinTimeIso,
+          });
+        }
+      }
+
+      locationShareMapRef.current = locationMap;
+      return locationMap;
+    } catch (error) {
+      console.error('Error fetching location shares:', error);
+      return new Map();
+    }
+  };
+
   const fetchActivities = async () => {
     try {
       const { ids: contactIds, map: freshContactMap } = await fetchContacts();
@@ -242,6 +315,8 @@ export default function ActivityScreen() {
         setLoading(false);
         return;
       }
+
+      const locationMap = await fetchLocationShares(contactIds);
 
       const { data, error } = await supabase
         .from('users_latest_checkin')
@@ -267,6 +342,10 @@ export default function ActivityScreen() {
           avatar_url: contactInfo?.avatar_url || null,
           hasNewUpdate: isNew,
           checkin_timezone: activity.checkin_timezone,
+          shared_location:
+            activity.last_checked_in_utc
+              ? locationMap.get(`${activity.user_id}:${activity.last_checked_in_utc}`) || null
+              : null,
         };
       });
 
@@ -549,6 +628,9 @@ export default function ActivityScreen() {
             avatar_url: contactInfo?.avatar_url || null,
             hasNewUpdate: isNew,
             checkin_timezone: updated.checkin_timezone,
+            shared_location: updated.last_checked_in_utc
+              ? locationShareMapRef.current.get(`${updated.user_id}:${updated.last_checked_in_utc}`) || null
+              : null,
           };
 
           setActivities((prev) => {
@@ -621,6 +703,7 @@ export default function ActivityScreen() {
               is_owner: true,
               hasNewUpdate: isNew,
               checkin_timezone: payload.new.checkin_timezone,
+              shared_location: null,
             }));
 
             if (payload.new.checkin_timezone) {
@@ -826,6 +909,75 @@ export default function ActivityScreen() {
     todayResponsesChannelRef.current = channel;
   };
 
+  const setupCheckinNotificationsSubscription = () => {
+    if (checkinNotificationsChannelRef.current) {
+      supabase.removeChannel(checkinNotificationsChannelRef.current);
+    }
+
+    if (!user) return;
+
+    const channel = supabase
+      .channel('contact-checkin-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (payload.new.type !== 'contact_checkin') {
+            return;
+          }
+
+          let data: any = {};
+          try {
+            data = typeof payload.new.data === 'string'
+              ? JSON.parse(payload.new.data)
+              : (payload.new.data || {});
+          } catch (error) {
+            console.error('Error parsing realtime check-in notification:', error);
+            return;
+          }
+
+          const location = data.location;
+          const checkinTimeIso = data.checkinTimeIso;
+          const senderUserId = payload.new.sender_user_id;
+
+          if (
+            !senderUserId ||
+            !checkinTimeIso ||
+            location?.latitude == null ||
+            location?.longitude == null
+          ) {
+            return;
+          }
+
+          const locationInfo: SharedLocationInfo = {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            accuracyMeters: location.accuracyMeters ?? null,
+            checkinTimeIso,
+          };
+
+          locationShareMapRef.current.set(`${senderUserId}:${checkinTimeIso}`, locationInfo);
+
+          setActivities((prev) =>
+            prev.map((activity) =>
+              activity.user_id === senderUserId &&
+              activity.last_checked_in_utc === checkinTimeIso
+                ? { ...activity, shared_location: locationInfo }
+                : activity
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    checkinNotificationsChannelRef.current = channel;
+  };
+
   // ============================================
   // Action Functions
   // ============================================
@@ -888,6 +1040,7 @@ export default function ActivityScreen() {
       setupContactsSubscription();
       setupResponsesSubscription();
       setupTodayResponsesSubscription();
+      setupCheckinNotificationsSubscription();
 
     } catch (error) {
       console.error('Error during initialization:', error);
@@ -930,7 +1083,8 @@ export default function ActivityScreen() {
         contactsChannelRef.current,
         ownerCheckinsChannelRef.current,
         responsesChannelRef.current,
-        todayResponsesChannelRef.current
+        todayResponsesChannelRef.current,
+        checkinNotificationsChannelRef.current
       ];
 
       channels.forEach(channel => {
@@ -1001,6 +1155,7 @@ export default function ActivityScreen() {
     userId,
     isLast = false,
     checkin_timezone,
+    shared_location,
   }: {
     name: string;
     username?: string | null;
@@ -1012,6 +1167,7 @@ export default function ActivityScreen() {
     userId: string;
     isLast?: boolean;
     checkin_timezone?: string | null;
+    shared_location?: SharedLocationInfo | null;
   }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
@@ -1168,6 +1324,19 @@ export default function ActivityScreen() {
       }
     };
 
+    const openSharedLocation = async () => {
+      if (!shared_location) return;
+
+      const url = `https://www.google.com/maps/search/?api=1&query=${shared_location.latitude},${shared_location.longitude}`;
+
+      try {
+        await Linking.openURL(url);
+      } catch (error) {
+        console.error('Error opening shared location:', error);
+        Alert.alert(t('errors.title'), 'Failed to open shared location.');
+      }
+    };
+
     const formatActivityTime = (timestamp: string | null, timezone?: string | null) => {
       let timeText = '';
       let dateText = '';
@@ -1280,6 +1449,17 @@ export default function ActivityScreen() {
               </Text>
             )}
 
+            {!isOwner && shared_location && (
+              <TouchableOpacity
+                style={styles.locationLink}
+                onPress={openSharedLocation}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="location" size={14} color={BaseColors.primaryDark} />
+                <Text style={styles.locationLinkText}>View shared location</Text>
+              </TouchableOpacity>
+            )}
+
             {!isOwner && isValidTimestamp && (
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
@@ -1369,6 +1549,7 @@ export default function ActivityScreen() {
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
                     checkin_timezone={ownerActivity.checkin_timezone}
+                    shared_location={ownerActivity.shared_location}
                     isLast
                   />
 
@@ -1425,6 +1606,7 @@ export default function ActivityScreen() {
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}
                       checkin_timezone={item.checkin_timezone}
+                      shared_location={item.shared_location}
                       isLast={index === activities.length - 1}
                     />
                   ))
@@ -1611,6 +1793,25 @@ const styles = StyleSheet.create({
     color: BaseColors.text.light,
     fontSize: iosFontSize(14),
     fontStyle: 'italic',
+  },
+  locationLink: {
+    marginTop: 6,
+    marginBottom: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: BaseColors.primaryLight,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    gap: 6,
+  },
+  locationLinkText: {
+    fontSize: iosFontSize(12),
+    fontWeight: '600',
+    color: BaseColors.primaryDark,
   },
   responseButtonContainer: {
     marginTop: 4,
