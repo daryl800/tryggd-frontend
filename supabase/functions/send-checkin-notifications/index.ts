@@ -9,6 +9,10 @@ interface CheckinPayload {
   timezone: string
 }
 
+type AuthorizedRequest =
+  | { kind: 'user'; userId: string }
+  | { kind: 'internal' }
+
 type NotificationPayload = {
   title: string
   body: string
@@ -16,38 +20,51 @@ type NotificationPayload = {
   data: Record<string, any>
 }
 
+function getInternalTriggerKey() {
+  return (
+    Deno.env.get('SUPABASE_ANON_KEY') ??
+    Deno.env.get('SUPABASE_PUBLISHABLE_KEY') ??
+    null
+  )
+}
+
 // ============================================
 // AUTH FUNCTION (embedded directly)
 // ============================================
-async function validateAndGetUser(req: Request) {
+async function validateRequest(
+  req: Request,
+  supabase: ReturnType<typeof createClient>,
+  payloadUserId: string
+): Promise<{ auth: AuthorizedRequest | null; error: string | null; status: number }> {
   const authHeader = req.headers.get('Authorization')
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { user: null, error: 'Missing or invalid Authorization header', status: 401 }
+    return { auth: null, error: 'Missing or invalid Authorization header', status: 401 }
   }
 
   const token = authHeader.replace('Bearer ', '')
-  
-  // Quick token format check
-  if (token.split('.').length !== 3) {
-    console.error('Malformed token - invalid segment count:', token.split('.').length)
-    return { user: null, error: 'Invalid token format', status: 401 }
+
+  if (token.split('.').length === 3) {
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (!authError && user) {
+      if (user.id !== payloadUserId) {
+        return { auth: null, error: 'User ID mismatch', status: 403 }
+      }
+
+      return { auth: { kind: 'user', userId: user.id }, error: null, status: 200 }
+    }
+
+    console.error('JWT auth error:', authError?.message)
   }
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    { auth: { persistSession: false } }
-  )
-
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-  
-  if (authError || !user) {
-    console.error('Auth error:', authError?.message)
-    return { user: null, error: 'Invalid or expired token', status: 401 }
+  const internalTriggerKey = getInternalTriggerKey()
+  if (internalTriggerKey && token === internalTriggerKey) {
+    console.log('🔐 Authorized internal trigger request')
+    return { auth: { kind: 'internal' }, error: null, status: 200 }
   }
 
-  return { user, error: null, status: 200 }
+  return { auth: null, error: 'Invalid or expired token', status: 401 }
 }
 
 // Capitalize first letter
@@ -73,6 +90,7 @@ function buildContactCheckinNotification(
       contactUserId: user_id,
       ownerUserId: owner_user_id,
       checkinTime: formattedTime,
+      checkinTimeIso: checkin_time,
       contactDisplayName,
       timezone
     }
@@ -82,11 +100,26 @@ function buildContactCheckinNotification(
 serve(async (req) => {
   try {
     // ============================================
-    // 1. Authentication
+    // 1. Initialize Supabase client
     // ============================================
-    const { user, error: authError, status } = await validateAndGetUser(req)
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    )
+
+    // ============================================
+    // 2. Parse request body
+    // ============================================
+    const { user_id, checkin_time, timezone } = await req.json() as CheckinPayload
+    console.log('🚀 Contact check-in notification started', { user_id, checkin_time, timezone })
+
+    // ============================================
+    // 3. Authentication
+    // ============================================
+    const { auth, error: authError, status } = await validateRequest(req, supabase, user_id)
     
-    if (!user) {
+    if (!auth) {
       console.error('Auth error:', authError)
       return new Response(JSON.stringify({ 
         error: authError,
@@ -96,32 +129,6 @@ serve(async (req) => {
         headers: { 'Content-Type': 'application/json' }
       })
     }
-
-    // ============================================
-    // 2. Parse request body
-    // ============================================
-    const { user_id, checkin_time, timezone } = await req.json() as CheckinPayload
-    console.log('🚀 Contact check-in notification started', { user_id, checkin_time, timezone })
-
-    // Verify the authenticated user matches the payload
-    if (user.id !== user_id) {
-      return new Response(JSON.stringify({ 
-        error: 'User ID mismatch',
-        code: 'forbidden'
-      }), { 
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-
-    // ============================================
-    // 3. Initialize Supabase client
-    // ============================================
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    )
 
     // ============================================
     // 4. Rate limit (60 seconds cooldown)
@@ -134,6 +141,8 @@ serve(async (req) => {
       .select('last_contact_checkin_push_at')
       .eq('user_id', user_id)
       .single()
+
+    console.log('🕒 Rate limit row:', rateLimit)
 
     if (rateLimit?.last_contact_checkin_push_at) {
       const lastPush = new Date(rateLimit.last_contact_checkin_push_at)
@@ -154,30 +163,32 @@ serve(async (req) => {
     // ============================================
     const { data: contactRelationships, error: contactsError } = await supabase
       .from('contacts')
-      .select('owner_user_id, contact_display_name')
-      .eq('contact_user_id', user_id)
+      .select('contact_user_id')
+      .eq('owner_user_id', user_id)
+      .neq('checkin_notifications_enabled', false)
 
     if (contactsError) throw contactsError
 
     if (!contactRelationships?.length) {
-      console.log('⏩ No contacts found')
-      return new Response(JSON.stringify({ message: 'No contacts found' }), { status: 200 })
+      console.log('⏩ No eligible contacts selected by sender')
+      return new Response(JSON.stringify({ message: 'No eligible contacts selected by sender' }), { status: 200 })
     }
 
     console.log(`✅ Found ${contactRelationships.length} contacts`)
+    console.log('📋 Eligible contact relationships:', contactRelationships)
 
     // ============================================
     // 6. Get checking-in user profile
     // ============================================
     const { data: checkingUser } = await supabase
       .from('profiles')
-      .select('display_name, email')
+      .select('display_name, username')
       .eq('id', user_id)
       .single()
 
     const checkingUserName =
       capitalizeName(checkingUser?.display_name ||
-        checkingUser?.email?.split('@')[0] ||
+        checkingUser?.username ||
         'Someone')
 
     console.log('👤 Checking user:', checkingUserName)
@@ -185,23 +196,50 @@ serve(async (req) => {
     // ============================================
     // 7. Get push tokens
     // ============================================
-    const ownerIds = contactRelationships.map(rel => rel.owner_user_id)
+    const recipientIds = contactRelationships.map(rel => rel.contact_user_id)
+    console.log('📋 Recipient IDs:', recipientIds)
 
-    const { data: owners, error: tokensError } = await supabase
+    const { data: existingNotifications, error: existingNotificationsError } = await supabase
+      .from('notifications')
+      .select('user_id')
+      .in('user_id', recipientIds)
+      .eq('sender_user_id', user_id)
+      .eq('type', 'contact_checkin')
+      .filter('data->>checkinTimeIso', 'eq', checkin_time)
+
+    if (existingNotificationsError) throw existingNotificationsError
+
+    const alreadyNotifiedUserIds = new Set(
+      (existingNotifications || []).map((notification) => notification.user_id)
+    )
+
+    if (alreadyNotifiedUserIds.size > 0) {
+      console.log('🧾 Existing notifications found for recipients:', [...alreadyNotifiedUserIds])
+    }
+
+    const { data: recipients, error: tokensError } = await supabase
       .from('user_push_tokens')
       .select('user_id, expo_push_token, contact_checkin_notifications')
-      .in('user_id', ownerIds)
+      .in('user_id', recipientIds)
       .eq('contact_checkin_notifications', true)
       .not('expo_push_token', 'is', null)
 
     if (tokensError) throw tokensError
 
-    if (!owners?.length) {
+    if (!recipients?.length) {
       console.log('⏩ No push tokens found')
       return new Response(JSON.stringify({ message: 'No push tokens found' }), { status: 200 })
     }
 
-    console.log(`✅ Found ${owners.length} owners with tokens`)
+    console.log(`✅ Found ${recipients.length} recipients with tokens`)
+    console.log(
+      '📋 Recipients with tokens:',
+      recipients.map((recipient) => ({
+        user_id: recipient.user_id,
+        has_token: !!recipient.expo_push_token,
+        contact_checkin_notifications: recipient.contact_checkin_notifications,
+      }))
+    )
 
     // ============================================
     // 8. Format time
@@ -216,13 +254,6 @@ serve(async (req) => {
       timeZone: timezone
     })
 
-    const ownerContactMap = new Map(
-      contactRelationships.map(rel => [
-        rel.owner_user_id,
-        capitalizeName(rel.contact_display_name || checkingUserName)
-      ])
-    )
-
     // ============================================
     // 9. Build notifications
     // ============================================
@@ -231,21 +262,23 @@ serve(async (req) => {
 
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
 
-    for (const owner of owners) {
-      const contactDisplayName =
-        ownerContactMap.get(owner.user_id) || checkingUserName
+    for (const recipient of recipients) {
+      if (alreadyNotifiedUserIds.has(recipient.user_id)) {
+        console.log(`⏩ Skipping duplicate notification for ${recipient.user_id}`)
+        continue
+      }
 
       const payload = buildContactCheckinNotification(
-        contactDisplayName,
+        checkingUserName,
         formattedTime,
         user_id,
-        owner.user_id,
+        recipient.user_id,
         checkin_time,
         timezone
       )
 
       notificationsToInsert.push({
-        user_id: owner.user_id,
+        user_id: recipient.user_id,
         type: payload.type,
         title: payload.title,
         body: payload.body,
@@ -255,9 +288,9 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       })
 
-      if (owner.expo_push_token && Expo.isExpoPushToken(owner.expo_push_token)) {
+      if (recipient.expo_push_token && Expo.isExpoPushToken(recipient.expo_push_token)) {
         messages.push({
-          to: owner.expo_push_token,
+          to: recipient.expo_push_token,
           sound: 'default',
           title: payload.title,
           body: payload.body,
@@ -337,6 +370,7 @@ serve(async (req) => {
     // 13. Return success
     // ============================================
     console.log('✅ Notification process completed', {
+      auth_kind: auth.kind,
       pushes_sent: successfulPushes.length,
       pushes_failed: failedPushes.length
     })
