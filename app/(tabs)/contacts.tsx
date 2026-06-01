@@ -25,6 +25,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
@@ -89,6 +90,8 @@ const ContactCard = memo(
         onRemove,
         onToggleCheckinNotifications,
         onToggleLocationSharing,
+        showCheckinNotificationControl,
+        showLocationSharingControl,
         inputRef,
         isNewContact,
     }: {
@@ -101,6 +104,8 @@ const ContactCard = memo(
         onRemove: () => void;
         onToggleCheckinNotifications?: (value: boolean) => void;
         onToggleLocationSharing?: (value: boolean) => void;
+        showCheckinNotificationControl: boolean;
+        showLocationSharingControl: boolean;
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
@@ -182,73 +187,79 @@ const ContactCard = memo(
                             </View>
                         ) : null}
 
-                        <View style={styles.contactToggleStack}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.locationToggle,
-                                    contact.location_sharing_enabled === true &&
-                                        styles.locationToggleEnabled,
-                                    contact.location_sharing_enabled !== true &&
-                                        styles.locationToggleDisabled,
-                                ]}
-                                onPress={() =>
-                                    onToggleLocationSharing?.(
-                                        !(contact.location_sharing_enabled === true)
-                                    )
-                                }
-                                disabled={contact.toggling_location}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name={
-                                        contact.location_sharing_enabled === true
-                                            ? 'location'
-                                            : 'location-outline'
-                                    }
-                                    size={18}
-                                    color={
-                                        contact.location_sharing_enabled === true
-                                            ? BaseColors.primaryDark
-                                            : BaseColors.error
-                                    }
-                                />
-                                {contact.location_sharing_enabled !== true && (
-                                    <View style={styles.locationToggleSlash} />
+                        {(showLocationSharingControl || showCheckinNotificationControl) && (
+                            <View style={styles.contactToggleStack}>
+                                {showLocationSharingControl && (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.locationToggle,
+                                            contact.location_sharing_enabled === true &&
+                                                styles.locationToggleEnabled,
+                                            contact.location_sharing_enabled !== true &&
+                                                styles.locationToggleDisabled,
+                                        ]}
+                                        onPress={() =>
+                                            onToggleLocationSharing?.(
+                                                !(contact.location_sharing_enabled === true)
+                                            )
+                                        }
+                                        disabled={contact.toggling_location}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Ionicons
+                                            name={
+                                                contact.location_sharing_enabled === true
+                                                    ? 'location'
+                                                    : 'location-outline'
+                                            }
+                                            size={18}
+                                            color={
+                                                contact.location_sharing_enabled === true
+                                                    ? BaseColors.primaryDark
+                                                    : BaseColors.error
+                                            }
+                                        />
+                                        {contact.location_sharing_enabled !== true && (
+                                            <View style={styles.locationToggleSlash} />
+                                        )}
+                                    </TouchableOpacity>
                                 )}
-                            </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={[
-                                    styles.notificationToggle,
-                                    contact.checkin_notifications_enabled === false &&
-                                        styles.notificationToggleDisabled,
-                                ]}
-                                onPress={() =>
-                                    onToggleCheckinNotifications?.(
-                                        !(contact.checkin_notifications_enabled !== false)
-                                    )
-                                }
-                                disabled={contact.toggling_notifications}
-                                activeOpacity={0.7}
-                            >
-                                <Ionicons
-                                    name={
-                                        contact.checkin_notifications_enabled !== false
-                                            ? 'notifications'
-                                            : 'notifications-outline'
-                                    }
-                                    size={20}
-                                    color={
-                                        contact.checkin_notifications_enabled !== false
-                                            ? BaseColors.primary
-                                            : BaseColors.error
-                                    }
-                                />
-                                {contact.checkin_notifications_enabled === false && (
-                                    <View style={styles.notificationToggleSlash} />
+                                {showCheckinNotificationControl && (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.notificationToggle,
+                                            contact.checkin_notifications_enabled === false &&
+                                                styles.notificationToggleDisabled,
+                                        ]}
+                                        onPress={() =>
+                                            onToggleCheckinNotifications?.(
+                                                !(contact.checkin_notifications_enabled !== false)
+                                            )
+                                        }
+                                        disabled={contact.toggling_notifications}
+                                        activeOpacity={0.7}
+                                    >
+                                        <Ionicons
+                                            name={
+                                                contact.checkin_notifications_enabled !== false
+                                                    ? 'notifications'
+                                                    : 'notifications-outline'
+                                            }
+                                            size={20}
+                                            color={
+                                                contact.checkin_notifications_enabled !== false
+                                                    ? BaseColors.primary
+                                                    : BaseColors.error
+                                            }
+                                        />
+                                        {contact.checkin_notifications_enabled === false && (
+                                            <View style={styles.notificationToggleSlash} />
+                                        )}
+                                    </TouchableOpacity>
                                 )}
-                            </TouchableOpacity>
-                        </View>
+                            </View>
+                        )}
                     </View>
                 )}
             </View>
@@ -360,6 +371,7 @@ const ContactRequestCard = memo(
 
 export default function ContactsScreen() {
     const { t } = useTranslation();
+    const { capabilities } = useAuth();
     const [existingContacts, setExistingContacts] = useState<ContactSlot[]>([]);
     const [newContacts, setNewContacts] = useState<ContactSlot[]>([]);
     const [incomingRequests, setIncomingRequests] = useState<ContactRequest[]>([]);
@@ -756,7 +768,7 @@ export default function ContactsScreen() {
     }, [activeSection, unreadCount, resetUnread]);
 
     const handleAddNewContact = () => {
-        if (totalContactsCount >= 3) {
+        if (totalContactsCount >= capabilities.maxContacts) {
             Alert.alert(
                 t('contacts.alerts.limitReached.title'),
                 t('contacts.alerts.limitReached.message'),
@@ -1245,6 +1257,15 @@ export default function ContactsScreen() {
             return;
         }
 
+        if (existingContacts.length + validNewContacts.length > capabilities.maxContacts) {
+            Alert.alert(
+                t('contacts.alerts.limitReached.title'),
+                t('contacts.alerts.limitReached.message'),
+                [{ text: t('common.ok') }]
+            );
+            return;
+        }
+
         setSaving(true);
 
         try {
@@ -1362,6 +1383,15 @@ export default function ContactsScreen() {
                 .eq('receiver_user_id', user.id)
                 .eq('status', 'pending')
                 .maybeSingle();
+
+            if (totalContactsCount >= capabilities.maxContacts) {
+                Alert.alert(
+                    t('contacts.alerts.limitReached.title'),
+                    t('contacts.alerts.limitReached.message'),
+                    [{ text: t('common.ok') }]
+                );
+                return;
+            }
 
             if (fetchError || !requestData) {
                 Alert.alert(t('errors.title'), t('contacts.errors.requestNotFound'));
@@ -1605,13 +1635,13 @@ export default function ContactsScreen() {
                             <TouchableOpacity
                                 onPress={handleAddNewContact}
                                 style={styles.addButton}
-                                disabled={totalContactsCount >= 3}
+                                disabled={totalContactsCount >= capabilities.maxContacts}
                             >
                                 <Ionicons
                                     name="add-circle"
                                     size={ICON_SIZES.LG}
                                     color={
-                                        totalContactsCount >= 3
+                                        totalContactsCount >= capabilities.maxContacts
                                             ? BaseColors.neutral[300]
                                             : BaseColors.primary
                                     }
@@ -1737,6 +1767,12 @@ export default function ContactsScreen() {
                                             onToggleLocationSharing={(value) =>
                                                 toggleContactLocationSharing(index, value)
                                             }
+                                            showCheckinNotificationControl={
+                                                capabilities.canControlCheckinRecipients
+                                            }
+                                            showLocationSharingControl={
+                                                capabilities.canShareLocation
+                                            }
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
                                             isNewContact={false}
                                         />
@@ -1757,6 +1793,8 @@ export default function ContactsScreen() {
                                                 onFocus={() => handleInputFocus(actualIndex)}
                                                 onBlur={() => handleInputBlur(actualIndex)}
                                                 onRemove={() => removeNewContact(newIndex)}
+                                                showCheckinNotificationControl={false}
+                                                showLocationSharingControl={false}
                                                 inputRef={(ref) => (inputRefs.current[actualIndex] = ref)}
                                                 isNewContact={true}
                                             />

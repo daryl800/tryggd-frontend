@@ -210,7 +210,7 @@ const formatTime24h = (date: Date, language: string) => {
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, capabilities } = useAuth();
 
   // State
   const [now, setNow] = useState(new Date());
@@ -613,7 +613,7 @@ export default function HomeScreen() {
       // Do the actual API calls in the background
       Promise.all([
         // Insert checkin to database
-        getOptionalCheckinLocation(user.id)
+        getOptionalCheckinLocation(user.id, capabilities.canShareLocation)
           .then((locationPayload) => {
             console.log('📍 Check-in location payload:', locationPayload);
             return supabase
@@ -656,7 +656,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [user, t, triggerCheckInAnimation, refetchStreak]);
+  }, [capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak]);
 
 
   const startOfDay = new Date();
