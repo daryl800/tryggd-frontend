@@ -26,6 +26,8 @@ export default ({ config }) => ({
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription:
                 "Tryggd uses the camera so you can take a profile photo, for example when updating your account picture in Profile.",
+            NSLocationWhenInUseUsageDescription:
+                "Tryggd uses your location so you can optionally share your current location with selected contacts when you check in.",
             NSPhotoLibraryUsageDescription:
                 "Tryggd uses your photo library so you can choose a profile photo, for example when selecting an account picture in Profile.",
             CFBundleLocalizations: [
@@ -58,7 +60,7 @@ export default ({ config }) => ({
         edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
         package: "com.marcustechnology.tryggd",
-        permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE"],
+        permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     },
 

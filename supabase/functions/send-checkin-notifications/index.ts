@@ -9,6 +9,12 @@ interface CheckinPayload {
   timezone: string
 }
 
+type SharedLocation = {
+  latitude: number
+  longitude: number
+  accuracyMeters: number | null
+}
+
 type AuthorizedRequest =
   | { kind: 'user'; userId: string }
   | { kind: 'internal' }
@@ -80,20 +86,27 @@ function buildContactCheckinNotification(
   user_id: string,
   owner_user_id: string,
   checkin_time: string,
-  timezone: string
+  timezone: string,
+  location: SharedLocation | null
 ): NotificationPayload {
+  const data: Record<string, any> = {
+    contactUserId: user_id,
+    ownerUserId: owner_user_id,
+    checkinTime: formattedTime,
+    checkinTimeIso: checkin_time,
+    contactDisplayName,
+    timezone
+  }
+
+  if (location) {
+    data.location = location
+  }
+
   return {
     title: `🎯 ${contactDisplayName} checked in.`,
     body: `All is well! - ${formattedTime}`,
     type: 'contact_checkin',
-    data: {
-      contactUserId: user_id,
-      ownerUserId: owner_user_id,
-      checkinTime: formattedTime,
-      checkinTimeIso: checkin_time,
-      contactDisplayName,
-      timezone
-    }
+    data
   }
 }
 
@@ -163,7 +176,7 @@ serve(async (req) => {
     // ============================================
     const { data: contactRelationships, error: contactsError } = await supabase
       .from('contacts')
-      .select('contact_user_id')
+      .select('contact_user_id, location_sharing_enabled')
       .eq('owner_user_id', user_id)
       .neq('checkin_notifications_enabled', false)
 
@@ -176,6 +189,33 @@ serve(async (req) => {
 
     console.log(`✅ Found ${contactRelationships.length} contacts`)
     console.log('📋 Eligible contact relationships:', contactRelationships)
+
+    const { data: latestCheckinRow, error: latestCheckinError } = await supabase
+      .from('checkins')
+      .select('location_latitude, location_longitude, location_accuracy_meters, checked_in_at_utc')
+      .eq('user_id', user_id)
+      .order('checked_in_at_utc', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (latestCheckinError) {
+      throw latestCheckinError
+    }
+
+    const sharedLocation: SharedLocation | null =
+      latestCheckinRow?.location_latitude != null && latestCheckinRow?.location_longitude != null
+        ? {
+            latitude: latestCheckinRow.location_latitude,
+            longitude: latestCheckinRow.location_longitude,
+            accuracyMeters: latestCheckinRow.location_accuracy_meters ?? null,
+          }
+        : null
+
+    const locationRecipientIds = new Set(
+      (contactRelationships || [])
+        .filter((relationship) => relationship.location_sharing_enabled === true)
+        .map((relationship) => relationship.contact_user_id)
+    )
 
     // ============================================
     // 6. Get checking-in user profile
@@ -274,7 +314,10 @@ serve(async (req) => {
         user_id,
         recipient.user_id,
         checkin_time,
-        timezone
+        timezone,
+        sharedLocation && locationRecipientIds.has(recipient.user_id)
+          ? sharedLocation
+          : null
       )
 
       notificationsToInsert.push({
@@ -289,12 +332,15 @@ serve(async (req) => {
       })
 
       if (recipient.expo_push_token && Expo.isExpoPushToken(recipient.expo_push_token)) {
+        const pushData = { ...payload.data }
+        delete pushData.location
+
         messages.push({
           to: recipient.expo_push_token,
           sound: 'default',
           title: payload.title,
           body: payload.body,
-          data: payload.data,
+          data: pushData,
           channelId: 'contact-checkins',
           priority: 'high',
           badge: 1

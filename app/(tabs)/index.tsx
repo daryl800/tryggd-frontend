@@ -4,6 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
+import { getOptionalCheckinLocation } from '@/lib/location/checkinLocation';
 import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
@@ -612,14 +613,19 @@ export default function HomeScreen() {
       // Do the actual API calls in the background
       Promise.all([
         // Insert checkin to database
-        supabase
-          .from('checkins')
-          .insert({
-            user_id: user.id,
-            checkin_timezone: timeZone,
+        getOptionalCheckinLocation(user.id)
+          .then((locationPayload) => {
+            console.log('📍 Check-in location payload:', locationPayload);
+            return supabase
+              .from('checkins')
+              .insert({
+                user_id: user.id,
+                checkin_timezone: timeZone,
+                ...(locationPayload || {}),
+              })
+              .select('id, checked_in_at_utc')
+              .single();
           })
-          .select('id, checked_in_at_utc')
-          .single()
           .then(async ({ data, error }) => {
             if (error) throw error;
             if (!data) return;
