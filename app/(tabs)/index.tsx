@@ -4,7 +4,6 @@ import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
-import { sendCheckinNotification } from '@/lib/api/checkinApi';
 import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
@@ -637,10 +636,6 @@ export default function HomeScreen() {
                 checkinTimezone: timeZone,
               })
             );
-
-            // Send notifications (don't await)
-            sendCheckinNotification(user.id, data.checked_in_at_utc, timeZone)
-              .catch(err => console.error('Failed to send notifications:', err));
 
             await cancelTodayReminderAfterCheckin();
             refetchStreak();

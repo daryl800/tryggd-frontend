@@ -35,6 +35,8 @@ type ContactSlot = {
     user_id?: string;
     display_name?: string;
     id?: string;
+    checkin_notifications_enabled?: boolean;
+    toggling_notifications?: boolean;
 };
 
 type ContactRequest = {
@@ -83,6 +85,7 @@ const ContactCard = memo(
         onFocus,
         onBlur,
         onRemove,
+        onToggleCheckinNotifications,
         inputRef,
         isNewContact,
     }: {
@@ -93,6 +96,7 @@ const ContactCard = memo(
         onFocus: () => void;
         onBlur: () => void;
         onRemove: () => void;
+        onToggleCheckinNotifications?: (value: boolean) => void;
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
@@ -173,6 +177,35 @@ const ContactCard = memo(
                                 </Text>
                             </View>
                         ) : null}
+
+                        <TouchableOpacity
+                            style={[
+                                styles.notificationToggle,
+                                contact.checkin_notifications_enabled === false &&
+                                    styles.notificationToggleDisabled,
+                            ]}
+                            onPress={() =>
+                                onToggleCheckinNotifications?.(
+                                    !(contact.checkin_notifications_enabled !== false)
+                                )
+                            }
+                            disabled={contact.toggling_notifications}
+                            activeOpacity={0.7}
+                        >
+                            <Ionicons
+                                name={
+                                    contact.checkin_notifications_enabled !== false
+                                        ? 'notifications-outline'
+                                        : 'notifications-off-outline'
+                                }
+                                size={20}
+                                color={
+                                    contact.checkin_notifications_enabled !== false
+                                        ? BaseColors.primary
+                                        : BaseColors.error
+                                }
+                            />
+                        </TouchableOpacity>
                     </View>
                 )}
             </View>
@@ -342,7 +375,7 @@ export default function ContactsScreen() {
             const [contactsResult, incomingResult, outgoingResult] = await Promise.all([
                 supabase
                     .from('contacts')
-                    .select('id, contact_user_id, contact_email, contact_display_name')
+                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled')
                     .eq('owner_user_id', user.id)
                     .order('created_at'),
 
@@ -407,6 +440,8 @@ export default function ContactsScreen() {
                             displayNameMap.get(row.contact_user_id) ||
                             row.contact_display_name ||
                             '',
+                        checkin_notifications_enabled:
+                            row.checkin_notifications_enabled !== false,
                     })) || [];
 
                 setExistingContacts(contacts);
@@ -815,6 +850,92 @@ export default function ContactsScreen() {
             );
         },
         [existingContacts]
+    );
+
+    const toggleContactCheckinNotifications = useCallback(
+        async (index: number, enabled: boolean) => {
+            const contact = existingContacts[index];
+            if (!contact?.id) return;
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? {
+                            ...item,
+                            checkin_notifications_enabled: enabled,
+                            toggling_notifications: true,
+                        }
+                        : item
+                )
+            );
+
+            const { data, error } = await supabase
+                .from('contacts')
+                .update({ checkin_notifications_enabled: enabled })
+                .eq('id', contact.id)
+                .select('id, checkin_notifications_enabled')
+                .single();
+
+            if (error) {
+                console.error('Toggle check-in notifications error:', error);
+                setExistingContacts((prev) =>
+                    prev.map((item, itemIndex) =>
+                        itemIndex === index
+                            ? {
+                                ...item,
+                                checkin_notifications_enabled:
+                                    contact.checkin_notifications_enabled !== false,
+                                toggling_notifications: false,
+                            }
+                            : item
+                    )
+                );
+                Alert.alert(
+                    t('errors.title'),
+                    error.message || 'Failed to update check-in notifications.'
+                );
+                return;
+            }
+
+            if (!data) {
+                setExistingContacts((prev) =>
+                    prev.map((item, itemIndex) =>
+                        itemIndex === index
+                            ? {
+                                ...item,
+                                checkin_notifications_enabled:
+                                    contact.checkin_notifications_enabled !== false,
+                                toggling_notifications: false,
+                            }
+                            : item
+                    )
+                );
+                Alert.alert(t('errors.title'), 'No contact row was updated.');
+                return;
+            }
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? {
+                            ...item,
+                            checkin_notifications_enabled:
+                                data.checkin_notifications_enabled !== false,
+                            toggling_notifications: false,
+                        }
+                        : item
+                )
+            );
+
+            Alert.alert(
+                data.checkin_notifications_enabled !== false
+                    ? `${contact.display_name || contact.username || 'This contact'} will receive your check-ins`
+                    : `${contact.display_name || contact.username || 'This contact'} will not receive your check-ins`
+            );
+
+            await fetchAllData();
+        },
+        [existingContacts, fetchAllData, t]
     );
 
     const deleteEverythingManually = async (userId1: string, userId2: string) => {
@@ -1479,6 +1600,9 @@ export default function ContactsScreen() {
                                             onFocus={() => handleInputFocus(index)}
                                             onBlur={() => handleInputBlur(index)}
                                             onRemove={() => removeExistingContact(index)}
+                                            onToggleCheckinNotifications={(value) =>
+                                                toggleContactCheckinNotifications(index, value)
+                                            }
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
                                             isNewContact={false}
                                         />
@@ -2001,6 +2125,22 @@ const styles = StyleSheet.create({
         fontSize: iosFontSize(14),
         color: BaseColors.neutral[500],
         flex: 1,
+    },
+    notificationToggle: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.neutral[50],
+    },
+    notificationToggleDisabled: {
+        backgroundColor: BaseColors.errorLight,
+        borderWidth: 1,
+        borderColor: BaseColors.errorBorder,
     },
     initialLoadingContainer: {
         flex: 1,
