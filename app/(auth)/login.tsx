@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from "../../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { resolveAuthEmailCandidates } from "@/lib/auth/phoneIdentity";
 import {
     Alert,
     KeyboardAvoidingView,
@@ -24,7 +25,7 @@ import { iosFontSize } from '@/constants/typography';
 
 export default function LoginScreen() {
     const { t, i18n } = useTranslation();
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function LoginScreen() {
         void syncLoginLanguage();
     }, [i18n]);
 
-    const canSubmit = email && password.length >= 6 && !loading;
+    const canSubmit = identifier && password.length >= 6 && !loading;
 
     const signIn = async () => {
         if (!canSubmit) return;
@@ -62,12 +63,28 @@ export default function LoginScreen() {
         setLoading(true);
 
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
+            const authEmailCandidates = resolveAuthEmailCandidates(identifier);
+            if (authEmailCandidates.length === 0) {
+                throw new Error("Please enter a valid email or Tryggd ID.");
+            }
 
-            if (error) throw error;
+            let signInError: Error | null = null;
+
+            for (const authEmail of authEmailCandidates) {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: authEmail,
+                    password,
+                });
+
+                if (!error) {
+                    signInError = null;
+                    break;
+                }
+
+                signInError = error;
+            }
+
+            if (signInError) throw signInError;
 
         } catch (err: any) {
             Alert.alert(t("auth.login.error"), err.message || t("auth.unknownError"));
@@ -140,19 +157,19 @@ export default function LoginScreen() {
                         <View style={dividerRow}>
                             <View style={dividerLine} />
                             <Text style={dividerText} allowFontScaling={false}>
-                                {t("auth.login.orContinueWithEmail")}
+                                {t("auth.login.orContinueWithIdentifier", { defaultValue: "or continue with Email or Tryggd ID" })}
                             </Text>
                             <View style={dividerLine} />
                         </View>
 
-                        {/* Email */}
+                        {/* Email or Tryggd ID */}
                         <TextInput
-                            placeholder={t("auth.email")}
+                            placeholder={t("auth.login.identifierPlaceholder", { defaultValue: "Email or Tryggd ID" })}
                             placeholderTextColor={BaseColors.placeholderTextColor}
                             autoCapitalize="none"
-                            keyboardType="email-address"
-                            value={email}
-                            onChangeText={setEmail}
+                            keyboardType="default"
+                            value={identifier}
+                            onChangeText={setIdentifier}
                             onSubmitEditing={() => passwordRef.current?.focus()}
                             style={inputStyle}
                             allowFontScaling={false}

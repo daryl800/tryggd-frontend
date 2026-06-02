@@ -157,6 +157,21 @@ function useDeepLinking(router: any) {
         return;
       }
 
+      if (parsed.path === 'invite' || parsed.path?.startsWith('invite/')) {
+        const token =
+          typeof parsed.queryParams?.token === 'string'
+            ? parsed.queryParams.token
+            : parsed.path?.startsWith('invite/')
+              ? parsed.path.slice('invite/'.length)
+              : undefined;
+
+        router.replace({
+          pathname: '/invite',
+          params: token ? { token } : {},
+        });
+        return;
+      }
+
       if (parsed.queryParams?.type === "recovery" && parsed.queryParams.access_token) {
         router.replace({
           pathname: "/(auth)/forgot-password",
