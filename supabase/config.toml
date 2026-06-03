@@ -409,3 +409,13 @@ entrypoint = "./functions/test-function/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/send-checkin-notifications/index.ts"
+
+[functions.register-invited-user]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/register-invited-user/index.ts"
+
+[functions.complete-recovery-invite]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/complete-recovery-invite/index.ts"

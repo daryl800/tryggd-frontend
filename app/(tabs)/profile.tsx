@@ -27,6 +27,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { deriveDisplayName, isAppleRelayEmail as isAppleRelayEmailAddress } from '../../lib/profile/displayName';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
+import { isSyntheticAuthEmail } from '@/lib/auth/phoneIdentity';
 
 type UserProfile = {
     id: string;
@@ -61,8 +62,11 @@ export default function ProfileScreen() {
     });
 
     const isAppleRelayEmail = isAppleRelayEmailAddress(profile.email);
+    const isInvitedAccount = isSyntheticAuthEmail(profile.email);
     const providerLabel =
-        profile.auth_provider === 'apple'
+        isInvitedAccount
+            ? 'Tryggd ID and password'
+            : profile.auth_provider === 'apple'
             ? 'Apple'
             : profile.auth_provider === 'google'
                 ? 'Google'
@@ -542,7 +546,7 @@ export default function ProfileScreen() {
                         profile.display_name || '',
                         'display_name'
                     )}
-                    {renderField(
+                    {!isInvitedAccount && renderField(
                         t('profile.fields.email'),
                         isAppleRelayEmail ? 'Hidden by Apple' : profile.email || '',
                         'email',

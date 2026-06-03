@@ -7,17 +7,20 @@ import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     ActivityIndicator,
     Alert,
     AppState,
     Dimensions,
+    Keyboard,
     KeyboardAvoidingView,
+    Modal,
     Platform,
     RefreshControl,
     ScrollView,
+    Share,
     StyleSheet,
     Text,
     TextInput,
@@ -26,6 +29,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
+import { getUsernameValidationMessage, normalizeUsername } from '../../lib/profile/username';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
@@ -68,6 +72,16 @@ type ContactProfileRow = {
     display_name?: string | null;
 };
 
+type GeneratedInvite = {
+    invite_token: string;
+    invite_code: string;
+    expires_at: string;
+    invite_kind?: 'signup' | 'recovery';
+    suggested_username?: string | null;
+    target_display_name?: string | null;
+    target_username?: string | null;
+};
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const getKeyboardVerticalOffset = () => {
@@ -90,6 +104,7 @@ const ContactCard = memo(
         onRemove,
         onToggleCheckinNotifications,
         onToggleLocationSharing,
+        onCreateRecoveryInvite,
         showCheckinNotificationControl,
         showLocationSharingControl,
         inputRef,
@@ -104,6 +119,7 @@ const ContactCard = memo(
         onRemove: () => void;
         onToggleCheckinNotifications?: (value: boolean) => void;
         onToggleLocationSharing?: (value: boolean) => void;
+        onCreateRecoveryInvite?: () => void;
         showCheckinNotificationControl: boolean;
         showLocationSharingControl: boolean;
         inputRef: (ref: TextInput | null) => void;
@@ -189,6 +205,17 @@ const ContactCard = memo(
 
                         {(showLocationSharingControl || showCheckinNotificationControl) && (
                             <View style={styles.contactToggleStack}>
+                                <TouchableOpacity
+                                    style={styles.recoveryInviteButton}
+                                    onPress={onCreateRecoveryInvite}
+                                    activeOpacity={0.7}
+                                >
+                                    <Ionicons
+                                        name="key-outline"
+                                        size={18}
+                                        color={BaseColors.primary}
+                                    />
+                                </TouchableOpacity>
                                 {showLocationSharingControl && (
                                     <TouchableOpacity
                                         style={[
@@ -379,6 +406,15 @@ export default function ContactsScreen() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [creatingInvite, setCreatingInvite] = useState(false);
+    const [inviteModalVisible, setInviteModalVisible] = useState(false);
+    const [inviteShareVisible, setInviteShareVisible] = useState(false);
+    const [suggestedInviteUsername, setSuggestedInviteUsername] = useState('');
+    const [generatedInvite, setGeneratedInvite] = useState<GeneratedInvite | null>(null);
+    const suggestedInviteValidationMessage = useMemo(
+        () => getUsernameValidationMessage(suggestedInviteUsername, t),
+        [suggestedInviteUsername, t]
+    );
     const [activeInputIndex, setActiveInputIndex] = useState<number | null>(null);
     const [activeSection, setActiveSection] = useState<'contacts' | 'requests'>(
         'contacts'
@@ -787,6 +823,92 @@ export default function ContactsScreen() {
             }
         }, 150);
     };
+
+    const handleCreateInvite = useCallback(async () => {
+        if (totalContactsCount >= capabilities.maxContacts) {
+            Alert.alert(
+                t('contacts.alerts.limitReached.title'),
+                t('contacts.alerts.limitReached.message'),
+                [{ text: t('common.ok') }]
+            );
+            return;
+        }
+
+        setCreatingInvite(true);
+        try {
+            const normalizedSuggestedUsername = normalizeUsername(suggestedInviteUsername);
+            const { data, error } = await supabase
+                .rpc('create_contact_invite', {
+                    p_suggested_username: normalizedSuggestedUsername || null,
+                })
+                .single();
+
+            if (error) throw error;
+            if (!data) throw new Error('Failed to create invite.');
+
+            setGeneratedInvite({
+                invite_token: data.invite_token,
+                invite_code: data.invite_code,
+                expires_at: data.expires_at,
+                suggested_username: data.suggested_username || normalizedSuggestedUsername || null,
+            });
+            setInviteModalVisible(false);
+            setInviteShareVisible(true);
+            setSuggestedInviteUsername('');
+        } catch (error: any) {
+            Alert.alert(t('errors.title'), error.message || 'Failed to create invite.');
+        } finally {
+            setCreatingInvite(false);
+        }
+    }, [capabilities.maxContacts, suggestedInviteUsername, t, totalContactsCount]);
+
+    const handleShareInviteLink = useCallback(async () => {
+        if (!generatedInvite) return;
+
+        const inviteUrl = `https://tryggd.com/invite?token=${generatedInvite.invite_token}`;
+        try {
+            await Share.share({
+                message:
+                    generatedInvite.invite_kind === 'recovery'
+                        ? `Use this link to reset your Tryggd password: ${inviteUrl}`
+                        : `Join me on Tryggd: ${inviteUrl}`,
+                url: inviteUrl,
+            });
+        } catch (error: any) {
+            Alert.alert(t('errors.title'), error.message || 'Failed to share invite link.');
+        }
+    }, [generatedInvite, t]);
+
+    const handleCreateRecoveryInvite = useCallback(async (contact: ContactSlot) => {
+        if (!contact.user_id) {
+            Alert.alert(t('errors.title'), 'This contact cannot receive a recovery invite yet.');
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .rpc('create_contact_recovery_invite', {
+                    p_contact_user_id: contact.user_id,
+                })
+                .single();
+
+            if (error) throw error;
+            if (!data) throw new Error('Failed to create recovery invite.');
+
+            setGeneratedInvite({
+                invite_token: data.invite_token,
+                invite_code: data.invite_code,
+                expires_at: data.expires_at,
+                invite_kind: 'recovery',
+                target_display_name: data.target_display_name || contact.display_name || null,
+                target_username: data.target_username || contact.username || contact.identifier || null,
+                suggested_username: data.target_username || contact.username || contact.identifier || null,
+            });
+            setInviteShareVisible(true);
+        } catch (error: any) {
+            Alert.alert(t('errors.title'), error.message || 'Failed to create recovery invite.');
+        }
+    }, [t]);
 
     const updateNewContact = useCallback((index: number, identifier: string) => {
         setNewContacts((prev) =>
@@ -1566,7 +1688,17 @@ export default function ContactsScreen() {
                         .eq('status', 'accepted')
                         .maybeSingle();
 
-                    if (!acceptedRequest) {
+                    const { data: claimedInvite } = await supabase
+                        .from('contact_invites')
+                        .select('id')
+                        .eq('invite_kind', 'signup')
+                        .eq('status', 'claimed')
+                        .or(
+                            `and(inviter_user_id.eq.${user.id},claimed_by_user_id.eq.${contact.contact_user_id}),and(inviter_user_id.eq.${contact.contact_user_id},claimed_by_user_id.eq.${user.id})`
+                        )
+                        .maybeSingle();
+
+                    if (!acceptedRequest && !claimedInvite) {
                         await supabase
                             .from('contacts')
                             .delete()
@@ -1620,6 +1752,16 @@ export default function ContactsScreen() {
                     iconName="people"
                     rightElement={
                         <View style={styles.headerActions}>
+                            <TouchableOpacity
+                                onPress={() => setInviteModalVisible(true)}
+                                style={styles.inviteButton}
+                            >
+                                <Ionicons
+                                    name="link"
+                                    size={ICON_SIZES.MD}
+                                    color={BaseColors.primary}
+                                />
+                            </TouchableOpacity>
                             {/* <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
@@ -1767,6 +1909,7 @@ export default function ContactsScreen() {
                                             onToggleLocationSharing={(value) =>
                                                 toggleContactLocationSharing(index, value)
                                             }
+                                            onCreateRecoveryInvite={() => handleCreateRecoveryInvite(contact)}
                                             showCheckinNotificationControl={
                                                 capabilities.canControlCheckinRecipients
                                             }
@@ -1914,6 +2057,121 @@ export default function ContactsScreen() {
                         )}
                     </ScrollView>
                 )}
+
+                <Modal
+                    visible={inviteModalVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setInviteModalVisible(false)}
+                >
+                    <KeyboardAvoidingView
+                        style={styles.modalBackdrop}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    >
+                        <View style={styles.modalCard}>
+                            <Text style={styles.modalTitle} allowFontScaling={false}>
+                                Invite someone to Tryggd
+                            </Text>
+                            <Text style={styles.modalText} allowFontScaling={false}>
+                                We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.
+                            </Text>
+                            <TextInput
+                                placeholder="Suggested Tryggd ID (optional)"
+                                placeholderTextColor={BaseColors.placeholderTextColor}
+                                value={suggestedInviteUsername}
+                                onChangeText={(value) => setSuggestedInviteUsername(normalizeUsername(value))}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                returnKeyType="done"
+                                onSubmitEditing={Keyboard.dismiss}
+                                style={styles.modalInput}
+                                allowFontScaling={false}
+                            />
+                            <Text style={styles.modalSubtleText} allowFontScaling={false}>
+                                {suggestedInviteValidationMessage || 'Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.'}
+                            </Text>
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={styles.modalSecondaryButton}
+                                    onPress={() => setInviteModalVisible(false)}
+                                    disabled={creatingInvite}
+                                >
+                                    <Text style={styles.modalSecondaryButtonText} allowFontScaling={false}>
+                                        Cancel
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.modalPrimaryButton, (creatingInvite || !!suggestedInviteValidationMessage) && styles.saveButtonDisabled]}
+                                    onPress={() => {
+                                        Keyboard.dismiss();
+                                        void handleCreateInvite();
+                                    }}
+                                    disabled={creatingInvite || !!suggestedInviteValidationMessage}
+                                >
+                                    <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
+                                        {creatingInvite ? 'Creating…' : 'Create invite'}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
+
+                <Modal
+                    visible={inviteShareVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setInviteShareVisible(false)}
+                >
+                    <View style={styles.modalBackdrop}>
+                        <View style={styles.modalCard}>
+                            <Text style={styles.modalTitle} allowFontScaling={false}>
+                                {generatedInvite?.invite_kind === 'recovery' ? 'Recovery link ready' : 'Invite ready'}
+                            </Text>
+                            <Text style={styles.modalText} allowFontScaling={false}>
+                                {generatedInvite?.invite_kind === 'recovery'
+                                    ? 'Send the recovery link first. Then tell them this code:'
+                                    : 'Send the link first. Then tell them this code:'}
+                            </Text>
+                            <Text style={styles.generatedInviteCode} allowFontScaling={false}>
+                                {generatedInvite?.invite_code || '------'}
+                            </Text>
+                            <Text style={styles.modalSubtleText} allowFontScaling={false}>
+                                This invite expires on {generatedInvite?.expires_at ? new Date(generatedInvite.expires_at).toLocaleDateString() : '—'}.
+                            </Text>
+                            {generatedInvite?.invite_kind === 'recovery' && generatedInvite?.target_username ? (
+                                <Text style={styles.modalSubtleText} allowFontScaling={false}>
+                                    Resetting Tryggd ID: {generatedInvite.target_username}
+                                </Text>
+                            ) : generatedInvite?.suggested_username ? (
+                                <Text style={styles.modalSubtleText} allowFontScaling={false}>
+                                    Suggested Tryggd ID: {generatedInvite.suggested_username}
+                                </Text>
+                            ) : null}
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={styles.modalSecondaryButton}
+                                    onPress={() => {
+                                        setInviteShareVisible(false);
+                                        setGeneratedInvite(null);
+                                    }}
+                                >
+                                    <Text style={styles.modalSecondaryButtonText} allowFontScaling={false}>
+                                        Done
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.modalPrimaryButton}
+                                    onPress={handleShareInviteLink}
+                                >
+                                    <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
+                                        Share link
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
@@ -1978,6 +2236,9 @@ const styles = StyleSheet.create({
         marginTop: -8,
     },
     addButton: {
+        padding: 4,
+    },
+    inviteButton: {
         padding: 4,
     },
     scrollView: {
@@ -2304,6 +2565,16 @@ const styles = StyleSheet.create({
         right: 0,
         gap: 8,
     },
+    recoveryInviteButton: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
     locationToggle: {
         width: 36,
         height: 36,
@@ -2372,5 +2643,79 @@ const styles = StyleSheet.create({
     },
     refreshing: {
         transform: [{ rotate: '45deg' }],
+    },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(17, 24, 39, 0.45)',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+    },
+    modalCard: {
+        backgroundColor: BaseColors.surface,
+        borderRadius: 18,
+        padding: 20,
+    },
+    modalTitle: {
+        fontSize: iosFontSize(20),
+        fontWeight: '700',
+        color: BaseColors.text.dark,
+        marginBottom: 8,
+    },
+    modalText: {
+        fontSize: iosFontSize(14),
+        color: BaseColors.neutral[600],
+        lineHeight: 20,
+        marginBottom: 16,
+    },
+    modalInput: {
+        backgroundColor: BaseColors.surface,
+        borderRadius: 12,
+        padding: 12,
+        fontSize: iosFontSize(15),
+        color: BaseColors.text.dark,
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
+        minHeight: 44,
+        marginBottom: 16,
+    },
+    modalActions: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 10,
+    },
+    modalSecondaryButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 10,
+        backgroundColor: BaseColors.neutral[100],
+    },
+    modalSecondaryButtonText: {
+        fontSize: iosFontSize(14),
+        fontWeight: '600',
+        color: BaseColors.neutral[700],
+    },
+    modalPrimaryButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 10,
+        backgroundColor: BaseColors.primary,
+    },
+    modalPrimaryButtonText: {
+        fontSize: iosFontSize(14),
+        fontWeight: '600',
+        color: BaseColors.surface,
+    },
+    generatedInviteCode: {
+        fontSize: iosFontSize(34),
+        fontWeight: '700',
+        letterSpacing: 4,
+        textAlign: 'center',
+        color: BaseColors.primaryDark,
+        marginBottom: 12,
+    },
+    modalSubtleText: {
+        fontSize: iosFontSize(13),
+        color: BaseColors.neutral[500],
+        marginBottom: 16,
     },
 });

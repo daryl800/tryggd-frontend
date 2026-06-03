@@ -1,0 +1,686 @@
+import BaseColors from "@/constants/colors";
+import { iosFontSize } from "@/constants/typography";
+import { buildSyntheticEmailFromTryggdId, isValidTryggdId, normalizePhoneNumber } from "@/lib/auth/phoneIdentity";
+import { supabase } from "@/lib/supabase";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+type InvitePreview = {
+  invite_id: string;
+  invite_kind: 'signup' | 'recovery';
+  inviter_display_name: string;
+  invitee_name?: string | null;
+  suggested_username?: string | null;
+  target_user_id?: string | null;
+  target_display_name?: string | null;
+  expires_at: string;
+  status: string;
+};
+
+type Props = {
+  token?: string;
+};
+
+export default function InviteSignupContent({ token }: Props) {
+  const { t } = useTranslation();
+
+  const [loadingInvite, setLoadingInvite] = useState(true);
+  const [invite, setInvite] = useState<InvitePreview | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  const [code, setCode] = useState("");
+  const [codeVerified, setCodeVerified] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
+
+  const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const codeRef = useRef<TextInput>(null);
+  const usernameRef = useRef<TextInput>(null);
+  const phoneRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    const loadInvite = async () => {
+      if (!token) {
+        setInviteError("Invite link is invalid.");
+        setLoadingInvite(false);
+        return;
+      }
+
+      setLoadingInvite(true);
+      const { data, error } = await supabase
+        .rpc('get_contact_invite', { p_invite_token: token })
+        .maybeSingle();
+
+      if (error) {
+        setInviteError(error.message);
+      } else if (!data) {
+        setInviteError("Invite not found.");
+      } else if (data.status !== 'pending') {
+        if (data.status === 'claimed') {
+          setInviteError("This invite has already been used.");
+        } else if (data.status === 'expired') {
+          setInviteError("This invite has expired.");
+        } else {
+          setInviteError("This invite is not available anymore.");
+        }
+      } else {
+        setInvite(data);
+        if (data.suggested_username) {
+          setUsername(data.suggested_username);
+        }
+      }
+
+      setLoadingInvite(false);
+    };
+
+    void loadInvite();
+  }, [token]);
+
+  const passwordsMatch =
+    password.length > 0 &&
+    confirmPassword.length > 0 &&
+    password === confirmPassword;
+
+  const canSubmitSignup = useMemo(() => {
+    return (
+      codeVerified &&
+      displayName.trim().length > 0 &&
+      isValidTryggdId(username) &&
+      (phone.trim().length === 0 || !!normalizePhoneNumber(phone)) &&
+      password.length >= 8 &&
+      passwordsMatch &&
+      !submitting
+    );
+  }, [codeVerified, displayName, password, passwordsMatch, phone, submitting, username]);
+
+  const webInviteUrl = token ? `https://tryggd.com/invite?token=${token}` : 'https://tryggd.com';
+  const appInviteUrl = token ? `tryggd://invite?token=${token}` : 'tryggd://';
+
+  const verifyCode = async () => {
+    if (!token || code.trim().length < 4) return;
+
+    setVerifyingCode(true);
+    try {
+      const { data, error } = await supabase
+        .rpc('verify_contact_invite_code', {
+          p_invite_token: token,
+          p_code: code.trim(),
+        })
+        .single();
+
+      if (error) throw error;
+      if (!data?.is_valid) {
+        throw new Error(data?.error || "The code is incorrect.");
+      }
+
+      setCodeVerified(true);
+    } catch (error: any) {
+      Alert.alert(t('errors.title'), error.message || "Failed to verify invite code.");
+    } finally {
+      setVerifyingCode(false);
+    }
+  };
+
+  const registerFromInvite = async () => {
+    if (!token || !canSubmitSignup || invite?.invite_kind !== 'signup') return;
+
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('register-invited-user', {
+        body: {
+          token,
+          code: code.trim(),
+          display_name: displayName.trim(),
+          phone: phone.trim(),
+          password,
+          username: username.trim(),
+        },
+      });
+
+      if (error) throw error;
+      if (!data?.success) {
+        throw new Error(data?.error || "Failed to create account.");
+      }
+
+      const authEmail = data?.auth_email || buildSyntheticEmailFromTryggdId(username.trim());
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: authEmail,
+        password,
+      });
+
+      if (signInError) throw signInError;
+
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert(t('errors.title'), error.message || "Failed to complete invited signup.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const completeRecoveryInvite = async () => {
+    if (!token || !invite || invite.invite_kind !== 'recovery' || password.length < 8 || !passwordsMatch || submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('complete-recovery-invite', {
+        body: {
+          token,
+          code: code.trim(),
+          password,
+        },
+      });
+
+      if (error) throw error;
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to reset password.');
+      }
+
+      const authEmail = data?.auth_email || (username ? buildSyntheticEmailFromTryggdId(username) : null);
+      if (!authEmail) {
+        throw new Error('Could not determine the account to sign in.');
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: authEmail,
+        password,
+      });
+
+      if (signInError) throw signInError;
+
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert(t('errors.title'), error.message || 'Failed to complete password recovery.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loadingInvite) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <ActivityIndicator size="large" color={BaseColors.primary} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!invite) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <Text style={styles.errorTitle} allowFontScaling={false}>Invite unavailable</Text>
+        <Text style={styles.errorText} allowFontScaling={false}>
+          {inviteError || "This invite could not be opened."}
+        </Text>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/(auth)/login')}>
+          <Text style={styles.backButtonText} allowFontScaling={false}>Back to login</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
+  if (Platform.OS === 'web') {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <View style={styles.header}>
+            <Ionicons name="people-circle" size={60} color={BaseColors.primary} />
+            <Text style={styles.title} allowFontScaling={false}>
+              {invite.invite_kind === 'recovery' ? 'Reset your Tryggd password' : 'You&apos;re invited to Tryggd'}
+            </Text>
+            <Text style={styles.subtitle} allowFontScaling={false}>
+              {invite.invite_kind === 'recovery'
+                ? `${invite.inviter_display_name} sent you a secure recovery link for ${invite.suggested_username || 'your Tryggd account'}.`
+                : `${invite.inviter_display_name} invited ${invite.invitee_name || 'you'} to join their Tryggd circle.`}
+            </Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle} allowFontScaling={false}>Install or open the app</Text>
+            <Text style={styles.sectionHint} allowFontScaling={false}>
+              Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => {
+                window.location.href = appInviteUrl;
+              }}
+            >
+              <Text style={styles.primaryButtonText} allowFontScaling={false}>
+                Open in Tryggd
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => {
+                window.location.href = 'https://apps.apple.com/us/app/tryggd/id6767919301';
+              }}
+            >
+              <Text style={styles.secondaryButtonText} allowFontScaling={false}>
+                Download on App Store
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => {
+                window.location.href = 'https://play.google.com/store/apps/details?id=com.marcustechnology.tryggd';
+              }}
+            >
+              <Text style={styles.secondaryButtonText} allowFontScaling={false}>
+                Get it on Google Play
+              </Text>
+            </TouchableOpacity>
+
+            <Text style={styles.linkLabel} allowFontScaling={false}>Keep this invite link:</Text>
+            <Text style={styles.linkText} allowFontScaling={false}>{webInviteUrl}</Text>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <View style={styles.header}>
+            <Ionicons name="people-circle" size={60} color={BaseColors.primary} />
+            <Text style={styles.title} allowFontScaling={false}>
+              {invite.invite_kind === 'recovery' ? 'Reset your Tryggd password' : 'You&apos;re invited to Tryggd'}
+            </Text>
+            <Text style={styles.subtitle} allowFontScaling={false}>
+              {invite.invite_kind === 'recovery'
+                ? `${invite.inviter_display_name} sent you a secure recovery link for ${invite.suggested_username || 'your Tryggd account'}.`
+                : `${invite.inviter_display_name} invited ${invite.invitee_name || 'you'} to join their Tryggd circle.`}
+            </Text>
+          </View>
+
+          {!codeVerified ? (
+            <View style={styles.card}>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>Enter your invite code</Text>
+              <Text style={styles.sectionHint} allowFontScaling={false}>
+                Ask {invite.inviter_display_name} for the 6-digit code that belongs to this invite.
+              </Text>
+              <TextInput
+                ref={codeRef}
+                placeholder="6-digit invite code"
+                placeholderTextColor={BaseColors.placeholderTextColor}
+                value={code}
+                onChangeText={setCode}
+                keyboardType="number-pad"
+                maxLength={6}
+                style={styles.input}
+                allowFontScaling={false}
+              />
+              <TouchableOpacity
+                style={[styles.primaryButton, (verifyingCode || code.trim().length < 6) && styles.disabledButton]}
+                onPress={verifyCode}
+                disabled={verifyingCode || code.trim().length < 6}
+              >
+                <Text style={styles.primaryButtonText} allowFontScaling={false}>
+                  {verifyingCode ? 'Checking code…' : 'Continue'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : invite.invite_kind === 'recovery' ? (
+            <View style={styles.card}>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>Set a new password</Text>
+              <Text style={styles.sectionHint} allowFontScaling={false}>
+                This will reset the password for Tryggd ID {invite.suggested_username || username}.
+              </Text>
+
+              <TextInput
+                ref={usernameRef}
+                placeholder="Tryggd ID"
+                placeholderTextColor={BaseColors.placeholderTextColor}
+                autoCapitalize="none"
+                value={username}
+                editable={false}
+                style={[styles.input, styles.disabledInput]}
+                allowFontScaling={false}
+              />
+
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  ref={passwordRef}
+                  placeholder={t('auth.password.placeholder')}
+                  placeholderTextColor={BaseColors.placeholderTextColor}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                  style={styles.passwordInput}
+                  allowFontScaling={false}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  ref={confirmPasswordRef}
+                  placeholder={t('auth.confirmPassword')}
+                  placeholderTextColor={BaseColors.placeholderTextColor}
+                  secureTextEntry={!showConfirmPassword}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  style={styles.passwordInput}
+                  allowFontScaling={false}
+                />
+                <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  <Ionicons name={showConfirmPassword ? "eye-off-outline" : "eye-outline"} size={22} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+
+              {confirmPassword.length > 0 && (
+                <Text
+                  style={{
+                    marginBottom: 16,
+                    color: passwordsMatch ? "#059669" : "#DC2626",
+                  }}
+                  allowFontScaling={false}
+                >
+                  {passwordsMatch ? t("auth.passwordsMatch") : t("auth.passwordsNoMatch")}
+                </Text>
+              )}
+
+              <Text style={styles.passwordHint} allowFontScaling={false}>
+                Use at least 8 characters.
+              </Text>
+
+              <TouchableOpacity
+                style={[styles.primaryButton, (password.length < 8 || !passwordsMatch || submitting) && styles.disabledButton]}
+                onPress={completeRecoveryInvite}
+                disabled={password.length < 8 || !passwordsMatch || submitting}
+              >
+                <Text style={styles.primaryButtonText} allowFontScaling={false}>
+                  {submitting ? 'Resetting password…' : 'Reset password'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.card}>
+              <Text style={styles.sectionTitle} allowFontScaling={false}>Create your account</Text>
+              <Text style={styles.sectionHint} allowFontScaling={false}>
+                You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.
+              </Text>
+
+              <TextInput
+                placeholder={t('auth.displayName')}
+                placeholderTextColor={BaseColors.placeholderTextColor}
+                value={displayName}
+                onChangeText={setDisplayName}
+                onSubmitEditing={() => usernameRef.current?.focus()}
+                style={styles.input}
+                allowFontScaling={false}
+              />
+
+              <TextInput
+                ref={usernameRef}
+                placeholder="Tryggd ID"
+                placeholderTextColor={BaseColors.placeholderTextColor}
+                autoCapitalize="none"
+                value={username}
+                onChangeText={(value) => setUsername(value.toLowerCase().replace(/\s+/g, ''))}
+                onSubmitEditing={() => phoneRef.current?.focus()}
+                style={styles.input}
+                allowFontScaling={false}
+              />
+
+              <TextInput
+                ref={phoneRef}
+                placeholder="Mobile number (optional)"
+                placeholderTextColor={BaseColors.placeholderTextColor}
+                keyboardType="phone-pad"
+                autoCapitalize="none"
+                value={phone}
+                onChangeText={setPhone}
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                style={styles.input}
+                allowFontScaling={false}
+              />
+
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  ref={passwordRef}
+                  placeholder={t('auth.password.placeholder')}
+                  placeholderTextColor={BaseColors.placeholderTextColor}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                  onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                  style={styles.passwordInput}
+                  allowFontScaling={false}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.passwordWrapper}>
+                <TextInput
+                  ref={confirmPasswordRef}
+                  placeholder={t('auth.confirmPassword')}
+                  placeholderTextColor={BaseColors.placeholderTextColor}
+                  secureTextEntry={!showConfirmPassword}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  style={styles.passwordInput}
+                  allowFontScaling={false}
+                />
+                <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  <Ionicons name={showConfirmPassword ? "eye-off-outline" : "eye-outline"} size={22} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+
+              {confirmPassword.length > 0 && (
+                <Text
+                  style={{
+                    marginBottom: 16,
+                    color: passwordsMatch ? "#059669" : "#DC2626",
+                  }}
+                  allowFontScaling={false}
+                >
+                  {passwordsMatch ? t("auth.passwordsMatch") : t("auth.passwordsNoMatch")}
+                </Text>
+              )}
+
+              <Text style={styles.passwordHint} allowFontScaling={false}>
+                Use at least 8 characters.
+              </Text>
+
+              <TouchableOpacity
+                style={[styles.primaryButton, !canSubmitSignup && styles.disabledButton]}
+                onPress={registerFromInvite}
+                disabled={!canSubmitSignup}
+              >
+                <Text style={styles.primaryButtonText} allowFontScaling={false}>
+                  {submitting ? 'Creating account…' : 'Create account'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#fff',
+  },
+  container: {
+    flexGrow: 1,
+    padding: 24,
+    backgroundColor: '#fff',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  title: {
+    marginTop: 12,
+    fontSize: iosFontSize(28),
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+  },
+  subtitle: {
+    marginTop: 10,
+    fontSize: iosFontSize(16),
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 16,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  sectionTitle: {
+    fontSize: iosFontSize(20),
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  sectionHint: {
+    fontSize: iosFontSize(14),
+    color: '#6B7280',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: iosFontSize(16),
+    color: '#1F2937',
+  },
+  disabledInput: {
+    backgroundColor: '#F3F4F6',
+    color: '#6B7280',
+  },
+  passwordWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: iosFontSize(16),
+    color: "#1F2937",
+  },
+  passwordHint: {
+    marginBottom: 16,
+    fontSize: iosFontSize(13),
+    color: '#6B7280',
+  },
+  primaryButton: {
+    backgroundColor: '#5FA893',
+    padding: 16,
+    borderRadius: 10,
+    marginTop: 4,
+  },
+  disabledButton: {
+    backgroundColor: '#9CA3AF',
+  },
+  primaryButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: iosFontSize(16),
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: BaseColors.neutral[100],
+    padding: 16,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  secondaryButtonText: {
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+    fontSize: iosFontSize(15),
+    fontWeight: '600',
+  },
+  errorTitle: {
+    fontSize: iosFontSize(24),
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  errorText: {
+    fontSize: iosFontSize(15),
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    backgroundColor: '#5FA893',
+    borderRadius: 10,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: iosFontSize(15),
+  },
+  linkLabel: {
+    marginTop: 16,
+    marginBottom: 6,
+    fontSize: iosFontSize(13),
+    color: '#6B7280',
+  },
+  linkText: {
+    fontSize: iosFontSize(13),
+    color: BaseColors.primaryDark,
+    lineHeight: 18,
+  },
+});
