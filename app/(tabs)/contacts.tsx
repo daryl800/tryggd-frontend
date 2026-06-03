@@ -130,40 +130,42 @@ const ContactCard = memo(
         isNewContact: boolean;
     }) => {
         const { t } = useTranslation();
+        const existingName =
+            contact.display_name?.trim() || contact.username || contact.identifier || contact.email;
+        const existingIdentifier = contact.username || contact.identifier;
 
         return (
-            <View style={[styles.card, isActive && styles.cardActive]}>
-                <View style={styles.cardHeader}>
-                    <View style={styles.cardTitle}>
-                        <View style={styles.cardNumber}>
-                            <Text style={styles.cardNumberText}>{index + 1}</Text>
-                        </View>
-                        <Text style={styles.cardTitleText}>
-                            {isNewContact
-                                ? t('contacts.newContact')
-                                : `${t('contacts.contact')} ${index + 1}`}
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        onPress={onRemove}
-                        style={styles.removeButton}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                        <Ionicons
-                            name={isNewContact ? 'close-circle' : 'trash-outline'}
-                            size={24}
-                            color={
-                                isNewContact ? BaseColors.neutral[400] : BaseColors.error
-                            }
-                        />
-                    </TouchableOpacity>
-                </View>
-
+            <View
+                style={[
+                    styles.card,
+                    !isNewContact && styles.existingContactCardWrapper,
+                    isActive && styles.cardActive,
+                ]}
+            >
                 {isNewContact ? (
                     <>
+                        <View style={styles.cardHeader}>
+                            <View style={styles.cardTitle}>
+                                <View style={styles.cardNumber}>
+                                    <Text style={styles.cardNumberText}>{index + 1}</Text>
+                                </View>
+                                <Text style={styles.cardTitleText}>{t('contacts.newContact')}</Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={onRemove}
+                                style={styles.removeButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons
+                                    name="close-circle"
+                                    size={21}
+                                    color={BaseColors.neutral[400]}
+                                />
+                            </TouchableOpacity>
+                        </View>
                         <TextInput
                             ref={inputRef}
-                            placeholder="Enter Tryggd ID or email"
+                            placeholder={t('contacts.placeholders.identifier')}
                             placeholderTextColor={BaseColors.neutral[400]}
                             value={contact.identifier || ''}
                             onChangeText={onIdentifierChange}
@@ -189,125 +191,133 @@ const ContactCard = memo(
                         )}
                     </>
                 ) : (
-                    <View style={styles.existingContactInfo}>
-                        <View style={styles.existingContactDetails}>
-                            {contact.avatar_url ? (
-                                <Image
-                                    source={{ uri: contact.avatar_url }}
-                                    style={styles.contactAvatar}
-                                />
-                            ) : (
-                                <View style={styles.contactAvatarFallback}>
-                                    <Ionicons
-                                        name="person"
-                                        size={22}
-                                        color={BaseColors.primary}
-                                    />
+                    <View style={styles.existingContactCard}>
+                        <View style={styles.existingContactHeading}>
+                            <View style={styles.existingContactTitleRow}>
+                                <View style={styles.cardNumber}>
+                                    <Text style={styles.cardNumberText}>{index + 1}</Text>
                                 </View>
-                            )}
-
-                            <View style={styles.existingContactTextBlock}>
-                                {contact.display_name && contact.display_name.trim() !== '' && (
-                                    <View style={styles.existingContactRow}>
-                                        <Ionicons name="person-outline" size={18} color={BaseColors.primary} />
-                                        <Text style={styles.displayNameMain}>{contact.display_name}</Text>
-                                    </View>
-                                )}
-                                {(contact.username || contact.identifier) ? (
-                                    <View style={styles.existingContactRow}>
-                                        <Ionicons name="at-outline" size={16} color={BaseColors.neutral[400]} />
-                                        <Text style={styles.emailSubdued}>
-                                            {contact.username || contact.identifier}
-                                        </Text>
-                                    </View>
+                                <Text style={styles.displayNameMain} numberOfLines={2}>
+                                    {existingName}
+                                </Text>
+                                {existingIdentifier ? (
+                                    <Text style={styles.contactIdInline} numberOfLines={1}>
+                                        @{existingIdentifier}
+                                    </Text>
                                 ) : null}
                             </View>
                         </View>
-
-                        {(showLocationSharingControl || showCheckinNotificationControl) && (
-                            <View style={styles.contactToggleStack}>
-                                <TouchableOpacity
-                                    style={styles.recoveryInviteButton}
-                                    onPress={onCreateRecoveryInvite}
-                                    activeOpacity={0.7}
-                                >
-                                    <Ionicons
-                                        name="key-outline"
-                                        size={18}
-                                        color={BaseColors.primary}
+                        <View style={styles.existingContactInfo}>
+                            <View style={styles.existingContactMainRow}>
+                                {contact.avatar_url ? (
+                                    <Image
+                                        source={{ uri: contact.avatar_url }}
+                                        style={styles.contactAvatar}
                                     />
-                                </TouchableOpacity>
-                                {showLocationSharingControl && (
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.locationToggle,
-                                            contact.location_sharing_enabled === true &&
-                                                styles.locationToggleEnabled,
-                                            contact.location_sharing_enabled !== true &&
-                                                styles.locationToggleDisabled,
-                                        ]}
-                                        onPress={() =>
-                                            onToggleLocationSharing?.(
-                                                !(contact.location_sharing_enabled === true)
-                                            )
-                                        }
-                                        disabled={contact.toggling_location}
-                                        activeOpacity={0.7}
-                                    >
+                                ) : (
+                                    <View style={styles.contactAvatarFallback}>
                                         <Ionicons
-                                            name={
-                                                contact.location_sharing_enabled === true
-                                                    ? 'location'
-                                                    : 'location-outline'
-                                            }
-                                            size={18}
-                                            color={
-                                                contact.location_sharing_enabled === true
-                                                    ? BaseColors.primaryDark
-                                                    : BaseColors.error
-                                            }
+                                            name="person"
+                                            size={22}
+                                            color={BaseColors.primary}
                                         />
-                                        {contact.location_sharing_enabled !== true && (
-                                            <View style={styles.locationToggleSlash} />
-                                        )}
-                                    </TouchableOpacity>
+                                    </View>
                                 )}
 
-                                {showCheckinNotificationControl && (
+                                <View style={styles.cardHeaderActions}>
+                                    {showCheckinNotificationControl && (
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.headerActionButton,
+                                                contact.checkin_notifications_enabled === false &&
+                                                    styles.notificationToggleDisabled,
+                                            ]}
+                                            onPress={() =>
+                                                onToggleCheckinNotifications?.(
+                                                    !(contact.checkin_notifications_enabled !== false)
+                                                )
+                                            }
+                                            disabled={contact.toggling_notifications}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Ionicons
+                                                name={
+                                                    contact.checkin_notifications_enabled !== false
+                                                        ? 'notifications'
+                                                        : 'notifications-outline'
+                                                }
+                                                size={22}
+                                                color={
+                                                    contact.checkin_notifications_enabled !== false
+                                                        ? BaseColors.primary
+                                                        : BaseColors.error
+                                                }
+                                            />
+                                            {contact.checkin_notifications_enabled === false && (
+                                                <View style={styles.notificationToggleSlash} />
+                                            )}
+                                        </TouchableOpacity>
+                                    )}
+                                    {showLocationSharingControl && (
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.headerActionButton,
+                                                contact.location_sharing_enabled === true &&
+                                                    styles.locationToggleEnabled,
+                                                contact.location_sharing_enabled !== true &&
+                                                    styles.locationToggleDisabled,
+                                            ]}
+                                            onPress={() =>
+                                                onToggleLocationSharing?.(
+                                                    !(contact.location_sharing_enabled === true)
+                                                )
+                                            }
+                                            disabled={contact.toggling_location}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Ionicons
+                                                name={
+                                                    contact.location_sharing_enabled === true
+                                                        ? 'location'
+                                                        : 'location-outline'
+                                                }
+                                                size={22}
+                                                color={
+                                                    contact.location_sharing_enabled === true
+                                                        ? BaseColors.primaryDark
+                                                        : BaseColors.error
+                                                }
+                                            />
+                                            {contact.location_sharing_enabled !== true && (
+                                                <View style={styles.locationToggleSlash} />
+                                            )}
+                                        </TouchableOpacity>
+                                    )}
                                     <TouchableOpacity
-                                        style={[
-                                            styles.notificationToggle,
-                                            contact.checkin_notifications_enabled === false &&
-                                                styles.notificationToggleDisabled,
-                                        ]}
-                                        onPress={() =>
-                                            onToggleCheckinNotifications?.(
-                                                !(contact.checkin_notifications_enabled !== false)
-                                            )
-                                        }
-                                        disabled={contact.toggling_notifications}
+                                        style={styles.headerActionButton}
+                                        onPress={onCreateRecoveryInvite}
                                         activeOpacity={0.7}
                                     >
                                         <Ionicons
-                                            name={
-                                                contact.checkin_notifications_enabled !== false
-                                                    ? 'notifications'
-                                                    : 'notifications-outline'
-                                            }
-                                            size={20}
-                                            color={
-                                                contact.checkin_notifications_enabled !== false
-                                                    ? BaseColors.primary
-                                                    : BaseColors.error
-                                            }
+                                            name="key-outline"
+                                            size={22}
+                                            color={BaseColors.primary}
                                         />
-                                        {contact.checkin_notifications_enabled === false && (
-                                            <View style={styles.notificationToggleSlash} />
-                                        )}
                                     </TouchableOpacity>
-                                )}
+                                    <TouchableOpacity
+                                        onPress={onRemove}
+                                        style={styles.removeButton}
+                                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                    >
+                                        <Ionicons
+                                            name="trash-outline"
+                                            size={21}
+                                            color={BaseColors.error}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        )}
+                        </View>
                     </View>
                 )}
             </View>
@@ -873,7 +883,7 @@ export default function ContactsScreen() {
                 .single();
 
             if (error) throw error;
-            if (!data) throw new Error('Failed to create invite.');
+            if (!data) throw new Error(t('contacts.errors.createInvite'));
 
             setGeneratedInvite({
                 invite_token: data.invite_token,
@@ -885,7 +895,7 @@ export default function ContactsScreen() {
             setInviteShareVisible(true);
             setSuggestedInviteUsername('');
         } catch (error: any) {
-            Alert.alert(t('errors.title'), error.message || 'Failed to create invite.');
+            Alert.alert(t('errors.title'), error.message || t('contacts.errors.createInvite'));
         } finally {
             setCreatingInvite(false);
         }
@@ -899,18 +909,18 @@ export default function ContactsScreen() {
             await Share.share({
                 message:
                     generatedInvite.invite_kind === 'recovery'
-                        ? `Use this link to reset your Tryggd password: ${inviteUrl}`
-                        : `Join me on Tryggd: ${inviteUrl}`,
+                        ? `${t('contacts.invite.recoveryShareMessage')} ${inviteUrl}`
+                        : `${t('contacts.invite.shareMessage')} ${inviteUrl}`,
                 url: inviteUrl,
             });
         } catch (error: any) {
-            Alert.alert(t('errors.title'), error.message || 'Failed to share invite link.');
+            Alert.alert(t('errors.title'), error.message || t('contacts.errors.shareInvite'));
         }
     }, [generatedInvite, t]);
 
     const handleCreateRecoveryInvite = useCallback(async (contact: ContactSlot) => {
         if (!contact.user_id) {
-            Alert.alert(t('errors.title'), 'This contact cannot receive a recovery invite yet.');
+            Alert.alert(t('errors.title'), t('contacts.errors.recoveryUnavailable'));
             return;
         }
 
@@ -922,7 +932,7 @@ export default function ContactsScreen() {
                 .single();
 
             if (error) throw error;
-            if (!data) throw new Error('Failed to create recovery invite.');
+            if (!data) throw new Error(t('contacts.errors.createRecoveryInvite'));
 
             setGeneratedInvite({
                 invite_token: data.invite_token,
@@ -935,7 +945,7 @@ export default function ContactsScreen() {
             });
             setInviteShareVisible(true);
         } catch (error: any) {
-            Alert.alert(t('errors.title'), error.message || 'Failed to create recovery invite.');
+            Alert.alert(t('errors.title'), error.message || t('contacts.errors.createRecoveryInvite'));
         }
     }, [t]);
 
@@ -1100,7 +1110,7 @@ export default function ContactsScreen() {
                 );
                 Alert.alert(
                     t('errors.title'),
-                    error.message || 'Failed to update check-in notifications.'
+                error.message || t('contacts.errors.updateCheckinNotifications')
                 );
                 return;
             }
@@ -1118,7 +1128,7 @@ export default function ContactsScreen() {
                             : item
                     )
                 );
-                Alert.alert(t('errors.title'), 'No contact row was updated.');
+                Alert.alert(t('errors.title'), t('contacts.errors.noContactUpdated'));
                 return;
             }
 
@@ -1137,8 +1147,12 @@ export default function ContactsScreen() {
 
             Alert.alert(
                 data.checkin_notifications_enabled !== false
-                    ? `${contact.display_name || contact.username || 'This contact'} will receive your check-ins`
-                    : `${contact.display_name || contact.username || 'This contact'} will not receive your check-ins`
+                    ? t('contacts.status.checkinsEnabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
+                    : t('contacts.status.checkinsDisabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
             );
 
             await fetchAllData();
@@ -1186,7 +1200,7 @@ export default function ContactsScreen() {
                 );
                 Alert.alert(
                     t('errors.title'),
-                    error.message || 'Failed to update location sharing.'
+                error.message || t('contacts.errors.updateLocationSharing')
                 );
                 return;
             }
@@ -1204,7 +1218,7 @@ export default function ContactsScreen() {
                             : item
                     )
                 );
-                Alert.alert(t('errors.title'), 'No contact row was updated.');
+                Alert.alert(t('errors.title'), t('contacts.errors.noContactUpdated'));
                 return;
             }
 
@@ -1223,8 +1237,12 @@ export default function ContactsScreen() {
 
             Alert.alert(
                 data.location_sharing_enabled === true
-                    ? `${contact.display_name || contact.username || 'This contact'} will see your location in Activity`
-                    : `${contact.display_name || contact.username || 'This contact'} will not see your location in Activity`
+                    ? t('contacts.status.locationEnabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
+                    : t('contacts.status.locationDisabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
             );
 
             await fetchAllData();
@@ -1776,7 +1794,14 @@ export default function ContactsScreen() {
                     title={t('contacts.title')}
                     subtitle={
                         totalContactsCount > 0
-                            ? t('contacts.subtitle.withContacts', { count: totalContactsCount })
+                            ? capabilities.maxContacts >= 999
+                                ? t('contacts.subtitle.withContactsUnlimited', {
+                                    count: totalContactsCount,
+                                })
+                                : t('contacts.subtitle.withContacts', {
+                                    count: totalContactsCount,
+                                    max: capabilities.maxContacts,
+                                })
                             : t('contacts.subtitle.noContacts')
                     }
                     iconName="people"
@@ -2100,13 +2125,13 @@ export default function ContactsScreen() {
                     >
                         <View style={styles.modalCard}>
                             <Text style={styles.modalTitle} allowFontScaling={false}>
-                                Invite someone to Tryggd
+                                {t('contacts.invite.modalTitle')}
                             </Text>
                             <Text style={styles.modalText} allowFontScaling={false}>
-                                We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.
+                                {t('contacts.invite.modalDescription')}
                             </Text>
                             <TextInput
-                                placeholder="Suggested Tryggd ID (optional)"
+                                placeholder={t('contacts.placeholders.suggestedUsername')}
                                 placeholderTextColor={BaseColors.placeholderTextColor}
                                 value={suggestedInviteUsername}
                                 onChangeText={(value) => setSuggestedInviteUsername(normalizeUsername(value))}
@@ -2118,7 +2143,7 @@ export default function ContactsScreen() {
                                 allowFontScaling={false}
                             />
                             <Text style={styles.modalSubtleText} allowFontScaling={false}>
-                                {suggestedInviteValidationMessage || 'Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.'}
+                                {suggestedInviteValidationMessage || t('contacts.invite.suggestedUsernameHelp')}
                             </Text>
                             <View style={styles.modalActions}>
                                 <TouchableOpacity
@@ -2127,7 +2152,7 @@ export default function ContactsScreen() {
                                     disabled={creatingInvite}
                                 >
                                     <Text style={styles.modalSecondaryButtonText} allowFontScaling={false}>
-                                        Cancel
+                                        {t('common.cancel')}
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
@@ -2139,7 +2164,7 @@ export default function ContactsScreen() {
                                     disabled={creatingInvite || !!suggestedInviteValidationMessage}
                                 >
                                     <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
-                                        {creatingInvite ? 'Creating…' : 'Create invite'}
+                                        {creatingInvite ? t('contacts.invite.creating') : t('contacts.invite.createButton')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -2156,26 +2181,34 @@ export default function ContactsScreen() {
                     <View style={styles.modalBackdrop}>
                         <View style={styles.modalCard}>
                             <Text style={styles.modalTitle} allowFontScaling={false}>
-                                {generatedInvite?.invite_kind === 'recovery' ? 'Recovery link ready' : 'Invite ready'}
+                                {generatedInvite?.invite_kind === 'recovery'
+                                    ? t('contacts.invite.recoveryReady')
+                                    : t('contacts.invite.ready')}
                             </Text>
                             <Text style={styles.modalText} allowFontScaling={false}>
                                 {generatedInvite?.invite_kind === 'recovery'
-                                    ? 'Send the recovery link first. Then tell them this code:'
-                                    : 'Send the link first. Then tell them this code:'}
+                                    ? t('contacts.invite.recoveryInstructions')
+                                    : t('contacts.invite.instructions')}
                             </Text>
                             <Text style={styles.generatedInviteCode} allowFontScaling={false}>
                                 {generatedInvite?.invite_code || '------'}
                             </Text>
                             <Text style={styles.modalSubtleText} allowFontScaling={false}>
-                                This invite expires on {generatedInvite?.expires_at ? new Date(generatedInvite.expires_at).toLocaleDateString() : '—'}.
+                                {t('contacts.invite.expiresOn', {
+                                    date: generatedInvite?.expires_at ? new Date(generatedInvite.expires_at).toLocaleDateString() : '—',
+                                })}
                             </Text>
                             {generatedInvite?.invite_kind === 'recovery' && generatedInvite?.target_username ? (
                                 <Text style={styles.modalSubtleText} allowFontScaling={false}>
-                                    Resetting Tryggd ID: {generatedInvite.target_username}
+                                    {t('contacts.invite.resettingTryggdId', {
+                                        id: generatedInvite.target_username,
+                                    })}
                                 </Text>
                             ) : generatedInvite?.suggested_username ? (
                                 <Text style={styles.modalSubtleText} allowFontScaling={false}>
-                                    Suggested Tryggd ID: {generatedInvite.suggested_username}
+                                    {t('contacts.invite.suggestedTryggdId', {
+                                        id: generatedInvite.suggested_username,
+                                    })}
                                 </Text>
                             ) : null}
                             <View style={styles.modalActions}>
@@ -2187,7 +2220,7 @@ export default function ContactsScreen() {
                                     }}
                                 >
                                     <Text style={styles.modalSecondaryButtonText} allowFontScaling={false}>
-                                        Done
+                                        {t('common.done')}
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
@@ -2195,7 +2228,7 @@ export default function ContactsScreen() {
                                     onPress={handleShareInviteLink}
                                 >
                                     <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
-                                        Share link
+                                        {t('contacts.invite.shareButton')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -2218,14 +2251,14 @@ const styles = StyleSheet.create({
     },
     tabsContainer: {
         paddingHorizontal: 20,
-        paddingTop: 14,
-        paddingBottom: 8,
-        backgroundColor: BaseColors.background, // Match background
+        paddingTop: 10,
+        paddingBottom: 6,
+        backgroundColor: BaseColors.background,
     },
     tabContainer: {
         flexDirection: 'row',
         backgroundColor: BaseColors.neutral[100],
-        borderRadius: 12,
+        borderRadius: 14,
         padding: 4,
     },
     tab: {
@@ -2233,8 +2266,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 10,
-        borderRadius: 8,
+        paddingVertical: 9,
+        borderRadius: 10,
     },
     activeTab: {
         backgroundColor: BaseColors.surface,
@@ -2266,10 +2299,24 @@ const styles = StyleSheet.create({
         marginTop: -8,
     },
     addButton: {
-        padding: 4,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
     },
     inviteButton: {
-        padding: 4,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: BaseColors.neutral[50],
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
     },
     scrollView: {
         flex: 1,
@@ -2317,10 +2364,10 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: BaseColors.surface,
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 12,
-        borderWidth: 2,
+        borderRadius: 18,
+        padding: 18,
+        marginBottom: 14,
+        borderWidth: 1,
         borderColor: BaseColors.neutral[100],
         ...Platform.select({
             ios: {
@@ -2338,9 +2385,14 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.surface,
         borderColor: BaseColors.primary,
     },
+    existingContactCardWrapper: {
+        padding: 0,
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[100],
+    },
     cardHeader: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         marginBottom: 10,
     },
@@ -2399,36 +2451,42 @@ const styles = StyleSheet.create({
         flex: 1, // Allow text to wrap
     },
     existingContactInfo: {
-        backgroundColor: BaseColors.surface,
-        borderRadius: 12,
-        padding: 12,
+        backgroundColor: BaseColors.neutral[50],
+        borderRadius: 14,
+        paddingVertical: 10,
+        paddingLeft: 10,
+        paddingRight: 8,
         borderWidth: 1,
         borderColor: BaseColors.neutral[200],
     },
-    existingContactDetails: {
+    existingContactCard: {
+        backgroundColor: BaseColors.surface,
+        borderRadius: 15,
+        padding: 14,
+    },
+    existingContactHeading: {
+        marginBottom: 14,
+    },
+    existingContactTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingRight: 132,
+        width: '100%',
     },
-    existingContactTextBlock: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    existingContactRow: {
+    existingContactMainRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        justifyContent: 'space-between',
     },
     contactAvatar: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         backgroundColor: BaseColors.neutral[100],
     },
     contactAvatarFallback: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         backgroundColor: BaseColors.primaryLight,
         borderWidth: 1,
         borderColor: BaseColors.primaryBorder,
@@ -2483,11 +2541,11 @@ const styles = StyleSheet.create({
     },
     requestCard: {
         backgroundColor: BaseColors.surface,
-        borderRadius: 12,
+        borderRadius: 16,
         padding: 16,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: BaseColors.neutral[200],
+        borderColor: BaseColors.neutral[100],
         ...Platform.select({
             ios: {
                 shadowColor: BaseColors.shadowColor,
@@ -2533,7 +2591,7 @@ const styles = StyleSheet.create({
     requestMessage: {
         backgroundColor: BaseColors.neutral[50],
         padding: 12,
-        borderRadius: 8,
+        borderRadius: 10,
         marginBottom: 12,
         borderLeftWidth: 3,
         borderLeftColor: BaseColors.primary,
@@ -2603,40 +2661,40 @@ const styles = StyleSheet.create({
     },
     displayNameMain: {
         marginLeft: 10,
-        fontSize: iosFontSize(16),
+        fontSize: iosFontSize(18),
         fontWeight: '600',
         color: BaseColors.text.dark,
+        lineHeight: iosFontSize(22),
         flex: 1,
     },
     emailSubdued: {
-        marginLeft: 10,
         fontSize: iosFontSize(14),
         color: BaseColors.neutral[500],
-        flex: 1,
+        marginTop: 8,
+        marginLeft: 40,
     },
-    contactToggleStack: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        gap: 8,
+    contactIdInline: {
+        fontSize: iosFontSize(14),
+        color: BaseColors.neutral[500],
+        marginLeft: 12,
+        flexShrink: 1,
+        textAlign: 'right',
     },
-    recoveryInviteButton: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+    cardHeaderActions: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: BaseColors.primaryLight,
-        borderWidth: 1,
-        borderColor: BaseColors.primaryBorder,
+        gap: 12,
+        marginLeft: 'auto',
     },
-    locationToggle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+    headerActionButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: BaseColors.neutral[50],
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
     },
     locationToggleEnabled: {
         backgroundColor: BaseColors.primaryLight,
@@ -2655,14 +2713,6 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.error,
         transform: [{ rotate: '45deg' }],
         borderRadius: 1,
-    },
-    notificationToggle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: BaseColors.neutral[50],
     },
     notificationToggleDisabled: {
         backgroundColor: BaseColors.errorLight,
@@ -2691,7 +2741,7 @@ const styles = StyleSheet.create({
     headerActions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 16,
+        gap: 10,
     },
     refreshButton: {
         padding: 4,
