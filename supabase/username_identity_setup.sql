@@ -20,7 +20,8 @@ returns table (
     user_id uuid,
     email text,
     display_name text,
-    username text
+    username text,
+    avatar_url text
 )
 language sql
 security definer
@@ -30,7 +31,8 @@ as $$
         p.id as user_id,
         au.email,
         p.display_name,
-        p.username
+        p.username,
+        p.avatar_url
     from public.profiles p
     join auth.users au
       on au.id = p.id
@@ -45,7 +47,8 @@ returns table (
     user_id uuid,
     email text,
     display_name text,
-    username text
+    username text,
+    avatar_url text
 )
 language sql
 security definer
@@ -55,7 +58,8 @@ as $$
         p.id as user_id,
         au.email,
         p.display_name,
-        p.username
+        p.username,
+        p.avatar_url
     from public.profiles p
     join auth.users au
       on au.id = p.id
@@ -69,7 +73,8 @@ create or replace function public.get_contact_usernames(contact_ids uuid[])
 returns table (
     id uuid,
     username text,
-    display_name text
+    display_name text,
+    avatar_url text
 )
 language sql
 security definer
@@ -78,7 +83,8 @@ as $$
     select
         p.id,
         p.username,
-        p.display_name
+        p.display_name,
+        p.avatar_url
     from public.profiles p
     where p.id = any(contact_ids);
 $$;

@@ -25,9 +25,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { deriveDisplayName, isAppleRelayEmail as isAppleRelayEmailAddress } from '../../lib/profile/displayName';
+import { isLocalAvatarUri, uploadAvatarToStorage } from '../../lib/profile/avatarStorage';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 import { isSyntheticAuthEmail } from '@/lib/auth/phoneIdentity';
+import { useAuth } from '@/contexts/AuthContext';
 
 type UserProfile = {
     id: string;
@@ -37,6 +39,8 @@ type UserProfile = {
     auth_provider?: string;
     phone?: string;
     avatar_url?: string;
+    avatar_mime_type?: string | null;
+    avatar_base64?: string | null;
 };
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -44,6 +48,7 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 export default function ProfileScreen() {
     const router = useRouter();
     const { t } = useTranslation();
+    const { refreshProfile } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -59,6 +64,8 @@ export default function ProfileScreen() {
         auth_provider: '',
         phone: '',
         avatar_url: '',
+        avatar_mime_type: null,
+        avatar_base64: null,
     });
 
     const isAppleRelayEmail = isAppleRelayEmailAddress(profile.email);
@@ -109,6 +116,8 @@ export default function ProfileScreen() {
                     auth_provider: user.app_metadata?.provider || 'email',
                     phone: data.phone || '',
                     avatar_url: data.avatar_url || '',
+                    avatar_mime_type: null,
+                    avatar_base64: null,
                 });
 
                 await AsyncStorage.setItem(
@@ -120,6 +129,8 @@ export default function ProfileScreen() {
                         auth_provider: user.app_metadata?.provider || 'email',
                         phone: data.phone || '',
                         avatar_url: data.avatar_url || '',
+                        avatar_mime_type: null,
+                        avatar_base64: null,
                     })
                 );
             }
@@ -179,6 +190,8 @@ export default function ProfileScreen() {
                 id: user.id,
                 display_name: deriveDisplayName(user, t('profile.defaultName')),
                 avatar_url: '',
+                avatar_mime_type: null,
+                avatar_base64: null,
             });
 
             if (error) {
@@ -206,12 +219,23 @@ export default function ProfileScreen() {
                 return;
             }
 
+            let avatarUrl = profile.avatar_url?.trim() || '';
+            if (isLocalAvatarUri(avatarUrl)) {
+                avatarUrl = await uploadAvatarToStorage(
+                    supabase,
+                    user.id,
+                    avatarUrl,
+                    profile.avatar_mime_type,
+                    profile.avatar_base64
+                );
+            }
+
             const { error } = await supabase
                 .from('profiles')
                 .update({
                     display_name: profile.display_name.trim(),
                     phone: profile.phone?.trim() || '',
-                    avatar_url: profile.avatar_url?.trim() || '',
+                    avatar_url: avatarUrl,
                 })
                 .eq('id', user.id);
 
@@ -229,9 +253,19 @@ export default function ProfileScreen() {
                     email: profile.email,
                     auth_provider: profile.auth_provider,
                     phone: profile.phone,
-                    avatar_url: profile.avatar_url,
+                    avatar_url: avatarUrl,
+                    avatar_mime_type: null,
+                    avatar_base64: null,
                 })
             );
+
+            setProfile((current) => ({
+                ...current,
+                avatar_url: avatarUrl,
+                avatar_mime_type: null,
+                avatar_base64: null,
+            }));
+            await refreshProfile();
 
             setIsEditing(false);
             Alert.alert(t('profile.success.title'), t('profile.success.saved'));
@@ -261,12 +295,17 @@ export default function ProfileScreen() {
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
+                base64: true,
             });
 
             if (!result.canceled) {
-                setProfile((current) => ({ ...current, avatar_url: result.assets[0].uri }));
+                setProfile((current) => ({
+                    ...current,
+                    avatar_url: result.assets[0].uri,
+                    avatar_mime_type: result.assets[0].mimeType || null,
+                    avatar_base64: result.assets[0].base64 || null,
+                }));
                 setShowAvatarModal(false);
-                // TODO: Upload to Supabase Storage
             }
         } catch (error) {
             console.error('Error picking avatar:', error);
@@ -285,12 +324,17 @@ export default function ProfileScreen() {
                 allowsEditing: true,
                 aspect: [1, 1],
                 quality: 0.5,
+                base64: true,
             });
 
             if (!result.canceled) {
-                setProfile((current) => ({ ...current, avatar_url: result.assets[0].uri }));
+                setProfile((current) => ({
+                    ...current,
+                    avatar_url: result.assets[0].uri,
+                    avatar_mime_type: result.assets[0].mimeType || null,
+                    avatar_base64: result.assets[0].base64 || null,
+                }));
                 setShowAvatarModal(false);
-                // TODO: Upload to Supabase Storage
             }
         } catch (error) {
             console.error('Error taking photo:', error);
