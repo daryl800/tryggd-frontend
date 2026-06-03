@@ -112,7 +112,8 @@
     "errors": {
       "loadActivities": "無法載入活動",
       "fetchContacts": "無法取得聯絡人",
-      "fetchOwnerActivity": "無法取得擁有者活動"
+      "fetchOwnerActivity": "無法取得擁有者活動",
+      "openSharedLocation": "無法開啟分享位置。"
     },
     "day": {
       "today": "今天",
@@ -132,6 +133,19 @@
     "welfareButton": {
       "send": "你還好嗎？",
       "sent": "已發送 ✓"
+    },
+    "sharedLocation": {
+      "view": "查看分享位置"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "中國",
+      "hongKong": "香港",
+      "taiwan": "台灣",
+      "sweden": "瑞典",
+      "norway": "挪威",
+      "denmark": "丹麥",
+      "finland": "芬蘭"
     }
   },
   "contacts": {
@@ -141,8 +155,9 @@
     "displayingAs": "顯示為",
     "loading": "載入聯絡人...",
     "subtitle": {
-      "withContacts": "您有 {{count}}/3 個聯絡人",
-      "noContacts": "新增聯絡人以共享（最多3個）"
+      "withContacts": "{{count}} / {{max}} 位聯絡人",
+      "noContacts": "新增聯絡人以共享（最多3個）",
+      "withContactsUnlimited": "{{count}} 位聯絡人"
     },
     "emptyState": {
       "title": "暫無聯絡人",
@@ -163,7 +178,9 @@
       }
     },
     "placeholders": {
-      "email": "輸入 Tryggd ID"
+      "email": "輸入 Tryggd ID",
+      "identifier": "輸入 Tryggd ID 或電子郵件",
+      "suggestedUsername": "建議的 Tryggd ID（可選）"
     },
     "buttons": {
       "accept": "接受",
@@ -244,7 +261,40 @@
       "requestNotFound": "找不到聯絡人請求或已被處理",
       "accept": "無法接受聯絡人請求",
       "reject": "無法拒絕請求",
-      "cancel": "無法取消請求"
+      "cancel": "無法取消請求",
+      "createInvite": "建立邀請失敗。",
+      "shareInvite": "分享邀請連結失敗。",
+      "recoveryUnavailable": "此聯絡人目前無法接收找回邀請。",
+      "createRecoveryInvite": "建立找回邀請失敗。",
+      "updateCheckinNotifications": "更新簽到通知失敗。",
+      "updateLocationSharing": "更新位置分享失敗。",
+      "noContactUpdated": "沒有更新任何聯絡人資料。"
+    },
+    "messages": {
+      "contactDefault": "此聯絡人"
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} 會收到您的簽到",
+      "checkinsDisabled": "{{name}} 不會收到您的簽到",
+      "locationEnabled": "{{name}} 會在活動中看到您的位置",
+      "locationDisabled": "{{name}} 不會在活動中看到您的位置"
+    },
+    "invite": {
+      "ready": "邀請連結已準備好",
+      "recoveryReady": "找回連結已準備好",
+      "instructions": "請先傳送連結，再把這組代碼告訴對方：",
+      "recoveryInstructions": "請先傳送找回連結，再把這組代碼告訴對方：",
+      "expiresOn": "此邀請將於 {{date}} 到期。",
+      "resettingTryggdId": "正在重設的 Tryggd ID：{{id}}",
+      "suggestedTryggdId": "建議的 Tryggd ID：{{id}}",
+      "shareMessage": "加入我的 Tryggd：",
+      "recoveryShareMessage": "使用此連結重設您的 Tryggd 密碼：",
+      "modalTitle": "邀請某人加入 Tryggd",
+      "modalDescription": "我們會建立一個私人邀請連結和 6 位數代碼。現在先建議一個 Tryggd ID，讓對方之後不用自己再選。",
+      "suggestedUsernameHelp": "請使用小寫字母、數字、句點或底線。我們會在建立邀請前檢查是否可用。",
+      "createButton": "建立邀請",
+      "creating": "建立中…",
+      "shareButton": "分享連結"
     }
   },
   "profile": {
@@ -362,7 +412,8 @@
     "next": "下一步",
     "submit": "提交",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "done": "完成"
   },
   "time": {
     "justNow": "剛剛",

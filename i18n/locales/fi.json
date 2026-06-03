@@ -76,7 +76,8 @@
     "errors": {
       "loadActivities": "Toimintoja ei voitu ladata",
       "fetchContacts": "Yhteystietoja ei voitu hakea",
-      "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea"
+      "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea",
+      "openSharedLocation": "Failed to open shared location."
     },
     "day": {
       "today": "Tänään",
@@ -96,6 +97,19 @@
     "welfareButton": {
       "send": "Oletko kunnossa?",
       "sent": "Lähetetty ✓"
+    },
+    "sharedLocation": {
+      "view": "View shared location"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "China",
+      "hongKong": "Hong Kong",
+      "taiwan": "Taiwan",
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
     }
   },
   "contacts": {
@@ -105,8 +119,9 @@
     "displayingAs": "Näytetään nimellä",
     "loading": "Ladataan yhteystietoja...",
     "subtitle": {
-      "withContacts": "Sinulla on {{count}}/3 mahdollisesta yhteystiedosta",
-      "noContacts": "Lisää yhteystietoja jakamiseen"
+      "withContacts": "Sinulla on {{count}}/{{max}} yhteystietoa",
+      "noContacts": "Lisää yhteystietoja jakamiseen",
+      "withContactsUnlimited": "{{count}} contacts"
     },
     "emptyState": {
       "title": "Ei yhteystietoja",
@@ -127,7 +142,9 @@
       }
     },
     "placeholders": {
-      "email": "Syötä sähköpostiosoite"
+      "email": "Syötä sähköpostiosoite",
+      "identifier": "Enter Tryggd ID or email",
+      "suggestedUsername": "Suggested Tryggd ID (optional)"
     },
     "buttons": {
       "accept": "Hyväksy",
@@ -197,6 +214,41 @@
         "title": "Pyyntö peruutettu",
         "message": "Yhteystietopyyntö on peruutettu"
       }
+    },
+    "errors": {
+      "createInvite": "Failed to create invite.",
+      "shareInvite": "Failed to share invite link.",
+      "recoveryUnavailable": "This contact cannot receive a recovery invite yet.",
+      "createRecoveryInvite": "Failed to create recovery invite.",
+      "updateCheckinNotifications": "Failed to update check-in notifications.",
+      "updateLocationSharing": "Failed to update location sharing.",
+      "noContactUpdated": "No contact row was updated."
+    },
+    "messages": {
+      "contactDefault": "This contact"
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} will receive your check-ins",
+      "checkinsDisabled": "{{name}} will not receive your check-ins",
+      "locationEnabled": "{{name}} will see your location in Activity",
+      "locationDisabled": "{{name}} will not see your location in Activity"
+    },
+    "invite": {
+      "ready": "Invite ready",
+      "recoveryReady": "Recovery link ready",
+      "instructions": "Send the link first. Then tell them this code:",
+      "recoveryInstructions": "Send the recovery link first. Then tell them this code:",
+      "expiresOn": "This invite expires on {{date}}.",
+      "resettingTryggdId": "Resetting Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Suggested Tryggd ID: {{id}}",
+      "shareMessage": "Join me on Tryggd:",
+      "recoveryShareMessage": "Use this link to reset your Tryggd password:",
+      "modalTitle": "Invite someone to Tryggd",
+      "modalDescription": "We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.",
+      "suggestedUsernameHelp": "Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.",
+      "createButton": "Create invite",
+      "creating": "Creating…",
+      "shareButton": "Share link"
     }
   },
   "profile": {
@@ -311,7 +363,8 @@
     "next": "Seuraava",
     "submit": "Lähetä",
     "yes": "Kyllä",
-    "no": "Ei"
+    "no": "Ei",
+    "done": "Done"
   },
   "time": {
     "justNow": "Juuri nyt",

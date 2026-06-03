@@ -38,6 +38,7 @@ type Activity = {
   is_owner?: boolean;
   hasNewUpdate?: boolean;
   checkin_timezone?: string | null;
+  checkin_timezone_label?: string | null;
   shared_location?: SharedLocationInfo | null;
 };
 
@@ -78,6 +79,24 @@ type ResponseNotification = {
 
 export default function ActivityScreen() {
   const { t } = useTranslation();
+
+  const getLocalizedTimezoneLabel = useCallback((label?: string | null) => {
+    const normalized = label?.trim();
+    if (!normalized) return '';
+
+    const labelMap: Record<string, string> = {
+      UTC: t('activity.timezoneLabels.utc'),
+      China: t('activity.timezoneLabels.china'),
+      'Hong Kong': t('activity.timezoneLabels.hongKong'),
+      Taiwan: t('activity.timezoneLabels.taiwan'),
+      Sweden: t('activity.timezoneLabels.sweden'),
+      Norway: t('activity.timezoneLabels.norway'),
+      Denmark: t('activity.timezoneLabels.denmark'),
+      Finland: t('activity.timezoneLabels.finland'),
+    };
+
+    return labelMap[normalized] || normalized;
+  }, [t]);
   const { user, capabilities } = useAuth();
 
   // State
@@ -226,6 +245,7 @@ export default function ActivityScreen() {
           is_owner: true,
           hasNewUpdate: isNew,
           checkin_timezone: data.checkin_timezone,
+          checkin_timezone_label: data.checkin_timezone_label || null,
         });
 
         if (data.checkin_timezone) {
@@ -241,6 +261,7 @@ export default function ActivityScreen() {
           is_owner: true,
           hasNewUpdate: false,
           checkin_timezone: null,
+          checkin_timezone_label: null,
         });
       }
     } catch (err) {
@@ -346,6 +367,7 @@ export default function ActivityScreen() {
           avatar_url: contactInfo?.avatar_url || null,
           hasNewUpdate: isNew,
           checkin_timezone: activity.checkin_timezone,
+          checkin_timezone_label: activity.checkin_timezone_label || null,
           shared_location:
             activity.last_checked_in_utc
               ? locationMap.get(`${activity.user_id}:${activity.last_checked_in_utc}`) || null
@@ -632,6 +654,7 @@ export default function ActivityScreen() {
             avatar_url: contactInfo?.avatar_url || null,
             hasNewUpdate: isNew,
             checkin_timezone: updated.checkin_timezone,
+            checkin_timezone_label: updated.checkin_timezone_label || null,
             shared_location: updated.last_checked_in_utc
               ? locationShareMapRef.current.get(`${updated.user_id}:${updated.last_checked_in_utc}`) || null
               : null,
@@ -686,6 +709,7 @@ export default function ActivityScreen() {
               is_owner: true,
               hasNewUpdate: false,
               checkin_timezone: null,
+              checkin_timezone_label: null,
             }));
             return;
           }
@@ -707,6 +731,7 @@ export default function ActivityScreen() {
               is_owner: true,
               hasNewUpdate: isNew,
               checkin_timezone: payload.new.checkin_timezone,
+              checkin_timezone_label: payload.new.checkin_timezone_label || null,
               shared_location: null,
             }));
 
@@ -1161,6 +1186,7 @@ export default function ActivityScreen() {
     userId,
     isLast = false,
     checkin_timezone,
+    checkin_timezone_label,
     shared_location,
   }: {
     name: string;
@@ -1173,6 +1199,7 @@ export default function ActivityScreen() {
     userId: string;
     isLast?: boolean;
     checkin_timezone?: string | null;
+    checkin_timezone_label?: string | null;
     shared_location?: SharedLocationInfo | null;
   }) => {
     const { t } = useTranslation();
@@ -1343,11 +1370,15 @@ export default function ActivityScreen() {
         await Linking.openURL(url);
       } catch (error) {
         console.error('Error opening shared location:', error);
-        Alert.alert(t('errors.title'), 'Failed to open shared location.');
+        Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
       }
     };
 
-    const formatActivityTime = (timestamp: string | null, timezone?: string | null) => {
+    const formatActivityTime = (
+      timestamp: string | null,
+      timezone?: string | null,
+      timezoneLabel?: string | null
+    ) => {
       let timeText = '';
       let dateText = '';
       let timezoneText = '';
@@ -1392,8 +1423,12 @@ export default function ActivityScreen() {
             dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
           }
 
-          const parts = tz.split('/');
-          timezoneText = parts.length > 1 ? parts[parts.length - 1] : tz;
+          if (timezoneLabel && timezoneLabel.trim() !== '') {
+            timezoneText = getLocalizedTimezoneLabel(timezoneLabel);
+          } else {
+            const parts = tz.split('/');
+            timezoneText = parts.length > 1 ? parts[parts.length - 1].replace(/_/g, ' ') : tz;
+          }
 
         } catch (error) {
           console.error('Error formatting time:', error);
@@ -1403,7 +1438,11 @@ export default function ActivityScreen() {
       return { timeText, dateText, timezoneText, isValidTimestamp };
     };
 
-    const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(timestamp, checkin_timezone);
+    const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(
+      timestamp,
+      checkin_timezone,
+      checkin_timezone_label
+    );
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -1428,7 +1467,7 @@ export default function ActivityScreen() {
               </Text>
               {!isOwner && username && (
                 <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
-                  {username}
+                  @{username}
                 </Text>
               )}
             </View>
@@ -1466,7 +1505,7 @@ export default function ActivityScreen() {
                 activeOpacity={0.7}
               >
                 <Ionicons name="location" size={14} color={BaseColors.primaryDark} />
-                <Text style={styles.locationLinkText}>View shared location</Text>
+                <Text style={styles.locationLinkText}>{t('activity.sharedLocation.view')}</Text>
               </TouchableOpacity>
             )}
 
@@ -1559,6 +1598,7 @@ export default function ActivityScreen() {
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
                     checkin_timezone={ownerActivity.checkin_timezone}
+                    checkin_timezone_label={ownerActivity.checkin_timezone_label}
                     shared_location={ownerActivity.shared_location}
                     isLast
                   />
@@ -1616,6 +1656,7 @@ export default function ActivityScreen() {
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}
                       checkin_timezone={item.checkin_timezone}
+                      checkin_timezone_label={item.checkin_timezone_label}
                       shared_location={item.shared_location}
                       isLast={index === activities.length - 1}
                     />
