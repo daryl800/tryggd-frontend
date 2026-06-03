@@ -20,6 +20,8 @@ import {
   Animated,
   AppState,
   Dimensions,
+  GestureResponderEvent,
+  LayoutChangeEvent,
   PixelRatio,
   Platform,
   StyleSheet,
@@ -47,6 +49,10 @@ const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
+const WELLNESS_MIN = -5;
+const WELLNESS_MAX = 5;
+const WELLNESS_DEFAULT = 0;
+const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
@@ -207,6 +213,99 @@ const formatTime24h = (date: Date, language: string) => {
   }
 };
 
+type WellnessSliderProps = {
+  value: number;
+  onChange: (value: number) => void;
+};
+
+const clampWellnessValue = (value: number) =>
+  Math.min(WELLNESS_MAX, Math.max(WELLNESS_MIN, value));
+
+const getWellnessValueFromPosition = (positionX: number, width: number) => {
+  if (width <= 0) return WELLNESS_DEFAULT;
+
+  const clampedX = Math.min(width, Math.max(0, positionX));
+  const ratio = clampedX / width;
+  const stepIndex = Math.round(ratio * (WELLNESS_STEPS - 1));
+  return clampWellnessValue(WELLNESS_MIN + stepIndex);
+};
+
+const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const lastValueRef = useRef(value);
+
+  useEffect(() => {
+    lastValueRef.current = value;
+  }, [value]);
+
+  const updateValueFromEvent = useCallback(
+    (event: GestureResponderEvent) => {
+      const nextValue = getWellnessValueFromPosition(event.nativeEvent.locationX, trackWidth);
+
+      if (nextValue === lastValueRef.current) return;
+
+      lastValueRef.current = nextValue;
+      onChange(nextValue);
+      void Haptics.selectionAsync();
+    },
+    [onChange, trackWidth]
+  );
+
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    setTrackWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
+  const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
+
+  return (
+    <View style={styles.wellnessCard}>
+      <View style={styles.wellnessSliderRow}>
+        <Ionicons
+          name="sad-outline"
+          size={24}
+          color={BaseColors.neutral[400]}
+          style={styles.wellnessEdgeIcon}
+        />
+        <View
+          style={styles.wellnessTrackTouchArea}
+          onLayout={handleLayout}
+          onStartShouldSetResponder={() => true}
+          onMoveShouldSetResponder={() => true}
+          onResponderGrant={updateValueFromEvent}
+          onResponderMove={updateValueFromEvent}
+        >
+          <View style={styles.wellnessTrack} />
+          <View style={styles.wellnessMarkersRow} pointerEvents="none">
+            {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
+              <View
+                key={`wellness-marker-${index}`}
+                style={[
+                  styles.wellnessMarker,
+                  index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarker,
+                ]}
+              />
+            ))}
+          </View>
+          <View
+            pointerEvents="none"
+            style={[
+              styles.wellnessThumb,
+              trackWidth > 0 && { left: handleLeft - 14 },
+            ]}
+          />
+        </View>
+        <Ionicons
+          name="happy-outline"
+          size={24}
+          color={BaseColors.primary}
+          style={styles.wellnessEdgeIcon}
+        />
+      </View>
+    </View>
+  );
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -223,6 +322,7 @@ export default function HomeScreen() {
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
+  const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -653,6 +753,8 @@ export default function HomeScreen() {
         setShowResetButton(false);
       });
 
+      setWellnessScore(WELLNESS_DEFAULT);
+
     } finally {
       setIsCheckingIn(false);
     }
@@ -904,40 +1006,14 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* WARNING MESSAGE */}
-          <View style={[styles.warningGroup, styles.groupContainer]}>
-            {checkedInToday ? (
-              <View style={styles.messageContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                </View>
-                <Text
-                  style={styles.messageText}
-                  numberOfLines={2}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.youCheckedInTodayAt', {
-                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
-                  })}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.warningContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
-                </View>
-                <Text
-                  style={styles.warningText}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.dontForget')}
-                </Text>
-              </View>
-            )}
-          </View>
+          {capabilities.canUseWellnessSlider && !checkedInToday ? (
+            <View style={[styles.wellnessGroup, styles.groupContainer]}>
+              <WellnessSlider
+                value={wellnessScore}
+                onChange={setWellnessScore}
+              />
+            </View>
+          ) : null}
 
           {/* ACTION CARDS */}
           <View style={[styles.cardsGroup, styles.groupContainer]}>
@@ -976,6 +1052,41 @@ export default function HomeScreen() {
             </View>
           </View>
 
+          {/* WARNING MESSAGE */}
+          <View style={[styles.warningGroup, styles.groupContainer]}>
+            {checkedInToday ? (
+              <View style={styles.messageContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                </View>
+                <Text
+                  style={styles.messageText}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {t('home.youCheckedInTodayAt', {
+                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
+                  })}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.warningContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
+                </View>
+                <Text
+                  style={styles.warningText}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {t('home.dontForget')}
+                </Text>
+              </View>
+            )}
+          </View>
+
           {/* Bottom padding */}
           <View style={styles.bottomPadding} />
         </Animated.View>
@@ -985,7 +1096,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 18;
+const GROUP_GAP = 14;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -1054,9 +1165,89 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
   },
+  wellnessGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
   checkInContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  wellnessCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  wellnessSliderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  wellnessEdgeIcon: {
+    width: 24,
+    textAlign: 'center',
+  },
+  wellnessTrackTouchArea: {
+    flex: 1,
+    height: 36,
+    justifyContent: 'center',
+  },
+  wellnessTrack: {
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: BaseColors.primaryBorder,
+  },
+  wellnessMarkersRow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 2,
+  },
+  wellnessMarker: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: BaseColors.neutral[300],
+  },
+  wellnessCenterMarker: {
+    backgroundColor: BaseColors.primary,
+  },
+  wellnessThumb: {
+    position: 'absolute',
+    top: 6,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: BaseColors.primary,
+    borderWidth: 3,
+    borderColor: BaseColors.surface,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   checkInButton: {
     alignItems: 'center',
@@ -1150,17 +1341,18 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
   },
   card: {
     flex: 1,
     backgroundColor: BaseColors.surface,
     borderRadius: 20,
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: BaseColors.neutral[200],
-    minHeight: 100,
+    minHeight: 78,
     justifyContent: 'space-between',
     ...Platform.select({
       ios: {
@@ -1175,21 +1367,23 @@ const styles = StyleSheet.create({
     }),
   },
   cardIcon: {
-    marginBottom: 8,
+    marginBottom: 4,
   },
   cardLabel: {
     fontSize: iosFontSize(16),
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: 2,
     color: BaseColors.text.dark,
+    lineHeight: iosFontSize(18),
   },
   cardSubtext: {
-    fontSize: iosFontSize(18),
+    fontSize: iosFontSize(16),
     fontWeight: '600',
-    marginTop: 10,
+    marginTop: 2,
     color: BaseColors.primary,
     textAlign: 'center',
+    lineHeight: iosFontSize(18),
   },
   iconContainerBase: {
     width: 30,
@@ -1205,7 +1399,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF7ED',
   },
   bottomPadding: {
-    height: 20,
+    height: 12,
   },
   messageContainer: {
     flexDirection: 'row',

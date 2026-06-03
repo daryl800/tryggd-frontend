@@ -12,6 +12,7 @@
     "dontForget": "Don't forget to check in today!",
     "youCheckedInTodayAt": "You checked in today @ {{time}}",
     "pressMeToCheckIn": "CHECK IN HERE",
+    "wellnessPrompt": "How are you feeling today?",
     "reset": "Reset",
     "timer": "Timer",
     "timeLeftToday": "Time left",

@@ -129,7 +129,7 @@ const ContactCard = memo(
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
-        const { t } = useTranslation();
+        const { t, i18n } = useTranslation();
         const existingName =
             contact.display_name?.trim() || contact.username || contact.identifier || contact.email;
         const existingIdentifier = contact.username || contact.identifier;
@@ -904,7 +904,8 @@ export default function ContactsScreen() {
     const handleShareInviteLink = useCallback(async () => {
         if (!generatedInvite) return;
 
-        const inviteUrl = `https://tryggd.com/invite?token=${generatedInvite.invite_token}`;
+        const webLanguage = i18n.resolvedLanguage === 'zh-Hant' ? 'zh-TW' : i18n.resolvedLanguage === 'zh-Hans' ? 'zh-CN' : i18n.resolvedLanguage || 'en';
+        const inviteUrl = `https://tryggd.com/invite?token=${generatedInvite.invite_token}&lang=${encodeURIComponent(webLanguage)}`;
         try {
             await Share.share({
                 message:
