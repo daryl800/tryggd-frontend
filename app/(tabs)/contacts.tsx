@@ -14,6 +14,7 @@ import {
     Alert,
     AppState,
     Dimensions,
+    Image,
     Keyboard,
     KeyboardAvoidingView,
     Modal,
@@ -39,6 +40,7 @@ type ContactSlot = {
     username?: string;
     user_id?: string;
     display_name?: string;
+    avatar_url?: string | null;
     id?: string;
     checkin_notifications_enabled?: boolean;
     location_sharing_enabled?: boolean;
@@ -64,12 +66,14 @@ interface UserSearchResult {
     email: string;
     display_name: string;
     username?: string | null;
+    avatar_url?: string | null;
 }
 
 type ContactProfileRow = {
     id: string;
     username?: string | null;
     display_name?: string | null;
+    avatar_url?: string | null;
 };
 
 type GeneratedInvite = {
@@ -186,22 +190,39 @@ const ContactCard = memo(
                     </>
                 ) : (
                     <View style={styles.existingContactInfo}>
-                        {/* Person icon with display name - now first */}
-                        {contact.display_name && contact.display_name.trim() !== '' && (
-                            <View style={styles.existingContactRow}>
-                                <Ionicons name="person-outline" size={18} color={BaseColors.primary} />
-                                <Text style={styles.displayNameMain}>{contact.display_name}</Text>
+                        <View style={styles.existingContactDetails}>
+                            {contact.avatar_url ? (
+                                <Image
+                                    source={{ uri: contact.avatar_url }}
+                                    style={styles.contactAvatar}
+                                />
+                            ) : (
+                                <View style={styles.contactAvatarFallback}>
+                                    <Ionicons
+                                        name="person"
+                                        size={22}
+                                        color={BaseColors.primary}
+                                    />
+                                </View>
+                            )}
+
+                            <View style={styles.existingContactTextBlock}>
+                                {contact.display_name && contact.display_name.trim() !== '' && (
+                                    <View style={styles.existingContactRow}>
+                                        <Ionicons name="person-outline" size={18} color={BaseColors.primary} />
+                                        <Text style={styles.displayNameMain}>{contact.display_name}</Text>
+                                    </View>
+                                )}
+                                {(contact.username || contact.identifier) ? (
+                                    <View style={styles.existingContactRow}>
+                                        <Ionicons name="at-outline" size={16} color={BaseColors.neutral[400]} />
+                                        <Text style={styles.emailSubdued}>
+                                            {contact.username || contact.identifier}
+                                        </Text>
+                                    </View>
+                                ) : null}
                             </View>
-                        )}
-                        {/* Tryggd ID with lighter color and smaller font - now second */}
-                        {(contact.username || contact.identifier) ? (
-                            <View style={styles.existingContactRow}>
-                                <Ionicons name="at-outline" size={16} color={BaseColors.neutral[400]} />
-                                <Text style={styles.emailSubdued}>
-                                    {contact.username || contact.identifier}
-                                </Text>
-                            </View>
-                        ) : null}
+                        </View>
 
                         {(showLocationSharingControl || showCheckinNotificationControl) && (
                             <View style={styles.contactToggleStack}>
@@ -441,6 +462,7 @@ export default function ContactsScreen() {
         return {
             display_name: row?.display_name || '',
             username: row?.username || '',
+            avatar_url: row?.avatar_url || '',
         };
     }, []);
 
@@ -498,6 +520,7 @@ export default function ContactsScreen() {
 
                 let usernameMap = new Map<string, string>();
                 let displayNameMap = new Map<string, string>();
+                let avatarMap = new Map<string, string>();
 
                 if (uniqueUserIds.length > 0) {
                     const { data: profileRows } = await supabase.rpc(
@@ -515,6 +538,11 @@ export default function ContactsScreen() {
                             .filter((row) => row.display_name && row.display_name.trim() !== '')
                             .map((row) => [row.id, row.display_name as string])
                     );
+                    avatarMap = new Map(
+                        (profileRows || [])
+                            .filter((row) => row.avatar_url && row.avatar_url.trim() !== '')
+                            .map((row) => [row.id, row.avatar_url as string])
+                    );
                 }
 
                 // Transform contacts
@@ -531,6 +559,7 @@ export default function ContactsScreen() {
                             displayNameMap.get(row.contact_user_id) ||
                             row.contact_display_name ||
                             '',
+                        avatar_url: avatarMap.get(row.contact_user_id) || null,
                         checkin_notifications_enabled:
                             row.checkin_notifications_enabled !== false,
                         location_sharing_enabled:
@@ -1477,6 +1506,7 @@ export default function ContactsScreen() {
                     email: userResult.email,
                     display_name: userResult.display_name,
                     username: userResult.username || undefined,
+                    avatar_url: userResult.avatar_url || null,
                 });
             }
 
@@ -2375,10 +2405,35 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: BaseColors.neutral[200],
     },
+    existingContactDetails: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingRight: 132,
+    },
+    existingContactTextBlock: {
+        flex: 1,
+        marginLeft: 12,
+    },
     existingContactRow: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 8,
+    },
+    contactAvatar: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: BaseColors.neutral[100],
+    },
+    contactAvatarFallback: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     existingContactText: {
         marginLeft: 10,

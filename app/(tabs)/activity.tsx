@@ -142,10 +142,14 @@ export default function ActivityScreen() {
           .map((c) => c.contact_user_id)
           .filter(Boolean);
 
-        const { data: profileRows } = await supabase
-          .from('profiles')
-          .select('id, username, display_name, avatar_url')
-          .in('id', ids) as { data: ContactProfileRow[] | null };
+        const { data: profileRows, error: profileError } = await supabase.rpc(
+          'get_contact_usernames',
+          { contact_ids: ids }
+        ) as { data: ContactProfileRow[] | null; error: any };
+
+        if (profileError) {
+          throw profileError;
+        }
 
         const profileMap = new Map(
           (profileRows || []).map((row) => [
@@ -1068,6 +1072,7 @@ export default function ActivityScreen() {
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
         console.log('📱 App became active - refreshing data');
+        fetchOwnerActivity();
         fetchActivities();
         fetchUnreadResponseNotifications();
       }
@@ -1100,6 +1105,7 @@ export default function ActivityScreen() {
   useFocusEffect(
     useCallback(() => {
       console.log('🎯 Screen focused - refreshing data');
+      fetchOwnerActivity();
       fetchActivities();
       fetchUnreadResponseNotifications();
     }, [])
