@@ -136,22 +136,22 @@ const CHECKIN_MESSAGES = {
     great: () => `Känner sig väldigt glad idag 😊`,
   },
   'zh-Hans': {
-    title: (name: string) => `🎯 ${name} 已签到。`,
+    title: (name: string) => `🎯 ${name} 签到`,
     fallback: (time: string) => `一切安好！- ${time}`,
-    very_low: () => `太不舒服😔`,
-    low: () => `有点低落😕`,
-    neutral: () => `一切安好🙂`,
-    good: () => `感觉不错☺️`,
-    great: () => `今天很开心 😊`,
+    very_low: () => `😔 太不舒服`,
+    low: () => `😕 有点低落`,
+    neutral: () => `🙂 一切安好`,
+    good: () => `☺️ 感觉不错`,
+    great: () => `😊 今天很开心`,
   },
   'zh-Hant': {
-    title: (name: string) => `🎯 ${name} 已簽到。`,
+    title: (name: string) => `🎯 ${name} 簽到`,
     fallback: (time: string) => `一切安好！- ${time}`,
-    very_low: () => `太不舒服😔`,
-    low: () => `有點低落😕`,
-    neutral: () => `一切安好🙂`,
-    good: () => `感覺不錯☺️`,
-    great: () => `今天很開心 😊`,
+    very_low: () => `😔 太不舒服`,
+    low: () => `😕 有點低落`,
+    neutral: () => `🙂 一切安好`,
+    good: () => `☺️ 感覺不錯`,
+    great: () => `😊 今天很開心`,
   },
 } as const
 
@@ -282,7 +282,7 @@ function buildContactCheckinNotification(
   const body =
     wellnessScore === null
       ? locale.fallback(formattedTime)
-      : getWellnessBody(locale, contactDisplayName, wellnessScore)
+      : `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
 
   return {
     title: locale.title(contactDisplayName),
@@ -483,10 +483,7 @@ serve(async (req) => {
     // ============================================
     // 8. Format time
     // ============================================
-    const formattedTime = new Date(checkin_time).toLocaleString('en-GB', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+    const formattedTime = new Date(checkin_time).toLocaleTimeString('en-GB', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,

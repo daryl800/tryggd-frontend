@@ -1,6 +1,7 @@
 // app/(tabs)/index.tsx 
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
@@ -217,9 +218,18 @@ const formatTime24h = (date: Date, language: string) => {
   }
 };
 
+const getChineseFontFamily = (language?: string) => {
+  if (Platform.OS !== 'ios') return undefined;
+  if (language === 'zh-Hans') return 'PingFang SC';
+  if (language === 'zh-Hant') return 'PingFang TC';
+  return undefined;
+};
+
 type WellnessSliderProps = {
   value: number;
   onChange: (value: number) => void;
+  disabled?: boolean;
+  onLockedPress?: () => void;
 };
 
 const getWellnessValueFromPosition = (positionX: number, width: number) => {
@@ -307,7 +317,7 @@ const getLocalDayBounds = (date: Date) => {
   };
 };
 
-const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
+const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: WellnessSliderProps) => {
   const [trackWidth, setTrackWidth] = useState(0);
   const lastValueRef = useRef(value);
 
@@ -335,38 +345,50 @@ const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
   const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
   const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
   const handleEmoji = getWellnessHandleEmoji(value);
+  const edgeLowColor = disabled ? BaseColors.neutral[300] : BaseColors.neutral[400];
+  const edgeHighColor = disabled ? BaseColors.neutral[300] : BaseColors.primary;
 
   return (
-    <View style={styles.wellnessCard}>
+    <TouchableOpacity
+      activeOpacity={disabled ? 0.85 : 1}
+      disabled={!disabled}
+      onPress={onLockedPress}
+      style={[
+        styles.wellnessCard,
+        disabled && styles.wellnessCardDisabled,
+      ]}
+    >
       <View style={styles.wellnessSliderRow}>
         <TouchableOpacity
-          onPress={() => onChange(WELLNESS_MIN)}
+          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MIN)}
           activeOpacity={0.7}
           style={styles.wellnessEdgeButton}
         >
           <Ionicons
             name="sad-outline"
             size={24}
-            color={BaseColors.neutral[400]}
+            color={edgeLowColor}
             style={styles.wellnessEdgeIcon}
           />
         </TouchableOpacity>
         <View
           style={styles.wellnessTrackTouchArea}
           onLayout={handleLayout}
-          onStartShouldSetResponder={() => true}
-          onMoveShouldSetResponder={() => true}
-          onResponderGrant={updateValueFromEvent}
-          onResponderMove={updateValueFromEvent}
+          onStartShouldSetResponder={() => !disabled}
+          onMoveShouldSetResponder={() => !disabled}
+          onResponderGrant={disabled ? undefined : updateValueFromEvent}
+          onResponderMove={disabled ? undefined : updateValueFromEvent}
         >
-          <View style={styles.wellnessTrack} />
+          <View style={[styles.wellnessTrack, disabled && styles.wellnessTrackDisabled]} />
           <View style={styles.wellnessMarkersRow} pointerEvents="none">
             {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
               <View
                 key={`wellness-marker-${index}`}
                 style={[
                   styles.wellnessMarker,
+                  disabled && styles.wellnessMarkerDisabled,
                   index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarker,
+                  disabled && index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarkerDisabled,
                 ]}
               />
             ))}
@@ -375,6 +397,7 @@ const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
             pointerEvents="none"
             style={[
               styles.wellnessThumb,
+              disabled && styles.wellnessThumbDisabled,
               trackWidth > 0 && { left: handleLeft - 16 },
             ]}
           >
@@ -382,19 +405,24 @@ const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => onChange(WELLNESS_MAX)}
+          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MAX)}
           activeOpacity={0.7}
           style={styles.wellnessEdgeButton}
         >
           <Ionicons
             name="happy-outline"
             size={24}
-            color={BaseColors.primary}
+            color={edgeHighColor}
             style={styles.wellnessEdgeIcon}
           />
         </TouchableOpacity>
       </View>
-    </View>
+      {disabled ? (
+        <View style={styles.wellnessThumbLockBadge} pointerEvents="none">
+          <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+        </View>
+      ) : null}
+    </TouchableOpacity>
   );
 };
 
@@ -761,6 +789,10 @@ export default function HomeScreen() {
     ]).start();
   };
 
+  const handleWellnessUpgradePress = useCallback(() => {
+    router.push('/(tabs)/plus');
+  }, [router]);
+
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
 
@@ -978,12 +1010,14 @@ export default function HomeScreen() {
   }
 
   const greetingInfo = getGreetingInfo(now, t);
-  const displayWellnessScore =
-    capabilities.canUseWellnessSlider && checkedInToday ? submittedWellnessScore : wellnessScore;
+  const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus;
+  const showWellnessModule = capabilities.isPlus || showLockedPlusWellness;
+  const displayWellnessScore = capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT;
   const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
   const checkedInMessage = capabilities.canUseWellnessSlider
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
+  const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
     checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
@@ -1177,10 +1211,12 @@ export default function HomeScreen() {
                     <View style={styles.textContainer}>
                       {checkedInToday ? (
                         <Text
-                          style={[styles.checkedInText, { color: checkedMessageColor }]}
-                          numberOfLines={2}
-                          adjustsFontSizeToFit
-                          minimumFontScale={0.6}
+                          style={[
+                            styles.checkedInText,
+                            { color: checkedMessageColor },
+                            chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                          ]}
+                          ellipsizeMode="clip"
                         >
                           {checkedInMessage}
                         </Text>
@@ -1228,11 +1264,13 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {capabilities.canUseWellnessSlider ? (
+          {showWellnessModule ? (
             <View style={[styles.wellnessGroup, styles.groupContainer]}>
               <WellnessSlider
-                value={wellnessScore}
+                value={capabilities.isPlus ? wellnessScore : WELLNESS_DEFAULT}
                 onChange={setWellnessScore}
+                disabled={!capabilities.isPlus}
+                onLockedPress={handleWellnessUpgradePress}
               />
             </View>
           ) : null}
@@ -1420,6 +1458,10 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  wellnessCardDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.neutral[50],
+  },
   wellnessSliderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1445,6 +1487,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: BaseColors.primaryBorder,
   },
+  wellnessTrackDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
   wellnessMarkersRow: {
     position: 'absolute',
     left: 0,
@@ -1460,8 +1505,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: BaseColors.neutral[300],
   },
+  wellnessMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
   wellnessCenterMarker: {
     backgroundColor: BaseColors.primary,
+  },
+  wellnessCenterMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[400],
   },
   wellnessThumb: {
     position: 'absolute',
@@ -1486,10 +1537,27 @@ const styles = StyleSheet.create({
       },
     }),
   },
+  wellnessThumbDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.surface,
+  },
   wellnessThumbEmoji: {
     fontSize: 18,
     lineHeight: 20,
     textAlign: 'center',
+  },
+  wellnessThumbLockBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: BaseColors.primaryLight,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   checkInButton: {
     alignItems: 'center',
@@ -1498,9 +1566,12 @@ const styles = StyleSheet.create({
   },
   checkedInText: {
     color: BaseColors.surface,
-    fontSize: iosFontSize(24),
+    fontSize: iosFontSize(22),
+    lineHeight: iosFontSize(26),
     fontWeight: '800',
     textAlign: 'center',
+    width: '100%',
+    flexWrap: 'wrap',
   },
   circleBorder: {
     position: 'absolute',
@@ -1547,7 +1618,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 14,
     maxWidth: '100%',
     width: '100%',
     marginTop: Platform.OS === 'ios' ? 0 : -4,
@@ -1599,12 +1670,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: BaseColors.surface,
     borderRadius: 20,
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 6,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: BaseColors.neutral[200],
-    minHeight: 78,
+    minHeight: 92,
     justifyContent: 'space-between',
     ...Platform.select({
       ios: {
@@ -1619,23 +1690,23 @@ const styles = StyleSheet.create({
     }),
   },
   cardIcon: {
-    marginBottom: 4,
+    marginBottom: 8,
   },
   cardLabel: {
     fontSize: iosFontSize(16),
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 2,
+    marginTop: 4,
     color: BaseColors.text.dark,
-    lineHeight: iosFontSize(18),
+    lineHeight: iosFontSize(20),
   },
   cardSubtext: {
     fontSize: iosFontSize(16),
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 6,
     color: BaseColors.primary,
     textAlign: 'center',
-    lineHeight: iosFontSize(18),
+    lineHeight: iosFontSize(20),
   },
   iconContainerBase: {
     width: 30,

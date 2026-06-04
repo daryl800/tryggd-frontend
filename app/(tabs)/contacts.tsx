@@ -1,12 +1,13 @@
 // screens/ContactsScreen.tsx
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { ICON_SIZES } from '@/constants/ui';
 import { sendContactRequestNotification } from '@/lib/notifications';
 import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -111,6 +112,10 @@ const ContactCard = memo(
         onCreateRecoveryInvite,
         showCheckinNotificationControl,
         showLocationSharingControl,
+        canEditCheckinNotificationControl,
+        canEditLocationSharingControl,
+        onLockedCheckinNotificationPress,
+        onLockedLocationSharingPress,
         inputRef,
         isNewContact,
     }: {
@@ -126,6 +131,10 @@ const ContactCard = memo(
         onCreateRecoveryInvite?: () => void;
         showCheckinNotificationControl: boolean;
         showLocationSharingControl: boolean;
+        canEditCheckinNotificationControl?: boolean;
+        canEditLocationSharingControl?: boolean;
+        onLockedCheckinNotificationPress?: () => void;
+        onLockedLocationSharingPress?: () => void;
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
@@ -229,32 +238,49 @@ const ContactCard = memo(
                                         <TouchableOpacity
                                             style={[
                                                 styles.headerActionButton,
-                                                contact.checkin_notifications_enabled === false &&
+                                                !canEditCheckinNotificationControl
+                                                    ? styles.premiumLockedButton
+                                                    : contact.checkin_notifications_enabled === false &&
                                                     styles.notificationToggleDisabled,
                                             ]}
                                             onPress={() =>
-                                                onToggleCheckinNotifications?.(
-                                                    !(contact.checkin_notifications_enabled !== false)
-                                                )
+                                                canEditCheckinNotificationControl
+                                                    ? onToggleCheckinNotifications?.(
+                                                        !(contact.checkin_notifications_enabled !== false)
+                                                      )
+                                                    : onLockedCheckinNotificationPress?.()
                                             }
-                                            disabled={contact.toggling_notifications}
+                                            disabled={
+                                                canEditCheckinNotificationControl &&
+                                                contact.toggling_notifications
+                                            }
                                             activeOpacity={0.7}
                                         >
                                             <Ionicons
                                                 name={
-                                                    contact.checkin_notifications_enabled !== false
+                                                    !canEditCheckinNotificationControl
+                                                        ? 'notifications-outline'
+                                                        : contact.checkin_notifications_enabled !== false
                                                         ? 'notifications'
                                                         : 'notifications-outline'
                                                 }
                                                 size={22}
                                                 color={
-                                                    contact.checkin_notifications_enabled !== false
+                                                    !canEditCheckinNotificationControl
+                                                        ? BaseColors.neutral[400]
+                                                        : contact.checkin_notifications_enabled !== false
                                                         ? BaseColors.primary
                                                         : BaseColors.error
                                                 }
                                             />
-                                            {contact.checkin_notifications_enabled === false && (
+                                            {canEditCheckinNotificationControl &&
+                                                contact.checkin_notifications_enabled === false && (
                                                 <View style={styles.notificationToggleSlash} />
+                                            )}
+                                            {!canEditCheckinNotificationControl && (
+                                                <View style={styles.premiumLockBadge}>
+                                                    <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+                                                </View>
                                             )}
                                         </TouchableOpacity>
                                     )}
@@ -262,34 +288,52 @@ const ContactCard = memo(
                                         <TouchableOpacity
                                             style={[
                                                 styles.headerActionButton,
-                                                contact.location_sharing_enabled === true &&
-                                                    styles.locationToggleEnabled,
-                                                contact.location_sharing_enabled !== true &&
+                                                !canEditLocationSharingControl
+                                                    ? styles.premiumLockedButton
+                                                    : contact.location_sharing_enabled === true &&
+                                                        styles.locationToggleEnabled,
+                                                canEditLocationSharingControl &&
+                                                    contact.location_sharing_enabled !== true &&
                                                     styles.locationToggleDisabled,
                                             ]}
                                             onPress={() =>
-                                                onToggleLocationSharing?.(
-                                                    !(contact.location_sharing_enabled === true)
-                                                )
+                                                canEditLocationSharingControl
+                                                    ? onToggleLocationSharing?.(
+                                                        !(contact.location_sharing_enabled === true)
+                                                      )
+                                                    : onLockedLocationSharingPress?.()
                                             }
-                                            disabled={contact.toggling_location}
+                                            disabled={
+                                                canEditLocationSharingControl &&
+                                                contact.toggling_location
+                                            }
                                             activeOpacity={0.7}
                                         >
                                             <Ionicons
                                                 name={
-                                                    contact.location_sharing_enabled === true
+                                                    !canEditLocationSharingControl
+                                                        ? 'location-outline'
+                                                        : contact.location_sharing_enabled === true
                                                         ? 'location'
                                                         : 'location-outline'
                                                 }
                                                 size={22}
                                                 color={
-                                                    contact.location_sharing_enabled === true
+                                                    !canEditLocationSharingControl
+                                                        ? BaseColors.neutral[400]
+                                                        : contact.location_sharing_enabled === true
                                                         ? BaseColors.primaryDark
                                                         : BaseColors.error
                                                 }
                                             />
-                                            {contact.location_sharing_enabled !== true && (
+                                            {canEditLocationSharingControl &&
+                                                contact.location_sharing_enabled !== true && (
                                                 <View style={styles.locationToggleSlash} />
+                                            )}
+                                            {!canEditLocationSharingControl && (
+                                                <View style={styles.premiumLockBadge}>
+                                                    <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+                                                </View>
                                             )}
                                         </TouchableOpacity>
                                     )}
@@ -430,6 +474,8 @@ const ContactRequestCard = memo(
 export default function ContactsScreen() {
     const { t } = useTranslation();
     const { capabilities } = useAuth();
+    const router = useRouter();
+    const showPlusUpsellUI = UI_FEATURE_FLAGS.showPlusUpsellUI;
     const [existingContacts, setExistingContacts] = useState<ContactSlot[]>([]);
     const [newContacts, setNewContacts] = useState<ContactSlot[]>([]);
     const [incomingRequests, setIncomingRequests] = useState<ContactRequest[]>([]);
@@ -1251,6 +1297,18 @@ export default function ContactsScreen() {
         [existingContacts, fetchAllData, t]
     );
 
+    const showPlusFeatureAlert = useCallback(() => {
+        router.push('/(tabs)/plus');
+    }, [router]);
+
+    const handleLockedCheckinNotificationPress = useCallback(() => {
+        showPlusFeatureAlert();
+    }, [showPlusFeatureAlert]);
+
+    const handleLockedLocationSharingPress = useCallback(() => {
+        showPlusFeatureAlert();
+    }, [showPlusFeatureAlert]);
+
     const deleteEverythingManually = async (userId1: string, userId2: string) => {
         try {
             const { error: contactsError } = await supabase
@@ -1967,10 +2025,22 @@ export default function ContactsScreen() {
                                             }
                                             onCreateRecoveryInvite={() => handleCreateRecoveryInvite(contact)}
                                             showCheckinNotificationControl={
-                                                capabilities.canControlCheckinRecipients
+                                                capabilities.canControlCheckinRecipients || showPlusUpsellUI
                                             }
                                             showLocationSharingControl={
+                                                capabilities.canShareLocation || showPlusUpsellUI
+                                            }
+                                            canEditCheckinNotificationControl={
+                                                capabilities.canControlCheckinRecipients
+                                            }
+                                            canEditLocationSharingControl={
                                                 capabilities.canShareLocation
+                                            }
+                                            onLockedCheckinNotificationPress={
+                                                handleLockedCheckinNotificationPress
+                                            }
+                                            onLockedLocationSharingPress={
+                                                handleLockedLocationSharingPress
                                             }
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
                                             isNewContact={false}
@@ -2719,6 +2789,23 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.errorLight,
         borderWidth: 1,
         borderColor: BaseColors.errorBorder,
+    },
+    premiumLockedButton: {
+        backgroundColor: BaseColors.neutral[50],
+        borderColor: BaseColors.primaryBorder,
+    },
+    premiumLockBadge: {
+        position: 'absolute',
+        right: -2,
+        bottom: -2,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     notificationToggleSlash: {
         position: 'absolute',

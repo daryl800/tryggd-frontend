@@ -1,6 +1,7 @@
 export type UserPlan = 'free' | 'plus';
 
 export type UserCapabilities = {
+  isPlus: boolean;
   canUseWelfareGreeting: boolean;
   canShareLocation: boolean;
   canUseWellnessSlider: boolean;
@@ -13,6 +14,7 @@ export function getCapabilities(plan: UserPlan): UserCapabilities {
   const isPlus = plan === 'plus';
 
   return {
+    isPlus,
     canUseWelfareGreeting: isPlus,
     canShareLocation: isPlus,
     canUseWellnessSlider: isPlus,

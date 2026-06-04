@@ -9,12 +9,16 @@
       "night": "晚安"
     },
     "everythingIsFine": "一切安好！",
-    "checkedInToday": "今日已签到！",
+    "checkedInToday": "今日签到！",
     "dontForget": "别忘了今天签到！",
     "youCheckedInTodayAt": "您今天已于 {{time}} 完成签到",
     "checkIn": "签到",
     "pressMeToCheckIn": "点击此处签到",
     "wellnessPrompt": "您今天感觉如何？",
+    "plusWellness": {
+      "title": "Plus 功能",
+      "message": "升级到 Plus，让您在签到时分享今天的感受。"
+    },
     "reset": "重置",
     "timer": "计时器",
     "timeLeftToday": "今日剩余时间",
@@ -149,11 +153,11 @@
       "finland": "芬兰"
     },
     "wellness": {
-      "veryLow": "太不舒服😔",
-      "low": "有点低落😕",
-      "neutral": "一切安好🙂",
-      "good": "感觉不错☺️",
-      "great": "今天很开心 😊"
+      "veryLow": "😔 太不舒服",
+      "low": "😕 有点低落",
+      "neutral": "🙂 一切安好",
+      "good": "☺️ 感觉不错",
+      "great": "😊 今天很开心"
     }
   },
   "contacts": {
@@ -237,6 +241,11 @@
         "title": "请求已处理",
         "message": "此请求已被处理"
       }
+    },
+    "plusFeature": {
+      "title": "Plus 功能",
+      "notifications": "升级到 Plus，才能控制联系人签到通知。",
+      "location": "升级到 Plus，才能为联系人启用位置分享。"
     },
     "success": {
       "requestSent": {
@@ -422,6 +431,40 @@
     "yes": "是",
     "no": "否",
     "done": "完成"
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "为每日签到加入更多信息",
+    "badge": "Plus",
+    "heading": "解锁更多状态信息",
+    "description": "Tryggd Plus 让每日签到提供更多背景信息，但不改变原本简单的流程。",
+    "comingSoon": {
+      "title": "升级方式",
+      "message": "应用内升级尚未接通。此页面目前作为锁定功能的目的地，也会是之后的升级入口。",
+      "button": "升级即将推出"
+    },
+    "features": {
+      "wellness": {
+        "title": "心情状态分享",
+        "description": "在每日签到时同步分享今天的感受。"
+      },
+      "location": {
+        "title": "位置分享",
+        "description": "让信任的联系人在活动页看见您分享的位置。"
+      },
+      "notifications": {
+        "title": "通知控制",
+        "description": "控制哪些联系人可以收到您的签到通知。"
+      },
+      "contacts": {
+        "title": "无限联系人",
+        "description": "突破免费方案的联系人数量限制。"
+      },
+      "welfare": {
+        "title": "关怀问候",
+        "description": "为联系人使用额外的关怀追踪功能。"
+      }
+    }
   },
   "time": {
     "justNow": "刚刚",
