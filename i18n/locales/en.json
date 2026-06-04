@@ -111,6 +111,13 @@
       "norway": "Norway",
       "denmark": "Denmark",
       "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "Not feeling well 😔",
+      "low": "A little low 😕",
+      "neutral": "All is well 🙂",
+      "good": "Feeling good ☺️",
+      "great": "Feeling very happy today 😊"
     }
   },
   "contacts": {

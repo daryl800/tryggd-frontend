@@ -49,11 +49,14 @@ const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
-const WELLNESS_MIN = -5;
-const WELLNESS_MAX = 5;
+const WELLNESS_MIN = -2;
+const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
+
+const clampWellnessValue = (value: number) =>
+  Math.max(WELLNESS_MIN, Math.min(WELLNESS_MAX, value));
 
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
@@ -219,9 +222,6 @@ type WellnessSliderProps = {
   onChange: (value: number) => void;
 };
 
-const clampWellnessValue = (value: number) =>
-  Math.min(WELLNESS_MAX, Math.max(WELLNESS_MIN, value));
-
 const getWellnessValueFromPosition = (positionX: number, width: number) => {
   if (width <= 0) return WELLNESS_DEFAULT;
 
@@ -262,28 +262,36 @@ const interpolateColor = (from: string, to: string, ratio: number) => {
 };
 
 const getWellnessHeartColor = (score: number) => {
-  const lowColor = '#4A4A4A';
+  const clampedScore = clampWellnessValue(score);
+  const lowColor = '#7A7A7A';
   const midColor = BaseColors.primary;
   const highColor = '#FFD700';
 
-  if (score <= 0) {
-    const ratio = (score - WELLNESS_MIN) / (WELLNESS_DEFAULT - WELLNESS_MIN || 1);
+  if (clampedScore <= 0) {
+    const ratio = (clampedScore - WELLNESS_MIN) / (WELLNESS_DEFAULT - WELLNESS_MIN || 1);
     return interpolateColor(lowColor, midColor, ratio);
   }
 
-  const ratio = score / WELLNESS_MAX;
+  const ratio = clampedScore / WELLNESS_MAX;
   return interpolateColor(midColor, highColor, ratio);
 };
 
+const getWellnessMessageKey = (score: number) => {
+  const clampedScore = clampWellnessValue(score);
+  if (clampedScore <= -2) return 'activity.wellness.veryLow';
+  if (clampedScore === -1) return 'activity.wellness.low';
+  if (clampedScore === 0) return 'activity.wellness.neutral';
+  if (clampedScore === 1) return 'activity.wellness.good';
+  return 'activity.wellness.great';
+};
+
 const getWellnessHandleEmoji = (score: number) => {
-  if (score <= -3) return '😞';
-  if (score === -2) return '🙁';
-  if (score === -1) return '😕';
-  if (score === 0) return '🙂';
-  if (score === 1) return '☺️';
-  if (score === 2) return '😊';
-  if (score === 3) return '😄';
-  return '😁';
+  const clampedScore = clampWellnessValue(score);
+  if (clampedScore <= -2) return '😔';
+  if (clampedScore === -1) return '😕';
+  if (clampedScore === 0) return '🙂';
+  if (clampedScore === 1) return '☺️';
+  return '😊';
 };
 
 const getLocalDayBounds = (date: Date) => {
@@ -407,6 +415,7 @@ export default function HomeScreen() {
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
   const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [submittedWellnessScore, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
 
@@ -462,12 +471,14 @@ export default function HomeScreen() {
           setLastCheckinUtc(savedLastCheckinUtc);
           if (!isFromToday) {
             setWellnessScore(WELLNESS_DEFAULT);
+            setSubmittedWellnessScore(WELLNESS_DEFAULT);
           }
         } else {
           setCheckedInToday(false);
           setShowResetButton(false);
           setLastCheckinUtc(null);
           setWellnessScore(WELLNESS_DEFAULT);
+          setSubmittedWellnessScore(WELLNESS_DEFAULT);
         }
       } catch (err) {
         console.error(t('home.errors.loadState'), err);
@@ -503,6 +514,7 @@ export default function HomeScreen() {
     setLastCheckinId(null);
     setShowResetButton(false);
     setWellnessScore(WELLNESS_DEFAULT);
+    setSubmittedWellnessScore(WELLNESS_DEFAULT);
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -525,7 +537,7 @@ export default function HomeScreen() {
 
     const { data, error } = await supabase
       .from('users_latest_checkin')
-      .select('last_checked_in_utc')
+      .select('last_checked_in_utc, wellness_score')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -541,12 +553,14 @@ export default function HomeScreen() {
 
       setLastCheckinUtc(data.last_checked_in_utc);
       setCheckedInToday(isFromToday);
+      setWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
+      setSubmittedWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
 
       if (isFromToday) {
         const { startIso, endIso } = getLocalDayBounds(today);
         const { data: todayCheckin } = await supabase
           .from('checkins')
-          .select('id')
+          .select('id, wellness_score')
           .eq('user_id', user.id)
           .gte('checked_in_at_utc', startIso)
           .lt('checked_in_at_utc', endIso)
@@ -555,6 +569,10 @@ export default function HomeScreen() {
           .maybeSingle();
 
         setLastCheckinId(todayCheckin?.id ?? null);
+        if (todayCheckin?.wellness_score != null) {
+          setWellnessScore(todayCheckin.wellness_score);
+          setSubmittedWellnessScore(todayCheckin.wellness_score);
+        }
       } else {
         setLastCheckinId(null);
       }
@@ -578,6 +596,7 @@ export default function HomeScreen() {
         setLastCheckinUtc(null);
         setLastCheckinId(null);
         setWellnessScore(WELLNESS_DEFAULT);
+        setSubmittedWellnessScore(WELLNESS_DEFAULT);
         await AsyncStorage.removeItem(STORAGE_KEY);
       }
   }, [user, t]);
@@ -828,57 +847,93 @@ export default function HomeScreen() {
             console.log('📍 Check-in location payload:', locationPayload);
 
             const nowDate = new Date();
-            const shouldUpdateToday = !!lastCheckinUtc && isSameDay(new Date(lastCheckinUtc), nowDate);
+            const { startIso, endIso } = getLocalDayBounds(nowDate);
+            const fallbackLegacyWrite = async () => {
+              const shouldUpdateToday = !!lastCheckinUtc && isSameDay(new Date(lastCheckinUtc), nowDate);
 
-            if (shouldUpdateToday) {
-              const existingId = lastCheckinId ?? (
-                await supabase
-                  .from('checkins')
-                  .select('id')
-                  .eq('user_id', user.id)
-                  .gte('checked_in_at_utc', getLocalDayBounds(nowDate).startIso)
-                  .lt('checked_in_at_utc', getLocalDayBounds(nowDate).endIso)
-                  .order('checked_in_at_utc', { ascending: false })
-                  .limit(1)
-                  .maybeSingle()
-              ).data?.id;
+              if (shouldUpdateToday) {
+                const existingId = lastCheckinId ?? (
+                  await supabase
+                    .from('checkins')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .gte('checked_in_at_utc', startIso)
+                    .lt('checked_in_at_utc', endIso)
+                    .order('checked_in_at_utc', { ascending: false })
+                    .limit(1)
+                    .maybeSingle()
+                ).data?.id;
 
-              if (existingId) {
-                return supabase
-                  .from('checkins')
-                  .update({
-                    checkin_timezone: timeZone,
-                    ...(locationPayload || {}),
-                  })
-                  .eq('id', existingId)
-                  .select('id, checked_in_at_utc')
-                  .single();
+                if (existingId) {
+                  return supabase
+                    .from('checkins')
+                    .update({
+                      checked_in_at_utc: new Date().toISOString(),
+                      checkin_timezone: timeZone,
+                      ...(locationPayload || {}),
+                    })
+                    .eq('id', existingId)
+                    .select('id, checked_in_at_utc')
+                    .single();
+                }
               }
+
+              return supabase
+                .from('checkins')
+                .insert({
+                  user_id: user.id,
+                  checkin_timezone: timeZone,
+                  ...(locationPayload || {}),
+                })
+                .select('id, checked_in_at_utc')
+                .single();
+            };
+
+            const rpcResult = await supabase.rpc('upsert_daily_checkin', {
+              p_checkin_timezone: timeZone,
+              p_local_day_start_utc: startIso,
+              p_local_day_end_utc: endIso,
+              p_wellness_score: capabilities.canUseWellnessSlider ? wellnessScore : null,
+              p_location_latitude: locationPayload?.location_latitude ?? null,
+              p_location_longitude: locationPayload?.location_longitude ?? null,
+              p_location_accuracy_meters: locationPayload?.location_accuracy_meters ?? null,
+            });
+
+            if (!rpcResult.error) {
+              return rpcResult;
             }
 
-            return supabase
-              .from('checkins')
-              .insert({
-                user_id: user.id,
-                checkin_timezone: timeZone,
-                ...(locationPayload || {}),
-              })
-              .select('id, checked_in_at_utc')
-              .single();
+            const rpcMissing =
+              rpcResult.error.code === 'PGRST202' ||
+              rpcResult.error.message?.includes('upsert_daily_checkin');
+
+            const rpcSchemaMismatch =
+              rpcResult.error.code === '42703' ||
+              rpcResult.error.message?.includes('users_latest_checkin') ||
+              rpcResult.error.message?.includes('priority');
+
+            if (rpcMissing || rpcSchemaMismatch) {
+              console.warn('upsert_daily_checkin unavailable or incompatible, falling back to legacy check-in write', rpcResult.error);
+              return fallbackLegacyWrite();
+            }
+
+            return rpcResult;
           })
           .then(async ({ data, error }) => {
             if (error) throw error;
-            if (!data) return;
+            const checkinRow = Array.isArray(data) ? data[0] : data;
+            if (!checkinRow) return;
 
             // Update with real data
-            setLastCheckinUtc(data.checked_in_at_utc);
-            setLastCheckinId(data.id);
+            setLastCheckinUtc(checkinRow.checked_in_at_utc);
+            setLastCheckinId(checkinRow.id);
+            setSubmittedWellnessScore(capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT);
 
             await AsyncStorage.setItem(
               STORAGE_KEY,
               JSON.stringify({
                 checkedInToday: true,
-                lastCheckinUtc: data.checked_in_at_utc,
+                lastCheckinUtc: checkinRow.checked_in_at_utc,
                 checkinTimezone: timeZone,
               })
             );
@@ -896,7 +951,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, lastCheckinId, lastCheckinUtc]);
+  }, [capabilities.canShareLocation, capabilities.canUseWellnessSlider, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
 
 
   const startOfDay = new Date();
@@ -923,7 +978,14 @@ export default function HomeScreen() {
   }
 
   const greetingInfo = getGreetingInfo(now, t);
-  const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(wellnessScore) : BaseColors.primary;
+  const displayWellnessScore =
+    capabilities.canUseWellnessSlider && checkedInToday ? submittedWellnessScore : wellnessScore;
+  const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
+  const checkedInMessage = capabilities.canUseWellnessSlider
+    ? t(getWellnessMessageKey(displayWellnessScore))
+    : t('home.everythingIsFine');
+  const checkedMessageColor =
+    checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
 
   return (
@@ -1091,7 +1153,21 @@ export default function HomeScreen() {
                     {/* Icon */}
                     <View style={styles.iconContainer}>
                       {checkedInToday ? (
-                        <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
+                        <View style={styles.checkedHeartStack}>
+                          {capabilities.canUseWellnessSlider && (
+                            <Ionicons
+                              name="heart-sharp"
+                              size={ICON_SIZES.SUPER_HUGE + 10}
+                              color="#fff"
+                              style={styles.checkedHeartOutline}
+                            />
+                          )}
+                          <Ionicons
+                            name="heart-sharp"
+                            size={ICON_SIZES.SUPER_HUGE}
+                            color={capabilities.canUseWellnessSlider ? heartColor : '#fff'}
+                          />
+                        </View>
                       ) : (
                         <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={heartColor} />
                       )}
@@ -1101,12 +1177,12 @@ export default function HomeScreen() {
                     <View style={styles.textContainer}>
                       {checkedInToday ? (
                         <Text
-                          style={styles.checkedInText}
+                          style={[styles.checkedInText, { color: checkedMessageColor }]}
                           numberOfLines={2}
                           adjustsFontSizeToFit
                           minimumFontScale={0.6}
                         >
-                          {t('home.everythingIsFine')}
+                          {checkedInMessage}
                         </Text>
                       ) : (
                         <>
@@ -1461,6 +1537,13 @@ const styles = StyleSheet.create({
     minHeight: ICON_SIZES.SUPER_HUGE,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  checkedHeartStack: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkedHeartOutline: {
+    position: 'absolute',
   },
   textContainer: {
     alignItems: 'center',

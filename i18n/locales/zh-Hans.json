@@ -147,6 +147,13 @@
       "norway": "挪威",
       "denmark": "丹麦",
       "finland": "芬兰"
+    },
+    "wellness": {
+      "veryLow": "太不舒服😔",
+      "low": "有点低落😕",
+      "neutral": "一切安好🙂",
+      "good": "感觉不错☺️",
+      "great": "今天很开心 😊"
     }
   },
   "contacts": {

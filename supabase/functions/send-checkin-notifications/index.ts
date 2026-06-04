@@ -9,6 +9,13 @@ interface CheckinPayload {
   timezone: string
 }
 
+type WellnessBucket =
+  | 'very_low'
+  | 'low'
+  | 'neutral'
+  | 'good'
+  | 'great'
+
 type SharedLocation = {
   latitude: number
   longitude: number
@@ -26,6 +33,150 @@ type NotificationPayload = {
   body: string
   type: string
   data: Record<string, any>
+}
+
+const CHECKIN_MESSAGES = {
+  en: {
+    title: (name: string) => `🎯 ${name} checked in.`,
+    fallback: (time: string) => `All is well! - ${time}`,
+    very_low: () => `Not feeling well today 😔`,
+    low: () => `A little low today 😕`,
+    neutral: () => `All is well 🙂`,
+    good: () => `Feeling good today ☺️`,
+    great: () => `Feeling very happy today 😊`,
+  },
+  da: {
+    title: (name: string) => `🎯 ${name} har tjekket ind.`,
+    fallback: (time: string) => `Alt er godt! - ${time}`,
+    very_low: () => `Har det ikke så godt i dag 😔`,
+    low: () => `Er lidt nede i dag 😕`,
+    neutral: () => `Alt er godt 🙂`,
+    good: () => `Har det godt i dag ☺️`,
+    great: () => `Føler sig meget glad i dag 😊`,
+  },
+  de: {
+    title: (name: string) => `🎯 ${name} hat eingecheckt.`,
+    fallback: (time: string) => `Alles ist gut! - ${time}`,
+    very_low: () => `Fühlt sich heute nicht gut 😔`,
+    low: () => `Ist heute etwas niedergeschlagen 😕`,
+    neutral: () => `Alles ist gut 🙂`,
+    good: () => `Fühlt sich heute gut ☺️`,
+    great: () => `Ist heute sehr glücklich 😊`,
+  },
+  es: {
+    title: (name: string) => `🎯 ${name} ha hecho check-in.`,
+    fallback: (time: string) => `¡Todo está bien! - ${time}`,
+    very_low: () => `No se siente bien hoy 😔`,
+    low: () => `Se siente un poco decaído hoy 😕`,
+    neutral: () => `Todo está bien 🙂`,
+    good: () => `Se siente bien hoy ☺️`,
+    great: () => `Se siente muy feliz hoy 😊`,
+  },
+  fi: {
+    title: (name: string) => `🎯 ${name} on kirjautunut.`,
+    fallback: (time: string) => `Kaikki on hyvin! - ${time}`,
+    very_low: () => `Olo ei ole tänään hyvä 😔`,
+    low: () => `Olo on tänään hieman alakuloinen 😕`,
+    neutral: () => `Kaikki on hyvin 🙂`,
+    good: () => `Olo on hyvä tänään ☺️`,
+    great: () => `On tänään todella iloinen 😊`,
+  },
+  fr: {
+    title: (name: string) => `🎯 ${name} a pointé.`,
+    fallback: (time: string) => `Tout va bien ! - ${time}`,
+    very_low: () => `Ne se sent pas bien aujourd’hui 😔`,
+    low: () => `Se sent un peu triste aujourd’hui 😕`,
+    neutral: () => `Tout va bien 🙂`,
+    good: () => `Se sent bien aujourd’hui ☺️`,
+    great: () => `Se sent très heureux aujourd’hui 😊`,
+  },
+  it: {
+    title: (name: string) => `🎯 ${name} ha fatto il check-in.`,
+    fallback: (time: string) => `Va tutto bene! - ${time}`,
+    very_low: () => `Oggi non si sente bene 😔`,
+    low: () => `Oggi si sente un po' giù 😕`,
+    neutral: () => `Va tutto bene 🙂`,
+    good: () => `Oggi si sente bene ☺️`,
+    great: () => `Si sente molto felice oggi 😊`,
+  },
+  ja: {
+    title: (name: string) => `🎯 ${name}さんがチェックインしました。`,
+    fallback: (time: string) => `すべて順調です！ - ${time}`,
+    very_low: () => `今日はかなりつらそうです 😔`,
+    low: () => `今日は少し落ち込んでいます 😕`,
+    neutral: () => `すべて順調です 🙂`,
+    good: () => `今日は気分が良さそうです ☺️`,
+    great: () => `今日はとても嬉しい気分です 😊`,
+  },
+  ko: {
+    title: (name: string) => `🎯 ${name}님이 체크인했어요.`,
+    fallback: (time: string) => `모든 것이 괜찮아요! - ${time}`,
+    very_low: () => `오늘은 몸 상태가 좋지 않아요 😔`,
+    low: () => `오늘은 조금 우울해요 😕`,
+    neutral: () => `모든 것이 괜찮아요 🙂`,
+    good: () => `오늘은 기분이 좋아요 ☺️`,
+    great: () => `오늘은 정말 행복해요 😊`,
+  },
+  no: {
+    title: (name: string) => `🎯 ${name} har sjekket inn.`,
+    fallback: (time: string) => `Alt er bra! - ${time}`,
+    very_low: () => `Føler seg ikke bra i dag 😔`,
+    low: () => `Er litt nedfor i dag 😕`,
+    neutral: () => `Alt er bra 🙂`,
+    good: () => `Føler seg bra i dag ☺️`,
+    great: () => `Er veldig glad i dag 😊`,
+  },
+  sv: {
+    title: (name: string) => `🎯 ${name} har checkat in.`,
+    fallback: (time: string) => `Allt är väl! - ${time}`,
+    very_low: () => `Mår inte bra idag 😔`,
+    low: () => `Känner sig lite låg idag 😕`,
+    neutral: () => `Allt är väl 🙂`,
+    good: () => `Känner sig bra idag ☺️`,
+    great: () => `Känner sig väldigt glad idag 😊`,
+  },
+  'zh-Hans': {
+    title: (name: string) => `🎯 ${name} 已签到。`,
+    fallback: (time: string) => `一切安好！- ${time}`,
+    very_low: () => `太不舒服😔`,
+    low: () => `有点低落😕`,
+    neutral: () => `一切安好🙂`,
+    good: () => `感觉不错☺️`,
+    great: () => `今天很开心 😊`,
+  },
+  'zh-Hant': {
+    title: (name: string) => `🎯 ${name} 已簽到。`,
+    fallback: (time: string) => `一切安好！- ${time}`,
+    very_low: () => `太不舒服😔`,
+    low: () => `有點低落😕`,
+    neutral: () => `一切安好🙂`,
+    good: () => `感覺不錯☺️`,
+    great: () => `今天很開心 😊`,
+  },
+} as const
+
+type CheckinLocaleKey = keyof typeof CHECKIN_MESSAGES
+
+function getCheckinLocale(language?: string | null) {
+  if (!language) return CHECKIN_MESSAGES.en
+  return CHECKIN_MESSAGES[language as CheckinLocaleKey] ?? CHECKIN_MESSAGES.en
+}
+
+function getWellnessBucket(score: number): WellnessBucket {
+  if (score <= -2) return 'very_low'
+  if (score === -1) return 'low'
+  if (score === 0) return 'neutral'
+  if (score === 1) return 'good'
+  return 'great'
+}
+
+function getWellnessBody(
+  locale: typeof CHECKIN_MESSAGES.en,
+  contactDisplayName: string,
+  score: number
+): string {
+  const bucket = getWellnessBucket(score)
+  return locale[bucket](contactDisplayName)
 }
 
 function getInternalTriggerKey() {
@@ -101,13 +252,15 @@ function capitalizeName(name: string) {
 
 // Notification payload builder
 function buildContactCheckinNotification(
+  locale: typeof CHECKIN_MESSAGES.en,
   contactDisplayName: string,
   formattedTime: string,
   user_id: string,
   owner_user_id: string,
   checkin_time: string,
   timezone: string,
-  location: SharedLocation | null
+  location: SharedLocation | null,
+  wellnessScore: number | null
 ): NotificationPayload {
   const data: Record<string, any> = {
     contactUserId: user_id,
@@ -122,9 +275,18 @@ function buildContactCheckinNotification(
     data.location = location
   }
 
+  if (wellnessScore !== null) {
+    data.wellnessScore = wellnessScore
+  }
+
+  const body =
+    wellnessScore === null
+      ? locale.fallback(formattedTime)
+      : getWellnessBody(locale, contactDisplayName, wellnessScore)
+
   return {
-    title: `🎯 ${contactDisplayName} checked in.`,
-    body: `All is well! - ${formattedTime}`,
+    title: locale.title(contactDisplayName),
+    body,
     type: 'contact_checkin',
     data
   }
@@ -222,7 +384,7 @@ serve(async (req) => {
 
     const { data: latestCheckinRow, error: latestCheckinError } = await supabase
       .from('checkins')
-      .select('location_latitude, location_longitude, location_accuracy_meters, checked_in_at_utc')
+      .select('location_latitude, location_longitude, location_accuracy_meters, checked_in_at_utc, wellness_score')
       .eq('user_id', user_id)
       .order('checked_in_at_utc', { ascending: false })
       .limit(1)
@@ -248,6 +410,11 @@ serve(async (req) => {
         .filter((relationship) => relationship.location_sharing_enabled === true)
         .map((relationship) => relationship.contact_user_id)
     )
+
+    const wellnessScore =
+      typeof latestCheckinRow?.wellness_score === 'number'
+        ? latestCheckinRow.wellness_score
+        : null
 
     // ============================================
     // 6. Get checking-in user profile
@@ -332,6 +499,15 @@ serve(async (req) => {
     const notificationsToInsert = []
     const messages = []
 
+    const { data: recipientSettings } = await supabase
+      .from('user_settings')
+      .select('user_id, language')
+      .in('user_id', recipientIds)
+
+    const recipientLanguageMap = new Map(
+      (recipientSettings || []).map((row) => [row.user_id, row.language])
+    )
+
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
 
     for (const recipient of recipients) {
@@ -340,7 +516,10 @@ serve(async (req) => {
         continue
       }
 
+      const locale = getCheckinLocale(recipientLanguageMap.get(recipient.user_id))
+
       const payload = buildContactCheckinNotification(
+        locale,
         checkingUserName,
         formattedTime,
         user_id,
@@ -349,7 +528,8 @@ serve(async (req) => {
         timezone,
         sharedLocation && locationRecipientIds.has(recipient.user_id)
           ? sharedLocation
-          : null
+          : null,
+        wellnessScore
       )
 
       notificationsToInsert.push({
