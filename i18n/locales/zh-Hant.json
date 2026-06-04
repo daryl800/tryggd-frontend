@@ -9,11 +9,16 @@
       "night": "晚安"
     },
     "everythingIsFine": "一切安好！",
-    "checkedInToday": "今日已簽到！",
+    "checkedInToday": "今日簽到！",
     "dontForget": "別忘了今天簽到！",
     "youCheckedInTodayAt": "您今天已於 {{time}} 完成簽到",
     "checkIn": "簽到",
     "pressMeToCheckIn": "點擊此處簽到",
+    "wellnessPrompt": "您今天感覺如何？",
+    "plusWellness": {
+      "title": "Plus 功能",
+      "message": "升級到 Plus，讓您在簽到時分享今天的感受。"
+    },
     "reset": "重置",
     "timer": "計時器",
     "timeLeftToday": "今日剩餘時間",
@@ -146,6 +151,13 @@
       "norway": "挪威",
       "denmark": "丹麥",
       "finland": "芬蘭"
+    },
+    "wellness": {
+      "veryLow": "😔 太不舒服",
+      "low": "😕 有點低落",
+      "neutral": "🙂 一切安好",
+      "good": "☺️ 感覺不錯",
+      "great": "😊 今天很開心"
     }
   },
   "contacts": {
@@ -229,6 +241,11 @@
         "title": "請求已處理",
         "message": "此請求已被處理"
       }
+    },
+    "plusFeature": {
+      "title": "Plus 功能",
+      "notifications": "升級到 Plus，才能控制聯絡人簽到通知。",
+      "location": "升級到 Plus，才能為聯絡人啟用位置分享。"
     },
     "success": {
       "requestSent": {
@@ -414,6 +431,40 @@
     "yes": "是",
     "no": "否",
     "done": "完成"
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "為每日簽到加入更多資訊",
+    "badge": "Plus",
+    "heading": "解鎖更多狀態資訊",
+    "description": "Tryggd Plus 讓每日簽到提供更多背景資訊，但不改變原本簡單的流程。",
+    "comingSoon": {
+      "title": "升級方式",
+      "message": "應用程式內升級尚未接通。此頁面目前作為鎖定功能的目的地，也會是之後的升級入口。",
+      "button": "升級即將推出"
+    },
+    "features": {
+      "wellness": {
+        "title": "心情狀態分享",
+        "description": "在每日簽到時同步分享今天的感受。"
+      },
+      "location": {
+        "title": "位置分享",
+        "description": "讓信任的聯絡人在活動頁看見您分享的位置。"
+      },
+      "notifications": {
+        "title": "通知控制",
+        "description": "控制哪些聯絡人可以收到您的簽到通知。"
+      },
+      "contacts": {
+        "title": "無上限聯絡人",
+        "description": "突破免費方案的聯絡人數量限制。"
+      },
+      "welfare": {
+        "title": "關懷問候",
+        "description": "為聯絡人使用額外的關懷追蹤功能。"
+      }
+    }
   },
   "time": {
     "justNow": "剛剛",

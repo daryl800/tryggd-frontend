@@ -12,6 +12,11 @@
     "dontForget": "Don't forget to check in today!",
     "youCheckedInTodayAt": "You checked in today @ {{time}}",
     "pressMeToCheckIn": "CHECK IN HERE",
+    "wellnessPrompt": "How are you feeling today?",
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
     "reset": "Reset",
     "timer": "Timer",
     "timeLeftToday": "Time left",
@@ -110,6 +115,13 @@
       "norway": "Norway",
       "denmark": "Denmark",
       "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "Not feeling well 😔",
+      "low": "A little low 😕",
+      "neutral": "All is well 🙂",
+      "good": "Feeling good ☺️",
+      "great": "Feeling very happy today 😊"
     }
   },
   "contacts": {
@@ -233,6 +245,11 @@
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
     },
     "messages": {
       "contactDefault": "This contact"
@@ -378,6 +395,40 @@
     "yes": "Yes",
     "no": "No",
     "done": "Done"
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Upgrade path",
+      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
+      "button": "Upgrade coming soon"
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      }
+    }
   },
   "time": {
     "justNow": "Just now",

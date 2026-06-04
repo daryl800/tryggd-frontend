@@ -33,6 +33,7 @@ type Activity = {
   display_name: string;
   last_checked_in_utc: string | null;
   priority: number;
+  wellness_score?: number | null;
   username?: string | null;
   avatar_url?: string | null;
   is_owner?: boolean;
@@ -217,7 +218,7 @@ export default function ActivityScreen() {
           .single(),
         supabase
           .from('profiles')
-          .select('avatar_url')
+          .select('avatar_url, username')
           .eq('id', user.id)
           .single(),
       ]);
@@ -231,6 +232,7 @@ export default function ActivityScreen() {
       }
 
       const ownerAvatarUrl = profileData?.avatar_url || '';
+      const ownerUsername = profileData?.username || '';
 
       if (data) {
         const isNew = !lastCheckinTimes.current.has(user.id) ||
@@ -241,6 +243,7 @@ export default function ActivityScreen() {
         setOwnerActivity({
           ...data,
           display_name: t('activity.you'),
+          username: ownerUsername,
           avatar_url: ownerAvatarUrl,
           is_owner: true,
           hasNewUpdate: isNew,
@@ -255,6 +258,7 @@ export default function ActivityScreen() {
         setOwnerActivity({
           user_id: user.id,
           display_name: t('activity.you'),
+          username: ownerUsername,
           last_checked_in_utc: null,
           priority: 0,
           avatar_url: ownerAvatarUrl,
@@ -703,6 +707,7 @@ export default function ActivityScreen() {
             setOwnerActivity((prev) => ({
               user_id: user.id,
               display_name: t('activity.you'),
+              username: prev?.username || null,
               last_checked_in_utc: null,
               priority: 0,
               avatar_url: prev?.avatar_url || null,
@@ -727,6 +732,7 @@ export default function ActivityScreen() {
               last_checked_in_utc: payload.new.last_checked_in_utc,
               priority: payload.new.priority,
               display_name: t('activity.you'),
+              username: prev?.username || null,
               avatar_url: prev?.avatar_url || null,
               is_owner: true,
               hasNewUpdate: isNew,
@@ -1187,6 +1193,7 @@ export default function ActivityScreen() {
     isLast = false,
     checkin_timezone,
     checkin_timezone_label,
+    wellness_score,
     shared_location,
   }: {
     name: string;
@@ -1200,6 +1207,7 @@ export default function ActivityScreen() {
     isLast?: boolean;
     checkin_timezone?: string | null;
     checkin_timezone_label?: string | null;
+    wellness_score?: number | null;
     shared_location?: SharedLocationInfo | null;
   }) => {
     const { t } = useTranslation();
@@ -1438,11 +1446,59 @@ export default function ActivityScreen() {
       return { timeText, dateText, timezoneText, isValidTimestamp };
     };
 
+    const getWellnessMeta = (score?: number | null) => {
+      if (typeof score !== 'number') return null;
+
+      if (score <= -2) {
+        return {
+          emoji: '😔',
+          color: '#7A7A7A',
+          backgroundColor: '#F4F4F4',
+          borderColor: '#DCDCDC',
+        };
+      }
+
+      if (score === -1) {
+        return {
+          emoji: '😕',
+          color: '#6F6F6F',
+          backgroundColor: '#F5F5F5',
+          borderColor: '#DDDDDD',
+        };
+      }
+
+      if (score === 0) {
+        return {
+          emoji: '🙂',
+          color: BaseColors.primary,
+          backgroundColor: BaseColors.primaryLight,
+          borderColor: BaseColors.primaryBorder,
+        };
+      }
+
+      if (score === 1) {
+        return {
+          emoji: '☺️',
+          color: BaseColors.primaryDark,
+          backgroundColor: '#E8F7EE',
+          borderColor: '#B7E2C7',
+        };
+      }
+
+      return {
+        emoji: '😊',
+        color: '#A56A00',
+        backgroundColor: '#FFF6D9',
+        borderColor: '#F1D26B',
+      };
+    };
+
     const { timeText, dateText, timezoneText, isValidTimestamp } = formatActivityTime(
       timestamp,
       checkin_timezone,
       checkin_timezone_label
     );
+    const wellnessMeta = getWellnessMeta(wellness_score);
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -1458,6 +1514,19 @@ export default function ActivityScreen() {
                 <Ionicons name={status.icon} size={14} color="#FFFFFF" />
               </View>
             </View>
+            {wellnessMeta && (
+              <View
+                style={[
+                  styles.wellnessBadge,
+                  {
+                    backgroundColor: wellnessMeta.backgroundColor,
+                    borderColor: wellnessMeta.borderColor,
+                  },
+                ]}
+              >
+                <Text style={styles.wellnessEmoji}>{wellnessMeta.emoji}</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.contentContainer}>
@@ -1465,7 +1534,7 @@ export default function ActivityScreen() {
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
               </Text>
-              {!isOwner && username && (
+              {username && (
                 <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
                   @{username}
                 </Text>
@@ -1490,23 +1559,23 @@ export default function ActivityScreen() {
                   <Text>🎯 </Text>
                   {timeText}  {dateText}
                 </Animated.Text>
-                <Text style={styles.timezone}>({timezoneText})</Text>
+                <View style={styles.timezoneRow}>
+                  <Text style={styles.timezone}>({timezoneText})</Text>
+                  {!isOwner && capabilities.canShareLocation && shared_location && (
+                    <TouchableOpacity
+                      style={styles.locationInlineButton}
+                      onPress={openSharedLocation}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="location" size={22} color={BaseColors.primaryDark} />
+                    </TouchableOpacity>
+                  )}
+                </View>
               </>
             ) : (
               <Text style={[styles.time, styles.noCheckIn]}>
                 {t('activity.noCheckIn')}
               </Text>
-            )}
-
-            {!isOwner && capabilities.canShareLocation && shared_location && (
-              <TouchableOpacity
-                style={styles.locationLink}
-                onPress={openSharedLocation}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="location" size={14} color={BaseColors.primaryDark} />
-                <Text style={styles.locationLinkText}>{t('activity.sharedLocation.view')}</Text>
-              </TouchableOpacity>
             )}
 
             {!isOwner && isValidTimestamp && (
@@ -1548,6 +1617,7 @@ export default function ActivityScreen() {
               </View>
             )}
           </View>
+
         </View>
       </View>
     );
@@ -1592,8 +1662,10 @@ export default function ActivityScreen() {
                   <ActivityItem
                     name={ownerActivity.display_name}
                     avatarUrl={ownerActivity.avatar_url}
+                    username={ownerActivity.username}
                     timestamp={ownerActivity.last_checked_in_utc}
                     priority={ownerActivity.priority}
+                    wellness_score={ownerActivity.wellness_score}
                     isOwner
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
@@ -1652,6 +1724,7 @@ export default function ActivityScreen() {
                       username={item.username}
                       timestamp={item.last_checked_in_utc}
                       priority={item.priority}
+                      wellness_score={item.wellness_score}
                       isOwner={false}
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}
@@ -1778,7 +1851,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   leftIconsColumn: {
-    width: 48,
+    width: 56,
     marginRight: 12,
     alignItems: 'center',
   },
@@ -1831,8 +1904,38 @@ const styles = StyleSheet.create({
   timezone: {
     fontSize: iosFontSize(15),
     color: BaseColors.primary,
-    marginBottom: 8,
     fontWeight: '500',
+    flexShrink: 1,
+    marginRight: 10,
+  },
+  timezoneRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  wellnessBadge: {
+    marginTop: 8,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wellnessEmoji: {
+    fontSize: 22,
+  },
+  locationInlineButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   time: {
     fontSize: iosFontSize(15),
@@ -1844,25 +1947,6 @@ const styles = StyleSheet.create({
     color: BaseColors.text.light,
     fontSize: iosFontSize(14),
     fontStyle: 'italic',
-  },
-  locationLink: {
-    marginTop: 6,
-    marginBottom: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: BaseColors.primaryLight,
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
-    gap: 6,
-  },
-  locationLinkText: {
-    fontSize: iosFontSize(12),
-    fontWeight: '600',
-    color: BaseColors.primaryDark,
   },
   responseButtonContainer: {
     marginTop: 4,

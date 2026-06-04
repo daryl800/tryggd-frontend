@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function InviteSignupContent({ token }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [loadingInvite, setLoadingInvite] = useState(true);
   const [invite, setInvite] = useState<InvitePreview | null>(null);
@@ -117,7 +117,8 @@ export default function InviteSignupContent({ token }: Props) {
     );
   }, [codeVerified, displayName, password, passwordsMatch, phone, submitting, username]);
 
-  const webInviteUrl = token ? `https://tryggd.com/invite?token=${token}` : 'https://tryggd.com';
+  const webLanguage = i18n.resolvedLanguage === 'zh-Hant' ? 'zh-TW' : i18n.resolvedLanguage === 'zh-Hans' ? 'zh-CN' : i18n.resolvedLanguage || 'en';
+  const webInviteUrl = token ? `https://tryggd.com/invite?token=${token}&lang=${encodeURIComponent(webLanguage)}` : `https://tryggd.com?lang=${encodeURIComponent(webLanguage)}`;
   const appInviteUrl = token ? `tryggd://invite?token=${token}` : 'tryggd://';
 
   const verifyCode = async () => {

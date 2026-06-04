@@ -1,6 +1,7 @@
 // app/(tabs)/index.tsx 
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
@@ -20,6 +21,8 @@ import {
   Animated,
   AppState,
   Dimensions,
+  GestureResponderEvent,
+  LayoutChangeEvent,
   PixelRatio,
   Platform,
   StyleSheet,
@@ -47,6 +50,14 @@ const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const IS_IOS = Platform.OS === 'ios';
+const WELLNESS_MIN = -2;
+const WELLNESS_MAX = 2;
+const WELLNESS_DEFAULT = 0;
+const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
+const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
+
+const clampWellnessValue = (value: number) =>
+  Math.max(WELLNESS_MIN, Math.min(WELLNESS_MAX, value));
 
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
@@ -207,6 +218,214 @@ const formatTime24h = (date: Date, language: string) => {
   }
 };
 
+const getChineseFontFamily = (language?: string) => {
+  if (Platform.OS !== 'ios') return undefined;
+  if (language === 'zh-Hans') return 'PingFang SC';
+  if (language === 'zh-Hant') return 'PingFang TC';
+  return undefined;
+};
+
+type WellnessSliderProps = {
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+  onLockedPress?: () => void;
+};
+
+const getWellnessValueFromPosition = (positionX: number, width: number) => {
+  if (width <= 0) return WELLNESS_DEFAULT;
+
+  const clampedX = Math.min(width, Math.max(0, positionX));
+  const ratio = clampedX / width;
+  const stepIndex = Math.round(ratio * (WELLNESS_STEPS - 1));
+  return clampWellnessValue(WELLNESS_MIN + stepIndex);
+};
+
+const hexToRgb = (hex: string) => {
+  const normalized = hex.replace('#', '');
+  const value = normalized.length === 3
+    ? normalized.split('').map((char) => char + char).join('')
+    : normalized;
+
+  const parsed = Number.parseInt(value, 16);
+  return {
+    r: (parsed >> 16) & 255,
+    g: (parsed >> 8) & 255,
+    b: parsed & 255,
+  };
+};
+
+const rgbToHex = ({ r, g, b }: { r: number; g: number; b: number }) =>
+  `#${[r, g, b]
+    .map((value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0'))
+    .join('')}`;
+
+const interpolateColor = (from: string, to: string, ratio: number) => {
+  const start = hexToRgb(from);
+  const end = hexToRgb(to);
+
+  return rgbToHex({
+    r: start.r + (end.r - start.r) * ratio,
+    g: start.g + (end.g - start.g) * ratio,
+    b: start.b + (end.b - start.b) * ratio,
+  });
+};
+
+const getWellnessHeartColor = (score: number) => {
+  const clampedScore = clampWellnessValue(score);
+  const lowColor = '#7A7A7A';
+  const midColor = BaseColors.primary;
+  const highColor = '#FFD700';
+
+  if (clampedScore <= 0) {
+    const ratio = (clampedScore - WELLNESS_MIN) / (WELLNESS_DEFAULT - WELLNESS_MIN || 1);
+    return interpolateColor(lowColor, midColor, ratio);
+  }
+
+  const ratio = clampedScore / WELLNESS_MAX;
+  return interpolateColor(midColor, highColor, ratio);
+};
+
+const getWellnessMessageKey = (score: number) => {
+  const clampedScore = clampWellnessValue(score);
+  if (clampedScore <= -2) return 'activity.wellness.veryLow';
+  if (clampedScore === -1) return 'activity.wellness.low';
+  if (clampedScore === 0) return 'activity.wellness.neutral';
+  if (clampedScore === 1) return 'activity.wellness.good';
+  return 'activity.wellness.great';
+};
+
+const getWellnessHandleEmoji = (score: number) => {
+  const clampedScore = clampWellnessValue(score);
+  if (clampedScore <= -2) return '😔';
+  if (clampedScore === -1) return '😕';
+  if (clampedScore === 0) return '🙂';
+  if (clampedScore === 1) return '☺️';
+  return '😊';
+};
+
+const getLocalDayBounds = (date: Date) => {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  return {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  };
+};
+
+const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: WellnessSliderProps) => {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const lastValueRef = useRef(value);
+
+  useEffect(() => {
+    lastValueRef.current = value;
+  }, [value]);
+
+  const updateValueFromEvent = useCallback(
+    (event: GestureResponderEvent) => {
+      const nextValue = getWellnessValueFromPosition(event.nativeEvent.locationX, trackWidth);
+
+      if (nextValue === lastValueRef.current) return;
+
+      lastValueRef.current = nextValue;
+      onChange(nextValue);
+      void Haptics.selectionAsync();
+    },
+    [onChange, trackWidth]
+  );
+
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    setTrackWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
+  const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
+  const handleEmoji = getWellnessHandleEmoji(value);
+  const edgeLowColor = disabled ? BaseColors.neutral[300] : BaseColors.neutral[400];
+  const edgeHighColor = disabled ? BaseColors.neutral[300] : BaseColors.primary;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={disabled ? 0.85 : 1}
+      disabled={!disabled}
+      onPress={onLockedPress}
+      style={[
+        styles.wellnessCard,
+        disabled && styles.wellnessCardDisabled,
+      ]}
+    >
+      <View style={styles.wellnessSliderRow}>
+        <TouchableOpacity
+          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MIN)}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="sad-outline"
+            size={24}
+            color={edgeLowColor}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
+        <View
+          style={styles.wellnessTrackTouchArea}
+          onLayout={handleLayout}
+          onStartShouldSetResponder={() => !disabled}
+          onMoveShouldSetResponder={() => !disabled}
+          onResponderGrant={disabled ? undefined : updateValueFromEvent}
+          onResponderMove={disabled ? undefined : updateValueFromEvent}
+        >
+          <View style={[styles.wellnessTrack, disabled && styles.wellnessTrackDisabled]} />
+          <View style={styles.wellnessMarkersRow} pointerEvents="none">
+            {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
+              <View
+                key={`wellness-marker-${index}`}
+                style={[
+                  styles.wellnessMarker,
+                  disabled && styles.wellnessMarkerDisabled,
+                  index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarker,
+                  disabled && index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarkerDisabled,
+                ]}
+              />
+            ))}
+          </View>
+          <View
+            pointerEvents="none"
+            style={[
+              styles.wellnessThumb,
+              disabled && styles.wellnessThumbDisabled,
+              trackWidth > 0 && { left: handleLeft - 16 },
+            ]}
+          >
+            <Text style={styles.wellnessThumbEmoji}>{handleEmoji}</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MAX)}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="happy-outline"
+            size={24}
+            color={edgeHighColor}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
+      </View>
+      {disabled ? (
+        <View style={styles.wellnessThumbLockBadge} pointerEvents="none">
+          <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+        </View>
+      ) : null}
+    </TouchableOpacity>
+  );
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -223,6 +442,10 @@ export default function HomeScreen() {
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
+  const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [submittedWellnessScore, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -274,10 +497,16 @@ export default function HomeScreen() {
           setCheckedInToday(isFromToday);
           setShowResetButton(isFromToday);
           setLastCheckinUtc(savedLastCheckinUtc);
+          if (!isFromToday) {
+            setWellnessScore(WELLNESS_DEFAULT);
+            setSubmittedWellnessScore(WELLNESS_DEFAULT);
+          }
         } else {
           setCheckedInToday(false);
           setShowResetButton(false);
           setLastCheckinUtc(null);
+          setWellnessScore(WELLNESS_DEFAULT);
+          setSubmittedWellnessScore(WELLNESS_DEFAULT);
         }
       } catch (err) {
         console.error(t('home.errors.loadState'), err);
@@ -312,6 +541,8 @@ export default function HomeScreen() {
     setLastCheckinUtc(null);
     setLastCheckinId(null);
     setShowResetButton(false);
+    setWellnessScore(WELLNESS_DEFAULT);
+    setSubmittedWellnessScore(WELLNESS_DEFAULT);
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -334,7 +565,7 @@ export default function HomeScreen() {
 
     const { data, error } = await supabase
       .from('users_latest_checkin')
-      .select('last_checked_in_utc')
+      .select('last_checked_in_utc, wellness_score')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -350,6 +581,29 @@ export default function HomeScreen() {
 
       setLastCheckinUtc(data.last_checked_in_utc);
       setCheckedInToday(isFromToday);
+      setWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
+      setSubmittedWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
+
+      if (isFromToday) {
+        const { startIso, endIso } = getLocalDayBounds(today);
+        const { data: todayCheckin } = await supabase
+          .from('checkins')
+          .select('id, wellness_score')
+          .eq('user_id', user.id)
+          .gte('checked_in_at_utc', startIso)
+          .lt('checked_in_at_utc', endIso)
+          .order('checked_in_at_utc', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        setLastCheckinId(todayCheckin?.id ?? null);
+        if (todayCheckin?.wellness_score != null) {
+          setWellnessScore(todayCheckin.wellness_score);
+          setSubmittedWellnessScore(todayCheckin.wellness_score);
+        }
+      } else {
+        setLastCheckinId(null);
+      }
 
       if (isFromToday) {
         await cancelTodayReminderAfterCheckin();
@@ -364,12 +618,15 @@ export default function HomeScreen() {
           lastCheckinUtc: data.last_checked_in_utc,
         })
       );
-    } else {
-      setCheckedInToday(false);
-      setShowResetButton(false);
-      setLastCheckinUtc(null);
-      await AsyncStorage.removeItem(STORAGE_KEY);
-    }
+      } else {
+        setCheckedInToday(false);
+        setShowResetButton(false);
+        setLastCheckinUtc(null);
+        setLastCheckinId(null);
+        setWellnessScore(WELLNESS_DEFAULT);
+        setSubmittedWellnessScore(WELLNESS_DEFAULT);
+        await AsyncStorage.removeItem(STORAGE_KEY);
+      }
   }, [user, t]);
 
   // Fetch initial data when user loads
@@ -532,6 +789,10 @@ export default function HomeScreen() {
     ]).start();
   };
 
+  const handleWellnessUpgradePress = useCallback(() => {
+    router.push('/(tabs)/plus');
+  }, [router]);
+
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
 
@@ -614,31 +875,97 @@ export default function HomeScreen() {
       Promise.all([
         // Insert checkin to database
         getOptionalCheckinLocation(user.id, capabilities.canShareLocation)
-          .then((locationPayload) => {
+          .then(async (locationPayload) => {
             console.log('📍 Check-in location payload:', locationPayload);
-            return supabase
-              .from('checkins')
-              .insert({
-                user_id: user.id,
-                checkin_timezone: timeZone,
-                ...(locationPayload || {}),
-              })
-              .select('id, checked_in_at_utc')
-              .single();
+
+            const nowDate = new Date();
+            const { startIso, endIso } = getLocalDayBounds(nowDate);
+            const fallbackLegacyWrite = async () => {
+              const shouldUpdateToday = !!lastCheckinUtc && isSameDay(new Date(lastCheckinUtc), nowDate);
+
+              if (shouldUpdateToday) {
+                const existingId = lastCheckinId ?? (
+                  await supabase
+                    .from('checkins')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .gte('checked_in_at_utc', startIso)
+                    .lt('checked_in_at_utc', endIso)
+                    .order('checked_in_at_utc', { ascending: false })
+                    .limit(1)
+                    .maybeSingle()
+                ).data?.id;
+
+                if (existingId) {
+                  return supabase
+                    .from('checkins')
+                    .update({
+                      checked_in_at_utc: new Date().toISOString(),
+                      checkin_timezone: timeZone,
+                      ...(locationPayload || {}),
+                    })
+                    .eq('id', existingId)
+                    .select('id, checked_in_at_utc')
+                    .single();
+                }
+              }
+
+              return supabase
+                .from('checkins')
+                .insert({
+                  user_id: user.id,
+                  checkin_timezone: timeZone,
+                  ...(locationPayload || {}),
+                })
+                .select('id, checked_in_at_utc')
+                .single();
+            };
+
+            const rpcResult = await supabase.rpc('upsert_daily_checkin', {
+              p_checkin_timezone: timeZone,
+              p_local_day_start_utc: startIso,
+              p_local_day_end_utc: endIso,
+              p_wellness_score: capabilities.canUseWellnessSlider ? wellnessScore : null,
+              p_location_latitude: locationPayload?.location_latitude ?? null,
+              p_location_longitude: locationPayload?.location_longitude ?? null,
+              p_location_accuracy_meters: locationPayload?.location_accuracy_meters ?? null,
+            });
+
+            if (!rpcResult.error) {
+              return rpcResult;
+            }
+
+            const rpcMissing =
+              rpcResult.error.code === 'PGRST202' ||
+              rpcResult.error.message?.includes('upsert_daily_checkin');
+
+            const rpcSchemaMismatch =
+              rpcResult.error.code === '42703' ||
+              rpcResult.error.message?.includes('users_latest_checkin') ||
+              rpcResult.error.message?.includes('priority');
+
+            if (rpcMissing || rpcSchemaMismatch) {
+              console.warn('upsert_daily_checkin unavailable or incompatible, falling back to legacy check-in write', rpcResult.error);
+              return fallbackLegacyWrite();
+            }
+
+            return rpcResult;
           })
           .then(async ({ data, error }) => {
             if (error) throw error;
-            if (!data) return;
+            const checkinRow = Array.isArray(data) ? data[0] : data;
+            if (!checkinRow) return;
 
             // Update with real data
-            setLastCheckinUtc(data.checked_in_at_utc);
-            setLastCheckinId(data.id);
+            setLastCheckinUtc(checkinRow.checked_in_at_utc);
+            setLastCheckinId(checkinRow.id);
+            setSubmittedWellnessScore(capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT);
 
             await AsyncStorage.setItem(
               STORAGE_KEY,
               JSON.stringify({
                 checkedInToday: true,
-                lastCheckinUtc: data.checked_in_at_utc,
+                lastCheckinUtc: checkinRow.checked_in_at_utc,
                 checkinTimezone: timeZone,
               })
             );
@@ -656,7 +983,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak]);
+  }, [capabilities.canShareLocation, capabilities.canUseWellnessSlider, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
 
 
   const startOfDay = new Date();
@@ -683,6 +1010,17 @@ export default function HomeScreen() {
   }
 
   const greetingInfo = getGreetingInfo(now, t);
+  const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus;
+  const showWellnessModule = capabilities.isPlus || showLockedPlusWellness;
+  const displayWellnessScore = capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT;
+  const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
+  const checkedInMessage = capabilities.canUseWellnessSlider
+    ? t(getWellnessMessageKey(displayWellnessScore))
+    : t('home.everythingIsFine');
+  const chineseFontFamily = getChineseFontFamily(i18n.language);
+  const checkedMessageColor =
+    checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
+  const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
 
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -706,13 +1044,19 @@ export default function HomeScreen() {
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          !shouldScroll && styles.scrollContentStatic,
+        ]}
+        onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}
+        onContentSizeChange={(_, height) => setContentHeight(height)}
         bounces={false}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={true}
+        scrollEnabled={shouldScroll}
         pinchGestureEnabled={false}
         maximumZoomScale={1}
         minimumZoomScale={1}
+        overScrollMode="never"
       >
         {/* BEGIN - BELOW CODE IS FOR DEBUGGING PURPOSES - enable when needed */}
         {/* <TouchableOpacity
@@ -843,9 +1187,23 @@ export default function HomeScreen() {
                     {/* Icon */}
                     <View style={styles.iconContainer}>
                       {checkedInToday ? (
-                        <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
+                        <View style={styles.checkedHeartStack}>
+                          {capabilities.canUseWellnessSlider && (
+                            <Ionicons
+                              name="heart-sharp"
+                              size={ICON_SIZES.SUPER_HUGE + 10}
+                              color="#fff"
+                              style={styles.checkedHeartOutline}
+                            />
+                          )}
+                          <Ionicons
+                            name="heart-sharp"
+                            size={ICON_SIZES.SUPER_HUGE}
+                            color={capabilities.canUseWellnessSlider ? heartColor : '#fff'}
+                          />
+                        </View>
                       ) : (
-                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
+                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={heartColor} />
                       )}
                     </View>
 
@@ -853,12 +1211,14 @@ export default function HomeScreen() {
                     <View style={styles.textContainer}>
                       {checkedInToday ? (
                         <Text
-                          style={styles.checkedInText}
-                          numberOfLines={2}
-                          adjustsFontSizeToFit
-                          minimumFontScale={0.6}
+                          style={[
+                            styles.checkedInText,
+                            { color: checkedMessageColor },
+                            chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                          ]}
+                          ellipsizeMode="clip"
                         >
-                          {t('home.everythingIsFine')}
+                          {checkedInMessage}
                         </Text>
                       ) : (
                         <>
@@ -904,40 +1264,16 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* WARNING MESSAGE */}
-          <View style={[styles.warningGroup, styles.groupContainer]}>
-            {checkedInToday ? (
-              <View style={styles.messageContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                </View>
-                <Text
-                  style={styles.messageText}
-                  numberOfLines={2}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.youCheckedInTodayAt', {
-                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
-                  })}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.warningContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
-                </View>
-                <Text
-                  style={styles.warningText}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.dontForget')}
-                </Text>
-              </View>
-            )}
-          </View>
+          {showWellnessModule ? (
+            <View style={[styles.wellnessGroup, styles.groupContainer]}>
+              <WellnessSlider
+                value={capabilities.isPlus ? wellnessScore : WELLNESS_DEFAULT}
+                onChange={setWellnessScore}
+                disabled={!capabilities.isPlus}
+                onLockedPress={handleWellnessUpgradePress}
+              />
+            </View>
+          ) : null}
 
           {/* ACTION CARDS */}
           <View style={[styles.cardsGroup, styles.groupContainer]}>
@@ -976,6 +1312,41 @@ export default function HomeScreen() {
             </View>
           </View>
 
+          {/* WARNING MESSAGE */}
+          <View style={[styles.warningGroup, styles.groupContainer]}>
+            {checkedInToday ? (
+              <View style={styles.messageContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
+                </View>
+                <Text
+                  style={styles.messageText}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {t('home.youCheckedInTodayAt', {
+                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
+                  })}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.warningContainer}>
+                <View style={styles.warningIconContainer}>
+                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
+                </View>
+                <Text
+                  style={styles.warningText}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {t('home.dontForget')}
+                </Text>
+              </View>
+            )}
+          </View>
+
           {/* Bottom padding */}
           <View style={styles.bottomPadding} />
         </Animated.View>
@@ -985,7 +1356,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 18;
+const GROUP_GAP = 14;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -1027,6 +1398,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 20,
   },
+  scrollContentStatic: {
+    flexGrow: 1,
+    paddingBottom: 0,
+  },
   groupContainer: {
     marginBottom: GROUP_GAP,
   },
@@ -1038,14 +1413,16 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: iosFontSize(36),
+    lineHeight: iosFontSize(40),
     fontWeight: '700',
     color: BaseColors.text.dark,
     textAlign: 'center',
   },
   dateText: {
     fontSize: iosFontSize(16),
+    lineHeight: iosFontSize(18),
     color: BaseColors.neutral[500],
-    marginTop: 6,
+    marginTop: 2,
     textTransform: 'capitalize',
     textAlign: 'center',
   },
@@ -1053,8 +1430,132 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: 8,
+  },
+  wellnessGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
   },
   checkInContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wellnessCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  wellnessCardDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.neutral[50],
+  },
+  wellnessSliderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  wellnessEdgeIcon: {
+    width: 24,
+    textAlign: 'center',
+  },
+  wellnessEdgeButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 28,
+    height: 28,
+  },
+  wellnessTrackTouchArea: {
+    flex: 1,
+    height: 36,
+    justifyContent: 'center',
+  },
+  wellnessTrack: {
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: BaseColors.primaryBorder,
+  },
+  wellnessTrackDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
+  wellnessMarkersRow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 2,
+  },
+  wellnessMarker: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: BaseColors.neutral[300],
+  },
+  wellnessMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
+  wellnessCenterMarker: {
+    backgroundColor: BaseColors.primary,
+  },
+  wellnessCenterMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[400],
+  },
+  wellnessThumb: {
+    position: 'absolute',
+    top: 2,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  wellnessThumbDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.surface,
+  },
+  wellnessThumbEmoji: {
+    fontSize: 18,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  wellnessThumbLockBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: BaseColors.primaryLight,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1065,9 +1566,12 @@ const styles = StyleSheet.create({
   },
   checkedInText: {
     color: BaseColors.surface,
-    fontSize: iosFontSize(24),
+    fontSize: iosFontSize(22),
+    lineHeight: iosFontSize(26),
     fontWeight: '800',
     textAlign: 'center',
+    width: '100%',
+    flexWrap: 'wrap',
   },
   circleBorder: {
     position: 'absolute',
@@ -1101,10 +1605,20 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: Platform.OS === 'ios' ? 8 : 4,
     marginTop: 4,
+    minHeight: ICON_SIZES.SUPER_HUGE,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkedHeartStack: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkedHeartOutline: {
+    position: 'absolute',
   },
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 4,
+    paddingHorizontal: 14,
     maxWidth: '100%',
     width: '100%',
     marginTop: Platform.OS === 'ios' ? 0 : -4,
@@ -1150,17 +1664,18 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
   },
   card: {
     flex: 1,
     backgroundColor: BaseColors.surface,
     borderRadius: 20,
-    padding: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: BaseColors.neutral[200],
-    minHeight: 100,
+    minHeight: 92,
     justifyContent: 'space-between',
     ...Platform.select({
       ios: {
@@ -1181,15 +1696,17 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(16),
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: 4,
     color: BaseColors.text.dark,
+    lineHeight: iosFontSize(20),
   },
   cardSubtext: {
-    fontSize: iosFontSize(18),
+    fontSize: iosFontSize(16),
     fontWeight: '600',
-    marginTop: 10,
+    marginTop: 6,
     color: BaseColors.primary,
     textAlign: 'center',
+    lineHeight: iosFontSize(20),
   },
   iconContainerBase: {
     width: 30,
@@ -1205,7 +1722,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF7ED',
   },
   bottomPadding: {
-    height: 20,
+    height: 12,
   },
   messageContainer: {
     flexDirection: 'row',
