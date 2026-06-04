@@ -217,7 +217,7 @@ export default function ActivityScreen() {
           .single(),
         supabase
           .from('profiles')
-          .select('avatar_url')
+          .select('avatar_url, username')
           .eq('id', user.id)
           .single(),
       ]);
@@ -231,6 +231,7 @@ export default function ActivityScreen() {
       }
 
       const ownerAvatarUrl = profileData?.avatar_url || '';
+      const ownerUsername = profileData?.username || '';
 
       if (data) {
         const isNew = !lastCheckinTimes.current.has(user.id) ||
@@ -241,6 +242,7 @@ export default function ActivityScreen() {
         setOwnerActivity({
           ...data,
           display_name: t('activity.you'),
+          username: ownerUsername,
           avatar_url: ownerAvatarUrl,
           is_owner: true,
           hasNewUpdate: isNew,
@@ -255,6 +257,7 @@ export default function ActivityScreen() {
         setOwnerActivity({
           user_id: user.id,
           display_name: t('activity.you'),
+          username: ownerUsername,
           last_checked_in_utc: null,
           priority: 0,
           avatar_url: ownerAvatarUrl,
@@ -703,6 +706,7 @@ export default function ActivityScreen() {
             setOwnerActivity((prev) => ({
               user_id: user.id,
               display_name: t('activity.you'),
+              username: prev?.username || null,
               last_checked_in_utc: null,
               priority: 0,
               avatar_url: prev?.avatar_url || null,
@@ -727,6 +731,7 @@ export default function ActivityScreen() {
               last_checked_in_utc: payload.new.last_checked_in_utc,
               priority: payload.new.priority,
               display_name: t('activity.you'),
+              username: prev?.username || null,
               avatar_url: prev?.avatar_url || null,
               is_owner: true,
               hasNewUpdate: isNew,
@@ -1465,7 +1470,7 @@ export default function ActivityScreen() {
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
               </Text>
-              {!isOwner && username && (
+              {username && (
                 <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
                   @{username}
                 </Text>
@@ -1592,6 +1597,7 @@ export default function ActivityScreen() {
                   <ActivityItem
                     name={ownerActivity.display_name}
                     avatarUrl={ownerActivity.avatar_url}
+                    username={ownerActivity.username}
                     timestamp={ownerActivity.last_checked_in_utc}
                     priority={ownerActivity.priority}
                     isOwner

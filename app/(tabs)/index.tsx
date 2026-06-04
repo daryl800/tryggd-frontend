@@ -53,6 +53,7 @@ const WELLNESS_MIN = -5;
 const WELLNESS_MAX = 5;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
+const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
@@ -230,6 +231,74 @@ const getWellnessValueFromPosition = (positionX: number, width: number) => {
   return clampWellnessValue(WELLNESS_MIN + stepIndex);
 };
 
+const hexToRgb = (hex: string) => {
+  const normalized = hex.replace('#', '');
+  const value = normalized.length === 3
+    ? normalized.split('').map((char) => char + char).join('')
+    : normalized;
+
+  const parsed = Number.parseInt(value, 16);
+  return {
+    r: (parsed >> 16) & 255,
+    g: (parsed >> 8) & 255,
+    b: parsed & 255,
+  };
+};
+
+const rgbToHex = ({ r, g, b }: { r: number; g: number; b: number }) =>
+  `#${[r, g, b]
+    .map((value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0'))
+    .join('')}`;
+
+const interpolateColor = (from: string, to: string, ratio: number) => {
+  const start = hexToRgb(from);
+  const end = hexToRgb(to);
+
+  return rgbToHex({
+    r: start.r + (end.r - start.r) * ratio,
+    g: start.g + (end.g - start.g) * ratio,
+    b: start.b + (end.b - start.b) * ratio,
+  });
+};
+
+const getWellnessHeartColor = (score: number) => {
+  const lowColor = '#4A4A4A';
+  const midColor = BaseColors.primary;
+  const highColor = '#FFD700';
+
+  if (score <= 0) {
+    const ratio = (score - WELLNESS_MIN) / (WELLNESS_DEFAULT - WELLNESS_MIN || 1);
+    return interpolateColor(lowColor, midColor, ratio);
+  }
+
+  const ratio = score / WELLNESS_MAX;
+  return interpolateColor(midColor, highColor, ratio);
+};
+
+const getWellnessHandleEmoji = (score: number) => {
+  if (score <= -3) return '😞';
+  if (score === -2) return '🙁';
+  if (score === -1) return '😕';
+  if (score === 0) return '🙂';
+  if (score === 1) return '☺️';
+  if (score === 2) return '😊';
+  if (score === 3) return '😄';
+  return '😁';
+};
+
+const getLocalDayBounds = (date: Date) => {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  return {
+    startIso: start.toISOString(),
+    endIso: end.toISOString(),
+  };
+};
+
 const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
   const [trackWidth, setTrackWidth] = useState(0);
   const lastValueRef = useRef(value);
@@ -257,16 +326,23 @@ const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
 
   const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
   const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
+  const handleEmoji = getWellnessHandleEmoji(value);
 
   return (
     <View style={styles.wellnessCard}>
       <View style={styles.wellnessSliderRow}>
-        <Ionicons
-          name="sad-outline"
-          size={24}
-          color={BaseColors.neutral[400]}
-          style={styles.wellnessEdgeIcon}
-        />
+        <TouchableOpacity
+          onPress={() => onChange(WELLNESS_MIN)}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="sad-outline"
+            size={24}
+            color={BaseColors.neutral[400]}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
         <View
           style={styles.wellnessTrackTouchArea}
           onLayout={handleLayout}
@@ -291,16 +367,24 @@ const WellnessSlider = ({ value, onChange }: WellnessSliderProps) => {
             pointerEvents="none"
             style={[
               styles.wellnessThumb,
-              trackWidth > 0 && { left: handleLeft - 14 },
+              trackWidth > 0 && { left: handleLeft - 16 },
             ]}
-          />
+          >
+            <Text style={styles.wellnessThumbEmoji}>{handleEmoji}</Text>
+          </View>
         </View>
-        <Ionicons
-          name="happy-outline"
-          size={24}
-          color={BaseColors.primary}
-          style={styles.wellnessEdgeIcon}
-        />
+        <TouchableOpacity
+          onPress={() => onChange(WELLNESS_MAX)}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="happy-outline"
+            size={24}
+            color={BaseColors.primary}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -323,6 +407,8 @@ export default function HomeScreen() {
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
   const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -374,10 +460,14 @@ export default function HomeScreen() {
           setCheckedInToday(isFromToday);
           setShowResetButton(isFromToday);
           setLastCheckinUtc(savedLastCheckinUtc);
+          if (!isFromToday) {
+            setWellnessScore(WELLNESS_DEFAULT);
+          }
         } else {
           setCheckedInToday(false);
           setShowResetButton(false);
           setLastCheckinUtc(null);
+          setWellnessScore(WELLNESS_DEFAULT);
         }
       } catch (err) {
         console.error(t('home.errors.loadState'), err);
@@ -412,6 +502,7 @@ export default function HomeScreen() {
     setLastCheckinUtc(null);
     setLastCheckinId(null);
     setShowResetButton(false);
+    setWellnessScore(WELLNESS_DEFAULT);
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -452,6 +543,23 @@ export default function HomeScreen() {
       setCheckedInToday(isFromToday);
 
       if (isFromToday) {
+        const { startIso, endIso } = getLocalDayBounds(today);
+        const { data: todayCheckin } = await supabase
+          .from('checkins')
+          .select('id')
+          .eq('user_id', user.id)
+          .gte('checked_in_at_utc', startIso)
+          .lt('checked_in_at_utc', endIso)
+          .order('checked_in_at_utc', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        setLastCheckinId(todayCheckin?.id ?? null);
+      } else {
+        setLastCheckinId(null);
+      }
+
+      if (isFromToday) {
         await cancelTodayReminderAfterCheckin();
       }
 
@@ -464,12 +572,14 @@ export default function HomeScreen() {
           lastCheckinUtc: data.last_checked_in_utc,
         })
       );
-    } else {
-      setCheckedInToday(false);
-      setShowResetButton(false);
-      setLastCheckinUtc(null);
-      await AsyncStorage.removeItem(STORAGE_KEY);
-    }
+      } else {
+        setCheckedInToday(false);
+        setShowResetButton(false);
+        setLastCheckinUtc(null);
+        setLastCheckinId(null);
+        setWellnessScore(WELLNESS_DEFAULT);
+        await AsyncStorage.removeItem(STORAGE_KEY);
+      }
   }, [user, t]);
 
   // Fetch initial data when user loads
@@ -714,8 +824,38 @@ export default function HomeScreen() {
       Promise.all([
         // Insert checkin to database
         getOptionalCheckinLocation(user.id, capabilities.canShareLocation)
-          .then((locationPayload) => {
+          .then(async (locationPayload) => {
             console.log('📍 Check-in location payload:', locationPayload);
+
+            const nowDate = new Date();
+            const shouldUpdateToday = !!lastCheckinUtc && isSameDay(new Date(lastCheckinUtc), nowDate);
+
+            if (shouldUpdateToday) {
+              const existingId = lastCheckinId ?? (
+                await supabase
+                  .from('checkins')
+                  .select('id')
+                  .eq('user_id', user.id)
+                  .gte('checked_in_at_utc', getLocalDayBounds(nowDate).startIso)
+                  .lt('checked_in_at_utc', getLocalDayBounds(nowDate).endIso)
+                  .order('checked_in_at_utc', { ascending: false })
+                  .limit(1)
+                  .maybeSingle()
+              ).data?.id;
+
+              if (existingId) {
+                return supabase
+                  .from('checkins')
+                  .update({
+                    checkin_timezone: timeZone,
+                    ...(locationPayload || {}),
+                  })
+                  .eq('id', existingId)
+                  .select('id, checked_in_at_utc')
+                  .single();
+              }
+            }
+
             return supabase
               .from('checkins')
               .insert({
@@ -753,12 +893,10 @@ export default function HomeScreen() {
         setShowResetButton(false);
       });
 
-      setWellnessScore(WELLNESS_DEFAULT);
-
     } finally {
       setIsCheckingIn(false);
     }
-  }, [capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak]);
+  }, [capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, lastCheckinId, lastCheckinUtc]);
 
 
   const startOfDay = new Date();
@@ -785,6 +923,8 @@ export default function HomeScreen() {
   }
 
   const greetingInfo = getGreetingInfo(now, t);
+  const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(wellnessScore) : BaseColors.primary;
+  const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
 
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -808,13 +948,19 @@ export default function HomeScreen() {
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          !shouldScroll && styles.scrollContentStatic,
+        ]}
+        onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}
+        onContentSizeChange={(_, height) => setContentHeight(height)}
         bounces={false}
         showsVerticalScrollIndicator={false}
-        scrollEnabled={true}
+        scrollEnabled={shouldScroll}
         pinchGestureEnabled={false}
         maximumZoomScale={1}
         minimumZoomScale={1}
+        overScrollMode="never"
       >
         {/* BEGIN - BELOW CODE IS FOR DEBUGGING PURPOSES - enable when needed */}
         {/* <TouchableOpacity
@@ -947,7 +1093,7 @@ export default function HomeScreen() {
                       {checkedInToday ? (
                         <Ionicons name="heart-sharp" size={ICON_SIZES.SUPER_HUGE} color="#fff" />
                       ) : (
-                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={BaseColors.primary} />
+                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={heartColor} />
                       )}
                     </View>
 
@@ -1006,7 +1152,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {capabilities.canUseWellnessSlider && !checkedInToday ? (
+          {capabilities.canUseWellnessSlider ? (
             <View style={[styles.wellnessGroup, styles.groupContainer]}>
               <WellnessSlider
                 value={wellnessScore}
@@ -1138,6 +1284,10 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 20,
   },
+  scrollContentStatic: {
+    flexGrow: 1,
+    paddingBottom: 0,
+  },
   groupContainer: {
     marginBottom: GROUP_GAP,
   },
@@ -1149,14 +1299,16 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: iosFontSize(36),
+    lineHeight: iosFontSize(40),
     fontWeight: '700',
     color: BaseColors.text.dark,
     textAlign: 'center',
   },
   dateText: {
     fontSize: iosFontSize(16),
+    lineHeight: iosFontSize(18),
     color: BaseColors.neutral[500],
-    marginTop: 6,
+    marginTop: 2,
     textTransform: 'capitalize',
     textAlign: 'center',
   },
@@ -1164,6 +1316,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: 8,
   },
   wellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -1200,6 +1353,12 @@ const styles = StyleSheet.create({
     width: 24,
     textAlign: 'center',
   },
+  wellnessEdgeButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 28,
+    height: 28,
+  },
   wellnessTrackTouchArea: {
     flex: 1,
     height: 36,
@@ -1230,13 +1389,15 @@ const styles = StyleSheet.create({
   },
   wellnessThumb: {
     position: 'absolute',
-    top: 6,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: BaseColors.primary,
-    borderWidth: 3,
-    borderColor: BaseColors.surface,
+    top: 2,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
@@ -1248,6 +1409,11 @@ const styles = StyleSheet.create({
         elevation: 3,
       },
     }),
+  },
+  wellnessThumbEmoji: {
+    fontSize: 18,
+    lineHeight: 20,
+    textAlign: 'center',
   },
   checkInButton: {
     alignItems: 'center',
@@ -1292,6 +1458,9 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: Platform.OS === 'ios' ? 8 : 4,
     marginTop: 4,
+    minHeight: ICON_SIZES.SUPER_HUGE,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textContainer: {
     alignItems: 'center',
