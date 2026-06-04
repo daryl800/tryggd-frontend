@@ -511,7 +511,8 @@
     "email": "邮箱",
     "displayName": "姓名",
     "password": {
-      "placeholder": "密码 (至少6个字符)"
+      "placeholder": "密码 (至少8个字符)",
+      "minimumLength": "请至少使用 8 个字符。"
     },
     "confirmPassword": "确认密码",
     "passwordsMatch": "✔ 密码匹配",
@@ -539,6 +540,50 @@
       "login": "前往登录",
       "error": "重置密码时出错",
       "passwordPlaceholder": "新密码"
+    },
+    "invite": {
+      "invalidLink": "邀请链接无效。",
+      "notFound": "找不到邀请。",
+      "alreadyUsed": "此邀请已被使用。",
+      "expired": "此邀请已过期。",
+      "unavailable": "此邀请目前无法使用。",
+      "unavailableTitle": "邀请无法使用",
+      "couldNotOpen": "无法打开此邀请。",
+      "backToLogin": "返回登录",
+      "recoveryTitle": "重置您的 Tryggd 密码",
+      "invitedTitle": "您已受邀加入 Tryggd",
+      "recoverySubtitle": "{{inviter}} 发送了 {{account}} 的安全找回链接给您。",
+      "signupSubtitle": "{{inviter}} 邀请 {{invitee}} 加入他的 Tryggd 圈。",
+      "yourAccount": "您的 Tryggd 账户",
+      "you": "您",
+      "installTitle": "安装或打开应用",
+      "installHint": "请在 Tryggd App 中打开这个邀请。如果您还没有 App，请先安装，再回到同一个链接。",
+      "openInApp": "在 Tryggd 中打开",
+      "downloadAppStore": "前往 App Store 下载",
+      "downloadGooglePlay": "前往 Google Play 下载",
+      "keepLink": "请保留这个邀请链接：",
+      "enterCodeTitle": "输入邀请代码",
+      "enterCodeHint": "请向 {{inviter}} 索取这组邀请专属的 6 位数字代码。",
+      "codePlaceholder": "6 位数字邀请代码",
+      "checkingCode": "验证代码中…",
+      "setPasswordTitle": "设置新密码",
+      "setPasswordHint": "这会重置 Tryggd ID {{id}} 的密码。",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "重置密码中…",
+      "resetPassword": "重置密码",
+      "createAccountTitle": "创建您的账户",
+      "createAccountHint": "之后您将使用 Tryggd ID 和密码登录。您可以保留建议的 Tryggd ID，或现在直接修改。",
+      "mobilePlaceholder": "手机号码（选填）",
+      "creatingAccount": "创建账户中…",
+      "createAccountButton": "创建账户",
+      "errors": {
+        "incorrectCode": "代码不正确。",
+        "verifyCode": "无法验证邀请代码。",
+        "createAccount": "无法创建账户。",
+        "completeSignup": "无法完成受邀注册。",
+        "missingAccount": "无法判断要登录的账户。",
+        "completeRecovery": "无法完成密码找回。"
+      }
     }
   },
   "completeProfile": {

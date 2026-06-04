@@ -511,7 +511,8 @@
     "email": "電子郵件",
     "displayName": "姓名",
     "password": {
-      "placeholder": "密碼 (至少6個字元)"
+      "placeholder": "密碼 (至少8個字元)",
+      "minimumLength": "請至少使用 8 個字元。"
     },
     "confirmPassword": "確認密碼",
     "passwordsMatch": "✔ 密碼匹配",
@@ -539,6 +540,50 @@
       "login": "前往登入",
       "error": "重設密碼時出錯",
       "passwordPlaceholder": "新密碼"
+    },
+    "invite": {
+      "invalidLink": "邀請連結無效。",
+      "notFound": "找不到邀請。",
+      "alreadyUsed": "此邀請已被使用。",
+      "expired": "此邀請已過期。",
+      "unavailable": "此邀請目前無法使用。",
+      "unavailableTitle": "邀請無法使用",
+      "couldNotOpen": "無法開啟此邀請。",
+      "backToLogin": "返回登入",
+      "recoveryTitle": "重設您的 Tryggd 密碼",
+      "invitedTitle": "您已受邀加入 Tryggd",
+      "recoverySubtitle": "{{inviter}} 傳送了 {{account}} 的安全找回連結給您。",
+      "signupSubtitle": "{{inviter}} 邀請 {{invitee}} 加入他的 Tryggd 圈。",
+      "yourAccount": "您的 Tryggd 帳戶",
+      "you": "您",
+      "installTitle": "安裝或開啟應用程式",
+      "installHint": "請在 Tryggd App 中開啟這個邀請。如果您還沒有 App，請先安裝，再回到同一個連結。",
+      "openInApp": "在 Tryggd 中開啟",
+      "downloadAppStore": "前往 App Store 下載",
+      "downloadGooglePlay": "前往 Google Play 下載",
+      "keepLink": "請保留這個邀請連結：",
+      "enterCodeTitle": "輸入邀請代碼",
+      "enterCodeHint": "請向 {{inviter}} 索取這組邀請專屬的 6 位數代碼。",
+      "codePlaceholder": "6 位數邀請代碼",
+      "checkingCode": "驗證代碼中…",
+      "setPasswordTitle": "設定新密碼",
+      "setPasswordHint": "這會重設 Tryggd ID {{id}} 的密碼。",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "重設密碼中…",
+      "resetPassword": "重設密碼",
+      "createAccountTitle": "建立您的帳戶",
+      "createAccountHint": "之後您將使用 Tryggd ID 和密碼登入。您可以保留建議的 Tryggd ID，或現在直接修改。",
+      "mobilePlaceholder": "手機號碼（選填）",
+      "creatingAccount": "建立帳戶中…",
+      "createAccountButton": "建立帳戶",
+      "errors": {
+        "incorrectCode": "代碼不正確。",
+        "verifyCode": "無法驗證邀請代碼。",
+        "createAccount": "無法建立帳戶。",
+        "completeSignup": "無法完成受邀註冊。",
+        "missingAccount": "無法判斷要登入的帳戶。",
+        "completeRecovery": "無法完成密碼找回。"
+      }
     }
   },
   "completeProfile": {

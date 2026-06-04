@@ -472,7 +472,7 @@ const ContactRequestCard = memo(
 );
 
 export default function ContactsScreen() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { capabilities } = useAuth();
     const router = useRouter();
     const showPlusUpsellUI = UI_FEATURE_FLAGS.showPlusUpsellUI;

@@ -475,7 +475,8 @@
     "email": "Email",
     "displayName": "Name",
     "password": {
-      "placeholder": "Password (at least 6 characters)"
+      "placeholder": "Password (at least 8 characters)",
+      "minimumLength": "Use at least 8 characters."
     },
     "confirmPassword": "Confirm Password",
     "passwordsMatch": "✔ Passwords match",
@@ -503,6 +504,50 @@
       "login": "Go to Login",
       "error": "Error resetting password",
       "passwordPlaceholder": "New password"
+    },
+    "invite": {
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery."
+      }
     }
   },
   "completeProfile": {
