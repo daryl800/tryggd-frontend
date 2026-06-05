@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -104,6 +105,18 @@ export default function InviteSignupContent({ token }: Props) {
     void loadInvite();
   }, [displayName, displayNameTouched, t, token]);
 
+  useEffect(() => {
+    if (!codeVerified) return;
+
+    const task = InteractionManager.runAfterInteractions(() => {
+      passwordRef.current?.focus();
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [codeVerified, invite?.invite_kind]);
+
   const handleDisplayNameChange = (value: string) => {
     setDisplayNameTouched(true);
     setDisplayName(value);
@@ -144,6 +157,88 @@ export default function InviteSignupContent({ token }: Props) {
   const webInviteUrl = token ? `https://tryggd.com/invite?token=${token}&lang=${encodeURIComponent(webLanguage)}` : `https://tryggd.com?lang=${encodeURIComponent(webLanguage)}`;
   const appInviteUrl = token ? `tryggd://invite?token=${token}` : 'tryggd://';
 
+  const getLocalizedInviteError = (message?: string | null) => {
+    if (!message) return null;
+
+    const normalizedMessage = message.toLowerCase();
+
+    if (normalizedMessage.includes('tryggd') && normalizedMessage.includes('taken')) {
+      return t('completeProfile.duplicateBody');
+    }
+
+    if (normalizedMessage.includes('phone') && normalizedMessage.includes('already')) {
+      return i18n.resolvedLanguage === 'zh-Hant'
+        ? '這個電話號碼已被使用。'
+        : i18n.resolvedLanguage === 'zh-Hans'
+          ? '这个电话号码已被使用。'
+          : message;
+    }
+
+    if (normalizedMessage.includes('too many incorrect attempts')) {
+      return i18n.resolvedLanguage === 'zh-Hant'
+        ? '錯誤嘗試次數過多，請重新索取邀請。'
+        : i18n.resolvedLanguage === 'zh-Hans'
+          ? '错误尝试次数过多，请重新索取邀请。'
+          : message;
+    }
+
+    switch (message) {
+      case 'That Tryggd ID is already taken.':
+        return t('completeProfile.duplicateBody');
+      case 'This phone number is already in use.':
+        return i18n.resolvedLanguage === 'zh-Hant'
+          ? '這個電話號碼已被使用。'
+          : i18n.resolvedLanguage === 'zh-Hans'
+            ? '这个电话号码已被使用。'
+            : message;
+      case 'Too many incorrect attempts. Ask for a new invite.':
+        return i18n.resolvedLanguage === 'zh-Hant'
+          ? '錯誤嘗試次數過多，請重新索取邀請。'
+          : i18n.resolvedLanguage === 'zh-Hans'
+            ? '错误尝试次数过多，请重新索取邀请。'
+            : message;
+      case 'The code is incorrect.':
+        return t('auth.invite.errors.incorrectCode');
+      case 'Failed to create the invited account.':
+        return t('auth.invite.errors.createAccount');
+      default:
+        return message;
+    }
+  };
+
+  const extractFunctionErrorMessage = async (error: any) => {
+    if (!error) return null;
+
+    if (typeof error.message === 'string' && error.message.trim()) {
+      const direct = getLocalizedInviteError(error.message.trim());
+      if (direct && direct !== error.message.trim()) {
+        return direct;
+      }
+    }
+
+    const response = error?.context;
+    if (response) {
+      try {
+        const payload = await response.clone().json();
+        const serverMessage = payload?.error;
+        if (typeof serverMessage === 'string' && serverMessage.trim()) {
+          return getLocalizedInviteError(serverMessage.trim()) || serverMessage.trim();
+        }
+      } catch {
+        try {
+          const text = await response.clone().text();
+          if (text?.trim()) {
+            return getLocalizedInviteError(text.trim()) || text.trim();
+          }
+        } catch {
+          // ignore parse failures and fall back below
+        }
+      }
+    }
+
+    return getLocalizedInviteError(error?.message) || error?.message || null;
+  };
+
   const verifyCode = async () => {
     if (!token || code.trim().length < 4) return;
 
@@ -163,7 +258,11 @@ export default function InviteSignupContent({ token }: Props) {
 
       setCodeVerified(true);
     } catch (error: any) {
-      Alert.alert(t('errors.title'), error.message || t('auth.invite.errors.verifyCode'));
+      const localizedMessage = await extractFunctionErrorMessage(error);
+      Alert.alert(
+        t('errors.title'),
+        localizedMessage || t('auth.invite.errors.verifyCode')
+      );
     } finally {
       setVerifyingCode(false);
     }
@@ -182,6 +281,7 @@ export default function InviteSignupContent({ token }: Props) {
           phone: phone.trim(),
           password,
           username: username.trim(),
+          language: i18n.resolvedLanguage || 'en',
         },
       });
 
@@ -201,7 +301,11 @@ export default function InviteSignupContent({ token }: Props) {
 
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert(t('errors.title'), error.message || t('auth.invite.errors.completeSignup'));
+      const localizedMessage = await extractFunctionErrorMessage(error);
+      Alert.alert(
+        t('errors.title'),
+        localizedMessage || t('auth.invite.errors.completeSignup')
+      );
     } finally {
       setSubmitting(false);
     }
@@ -241,7 +345,11 @@ export default function InviteSignupContent({ token }: Props) {
 
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert(t('errors.title'), error.message || t('auth.invite.errors.completeRecovery'));
+      const localizedMessage = await extractFunctionErrorMessage(error);
+      Alert.alert(
+        t('errors.title'),
+        localizedMessage || t('auth.invite.errors.completeRecovery')
+      );
     } finally {
       setSubmitting(false);
     }
@@ -342,7 +450,7 @@ export default function InviteSignupContent({ token }: Props) {
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>

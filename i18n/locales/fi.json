@@ -144,7 +144,7 @@
     "placeholders": {
       "email": "Syötä sähköpostiosoite",
       "identifier": "Enter Tryggd ID or email",
-      "suggestedUsername": "Suggested Tryggd ID (optional)"
+      "suggestedUsername": "Ehdotettu Tryggd ID (valinnainen)"
     },
     "buttons": {
       "accept": "Hyväksy",
@@ -216,10 +216,10 @@
       }
     },
     "errors": {
-      "createInvite": "Failed to create invite.",
-      "shareInvite": "Failed to share invite link.",
-      "recoveryUnavailable": "This contact cannot receive a recovery invite yet.",
-      "createRecoveryInvite": "Failed to create recovery invite.",
+      "createInvite": "Kutsun luominen epäonnistui.",
+      "shareInvite": "Kutsulinkin jakaminen epäonnistui.",
+      "recoveryUnavailable": "Tämä yhteyshenkilö ei voi vielä vastaanottaa palautuskutsua.",
+      "createRecoveryInvite": "Palautuskutsun luominen epäonnistui.",
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
@@ -234,21 +234,21 @@
       "locationDisabled": "{{name}} will not see your location in Activity"
     },
     "invite": {
-      "ready": "Invite ready",
-      "recoveryReady": "Recovery link ready",
-      "instructions": "Send the link first. Then tell them this code:",
-      "recoveryInstructions": "Send the recovery link first. Then tell them this code:",
-      "expiresOn": "This invite expires on {{date}}.",
-      "resettingTryggdId": "Resetting Tryggd ID: {{id}}",
-      "suggestedTryggdId": "Suggested Tryggd ID: {{id}}",
-      "shareMessage": "Join me on Tryggd:",
-      "recoveryShareMessage": "Use this link to reset your Tryggd password:",
-      "modalTitle": "Invite someone to Tryggd",
-      "modalDescription": "We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.",
-      "suggestedUsernameHelp": "Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.",
-      "createButton": "Create invite",
-      "creating": "Creating…",
-      "shareButton": "Share link"
+      "ready": "Kutsu on valmis",
+      "recoveryReady": "Palautuslinkki on valmis",
+      "instructions": "Lähetä linkki ensin. Kerro sitten tämä koodi:",
+      "recoveryInstructions": "Lähetä palautuslinkki ensin. Kerro sitten tämä koodi:",
+      "expiresOn": "Tämä kutsu vanhenee {{date}}.",
+      "resettingTryggdId": "Nollataan Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Ehdotettu Tryggd ID: {{id}}",
+      "shareMessage": "Liity kanssani Tryggdiin:",
+      "recoveryShareMessage": "Käytä tätä linkkiä Tryggd-salasanasi nollaamiseen:",
+      "modalTitle": "Kutsu joku Tryggdiin",
+      "modalDescription": "Luomme yksityisen kutsulinkin ja 6-numeroisen koodin. Ehdota Tryggd ID nyt, jotta kutsutun ei tarvitse valita sitä myöhemmin.",
+      "suggestedUsernameHelp": "Käytä pieniä kirjaimia, numeroita, pisteitä tai alaviivoja. Tarkistamme saatavuuden ennen kutsun luomista.",
+      "createButton": "Luo kutsu",
+      "creating": "Luodaan…",
+      "shareButton": "Jaa linkki"
     }
   },
   "profile": {

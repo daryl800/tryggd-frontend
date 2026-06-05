@@ -144,7 +144,7 @@
     "placeholders": {
       "email": "Tryggd ID 입력",
       "identifier": "Enter Tryggd ID or email",
-      "suggestedUsername": "Suggested Tryggd ID (optional)"
+      "suggestedUsername": "추천 Tryggd ID (선택 사항)"
     },
     "buttons": {
       "accept": "수락",
@@ -226,10 +226,10 @@
       "accept": "연락처 요청 수락에 실패했습니다",
       "reject": "요청 거절에 실패했습니다",
       "cancel": "요청 취소에 실패했습니다",
-      "createInvite": "Failed to create invite.",
-      "shareInvite": "Failed to share invite link.",
-      "recoveryUnavailable": "This contact cannot receive a recovery invite yet.",
-      "createRecoveryInvite": "Failed to create recovery invite.",
+      "createInvite": "초대를 만들지 못했습니다.",
+      "shareInvite": "초대 링크를 공유하지 못했습니다.",
+      "recoveryUnavailable": "이 연락처는 아직 복구 초대를 받을 수 없습니다.",
+      "createRecoveryInvite": "복구 초대를 만들지 못했습니다.",
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
@@ -244,21 +244,21 @@
       "locationDisabled": "{{name}} will not see your location in Activity"
     },
     "invite": {
-      "ready": "Invite ready",
-      "recoveryReady": "Recovery link ready",
-      "instructions": "Send the link first. Then tell them this code:",
-      "recoveryInstructions": "Send the recovery link first. Then tell them this code:",
-      "expiresOn": "This invite expires on {{date}}.",
-      "resettingTryggdId": "Resetting Tryggd ID: {{id}}",
-      "suggestedTryggdId": "Suggested Tryggd ID: {{id}}",
-      "shareMessage": "Join me on Tryggd:",
-      "recoveryShareMessage": "Use this link to reset your Tryggd password:",
-      "modalTitle": "Invite someone to Tryggd",
-      "modalDescription": "We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.",
-      "suggestedUsernameHelp": "Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.",
-      "createButton": "Create invite",
-      "creating": "Creating…",
-      "shareButton": "Share link"
+      "ready": "초대가 준비되었습니다",
+      "recoveryReady": "복구 링크가 준비되었습니다",
+      "instructions": "먼저 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
+      "recoveryInstructions": "먼저 복구 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
+      "expiresOn": "이 초대는 {{date}}에 만료됩니다.",
+      "resettingTryggdId": "Tryggd ID 재설정 중: {{id}}",
+      "suggestedTryggdId": "추천 Tryggd ID: {{id}}",
+      "shareMessage": "Tryggd에서 저와 연결하세요:",
+      "recoveryShareMessage": "이 링크로 Tryggd 비밀번호를 재설정하세요:",
+      "modalTitle": "누군가를 Tryggd로 초대하기",
+      "modalDescription": "비공개 초대 링크와 6자리 코드를 만듭니다. 초대받은 사람이 나중에 고르지 않아도 되도록 지금 Tryggd ID를 제안하세요.",
+      "suggestedUsernameHelp": "소문자, 숫자, 점 또는 밑줄을 사용하세요. 초대를 만들기 전에 사용 가능 여부를 확인합니다.",
+      "createButton": "초대 만들기",
+      "creating": "생성 중…",
+      "shareButton": "링크 공유"
     }
   },
   "profile": {

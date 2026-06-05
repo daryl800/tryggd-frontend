@@ -546,7 +546,9 @@
         "createAccount": "Failed to create account.",
         "completeSignup": "Failed to complete invited signup.",
         "missingAccount": "Could not determine the account to sign in.",
-        "completeRecovery": "Failed to complete password recovery."
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
       }
     }
   },

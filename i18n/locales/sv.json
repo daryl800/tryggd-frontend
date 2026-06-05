@@ -144,7 +144,7 @@
     "placeholders": {
       "email": "Ange e-postadress",
       "identifier": "Enter Tryggd ID or email",
-      "suggestedUsername": "Suggested Tryggd ID (optional)"
+      "suggestedUsername": "Föreslaget Tryggd ID (valfritt)"
     },
     "buttons": {
       "accept": "Acceptera",
@@ -216,10 +216,10 @@
       }
     },
     "errors": {
-      "createInvite": "Failed to create invite.",
-      "shareInvite": "Failed to share invite link.",
-      "recoveryUnavailable": "This contact cannot receive a recovery invite yet.",
-      "createRecoveryInvite": "Failed to create recovery invite.",
+      "createInvite": "Det gick inte att skapa inbjudan.",
+      "shareInvite": "Det gick inte att dela inbjudningslänken.",
+      "recoveryUnavailable": "Den här kontakten kan inte få en återställningsinbjudan ännu.",
+      "createRecoveryInvite": "Det gick inte att skapa återställningsinbjudan.",
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
@@ -234,21 +234,21 @@
       "locationDisabled": "{{name}} will not see your location in Activity"
     },
     "invite": {
-      "ready": "Invite ready",
-      "recoveryReady": "Recovery link ready",
-      "instructions": "Send the link first. Then tell them this code:",
-      "recoveryInstructions": "Send the recovery link first. Then tell them this code:",
-      "expiresOn": "This invite expires on {{date}}.",
-      "resettingTryggdId": "Resetting Tryggd ID: {{id}}",
-      "suggestedTryggdId": "Suggested Tryggd ID: {{id}}",
-      "shareMessage": "Join me on Tryggd:",
-      "recoveryShareMessage": "Use this link to reset your Tryggd password:",
-      "modalTitle": "Invite someone to Tryggd",
-      "modalDescription": "We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.",
-      "suggestedUsernameHelp": "Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.",
-      "createButton": "Create invite",
-      "creating": "Creating…",
-      "shareButton": "Share link"
+      "ready": "Inbjudan är klar",
+      "recoveryReady": "Återställningslänk klar",
+      "instructions": "Skicka först länken. Berätta sedan den här koden:",
+      "recoveryInstructions": "Skicka först återställningslänken. Berätta sedan den här koden:",
+      "expiresOn": "Den här inbjudan gäller till {{date}}.",
+      "resettingTryggdId": "Återställer Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Föreslaget Tryggd ID: {{id}}",
+      "shareMessage": "Gå med mig på Tryggd:",
+      "recoveryShareMessage": "Använd den här länken för att återställa ditt Tryggd-lösenord:",
+      "modalTitle": "Bjud in någon till Tryggd",
+      "modalDescription": "Vi skapar en privat inbjudningslänk och en 6-siffrig kod. Föreslå ett Tryggd ID nu så att mottagaren slipper välja ett senare.",
+      "suggestedUsernameHelp": "Använd små bokstäver, siffror, punkter eller understreck. Vi kontrollerar tillgängligheten innan inbjudan skapas.",
+      "createButton": "Skapa inbjudan",
+      "creating": "Skapar…",
+      "shareButton": "Dela länk"
     }
   },
   "profile": {

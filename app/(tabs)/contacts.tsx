@@ -492,6 +492,21 @@ export default function ContactsScreen() {
         () => getUsernameValidationMessage(suggestedInviteUsername, t),
         [suggestedInviteUsername, t]
     );
+    const getLocalizedInviteModalError = useCallback((message?: string | null) => {
+        if (!message) return t('contacts.errors.createInvite');
+
+        const normalized = message.toLowerCase();
+
+        if (normalized.includes('tryggd') && normalized.includes('taken')) {
+            return t('completeProfile.duplicateBody');
+        }
+
+        if (normalized.includes('lowercase letters') || normalized.includes('invalid')) {
+            return suggestedInviteValidationMessage || t('contacts.invite.suggestedUsernameHelp');
+        }
+
+        return message;
+    }, [suggestedInviteValidationMessage, t]);
     const [activeInputIndex, setActiveInputIndex] = useState<number | null>(null);
     const [activeSection, setActiveSection] = useState<'contacts' | 'requests'>(
         'contacts'
@@ -941,11 +956,14 @@ export default function ContactsScreen() {
             setInviteShareVisible(true);
             setSuggestedInviteUsername('');
         } catch (error: any) {
-            Alert.alert(t('errors.title'), error.message || t('contacts.errors.createInvite'));
+            Alert.alert(
+                t('errors.title'),
+                getLocalizedInviteModalError(error?.message)
+            );
         } finally {
             setCreatingInvite(false);
         }
-    }, [capabilities.maxContacts, suggestedInviteUsername, t, totalContactsCount]);
+    }, [capabilities.maxContacts, getLocalizedInviteModalError, suggestedInviteUsername, t, totalContactsCount]);
 
     const handleShareInviteLink = useCallback(async () => {
         if (!generatedInvite) return;
@@ -1872,7 +1890,7 @@ export default function ContactsScreen() {
                             >
                                 <Ionicons
                                     name="link"
-                                    size={ICON_SIZES.MD}
+                                    size={ICON_SIZES.LG}
                                     color={BaseColors.primary}
                                 />
                             </TouchableOpacity>
@@ -1895,7 +1913,7 @@ export default function ContactsScreen() {
                             >
                                 <Ionicons
                                     name="add-circle"
-                                    size={ICON_SIZES.LG}
+                                    size={ICON_SIZES.XL}
                                     color={
                                         totalContactsCount >= capabilities.maxContacts
                                             ? BaseColors.neutral[300]
@@ -2370,9 +2388,9 @@ const styles = StyleSheet.create({
         marginTop: -8,
     },
     addButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: BaseColors.primaryLight,
@@ -2380,14 +2398,14 @@ const styles = StyleSheet.create({
         borderColor: BaseColors.primaryBorder,
     },
     inviteButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: BaseColors.neutral[50],
+        backgroundColor: BaseColors.primaryLight,
         borderWidth: 1,
-        borderColor: BaseColors.neutral[200],
+        borderColor: BaseColors.primaryBorder,
     },
     scrollView: {
         flex: 1,

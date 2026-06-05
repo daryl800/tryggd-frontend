@@ -144,7 +144,7 @@
     "placeholders": {
       "email": "Saisir un Tryggd ID",
       "identifier": "Enter Tryggd ID or email",
-      "suggestedUsername": "Suggested Tryggd ID (optional)"
+      "suggestedUsername": "Tryggd ID suggéré (facultatif)"
     },
     "buttons": {
       "accept": "Accepter",
@@ -226,10 +226,10 @@
       "accept": "Échec de l'acceptation de la demande de contact",
       "reject": "Échec du refus de la demande",
       "cancel": "Échec de l'annulation de la demande",
-      "createInvite": "Failed to create invite.",
-      "shareInvite": "Failed to share invite link.",
-      "recoveryUnavailable": "This contact cannot receive a recovery invite yet.",
-      "createRecoveryInvite": "Failed to create recovery invite.",
+      "createInvite": "Impossible de créer l'invitation.",
+      "shareInvite": "Impossible de partager le lien d'invitation.",
+      "recoveryUnavailable": "Ce contact ne peut pas encore recevoir une invitation de récupération.",
+      "createRecoveryInvite": "Impossible de créer l'invitation de récupération.",
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
@@ -244,21 +244,21 @@
       "locationDisabled": "{{name}} will not see your location in Activity"
     },
     "invite": {
-      "ready": "Invite ready",
-      "recoveryReady": "Recovery link ready",
-      "instructions": "Send the link first. Then tell them this code:",
-      "recoveryInstructions": "Send the recovery link first. Then tell them this code:",
-      "expiresOn": "This invite expires on {{date}}.",
-      "resettingTryggdId": "Resetting Tryggd ID: {{id}}",
-      "suggestedTryggdId": "Suggested Tryggd ID: {{id}}",
-      "shareMessage": "Join me on Tryggd:",
-      "recoveryShareMessage": "Use this link to reset your Tryggd password:",
-      "modalTitle": "Invite someone to Tryggd",
-      "modalDescription": "We will create a private invite link and a 6-digit code. Suggest a Tryggd ID now so the invitee does not have to pick one later.",
-      "suggestedUsernameHelp": "Use lowercase letters, numbers, dots, or underscores. We will check availability before creating the invite.",
-      "createButton": "Create invite",
-      "creating": "Creating…",
-      "shareButton": "Share link"
+      "ready": "Invitation prête",
+      "recoveryReady": "Lien de récupération prêt",
+      "instructions": "Envoyez d'abord le lien. Donnez ensuite ce code :",
+      "recoveryInstructions": "Envoyez d'abord le lien de récupération. Donnez ensuite ce code :",
+      "expiresOn": "Cette invitation expire le {{date}}.",
+      "resettingTryggdId": "Réinitialisation du Tryggd ID : {{id}}",
+      "suggestedTryggdId": "Tryggd ID suggéré : {{id}}",
+      "shareMessage": "Rejoignez-moi sur Tryggd :",
+      "recoveryShareMessage": "Utilisez ce lien pour réinitialiser votre mot de passe Tryggd :",
+      "modalTitle": "Inviter quelqu'un sur Tryggd",
+      "modalDescription": "Nous allons créer un lien d'invitation privé et un code à 6 chiffres. Suggérez maintenant un Tryggd ID pour que l'invité n'ait pas à en choisir un plus tard.",
+      "suggestedUsernameHelp": "Utilisez des lettres minuscules, des chiffres, des points ou des tirets bas. Nous vérifierons la disponibilité avant de créer l'invitation.",
+      "createButton": "Créer l'invitation",
+      "creating": "Création…",
+      "shareButton": "Partager le lien"
     }
   },
   "profile": {

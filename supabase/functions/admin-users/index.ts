@@ -9,8 +9,8 @@ const corsHeaders = {
 }
 
 type AdminAction =
-  | { action: 'list'; page?: number; pageSize?: number; query?: string }
-  | { action: 'delete'; tryggdId?: string }
+  | { action: 'list'; page?: number; pageSize?: number; query?: string; filter?: 'all' | 'plus' | 'new_last_7_days' | 'checked_in_today' }
+  | { action: 'delete'; userId?: string; tryggdId?: string }
 
 function getServiceClient() {
   return createClient(
@@ -117,11 +117,21 @@ async function loadStats(supabase: ReturnType<typeof getServiceClient>) {
   }
 }
 
-async function listUsers(supabase: ReturnType<typeof getServiceClient>, page = 1, pageSize = 20, query = '') {
+async function listUsers(
+  supabase: ReturnType<typeof getServiceClient>,
+  page = 1,
+  pageSize = 20,
+  query = '',
+  filter: 'all' | 'plus' | 'new_last_7_days' | 'checked_in_today' = 'all'
+) {
   const safePage = Math.max(1, page)
   const safePageSize = Math.min(100, Math.max(1, pageSize))
   const offset = (safePage - 1) * safePageSize
   const trimmedQuery = query.trim()
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 7)
+  const startOfTodayUtc = new Date()
+  startOfTodayUtc.setUTCHours(0, 0, 0, 0)
 
   const authUsers = await listAllAuthUsers(supabase)
   const allIds = authUsers.map((row) => row.id)
@@ -136,8 +146,35 @@ async function listUsers(supabase: ReturnType<typeof getServiceClient>, page = 1
     throw profilesError
   }
 
+  const [entitlementsResult, latestCheckinsResult] = await Promise.all([
+    allIds.length > 0
+      ? supabase.from('user_entitlements').select('user_id, plan').in('user_id', allIds)
+      : Promise.resolve({ data: [], error: null }),
+    allIds.length > 0
+      ? supabase.from('users_latest_checkin').select('user_id, last_checked_in_utc').in('user_id', allIds)
+      : Promise.resolve({ data: [], error: null }),
+  ])
+
+  if (entitlementsResult.error) {
+    throw entitlementsResult.error
+  }
+
+  if (latestCheckinsResult.error) {
+    throw latestCheckinsResult.error
+  }
+
   const profileMap = new Map(
     (profiles ?? []).map((row) => [row.id, row])
+  )
+  const plusUserIds = new Set(
+    (entitlementsResult.data ?? [])
+      .filter((row) => row.plan === 'plus')
+      .map((row) => row.user_id)
+  )
+  const checkedInTodayUserIds = new Set(
+    (latestCheckinsResult.data ?? [])
+      .filter((row) => new Date(row.last_checked_in_utc) >= startOfTodayUtc)
+      .map((row) => row.user_id)
   )
 
   const normalizedQuery = trimmedQuery.toLowerCase()
@@ -153,6 +190,10 @@ async function listUsers(supabase: ReturnType<typeof getServiceClient>, page = 1
       }
     })
     .filter((row) => {
+      if (filter === 'plus' && !plusUserIds.has(row.user_id)) return false
+      if (filter === 'new_last_7_days' && new Date(row.account_created_at) < sevenDaysAgo) return false
+      if (filter === 'checked_in_today' && !checkedInTodayUserIds.has(row.user_id)) return false
+
       if (!normalizedQuery) return true
 
       return [
@@ -173,28 +214,53 @@ async function listUsers(supabase: ReturnType<typeof getServiceClient>, page = 1
   }
 }
 
-async function deleteUserByTryggdId(supabase: ReturnType<typeof getServiceClient>, tryggdId: string) {
-  const normalizedTryggdId = tryggdId.trim().toLowerCase()
+async function deleteUser(
+  supabase: ReturnType<typeof getServiceClient>,
+  options: { userId?: string; tryggdId?: string }
+) {
+  const normalizedTryggdId = options.tryggdId?.trim().toLowerCase() ?? ''
+  let userId = options.userId?.trim() ?? ''
+  let deletedDisplayName = ''
+  let deletedTryggdId = normalizedTryggdId
 
-  if (!normalizedTryggdId) {
-    return { status: 400, body: { error: 'Missing tryggd_id' } }
+  if (!userId && !normalizedTryggdId) {
+    return { status: 400, body: { error: 'Missing user_id or tryggd_id' } }
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, username, display_name')
-    .eq('username', normalizedTryggdId)
-    .maybeSingle()
+  if (userId) {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, username, display_name')
+      .eq('id', userId)
+      .maybeSingle()
 
-  if (profileError) {
-    return { status: 500, body: { error: 'Failed to look up user' } }
+    if (profileError) {
+      return { status: 500, body: { error: 'Failed to look up user profile' } }
+    }
+
+    if (profile) {
+      deletedDisplayName = profile.display_name ?? ''
+      deletedTryggdId = profile.username ?? deletedTryggdId
+    }
+  } else {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, username, display_name')
+      .eq('username', normalizedTryggdId)
+      .maybeSingle()
+
+    if (profileError) {
+      return { status: 500, body: { error: 'Failed to look up user' } }
+    }
+
+    if (!profile) {
+      return { status: 404, body: { error: 'User not found' } }
+    }
+
+    userId = profile.id
+    deletedDisplayName = profile.display_name ?? ''
+    deletedTryggdId = profile.username ?? deletedTryggdId
   }
-
-  if (!profile) {
-    return { status: 404, body: { error: 'User not found' } }
-  }
-
-  const userId = profile.id
 
   const operations = [
     supabase.from('contacts').delete().or(`owner_user_id.eq.${userId},contact_user_id.eq.${userId}`),
@@ -231,8 +297,8 @@ async function deleteUserByTryggdId(supabase: ReturnType<typeof getServiceClient
     body: {
       success: true,
       deleted_user_id: userId,
-      deleted_tryggd_id: normalizedTryggdId,
-      deleted_display_name: profile.display_name ?? '',
+      deleted_tryggd_id: deletedTryggdId,
+      deleted_display_name: deletedDisplayName,
     },
   }
 }
@@ -253,13 +319,13 @@ serve(async (req) => {
     const supabase = getServiceClient()
 
     if (body.action === 'delete') {
-      const result = await deleteUserByTryggdId(supabase, body.tryggdId ?? '')
+      const result = await deleteUser(supabase, { userId: body.userId, tryggdId: body.tryggdId })
       return new Response(JSON.stringify(result.body), { status: result.status, headers: corsHeaders })
     }
 
     const [stats, listResult] = await Promise.all([
       loadStats(supabase),
-      listUsers(supabase, body.page, body.pageSize, body.query),
+      listUsers(supabase, body.page, body.pageSize, body.query, body.filter),
     ])
 
     return new Response(JSON.stringify({ stats, ...listResult }), {
