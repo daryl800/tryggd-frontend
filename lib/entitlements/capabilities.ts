@@ -15,7 +15,7 @@ export function getCapabilities(plan: UserPlan): UserCapabilities {
 
   return {
     isPlus,
-    canUseWelfareGreeting: isPlus,
+    canUseWelfareGreeting: true,
     canShareLocation: isPlus,
     canUseWellnessSlider: isPlus,
     canControlCheckinRecipients: isPlus,

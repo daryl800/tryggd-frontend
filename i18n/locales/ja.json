@@ -51,6 +51,11 @@
       "noUser": "ユーザーが見つかりません",
       "checkin": "チェックインに失敗しました",
       "loadState": "状態の読み込みに失敗しました"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
     }
   },
   "activity": {
@@ -86,16 +91,17 @@
     },
     "responseButton": {
       "sendResponse": "いいね 👍 を送る",
-      "responded": "👏 リアクション済み!"
+      "responded": "👏 リアクション済み!",
+      "sent": "いいね送信済み 👌"
     },
     "checkinResponse": {
-      "todayLikes_one": "👋 今日のいいね {{count}} 件:",
-      "todayLikes_other": "👋 今日のいいね {{count}} 件:",
-      "prefix": "あなたのチェックインにリアクションしました",
+      "todayLikes_one": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
+      "todayLikes_other": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
+      "prefix": "あなたのチェックインに反応しました",
       "defaultMessage": "があなたのチェックインに 👍 しました!"
     },
     "welfareButton": {
-      "send": "大丈夫ですか？",
+      "send": "大丈夫ですか❓",
       "sent": "送信済み ✓"
     },
     "sharedLocation": {
@@ -110,6 +116,21 @@
       "norway": "Norway",
       "denmark": "Denmark",
       "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "つらいです 😔",
+      "low": "少し落ち込んでいます 😕",
+      "neutral": "大丈夫です 🙂",
+      "good": "気分はいいです ☺️",
+      "great": "今日はとてもうれしいです 😊"
+    },
+    "todayCheckButton": {
+      "send": "今日はどうですか 👋"
+    },
+    "checkedInAt": "{{date}} {{time}} にチェックイン",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:",
+      "todayGreetings_other": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:"
     }
   },
   "contacts": {
@@ -259,6 +280,11 @@
       "createButton": "招待を作成",
       "creating": "作成中…",
       "shareButton": "リンクを共有"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
     }
   },
   "profile": {
@@ -419,12 +445,14 @@
       "continueWithApple": "Apple で続ける",
       "connectingToApple": "Apple に接続中...",
       "orContinueWithEmail": "またはメールで続ける",
-      "socialError": "サインインに失敗しました"
+      "socialError": "サインインに失敗しました",
+      "useInviteCode": "招待コードをお持ちですか？"
     },
     "email": "メール",
     "displayName": "名前",
     "password": {
-      "placeholder": "パスワード（6文字以上）"
+      "placeholder": "パスワード（6文字以上）",
+      "minimumLength": "Use at least 8 characters."
     },
     "confirmPassword": "パスワードを確認",
     "passwordsMatch": "✔ パスワードが一致しています",
@@ -452,6 +480,53 @@
       "login": "ログインへ",
       "error": "パスワード再設定エラー",
       "passwordPlaceholder": "新しいパスワード"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "招待を受け取った後にアプリをインストールした場合は、6桁のコードを入力して続行してください。",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
     }
   },
   "completeProfile": {
@@ -476,6 +551,40 @@
       "min": "Tryggd ID は3文字以上で入力してください。",
       "max": "Tryggd ID は24文字以内で入力してください。",
       "chars": "使用できるのは小文字、数字、ドット、アンダースコアのみです。"
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Upgrade path",
+      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
+      "button": "Upgrade coming soon"
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      }
     }
   }
 }

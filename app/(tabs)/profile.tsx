@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import {
     Alert,
     AppState,
-    Dimensions,
     Image,
     Modal,
     Platform,
@@ -43,7 +42,6 @@ type UserProfile = {
     avatar_base64?: string | null;
 };
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -54,6 +52,7 @@ export default function ProfileScreen() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
     const isMountedRef = useRef(true);
 
     const [profile, setProfile] = useState<UserProfile>({
@@ -70,6 +69,7 @@ export default function ProfileScreen() {
 
     const isAppleRelayEmail = isAppleRelayEmailAddress(profile.email);
     const isInvitedAccount = isSyntheticAuthEmail(profile.email);
+    const displayAvatarUrl = profile.avatar_url?.trim() || '';
     const providerLabel =
         isInvitedAccount
             ? 'Tryggd ID and password'
@@ -78,6 +78,10 @@ export default function ProfileScreen() {
             : profile.auth_provider === 'google'
                 ? 'Google'
                 : 'Email';
+
+    useEffect(() => {
+        setAvatarLoadFailed(false);
+    }, [displayAvatarUrl]);
 
     // ✅ 1. Define loadProfile with useCallback
     const loadProfile = useCallback(async () => {
@@ -504,10 +508,11 @@ export default function ProfileScreen() {
                         style={styles.avatarTouchable}
                         activeOpacity={0.8}
                     >
-                        {profile.avatar_url ? (
+                        {displayAvatarUrl && !avatarLoadFailed ? (
                             <Image
-                                source={{ uri: profile.avatar_url }}
+                                source={{ uri: displayAvatarUrl }}
                                 style={styles.avatarImage}
+                                onError={() => setAvatarLoadFailed(true)}
                             />
                         ) : (
                             <View style={styles.avatarPlaceholder}>

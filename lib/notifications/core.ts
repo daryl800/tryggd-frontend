@@ -315,10 +315,11 @@ export async function sendContactRequestNotification({
 export async function hasSentWelfareCheck(
     recipientUserId: string,
     senderUserId: string,
-    checkinTime: string
+    checkinTime: string,
+    welfareKind: 'today_check' | 'overdue_check'
 ): Promise<boolean> {
     try {
-        const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}`;
+        const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
         const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
         if (cached) {
             const parsed = JSON.parse(cached) as Record<string, boolean>;
@@ -334,6 +335,7 @@ export async function hasSentWelfareCheck(
             .eq('sender_user_id', senderUserId)
             .eq('type', 'welfare_check')
             .filter('data->>checkinTime', 'eq', checkinTime)
+            .filter('data->>welfareKind', 'eq', welfareKind)
             .limit(1);
 
         if (error) throw error;
@@ -360,23 +362,26 @@ export async function sendWelfareCheckNotification({
     senderUserId,
     senderName,
     checkinTime,
+    welfareKind,
 }: {
     receiverUserId: string;
     senderUserId: string;
     senderName?: string;
     checkinTime: string;
+    welfareKind: 'today_check' | 'overdue_check';
 }): Promise<{ success: boolean; alreadySent?: boolean; error?: string }> {
     try {
         console.log('📤 Sending welfare check notification...', {
             receiverUserId,
             senderUserId,
             checkinTime,
+            welfareKind,
         });
 
-        const cacheKey = `${receiverUserId}_${senderUserId}_${checkinTime}`;
-        const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime);
+        const cacheKey = `${receiverUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
+        const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime, welfareKind);
         if (alreadySent) {
-            console.log('⏩ Welfare check already sent for this overdue check-in');
+            console.log('⏩ Welfare check already sent for this state/check-in');
             return { success: true, alreadySent: true };
         }
         const { data: sessionData } = await supabase.auth.getSession();
@@ -398,6 +403,7 @@ export async function sendWelfareCheckNotification({
                 senderUserId,
                 senderName,
                 checkinTime,
+                welfareKind,
             }),
         });
 

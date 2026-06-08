@@ -49,7 +49,6 @@ const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2;
 const STORAGE_KEY = '@checkin_state';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
-const IS_IOS = Platform.OS === 'ios';
 const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
@@ -196,6 +195,7 @@ const formatTime24h = (date: Date, language: string) => {
     no: 'nb-NO',
     da: 'da-DK',
     fi: 'fi-FI',
+    th: 'th-TH',
     'zh-Hans': 'zh_Hans',
     'zh-Hant': 'zh_Hant',
     zh: 'zh-CN',
@@ -209,7 +209,7 @@ const formatTime24h = (date: Date, language: string) => {
       minute: '2-digit',
       hour12: false,
     });
-  } catch (error) {
+  } catch {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -273,12 +273,22 @@ const interpolateColor = (from: string, to: string, ratio: number) => {
 
 const getWellnessHeartColor = (score: number) => {
   const clampedScore = clampWellnessValue(score);
-  const lowColor = '#7A7A7A';
+  const veryLowColor = '#7A5C4D';
+  const lowColor = '#A8A8A8';
   const midColor = BaseColors.primary;
   const highColor = '#FFD700';
 
-  if (clampedScore <= 0) {
-    const ratio = (clampedScore - WELLNESS_MIN) / (WELLNESS_DEFAULT - WELLNESS_MIN || 1);
+  if (clampedScore <= -1) {
+    const ratio = (clampedScore - WELLNESS_MIN) / Math.max(1, -1 - WELLNESS_MIN);
+    return interpolateColor(veryLowColor, lowColor, ratio);
+  }
+
+  if (clampedScore === 0) {
+    return midColor;
+  }
+
+  if (clampedScore < 0) {
+    const ratio = clampedScore + 1;
     return interpolateColor(lowColor, midColor, ratio);
   }
 
@@ -436,14 +446,14 @@ export default function HomeScreen() {
   const [checkedInToday, setCheckedInToday] = useState(false);
   const [lastCheckinUtc, setLastCheckinUtc] = useState<string | null>(null);
   const [lastCheckinId, setLastCheckinId] = useState<string | null>(null);
-  const { streak, loading: streakLoading, refetch: refetchStreak } = useStreak();
-  const [showResetButton, setShowResetButton] = useState(false);
+  const { streak, refetch: refetchStreak } = useStreak();
+  const [, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
   const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
-  const [submittedWellnessScore, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
 
@@ -869,7 +879,10 @@ export default function HomeScreen() {
       // Trigger animation
       triggerCheckInAnimation();
 
-      const timeZone = Localization.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      const timeZone =
+        Localization.getCalendars?.()[0]?.timeZone ||
+        Intl.DateTimeFormat().resolvedOptions().timeZone ||
+        'UTC';
 
       // Do the actual API calls in the background
       Promise.all([

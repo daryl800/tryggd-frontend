@@ -42,6 +42,7 @@ export default ({ config }) => ({
                 "no",
                 "es",
                 "sv",
+                "th",
                 "zh-Hans",
                 "zh-Hant",
             ],

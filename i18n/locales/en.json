@@ -91,16 +91,17 @@
     },
     "responseButton": {
       "sendResponse": "Send a Like 👍",
-      "responded": "👏 Applauded!"
+      "responded": "👏 Applauded!",
+      "sent": "Sent Like 👌"
     },
     "checkinResponse": {
-      "todayLikes_one": "👋 You got {{count}} like today:",
-      "todayLikes_other": "👋 You got {{count}} likes today:",
+      "todayLikes_one": "⭐️ You got {{count}} check-in response today:",
+      "todayLikes_other": "⭐️ You got {{count}} check-in responses today:",
       "prefix": "reacted to your check-in",
       "defaultMessage": "likes 👍 your checkin!"
     },
     "welfareButton": {
-      "send": "Are you alright?",
+      "send": "Are you alright❓",
       "sent": "Sent ✓"
     },
     "sharedLocation": {
@@ -122,6 +123,14 @@
       "neutral": "All is well 🙂",
       "good": "Feeling good ☺️",
       "great": "Feeling very happy today 😊"
+    },
+    "todayCheckButton": {
+      "send": "How are you today 👋"
+    },
+    "checkedInAt": "Checked in @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 You got {{count}} greeting today:",
+      "todayGreetings_other": "💛 You got {{count}} greetings today:"
     }
   },
   "contacts": {
@@ -470,7 +479,8 @@
       "continueWithApple": "Continue with Apple",
       "connectingToApple": "Connecting to Apple...",
       "orContinueWithEmail": "or continue with email",
-      "socialError": "Sign-in failed"
+      "socialError": "Sign-in failed",
+      "useInviteCode": "Have an invite code?"
     },
     "email": "Email",
     "displayName": "Name",
@@ -549,7 +559,8 @@
         "completeRecovery": "Failed to complete password recovery.",
         "phoneAlreadyInUse": "This phone number is already in use.",
         "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-      }
+      },
+      "enterCodeStandaloneHint": "If you installed the app after receiving an invite, enter the 6-digit code to continue."
     }
   },
   "completeProfile": {

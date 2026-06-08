@@ -8,7 +8,7 @@ import {
     SCREEN,
     SPACING
 } from '@/constants/ui';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const commonStyles = StyleSheet.create({
     // ===== CONTAINERS =====
@@ -51,8 +51,8 @@ export const commonStyles = StyleSheet.create({
     },
 
     headerIcon: {
-        size: ICON_SIZES.LG,
-        color: colors.primary,
+        width: ICON_SIZES.LG,
+        height: ICON_SIZES.LG,
     },
 
     // ===== CARDS =====
@@ -90,7 +90,7 @@ export const commonStyles = StyleSheet.create({
     },
 
     buttonSecondary: {
-        backgroundColor: colors.secondary,
+        backgroundColor: colors.primaryDark,
     },
 
     buttonText: {

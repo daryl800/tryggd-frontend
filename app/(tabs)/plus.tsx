@@ -21,7 +21,7 @@ const FEATURE_ICONS = [
   { key: 'notifications', icon: 'notifications-outline' as const },
   { key: 'contacts', icon: 'people-outline' as const },
   { key: 'welfare', icon: 'heart-outline' as const },
-];
+] as const;
 
 export default function PlusScreen() {
   const { t } = useTranslation();

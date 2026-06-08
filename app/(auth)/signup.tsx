@@ -1,5 +1,5 @@
 // app/(auth)/signup.tsx
-import BaseColors from "@/constants/colors";
+import { BaseColors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useRef, useState } from "react";
@@ -88,7 +88,7 @@ export default function SignupScreen() {
             // Try to stringify the whole object
             try {
                 console.error("Stringified:", JSON.stringify(err, null, 2));
-            } catch (e) {
+            } catch {
                 console.error("Could not stringify error");
             }
 
