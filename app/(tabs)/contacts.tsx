@@ -1984,7 +1984,7 @@ export default function ContactsScreen() {
                                     <ActivityIndicator size="small" color={BaseColors.primary} />
                                 ) : (
                                     <Ionicons
-                                        name="qr-code-outline"
+                                        name="scan-outline"
                                         size={ICON_SIZES.LG}
                                         color={BaseColors.primary}
                                     />
