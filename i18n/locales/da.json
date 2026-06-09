@@ -256,6 +256,14 @@
       "reject": "Failed to reject request",
       "cancel": "Failed to cancel request"
     },
+    "qr": {
+      "permissionTitle": "Kameratilladelse påkrævet",
+      "permissionMessage": "Tillad venligst kameraadgang for at scanne QR-koder.",
+      "scanHint": "Peg på en Tryggd QR-kode for at tilføje en kontakt",
+      "successTitle": "Kontakt tilføjet",
+      "successMessage": "{{name}} er blevet tilføjet til dine kontakter",
+      "newContact": "Ny kontakt"
+    },
     "messages": {
       "contactDefault": "This contact"
     },
@@ -345,6 +353,11 @@
       "deleting": "Sletter...",
       "successTitle": "Konto slettet",
       "successMessage": "Din konto er blevet slettet permanent."
+    },
+    "qr": {
+      "title": "Min QR-kode",
+      "hint": "Lad nogen scanne denne for at tilføje dig som kontakt med det samme.",
+      "errorGenerating": "Kunne ikke generere QR-kode. Prøv igen."
     }
   },
   "settings": {

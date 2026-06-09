@@ -256,6 +256,14 @@
       "reject": "Failed to reject request",
       "cancel": "Failed to cancel request"
     },
+    "qr": {
+      "permissionTitle": "Kamerabehörighet krävs",
+      "permissionMessage": "Tillåt kameraåtkomst för att skanna QR-koder.",
+      "scanHint": "Rikta kameran mot en Tryggd QR-kod för att lägga till en kontakt",
+      "successTitle": "Kontakt tillagd",
+      "successMessage": "{{name}} har lagts till i dina kontakter",
+      "newContact": "Ny kontakt"
+    },
     "messages": {
       "contactDefault": "This contact"
     },
@@ -345,6 +353,11 @@
       "deleting": "Raderar...",
       "successTitle": "Kontot raderat",
       "successMessage": "Ditt konto har raderats permanent."
+    },
+    "qr": {
+      "title": "Min QR-kod",
+      "hint": "Låt någon skanna detta för att lägga till dig som kontakt direkt.",
+      "errorGenerating": "Kunde inte generera QR-kod. Försök igen."
     }
   },
   "settings": {

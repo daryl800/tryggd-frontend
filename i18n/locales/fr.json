@@ -255,6 +255,14 @@
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
     },
+    "qr": {
+      "permissionTitle": "Accès à la caméra requis",
+      "permissionMessage": "Veuillez autoriser l'accès à la caméra pour scanner les QR codes.",
+      "scanHint": "Pointez vers un QR code Tryggd pour ajouter un contact",
+      "successTitle": "Contact ajouté",
+      "successMessage": "{{name}} a été ajouté à vos contacts",
+      "newContact": "Nouveau contact"
+    },
     "messages": {
       "contactDefault": "This contact"
     },
@@ -344,6 +352,11 @@
       "deleting": "Suppression...",
       "successTitle": "Compte supprimé",
       "successMessage": "Votre compte a été supprimé définitivement."
+    },
+    "qr": {
+      "title": "Mon QR code",
+      "hint": "Laissez quelqu'un scanner ceci pour vous ajouter instantanément comme contact.",
+      "errorGenerating": "Impossible de générer le QR code. Veuillez réessayer."
     }
   },
   "settings": {

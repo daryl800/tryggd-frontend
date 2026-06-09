@@ -256,6 +256,14 @@
       "reject": "Failed to reject request",
       "cancel": "Failed to cancel request"
     },
+    "qr": {
+      "permissionTitle": "Kameran käyttöoikeus vaaditaan",
+      "permissionMessage": "Salli kameran käyttö QR-koodien skannaamiseen.",
+      "scanHint": "Osoita Tryggd QR-koodiin lisätäksesi yhteystiedon",
+      "successTitle": "Yhteystieto lisätty",
+      "successMessage": "{{name}} on lisätty yhteystietoihisi",
+      "newContact": "Uusi yhteystieto"
+    },
     "messages": {
       "contactDefault": "This contact"
     },
@@ -345,6 +353,11 @@
       "deleting": "Poistetaan...",
       "successTitle": "Tili poistettu",
       "successMessage": "Tilisi on poistettu pysyvästi."
+    },
+    "qr": {
+      "title": "Oma QR-koodini",
+      "hint": "Anna jonkun skannata tämä lisätäkseen sinut yhteystiedoksi heti.",
+      "errorGenerating": "QR-koodia ei voitu luoda. Yritä uudelleen."
     }
   },
   "settings": {

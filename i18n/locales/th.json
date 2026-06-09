@@ -255,6 +255,14 @@
       "updateLocationSharing": "อัปเดตการแชร์ตำแหน่งไม่สำเร็จ",
       "noContactUpdated": "ไม่มีแถวผู้ติดต่อใดถูกอัปเดต"
     },
+    "qr": {
+      "permissionTitle": "ต้องการสิทธิ์เข้าถึงกล้อง",
+      "permissionMessage": "กรุณาอนุญาตการเข้าถึงกล้องเพื่อสแกน QR code",
+      "scanHint": "ชี้กล้องไปที่ Tryggd QR code เพื่อเพิ่มผู้ติดต่อ",
+      "successTitle": "เพิ่มผู้ติดต่อแล้ว",
+      "successMessage": "{{name}} ถูกเพิ่มเข้าในรายชื่อผู้ติดต่อของคุณแล้ว",
+      "newContact": "ผู้ติดต่อใหม่"
+    },
     "plusFeature": {
       "title": "ฟีเจอร์ Plus",
       "notifications": "อัปเกรดเป็น Plus เพื่อควบคุมการแจ้งเตือนเช็กอินของผู้ติดต่อ",
@@ -344,6 +352,11 @@
       "deleting": "กำลังลบ...",
       "successTitle": "ลบบัญชีแล้ว",
       "successMessage": "บัญชีของคุณถูกลบอย่างถาวรแล้ว"
+    },
+    "qr": {
+      "title": "QR Code ของฉัน",
+      "hint": "ให้คนอื่นสแกน QR นี้เพื่อเพิ่มคุณเป็นผู้ติดต่อทันที",
+      "errorGenerating": "ไม่สามารถสร้าง QR code ได้ กรุณาลองใหม่อีกครั้ง"
     }
   },
   "settings": {

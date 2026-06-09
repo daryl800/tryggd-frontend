@@ -8,6 +8,7 @@ import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -503,6 +504,9 @@ export default function ContactsScreen() {
     const [creatingInvite, setCreatingInvite] = useState(false);
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [inviteShareVisible, setInviteShareVisible] = useState(false);
+    const [scannerVisible, setScannerVisible] = useState(false);
+    const [scannerProcessing, setScannerProcessing] = useState(false);
+    const [cameraPermission, requestCameraPermission] = useCameraPermissions();
     const [suggestedInviteUsername, setSuggestedInviteUsername] = useState('');
     const [generatedInvite, setGeneratedInvite] = useState<GeneratedInvite | null>(null);
     const suggestedInviteValidationMessage = useMemo(
@@ -940,6 +944,66 @@ export default function ContactsScreen() {
             }
         }, 150);
     };
+
+    const handleOpenScanner = useCallback(async () => {
+        if (totalContactsCount >= capabilities.maxContacts) {
+            Alert.alert(
+                t('contacts.alerts.limitReached.title'),
+                t('contacts.alerts.limitReached.message'),
+                [{ text: t('common.ok') }]
+            );
+            return;
+        }
+        if (!cameraPermission?.granted) {
+            const result = await requestCameraPermission();
+            if (!result.granted) {
+                Alert.alert(t('contacts.qr.permissionTitle'), t('contacts.qr.permissionMessage'));
+                return;
+            }
+        }
+        setScannerProcessing(false);
+        setScannerVisible(true);
+    }, [cameraPermission, capabilities.maxContacts, requestCameraPermission, t, totalContactsCount]);
+
+    const handleQrScanned = useCallback(async ({ data }: { data: string }) => {
+        if (scannerProcessing) return;
+
+        const match = data.match(/tryggd:\/\/add\?token=([a-f0-9]+)/);
+        if (!match) return;
+
+        const token = match[1];
+        setScannerProcessing(true);
+        setScannerVisible(false);
+
+        try {
+            const { data: result, error } = await supabase.rpc('add_contact_via_qr', { p_token: token });
+            if (error) throw error;
+
+            if (result?.error === 'contact_limit_reached') {
+                Alert.alert(t('contacts.alerts.limitReached.title'), t('contacts.alerts.limitReached.message'));
+                return;
+            }
+            if (result?.warning === 'already_connected') {
+                Alert.alert(t('contacts.alerts.contactExists.title'), t('contacts.alerts.alreadyInContacts'));
+                return;
+            }
+            if (result?.error) {
+                Alert.alert(t('errors.title'), result.error);
+                return;
+            }
+            if (result?.success) {
+                const name = result.contact?.display_name || result.contact?.username || t('contacts.qr.newContact');
+                Alert.alert(
+                    t('contacts.qr.successTitle'),
+                    t('contacts.qr.successMessage', { name })
+                );
+            }
+        } catch (e: any) {
+            Alert.alert(t('errors.title'), e.message || t('contacts.errors.save'));
+        } finally {
+            setScannerProcessing(false);
+        }
+    }, [scannerProcessing, t]);
 
     const handleCreateInvite = useCallback(async () => {
         if (totalContactsCount >= capabilities.maxContacts) {
@@ -1911,6 +1975,21 @@ export default function ContactsScreen() {
                                     color={BaseColors.primary}
                                 />
                             </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleOpenScanner}
+                                style={styles.inviteButton}
+                                disabled={scannerProcessing}
+                            >
+                                {scannerProcessing ? (
+                                    <ActivityIndicator size="small" color={BaseColors.primary} />
+                                ) : (
+                                    <Ionicons
+                                        name="qr-code-outline"
+                                        size={ICON_SIZES.LG}
+                                        color={BaseColors.primary}
+                                    />
+                                )}
+                            </TouchableOpacity>
                             {/* <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
@@ -2218,6 +2297,32 @@ export default function ContactsScreen() {
                         )}
                     </ScrollView>
                 )}
+
+                {/* QR Scanner Modal */}
+                <Modal
+                    visible={scannerVisible}
+                    animationType="slide"
+                    onRequestClose={() => setScannerVisible(false)}
+                >
+                    <View style={styles.scannerContainer}>
+                        <CameraView
+                            style={StyleSheet.absoluteFill}
+                            facing="back"
+                            barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+                            onBarcodeScanned={handleQrScanned}
+                        />
+                        <View style={styles.scannerOverlay}>
+                            <View style={styles.scannerFrame} />
+                            <Text style={styles.scannerHint}>{t('contacts.qr.scanHint')}</Text>
+                        </View>
+                        <TouchableOpacity
+                            style={styles.scannerCloseButton}
+                            onPress={() => setScannerVisible(false)}
+                        >
+                            <Ionicons name="close-circle" size={44} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
 
                 <Modal
                     visible={inviteModalVisible}
@@ -2948,5 +3053,34 @@ const styles = StyleSheet.create({
         fontSize: iosFontSize(13),
         color: BaseColors.neutral[500],
         marginBottom: 16,
+    },
+    scannerContainer: {
+        flex: 1,
+        backgroundColor: '#000',
+    },
+    scannerOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    scannerFrame: {
+        width: 240,
+        height: 240,
+        borderWidth: 3,
+        borderColor: 'white',
+        borderRadius: 16,
+        backgroundColor: 'transparent',
+    },
+    scannerHint: {
+        marginTop: 24,
+        color: 'white',
+        fontSize: iosFontSize(15),
+        textAlign: 'center',
+        paddingHorizontal: 32,
+    },
+    scannerCloseButton: {
+        position: 'absolute',
+        top: Platform.OS === 'ios' ? 60 : 20,
+        right: 20,
     },
 });

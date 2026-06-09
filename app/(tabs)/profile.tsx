@@ -21,7 +21,9 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { deriveDisplayName, isAppleRelayEmail as isAppleRelayEmailAddress } from '../../lib/profile/displayName';
 import { isLocalAvatarUri, uploadAvatarToStorage } from '../../lib/profile/avatarStorage';
@@ -49,6 +51,9 @@ export default function ProfileScreen() {
     const { refreshProfile } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [showAvatarModal, setShowAvatarModal] = useState(false);
+    const [showQrModal, setShowQrModal] = useState(false);
+    const [qrToken, setQrToken] = useState<string | null>(null);
+    const [generatingQr, setGeneratingQr] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -345,6 +350,22 @@ export default function ProfileScreen() {
         }
     };
 
+    const handleShowQr = async () => {
+        setShowQrModal(true);
+        setQrToken(null);
+        setGeneratingQr(true);
+        try {
+            const { data, error } = await supabase.rpc('generate_qr_token');
+            if (error) throw error;
+            setQrToken(data as string);
+        } catch {
+            Alert.alert(t('errors.title'), t('profile.qr.errorGenerating'));
+            setShowQrModal(false);
+        } finally {
+            setGeneratingQr(false);
+        }
+    };
+
     const handleLogout = async () => {
         Alert.alert(t('profile.logout.title'), t('profile.logout.confirm'), [
             {
@@ -584,12 +605,16 @@ export default function ProfileScreen() {
                         'auth_provider',
                         false
                     )}
-                    {renderField(
-                        'Tryggd ID',
-                        profile.username || '',
-                        'username',
-                        false
-                    )}
+                    {profile.username ? (
+                        <View style={styles.tryggdIdRow}>
+                            <View style={{ flex: 1 }}>
+                                {renderField('Tryggd ID', profile.username, 'username', false)}
+                            </View>
+                            <TouchableOpacity onPress={handleShowQr} style={styles.qrIconButton} activeOpacity={0.7}>
+                                <Ionicons name="qr-code-outline" size={22} color={BaseColors.primary} />
+                            </TouchableOpacity>
+                        </View>
+                    ) : renderField('Tryggd ID', '', 'username', false)}
                     {renderField(
                         t('profile.fields.name'),
                         profile.display_name || '',
@@ -634,6 +659,38 @@ export default function ProfileScreen() {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
+
+            {/* QR Code Modal */}
+            <Modal visible={showQrModal} transparent animationType="fade">
+                <Pressable style={styles.modalOverlay} onPress={() => setShowQrModal(false)}>
+                    <Pressable style={styles.qrModalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>{t('profile.qr.title')}</Text>
+                            <TouchableOpacity onPress={() => setShowQrModal(false)}>
+                                <Ionicons name="close" size={24} color={BaseColors.neutral[500]} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.qrModalBody}>
+                            {generatingQr ? (
+                                <ActivityIndicator size="large" color={BaseColors.primary} style={{ height: 200 }} />
+                            ) : qrToken ? (
+                                <>
+                                    <View style={styles.qrWrapper}>
+                                        <QRCode
+                                            value={`tryggd://add?token=${qrToken}`}
+                                            size={200}
+                                            color={BaseColors.text.dark}
+                                            backgroundColor={BaseColors.surface}
+                                        />
+                                    </View>
+                                    <Text style={styles.qrUsername}>@{profile.username}</Text>
+                                    <Text style={styles.qrHint}>{t('profile.qr.hint')}</Text>
+                                </>
+                            ) : null}
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
 
             {/* Avatar Selection Modal */}
             <Modal visible={showAvatarModal} transparent animationType="fade">
@@ -974,5 +1031,43 @@ const styles = StyleSheet.create({
     modalOptionText: {
         fontSize: iosFontSize(16),
         color: BaseColors.text.dark,
+    },
+    tryggdIdRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    qrIconButton: {
+        padding: 8,
+        marginLeft: 4,
+    },
+    qrModalContent: {
+        backgroundColor: BaseColors.surface,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+    },
+    qrModalBody: {
+        alignItems: 'center',
+        paddingVertical: 24,
+        paddingHorizontal: 20,
+    },
+    qrWrapper: {
+        padding: 16,
+        backgroundColor: BaseColors.surface,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
+        marginBottom: 16,
+    },
+    qrUsername: {
+        fontSize: iosFontSize(18),
+        fontWeight: '700',
+        color: BaseColors.text.dark,
+        marginBottom: 8,
+    },
+    qrHint: {
+        fontSize: iosFontSize(13),
+        color: BaseColors.neutral[400],
+        textAlign: 'center',
     },
 });
