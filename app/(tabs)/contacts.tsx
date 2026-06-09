@@ -1003,7 +1003,6 @@ export default function ContactsScreen() {
         } catch (e: any) {
             Alert.alert(t('errors.title'), e.message || t('contacts.errors.save'));
         } finally {
-            scannerProcessingRef.current = false;
             setScannerProcessing(false);
         }
     }, [t]);
