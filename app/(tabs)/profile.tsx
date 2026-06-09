@@ -611,7 +611,7 @@ export default function ProfileScreen() {
                                 {renderField('Tryggd ID', profile.username, 'username', false)}
                             </View>
                             <TouchableOpacity onPress={handleShowQr} style={styles.qrIconButton} activeOpacity={0.7}>
-                                <Ionicons name="qr-code-outline" size={22} color={BaseColors.primary} />
+                                <Ionicons name="qr-code-outline" size={28} color={BaseColors.primary} />
                             </TouchableOpacity>
                         </View>
                     ) : renderField('Tryggd ID', '', 'username', false)}
