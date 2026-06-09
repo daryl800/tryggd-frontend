@@ -70,13 +70,13 @@ const WELFARE_MESSAGES = {
   },
   'zh-Hans': {
     title: '💛 你收到一个问候',
-    today: (_name: string) => `你今天过得好吗？💛`,
+    today: (_name: string) => `你今天怎么样？💛`,
     overdue: (_name: string) => `你最近还好吗？💛`,
     someone: '有人',
   },
   'zh-Hant': {
     title: '💛 你收到一個問候',
-    today: (_name: string) => `你今天過得好嗎？💛`,
+    today: (_name: string) => `你今天怎麼樣？💛`,
     overdue: (_name: string) => `你最近還好嗎？💛`,
     someone: '有人',
   },

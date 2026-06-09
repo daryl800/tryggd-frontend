@@ -91,8 +91,7 @@
     },
     "responseButton": {
       "sendResponse": "👏 Taputa tälle?",
-      "responded": "👏 Taputettu!",
-      "sent": "Tykkäys lähetetty 👌"
+      "sent": "Tykkäys lähetetty ✓"
     },
     "checkinResponse": {
       "todayLikes_one": "⭐️ Sait tänään {{count}} vastauksen check-iniisi:",
@@ -101,8 +100,8 @@
       "defaultMessage": "tykkää 👍 kirjautumisestasi!"
     },
     "welfareButton": {
-      "send": "Oletko kunnossa❓",
-      "sent": "Lähetetty ✓"
+      "send": "Oletko kunnossa? 🍀",
+      "sent": "Tervehdys lähetetty ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -118,14 +117,15 @@
       "finland": "Finland"
     },
     "wellness": {
-      "veryLow": "En voi hyvin 😔",
-      "low": "Hieman alamaissa 😕",
-      "neutral": "Kaikki on hyvin 🙂",
-      "good": "Voin hyvin ☺️",
-      "great": "Todella iloinen tänään 😊"
+      "veryLow": "En voi hyvin\n😔",
+      "low": "Hieman alamaissa\n😕",
+      "neutral": "Kaikki on hyvin\n🙂",
+      "good": "Voin hyvin\n☺️",
+      "great": "Todella iloinen tänään\n😊"
     },
     "todayCheckButton": {
-      "send": "Mitä kuuluu tänään 👋"
+      "send": "Mitä kuuluu tänään? 👋",
+      "sent": "Tervehdys lähetetty ✓"
     },
     "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
     "welfareCheck": {

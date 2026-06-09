@@ -91,8 +91,7 @@
     },
     "responseButton": {
       "sendResponse": "👏 Gi en high five?",
-      "responded": "👏 High five sendt!",
-      "sent": "Like sendt 👌"
+      "sent": "Like sendt ✓"
     },
     "checkinResponse": {
       "todayLikes_one": "⭐️ Du fikk {{count}} svar på innsjekkingen din i dag:",
@@ -101,8 +100,8 @@
       "defaultMessage": "liker 👍 innsjekkingen din!"
     },
     "welfareButton": {
-      "send": "Går det bra❓",
-      "sent": "Sendt ✓"
+      "send": "Går det bra? 🍀",
+      "sent": "Hilsen sendt ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -118,14 +117,15 @@
       "finland": "Finland"
     },
     "wellness": {
-      "veryLow": "Føler meg ikke bra 😔",
-      "low": "Litt nedfor 😕",
-      "neutral": "Alt er bra 🙂",
-      "good": "Føler meg bra ☺️",
-      "great": "Veldig glad i dag 😊"
+      "veryLow": "Føler meg ikke bra\n😔",
+      "low": "Litt nedfor\n😕",
+      "neutral": "Alt er bra\n🙂",
+      "good": "Føler meg bra\n☺️",
+      "great": "Veldig glad i dag\n😊"
     },
     "todayCheckButton": {
-      "send": "Hvordan har du det i dag 👋"
+      "send": "Hvordan har du det i dag? 👋",
+      "sent": "Hilsen sendt ✓"
     },
     "checkedInAt": "Sjekket inn @ {{time}} {{date}}",
     "welfareCheck": {

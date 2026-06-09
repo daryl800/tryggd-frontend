@@ -126,9 +126,8 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "发送点赞 👍",
-      "responded": "👏 已点赞！",
-      "sent": "已发送赞 👌"
+      "sendResponse": "点赞 👍",
+      "sent": "已点赞 ✓"
     },
     "checkinResponse": {
       "todayLikes_one": "⭐️ 你今天收到 {{count}} 个 check-in 的回应：",
@@ -137,8 +136,8 @@
       "defaultMessage": "为您的签到点赞 👍！"
     },
     "welfareButton": {
-      "send": "你最近还好吗❓",
-      "sent": "已发送赞"
+      "send": "你最近还好吗？🍀",
+      "sent": "已发送问候 ✓"
     },
     "sharedLocation": {
       "view": "查看共享位置"
@@ -154,14 +153,15 @@
       "finland": "芬兰"
     },
     "wellness": {
-      "veryLow": "😔 太不舒服",
-      "low": "😕 有点低落",
-      "neutral": "🙂 一切安好",
-      "good": "☺️ 感觉不错",
-      "great": "😊 今天很开心"
+      "veryLow": "太不舒服\n😔",
+      "low": "有点低落\n😕",
+      "neutral": "一切安好\n🙂",
+      "good": "感觉不错\n☺️",
+      "great": "今天很开心\n😊"
     },
     "todayCheckButton": {
-      "send": "你今天好吗 👋"
+      "send": "你今天怎么样？👋",
+      "sent": "已发送问候 ✓"
     },
     "checkedInAt": "已签到 @ {{time}} {{date}}",
     "welfareCheck": {

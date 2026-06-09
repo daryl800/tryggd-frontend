@@ -1187,6 +1187,7 @@ export default function ActivityScreen() {
 
     const [sendingResponse, setSendingResponse] = useState(false);
     const [sendingWelfareCheck, setSendingWelfareCheck] = useState(false);
+    const [fetchingLocation, setFetchingLocation] = useState(false);
     const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
     const [responseSent, setResponseSent] = useState(() => {
       if (!user || !timestamp || isOwner) return false;
@@ -1366,6 +1367,39 @@ export default function ActivityScreen() {
       }
     };
 
+    const openCurrentLocation = async () => {
+      if (fetchingLocation) return;
+      setFetchingLocation(true);
+      try {
+        const locationModule = await import('expo-location');
+        const Location = locationModule?.default ?? locationModule;
+
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+          return;
+        }
+
+        const position = await Promise.race([
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy?.Balanced ?? 3 }),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+        ]);
+
+        if (!position) {
+          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+          return;
+        }
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${position.coords.latitude},${position.coords.longitude}`;
+        await Linking.openURL(url);
+      } catch (error) {
+        console.error('Error opening current location:', error);
+        Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+      } finally {
+        setFetchingLocation(false);
+      }
+    };
+
     const formatActivityTime = (
       timestamp: string | null,
       timezone?: string | null,
@@ -1494,18 +1528,29 @@ export default function ActivityScreen() {
                 <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
               )}
             </View>
-            {wellnessMeta && (
-              <View
-                style={[
-                  styles.wellnessBadge,
-                  {
-                    backgroundColor: wellnessMeta.backgroundColor,
-                    borderColor: wellnessMeta.borderColor,
-                  },
-                ]}
+            {capabilities.canShareLocation && (isOwner || shared_location) && (
+              <TouchableOpacity
+                style={styles.locationInlineButton}
+                onPress={isOwner ? openCurrentLocation : openSharedLocation}
+                activeOpacity={0.7}
+                disabled={fetchingLocation}
               >
-                <Ionicons name="heart" size={36} color={wellnessMeta.color} />
-              </View>
+                {fetchingLocation ? (
+                  <ActivityIndicator size="small" color={BaseColors.primaryDark} />
+                ) : (
+                  <Ionicons name="location" size={30} color={BaseColors.primaryDark} />
+                )}
+              </TouchableOpacity>
+            )}
+            {!isOwner && shared_location?.checkinTimeIso && (
+              <Text style={styles.locationTime}>
+                {new Date(shared_location.checkinTimeIso).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                  timeZone: checkin_timezone || undefined,
+                })}
+              </Text>
             )}
           </View>
 
@@ -1514,11 +1559,6 @@ export default function ActivityScreen() {
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
               </Text>
-              {username && (
-                <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
-                  @{username}
-                </Text>
-              )}
             </View>
 
             {isValidTimestamp ? (
@@ -1566,7 +1606,7 @@ export default function ActivityScreen() {
                   disabled={!isSingleActionEnabled || sendingResponse || sendingWelfareCheck}
                   activeOpacity={0.7}
                 >
-                  {(sendingResponse || sendingWelfareCheck) ? (
+                  {(sendingResponse || sendingWelfareCheck || ((isTodayCheckMode || isWelfareMode) && welfareCheckSent === null)) ? (
                     <ActivityIndicator
                       size="small"
                       color={isWelfareMode ? BaseColors.error : BaseColors.primary}
@@ -1577,9 +1617,13 @@ export default function ActivityScreen() {
                         isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
                         !isSingleActionEnabled && styles.responseButtonTextDisabled
                       ]}>
-                        {isTodayCheckMode
-                          ? (t('activity.todayCheckButton.send') || 'How are you today?')
-                          : (t('activity.welfareButton.send') || 'Are you alright?')}
+                        {welfareCheckSent
+                          ? (isTodayCheckMode
+                            ? (t('activity.todayCheckButton.sent') || 'Greeting sent ✓')
+                            : (t('activity.welfareButton.sent') || 'Greeting sent ✓'))
+                          : isTodayCheckMode
+                            ? (t('activity.todayCheckButton.send') || 'How are you today?')
+                            : (t('activity.welfareButton.send') || 'Are you alright?')}
                       </Text>
                     </View>
                   ) : (
@@ -1597,16 +1641,18 @@ export default function ActivityScreen() {
             )}
           </View>
 
-          {!isOwner && capabilities.canShareLocation && shared_location && (
-            <View style={styles.rightIconsColumn}>
-              <View style={styles.iconContainer} />
-              <TouchableOpacity
-                style={styles.locationInlineButton}
-                onPress={openSharedLocation}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="location" size={36} color={BaseColors.primaryDark} />
-              </TouchableOpacity>
+          {(username || wellnessMeta) && (
+            <View style={styles.rightColumn}>
+              {username && (
+                <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
+                  @{username}
+                </Text>
+              )}
+              {wellnessMeta && (
+                <View style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}>
+                  <Ionicons name="heart" size={30} color={wellnessMeta.color} />
+                </View>
+              )}
             </View>
           )}
 
@@ -1923,11 +1969,20 @@ const styles = StyleSheet.create({
     width: 56,
     marginRight: 12,
     alignItems: 'center',
+    gap: 6,
   },
-  rightIconsColumn: {
+  wellnessBadge: {
     width: 56,
-    marginLeft: 12,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationTime: {
+    fontSize: iosFontSize(10),
+    color: BaseColors.neutral[400],
+    textAlign: 'center',
   },
   iconContainer: {
     position: 'relative',
@@ -1960,7 +2015,6 @@ const styles = StyleSheet.create({
   nameEmailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: 4,
   },
   name: {
@@ -1974,6 +2028,19 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(12),
     color: BaseColors.neutral[400],
     flexShrink: 1,
+  },
+  rightColumn: {
+    width: 60,
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 2,
+  },
+  usernameText: {
+    fontSize: iosFontSize(11),
+    color: BaseColors.neutral[400],
+    textAlign: 'right',
+    marginBottom: 10,
   },
   timezone: {
     fontSize: iosFontSize(15),
@@ -1989,22 +2056,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  wellnessBadge: {
-    marginTop: 8,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   wellnessEmoji: {
     fontSize: 22,
   },
   locationInlineButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     backgroundColor: BaseColors.primaryLight,
@@ -2067,13 +2125,13 @@ const styles = StyleSheet.create({
   todayCheckButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: BaseColors.primaryLight,
+    backgroundColor: BaseColors.warningLight,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: BaseColors.primary,
+    borderColor: '#B45309',
     marginBottom: 8,
   },
   welfareButtonText: {
@@ -2084,7 +2142,7 @@ const styles = StyleSheet.create({
   todayCheckButtonText: {
     fontSize: iosFontSize(13),
     fontWeight: '600',
-    color: BaseColors.primary,
+    color: '#B45309',
   },
   welfareButtonContent: {
     flexDirection: 'row',

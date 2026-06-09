@@ -1580,7 +1580,7 @@ const styles = StyleSheet.create({
   checkedInText: {
     color: BaseColors.surface,
     fontSize: iosFontSize(22),
-    lineHeight: iosFontSize(26),
+    lineHeight: iosFontSize(34),
     fontWeight: '800',
     textAlign: 'center',
     width: '100%',

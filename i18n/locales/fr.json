@@ -91,8 +91,7 @@
     },
     "responseButton": {
       "sendResponse": "Envoyer un j'aime 👍",
-      "responded": "👏 Réagi !",
-      "sent": "Like envoyé 👌"
+      "sent": "Like envoyé ✓"
     },
     "checkinResponse": {
       "todayLikes_one": "⭐️ Vous avez reçu {{count}} réponse à votre check-in aujourd’hui :",
@@ -101,8 +100,8 @@
       "defaultMessage": "aime 👍 votre check-in !"
     },
     "welfareButton": {
-      "send": "Ça va❓",
-      "sent": "Envoyé ✓"
+      "send": "Ça va? 🍀",
+      "sent": "Message envoyé ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -118,14 +117,15 @@
       "finland": "Finland"
     },
     "wellness": {
-      "veryLow": "Je ne me sens pas bien 😔",
-      "low": "Un peu triste 😕",
-      "neutral": "Tout va bien 🙂",
-      "good": "Je me sens bien ☺️",
-      "great": "Très heureux aujourd’hui 😊"
+      "veryLow": "Je ne me sens pas bien\n😔",
+      "low": "Un peu triste\n😕",
+      "neutral": "Tout va bien\n🙂",
+      "good": "Je me sens bien\n☺️",
+      "great": "Très heureux aujourd’hui\n😊"
     },
     "todayCheckButton": {
-      "send": "Comment ça va aujourd’hui 👋"
+      "send": "Comment ça va aujourd’hui? 👋",
+      "sent": "Message envoyé ✓"
     },
     "checkedInAt": "A pointé à {{time}} {{date}}",
     "welfareCheck": {

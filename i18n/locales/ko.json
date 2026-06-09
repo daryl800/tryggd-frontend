@@ -91,8 +91,7 @@
     },
     "responseButton": {
       "sendResponse": "좋아요 👍 보내기",
-      "responded": "👏 반응 완료!",
-      "sent": "좋아요 전송됨 👌"
+      "sent": "좋아요 전송됨 ✓"
     },
     "checkinResponse": {
       "todayLikes_one": "⭐️ 오늘 {{count}}개의 체크인 반응을 받았습니다:",
@@ -101,8 +100,8 @@
       "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
     },
     "welfareButton": {
-      "send": "괜찮으세요❓",
-      "sent": "전송됨 ✓"
+      "send": "괜찮으세요? 🍀",
+      "sent": "안부 전송됨 ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -118,14 +117,15 @@
       "finland": "Finland"
     },
     "wellness": {
-      "veryLow": "많이 불편해요 😔",
-      "low": "조금 우울해요 😕",
-      "neutral": "괜찮아요 🙂",
-      "good": "기분이 좋아요 ☺️",
-      "great": "오늘 아주 행복해요 😊"
+      "veryLow": "많이 불편해요\n😔",
+      "low": "조금 우울해요\n😕",
+      "neutral": "괜찮아요\n🙂",
+      "good": "기분이 좋아요\n☺️",
+      "great": "오늘 아주 행복해요\n😊"
     },
     "todayCheckButton": {
-      "send": "오늘은 어떠세요 👋"
+      "send": "오늘은 어떠세요? 👋",
+      "sent": "안부 전송됨 ✓"
     },
     "checkedInAt": "{{date}} {{time}} 체크인 완료",
     "welfareCheck": {
