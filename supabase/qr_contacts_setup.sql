@@ -110,8 +110,14 @@ begin
     return jsonb_build_object('error', 'You cannot add yourself as a contact');
   end if;
 
-  -- check contact limit (free tier = 3)
-  if (select count(*) from public.contacts where owner_user_id = v_scanner_id) >= 3 then
+  -- check contact limit based on user's plan (free = 3, plus = 999)
+  if (
+    select count(*) from public.contacts where owner_user_id = v_scanner_id
+  ) >= (
+    select case when coalesce(plan, 'free') = 'plus' then 999 else 3 end
+    from public.user_entitlements
+    where user_id = v_scanner_id
+  ) then
     return jsonb_build_object('error', 'contact_limit_reached');
   end if;
 

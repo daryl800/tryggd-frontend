@@ -506,6 +506,7 @@ export default function ContactsScreen() {
     const [inviteShareVisible, setInviteShareVisible] = useState(false);
     const [scannerVisible, setScannerVisible] = useState(false);
     const [scannerProcessing, setScannerProcessing] = useState(false);
+    const scannerProcessingRef = useRef(false);
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
     const [suggestedInviteUsername, setSuggestedInviteUsername] = useState('');
     const [generatedInvite, setGeneratedInvite] = useState<GeneratedInvite | null>(null);
@@ -961,22 +962,23 @@ export default function ContactsScreen() {
                 return;
             }
         }
+        scannerProcessingRef.current = false;
         setScannerProcessing(false);
         setScannerVisible(true);
     }, [cameraPermission, capabilities.maxContacts, requestCameraPermission, t, totalContactsCount]);
 
     const handleQrScanned = useCallback(async ({ data }: { data: string }) => {
-        if (scannerProcessing) return;
+        if (scannerProcessingRef.current) return;
 
         const match = data.match(/tryggd:\/\/add\?token=([a-f0-9]+)/);
         if (!match) return;
 
-        const token = match[1];
+        scannerProcessingRef.current = true;
         setScannerProcessing(true);
         setScannerVisible(false);
 
         try {
-            const { data: result, error } = await supabase.rpc('add_contact_via_qr', { p_token: token });
+            const { data: result, error } = await supabase.rpc('add_contact_via_qr', { p_token: match[1] });
             if (error) throw error;
 
             if (result?.error === 'contact_limit_reached') {
@@ -1001,9 +1003,10 @@ export default function ContactsScreen() {
         } catch (e: any) {
             Alert.alert(t('errors.title'), e.message || t('contacts.errors.save'));
         } finally {
+            scannerProcessingRef.current = false;
             setScannerProcessing(false);
         }
-    }, [scannerProcessing, t]);
+    }, [t]);
 
     const handleCreateInvite = useCallback(async () => {
         if (totalContactsCount >= capabilities.maxContacts) {
