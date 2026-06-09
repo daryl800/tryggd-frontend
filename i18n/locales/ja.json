@@ -255,6 +255,14 @@
       "updateLocationSharing": "Failed to update location sharing.",
       "noContactUpdated": "No contact row was updated."
     },
+    "qr": {
+      "permissionTitle": "カメラの許可が必要です",
+      "permissionMessage": "QRコードをスキャンするにはカメラのアクセスを許可してください。",
+      "scanHint": "TryggdのQRコードにカメラを向けて連絡先を追加",
+      "successTitle": "連絡先を追加しました",
+      "successMessage": "{{name}} が連絡先に追加されました",
+      "newContact": "新しい連絡先"
+    },
     "messages": {
       "contactDefault": "This contact"
     },
@@ -344,6 +352,11 @@
       "deleting": "削除中...",
       "successTitle": "アカウントを削除しました",
       "successMessage": "アカウントは完全に削除されました。"
+    },
+    "qr": {
+      "title": "マイQRコード",
+      "hint": "このコードをスキャンしてもらうと、すぐに連絡先として追加されます。",
+      "errorGenerating": "QRコードを生成できませんでした。もう一度お試しください。"
     }
   },
   "settings": {

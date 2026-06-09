@@ -25,6 +25,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
+import { isLocalAvatarUri } from '@/lib/profile/avatarStorage';
 
 type Activity = {
   user_id: string;
@@ -1183,7 +1184,7 @@ export default function ActivityScreen() {
     const { user, capabilities } = useAuth();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
-    const displayAvatarUrl = avatarUrl?.trim() || '';
+    const displayAvatarUrl = (avatarUrl?.trim() && !isLocalAvatarUri(avatarUrl)) ? avatarUrl.trim() : '';
 
     const [sendingResponse, setSendingResponse] = useState(false);
     const [sendingWelfareCheck, setSendingWelfareCheck] = useState(false);
@@ -1525,7 +1526,7 @@ export default function ActivityScreen() {
                   onError={() => setAvatarLoadFailed(true)}
                 />
               ) : (
-                <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
+                <Ionicons name="person-circle" size={48} color={BaseColors.neutral[300]} />
               )}
             </View>
             {capabilities.canShareLocation && (isOwner || shared_location) && (

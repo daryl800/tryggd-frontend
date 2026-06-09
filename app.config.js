@@ -25,7 +25,7 @@ export default ({ config }) => ({
             UIBackgroundModes: ["remote-notification"],
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription:
-                "Tryggd uses the camera so you can take a profile photo, for example when updating your account picture in Profile.",
+                "Tryggd uses the camera to take a profile photo and to scan QR codes when adding contacts.",
             NSLocationWhenInUseUsageDescription:
                 "Tryggd uses your location so you can optionally share your current location with selected contacts when you check in.",
             NSPhotoLibraryUsageDescription:

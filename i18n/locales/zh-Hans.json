@@ -296,6 +296,14 @@
       "updateLocationSharing": "更新位置共享失败。",
       "noContactUpdated": "没有更新任何联系人资料。"
     },
+    "qr": {
+      "permissionTitle": "需要相机权限",
+      "permissionMessage": "请允许使用相机以扫描 QR 码。",
+      "scanHint": "将镜头对准 Tryggd QR 码即可添加联系人",
+      "successTitle": "已添加联系人",
+      "successMessage": "{{name}} 已加入你的联系人",
+      "newContact": "新联系人"
+    },
     "messages": {
       "contactDefault": "此联系人"
     },
@@ -380,6 +388,11 @@
       "deleting": "正在删除...",
       "successTitle": "账户已删除",
       "successMessage": "你的账户已被永久删除。"
+    },
+    "qr": {
+      "title": "我的 QR 码",
+      "hint": "让对方扫描此码即可立即将你添加为联系人。",
+      "errorGenerating": "无法生成 QR 码，请再试一次。"
     }
   },
   "settings": {
