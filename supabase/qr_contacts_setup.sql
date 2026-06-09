@@ -82,9 +82,12 @@ security definer
 set search_path = public
 as $$
 declare
-  v_scanner_id uuid;
-  v_owner_id   uuid;
-  v_expires_at timestamptz;
+  v_scanner_id        uuid;
+  v_owner_id          uuid;
+  v_expires_at        timestamptz;
+  v_scanner_name      text;
+  v_scanner_email     text;
+  v_owner_name        text;
 begin
   v_scanner_id := auth.uid();
   if v_scanner_id is null then
@@ -129,6 +132,11 @@ begin
     return jsonb_build_object('warning', 'already_connected');
   end if;
 
+  -- fetch display names for the contact_requests row
+  select display_name into v_scanner_name from public.profiles where id = v_scanner_id;
+  select display_name into v_owner_name   from public.profiles where id = v_owner_id;
+  select email        into v_scanner_email from auth.users    where id = v_scanner_id;
+
   -- create both sides of the contact relationship
   insert into public.contacts (owner_user_id, contact_user_id)
   values (v_scanner_id, v_owner_id)
@@ -136,6 +144,19 @@ begin
 
   insert into public.contacts (owner_user_id, contact_user_id)
   values (v_owner_id, v_scanner_id)
+  on conflict do nothing;
+
+  -- insert an accepted contact_request so cleanupContactData() does not
+  -- remove these contacts (it deletes any contact with no accepted request)
+  insert into public.contact_requests (
+    sender_user_id, receiver_user_id,
+    sender_email, sender_display_name,
+    status
+  ) values (
+    v_scanner_id, v_owner_id,
+    coalesce(v_scanner_email, ''), coalesce(v_scanner_name, ''),
+    'accepted'
+  )
   on conflict do nothing;
 
   -- consume the token so it can't be reused
