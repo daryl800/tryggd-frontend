@@ -51,6 +51,11 @@
       "noUser": "Kein Benutzer gefunden",
       "checkin": "Check-in fehlgeschlagen",
       "loadState": "Status konnte nicht geladen werden"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
     }
   },
   "activity": {
@@ -86,17 +91,17 @@
     },
     "responseButton": {
       "sendResponse": "Ein Like senden 👍",
-      "responded": "👏 Reagiert!"
+      "sent": "Like gesendet ✓"
     },
     "checkinResponse": {
-      "todayLikes_one": "👋 Du hast heute {{count}} Like erhalten:",
-      "todayLikes_other": "👋 Du hast heute {{count}} Likes erhalten:",
+      "todayLikes_one": "⭐️ Du hast heute {{count}} Check-in-Reaktion erhalten:",
+      "todayLikes_other": "⭐️ Du hast heute {{count}} Check-in-Reaktionen erhalten:",
       "prefix": "hat auf deinen Check-in reagiert",
       "defaultMessage": "mag 👍 deinen Check-in!"
     },
     "welfareButton": {
-      "send": "Geht es dir gut?",
-      "sent": "Gesendet ✓"
+      "send": "Geht es dir gut? 🍀",
+      "sent": "Gruß gesendet ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -110,6 +115,22 @@
       "norway": "Norway",
       "denmark": "Denmark",
       "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "Mir geht es nicht gut\n😔",
+      "low": "Etwas niedergeschlagen\n😕",
+      "neutral": "Alles ist gut\n🙂",
+      "good": "Mir geht es gut\n☺️",
+      "great": "Heute sehr glücklich\n😊"
+    },
+    "todayCheckButton": {
+      "send": "Wie geht es dir heute? 👋",
+      "sent": "Gruß gesendet ✓"
+    },
+    "checkedInAt": "Eingecheckt um {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 Du hast heute {{count}} Gruß erhalten:",
+      "todayGreetings_other": "💛 Du hast heute {{count}} Grüße erhalten:"
     }
   },
   "contacts": {
@@ -259,6 +280,11 @@
       "createButton": "Einladung erstellen",
       "creating": "Wird erstellt…",
       "shareButton": "Link teilen"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
     }
   },
   "profile": {
@@ -419,12 +445,14 @@
       "continueWithApple": "Mit Apple fortfahren",
       "connectingToApple": "Verbindung mit Apple wird hergestellt...",
       "orContinueWithEmail": "oder mit E-Mail fortfahren",
-      "socialError": "Anmeldung fehlgeschlagen"
+      "socialError": "Anmeldung fehlgeschlagen",
+      "useInviteCode": "Hast du einen Einladungscode?"
     },
     "email": "E-Mail",
     "displayName": "Name",
     "password": {
-      "placeholder": "Passwort (mindestens 6 Zeichen)"
+      "placeholder": "Passwort (mindestens 6 Zeichen)",
+      "minimumLength": "Use at least 8 characters."
     },
     "confirmPassword": "Passwort bestätigen",
     "passwordsMatch": "✔ Passwörter stimmen überein",
@@ -452,6 +480,53 @@
       "login": "Zur Anmeldung",
       "error": "Fehler beim Zurücksetzen des Passworts",
       "passwordPlaceholder": "Neues Passwort"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "Wenn du die App erst nach Erhalt der Einladung installiert hast, gib den 6-stelligen Code ein, um fortzufahren.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
     }
   },
   "completeProfile": {
@@ -476,6 +551,40 @@
       "min": "Die Tryggd ID muss mindestens 3 Zeichen lang sein.",
       "max": "Die Tryggd ID darf höchstens 24 Zeichen lang sein.",
       "chars": "Verwende nur Kleinbuchstaben, Zahlen, Punkte oder Unterstriche."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Upgrade path",
+      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
+      "button": "Upgrade coming soon"
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      }
     }
   }
 }

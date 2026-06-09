@@ -1,5 +1,5 @@
 // app/(auth)/forgot-password.tsx
-import BaseColors from "@/constants/colors";
+import { BaseColors } from "@/constants/colors";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

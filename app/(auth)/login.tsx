@@ -1,5 +1,5 @@
 // app/(auth)/login.tsx
-import BaseColors from "@/constants/colors";
+import { BaseColors } from "@/constants/colors";
 import { signInWithSocial } from "@/lib/auth/oauth";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
@@ -233,6 +233,22 @@ export default function LoginScreen() {
                             </Text>
                         </Link>
 
+                        <Link href="/(auth)/invite-code" asChild>
+                            <TouchableOpacity style={invitePanel}>
+                                <View style={invitePanelCopy}>
+                                    <Text style={inviteTitle} allowFontScaling={false}>
+                                        {t("auth.login.useInviteCode", { defaultValue: "Have an invite code?" })}
+                                    </Text>
+                                    <Text style={inviteSubtitle} allowFontScaling={false}>
+                                        {t("auth.invite.enterCodeStandaloneHint", {
+                                            defaultValue: "If you installed the app after receiving an invite, enter the 6-digit code to continue.",
+                                        })}
+                                    </Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={22} color={BaseColors.primaryDark} />
+                            </TouchableOpacity>
+                        </Link>
+
                         {/* Sign up link */}
                         <Link href="/(auth)/signup" style={{ marginBottom: 20 }}>
                             <Text
@@ -317,4 +333,35 @@ const dividerLine = {
 const dividerText = {
     color: "#6B7280",
     fontSize: iosFontSize(13),
+};
+
+const invitePanel = {
+    alignItems: "center" as const,
+    backgroundColor: BaseColors.primaryLight,
+    borderColor: BaseColors.primaryBorder,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    marginBottom: 16,
+    padding: 18,
+};
+
+const invitePanelCopy = {
+    flex: 1,
+    paddingRight: 12,
+};
+
+const inviteTitle = {
+    color: BaseColors.text.dark,
+    fontSize: iosFontSize(20),
+    fontWeight: "700" as const,
+    marginBottom: 8,
+};
+
+const inviteSubtitle = {
+    color: BaseColors.text.muted,
+    fontSize: iosFontSize(14),
+    lineHeight: iosFontSize(20),
+    marginBottom: 14,
 };

@@ -51,6 +51,11 @@
       "noUser": "Käyttäjää ei löytynyt",
       "checkin": "Sisäänkirjautuminen epäonnistui",
       "loadState": "Tilaa ei voitu ladata"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
     }
   },
   "activity": {
@@ -86,17 +91,17 @@
     },
     "responseButton": {
       "sendResponse": "👏 Taputa tälle?",
-      "responded": "👏 Taputettu!"
+      "sent": "Tykkäys lähetetty ✓"
     },
     "checkinResponse": {
-      "todayLikes_one": "👋 Sait tänään {{count}} tykkäyksen:",
-      "todayLikes_other": "👋 Sait tänään {{count}} tykkäystä:",
-      "prefix": "reagoi kirjautumiseesi",
+      "todayLikes_one": "⭐️ Sait tänään {{count}} vastauksen check-iniisi:",
+      "todayLikes_other": "⭐️ Sait tänään {{count}} vastausta check-iniisi:",
+      "prefix": "vastasi check-iniisi",
       "defaultMessage": "tykkää 👍 kirjautumisestasi!"
     },
     "welfareButton": {
-      "send": "Oletko kunnossa?",
-      "sent": "Lähetetty ✓"
+      "send": "Oletko kunnossa? 🍀",
+      "sent": "Tervehdys lähetetty ✓"
     },
     "sharedLocation": {
       "view": "View shared location"
@@ -110,6 +115,22 @@
       "norway": "Norway",
       "denmark": "Denmark",
       "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "En voi hyvin\n😔",
+      "low": "Hieman alamaissa\n😕",
+      "neutral": "Kaikki on hyvin\n🙂",
+      "good": "Voin hyvin\n☺️",
+      "great": "Todella iloinen tänään\n😊"
+    },
+    "todayCheckButton": {
+      "send": "Mitä kuuluu tänään? 👋",
+      "sent": "Tervehdys lähetetty ✓"
+    },
+    "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 Sait tänään {{count}} tervehdyksen:",
+      "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
     }
   },
   "contacts": {
@@ -152,7 +173,9 @@
       "delete": "Poista",
       "cancelRequest": "Peruuta pyyntö",
       "sending": "Lähetetään...",
-      "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}"
+      "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}",
+      "sendRequests_one": "Send request",
+      "sendRequests_other": "Send requests"
     },
     "alerts": {
       "limitReached": {
@@ -222,7 +245,16 @@
       "createRecoveryInvite": "Palautuskutsun luominen epäonnistui.",
       "updateCheckinNotifications": "Failed to update check-in notifications.",
       "updateLocationSharing": "Failed to update location sharing.",
-      "noContactUpdated": "No contact row was updated."
+      "noContactUpdated": "No contact row was updated.",
+      "loadData": "Failed to load data",
+      "save": "Failed to save contacts",
+      "delete": "Failed to delete contact",
+      "sendRequest": "Failed to send contact request",
+      "search": "Could not search for user",
+      "requestNotFound": "Could not find contact request or it was already handled",
+      "accept": "Failed to accept contact request",
+      "reject": "Failed to reject request",
+      "cancel": "Failed to cancel request"
     },
     "messages": {
       "contactDefault": "This contact"
@@ -249,6 +281,11 @@
       "createButton": "Luo kutsu",
       "creating": "Luodaan…",
       "shareButton": "Jaa linkki"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
     }
   },
   "profile": {
@@ -350,7 +387,9 @@
     "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
     "confirmReset": "Nollaa",
     "cancel": "Peruuta",
-    "ok": "OK"
+    "ok": "OK",
+    "chineseSimplified": "Chinese (Simplified)",
+    "chineseTraditional": "Chinese (Traditional)"
   },
   "common": {
     "ok": "OK",
@@ -364,13 +403,18 @@
     "submit": "Lähetä",
     "yes": "Kyllä",
     "no": "Ei",
-    "done": "Done"
+    "done": "Done",
+    "refreshing": "Refreshing..."
   },
   "time": {
     "justNow": "Juuri nyt",
     "minutesAgo": "{{count}} min sitten",
     "hoursAgo": "{{count}} tunti{{count, plural, =1 {} other {a}}} sitten",
-    "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten"
+    "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
   },
   "errors": {
     "title": "Virhe",
@@ -404,12 +448,14 @@
       "continueWithApple": "Jatka Applella",
       "connectingToApple": "Yhdistetään Appleen...",
       "orContinueWithEmail": "tai jatka sähköpostilla",
-      "socialError": "Kirjautuminen epäonnistui"
+      "socialError": "Kirjautuminen epäonnistui",
+      "useInviteCode": "Onko sinulla kutsukoodi?"
     },
     "email": "Sähköposti",
     "displayName": "Nimi",
     "password": {
-      "placeholder": "Salasana (vähintään 6 merkkiä)"
+      "placeholder": "Salasana (vähintään 6 merkkiä)",
+      "minimumLength": "Use at least 8 characters."
     },
     "confirmPassword": "Vahvista salasana",
     "passwordsMatch": "✔ Salasanat täsmäävät",
@@ -437,6 +483,53 @@
       "login": "Siirry kirjautumiseen",
       "error": "Virhe salasanan nollauksessa",
       "passwordPlaceholder": "Uusi salasana"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "Jos asensit sovelluksen vasta kutsun saamisen jälkeen, jatka syöttämällä 6-numeroinen koodi.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
     }
   },
   "completeProfile": {
@@ -461,6 +554,40 @@
       "min": "Tryggd ID:n on oltava vähintään 3 merkkiä.",
       "max": "Tryggd ID saa olla enintään 24 merkkiä.",
       "chars": "Käytä vain pieniä kirjaimia, numeroita, pisteitä tai alaviivoja."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Upgrade path",
+      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
+      "button": "Upgrade coming soon"
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      }
     }
   }
 }

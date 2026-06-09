@@ -1,4 +1,4 @@
-import BaseColors from "@/constants/colors";
+import { BaseColors } from "@/constants/colors";
 import { iosFontSize } from "@/constants/typography";
 import { buildSyntheticEmailFromTryggdId, isValidTryggdId, normalizePhoneNumber } from "@/lib/auth/phoneIdentity";
 import { supabase } from "@/lib/supabase";
@@ -33,11 +33,17 @@ type InvitePreview = {
   status: string;
 };
 
-type Props = {
-  token?: string;
+type VerifyInviteCodeResult = {
+  is_valid: boolean;
+  error: string | null;
 };
 
-export default function InviteSignupContent({ token }: Props) {
+type Props = {
+  token?: string;
+  initialCode?: string;
+};
+
+export default function InviteSignupContent({ token, initialCode }: Props) {
   const { t, i18n } = useTranslation();
 
   const [loadingInvite, setLoadingInvite] = useState(true);
@@ -63,6 +69,7 @@ export default function InviteSignupContent({ token }: Props) {
   const phoneRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
   const confirmPasswordRef = useRef<TextInput>(null);
+  const autoVerifyAttemptedRef = useRef(false);
 
   useEffect(() => {
     const loadInvite = async () => {
@@ -75,7 +82,7 @@ export default function InviteSignupContent({ token }: Props) {
       setLoadingInvite(true);
       const { data, error } = await supabase
         .rpc('get_contact_invite', { p_invite_token: token })
-        .maybeSingle();
+        .maybeSingle<InvitePreview>();
 
       if (error) {
         setInviteError(error.message);
@@ -106,6 +113,11 @@ export default function InviteSignupContent({ token }: Props) {
   }, [displayName, displayNameTouched, t, token]);
 
   useEffect(() => {
+    if (!initialCode || code.length > 0) return;
+    setCode(initialCode);
+  }, [code.length, initialCode]);
+
+  useEffect(() => {
     if (!codeVerified) return;
 
     const task = InteractionManager.runAfterInteractions(() => {
@@ -116,6 +128,19 @@ export default function InviteSignupContent({ token }: Props) {
       task.cancel();
     };
   }, [codeVerified, invite?.invite_kind]);
+
+  useEffect(() => {
+    if (!invite || !initialCode || codeVerified || verifyingCode || autoVerifyAttemptedRef.current) {
+      return;
+    }
+
+    if (code.trim().length < 6) {
+      return;
+    }
+
+    autoVerifyAttemptedRef.current = true;
+    void verifyCode();
+  }, [code, codeVerified, initialCode, invite, verifyingCode]);
 
   const handleDisplayNameChange = (value: string) => {
     setDisplayNameTouched(true);
@@ -249,7 +274,7 @@ export default function InviteSignupContent({ token }: Props) {
           p_invite_token: token,
           p_code: code.trim(),
         })
-        .single();
+        .single<VerifyInviteCodeResult>();
 
       if (error) throw error;
       if (!data?.is_valid) {

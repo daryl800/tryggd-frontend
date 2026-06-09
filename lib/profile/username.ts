@@ -1,4 +1,4 @@
-type TranslateFn = (key: string) => string;
+type TranslateFn = (key: any) => string;
 
 const USERNAME_PATTERN = /^[a-z0-9._]{3,24}$/;
 

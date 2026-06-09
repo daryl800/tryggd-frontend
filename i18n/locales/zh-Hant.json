@@ -126,18 +126,18 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "發送讚 👍",
-      "responded": "👏 已按讚！"
+      "sendResponse": "點讚 👍",
+      "sent": "已點讚 ✓"
     },
     "checkinResponse": {
-      "todayLikes_one": "👋 今天您收到 {{count}} 個讚：",
-      "todayLikes_other": "👋 今天您收到 {{count}} 個讚：",
-      "prefix": "回應了您的簽到",
+      "todayLikes_one": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
+      "todayLikes_other": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
+      "prefix": "回應了你的簽到",
       "defaultMessage": "為您的簽到按讚 👍！"
     },
     "welfareButton": {
-      "send": "你還好嗎？",
-      "sent": "已發送 ✓"
+      "send": "你最近還好嗎？🍀",
+      "sent": "已發送問候 ✓"
     },
     "sharedLocation": {
       "view": "查看分享位置"
@@ -153,11 +153,20 @@
       "finland": "芬蘭"
     },
     "wellness": {
-      "veryLow": "😔 太不舒服",
-      "low": "😕 有點低落",
-      "neutral": "🙂 一切安好",
-      "good": "☺️ 感覺不錯",
-      "great": "😊 今天很開心"
+      "veryLow": "太不舒服\n😔",
+      "low": "有點低落\n😕",
+      "neutral": "一切安好\n🙂",
+      "good": "感覺不錯\n☺️",
+      "great": "今天很開心\n😊"
+    },
+    "todayCheckButton": {
+      "send": "你今天怎麼樣？👋",
+      "sent": "已發送問候 ✓"
+    },
+    "checkedInAt": "已簽到 @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 你今天收到 {{count}} 個問候：",
+      "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
     }
   },
   "contacts": {
@@ -506,7 +515,8 @@
       "continueWithApple": "使用 Apple 繼續",
       "connectingToApple": "正在連接 Apple...",
       "orContinueWithEmail": "或使用電子郵件繼續",
-      "socialError": "登入失敗"
+      "socialError": "登入失敗",
+      "useInviteCode": "有邀請代碼嗎？"
     },
     "email": "電子郵件",
     "displayName": "姓名",
@@ -582,8 +592,11 @@
         "createAccount": "無法建立帳戶。",
         "completeSignup": "無法完成受邀註冊。",
         "missingAccount": "無法判斷要登入的帳戶。",
-        "completeRecovery": "無法完成密碼找回。"
-      }
+        "completeRecovery": "無法完成密碼找回。",
+        "phoneAlreadyInUse": "該手機號碼已被使用。",
+        "tooManyAttempts": "嘗試次數過多，請稍後再試。"
+      },
+      "enterCodeStandaloneHint": "如果您是在收到邀請後才安裝 App，請輸入 6 位數代碼繼續。"
     }
   },
   "completeProfile": {

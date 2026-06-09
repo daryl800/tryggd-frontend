@@ -26,13 +26,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
-const ENABLE_WELFARE_CHECK = false;
-
 type Activity = {
   user_id: string;
   display_name: string;
   last_checked_in_utc: string | null;
   priority: number;
+  action_state?: 'like' | 'today_check' | 'overdue_check' | 'none' | null;
+  recency_status?: 'today' | 'yesterday' | 'older' | 'none' | null;
   wellness_score?: number | null;
   username?: string | null;
   avatar_url?: string | null;
@@ -78,6 +78,10 @@ type ResponseNotification = {
   };
 };
 
+const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check'] as const;
+const isActivityNotificationType = (type?: string | null) =>
+  !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
+
 export default function ActivityScreen() {
   const { t } = useTranslation();
 
@@ -98,15 +102,15 @@ export default function ActivityScreen() {
 
     return labelMap[normalized] || normalized;
   }, [t]);
-  const { user, capabilities } = useAuth();
+  const { user } = useAuth();
 
   // State
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [contactMap, setContactMap] = useState<Map<string, ContactIdentity>>(new Map());
-  const [responses, setResponses] = useState<ResponseNotification[]>([]);
-  const [unreadResponses, setUnreadResponses] = useState<ResponseNotification[]>([]);
+  const [, setContactMap] = useState<Map<string, ContactIdentity>>(new Map());
+  const [, setResponses] = useState<ResponseNotification[]>([]);
+  const [, setUnreadResponses] = useState<ResponseNotification[]>([]);
   const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
 
   // Refs
@@ -346,6 +350,30 @@ export default function ActivityScreen() {
       }
 
       const locationMap = await fetchLocationShares(contactIds);
+      const { data: actionStates, error: actionStateError } = await supabase.rpc(
+        'get_activity_action_states',
+        { p_contact_ids: contactIds }
+      ) as {
+        data: {
+          user_id: string;
+          action_state: Activity['action_state'];
+          recency_status: Activity['recency_status'];
+          action_reference_time: string | null;
+        }[] | null;
+        error: any;
+      };
+
+      if (actionStateError) throw actionStateError;
+
+      const actionStateMap = new Map(
+        (actionStates || []).map((row) => [
+          row.user_id,
+          {
+            action_state: row.action_state || null,
+            recency_status: row.recency_status || null,
+          },
+        ])
+      );
 
       const { data, error } = await supabase
         .from('users_latest_checkin')
@@ -369,6 +397,8 @@ export default function ActivityScreen() {
           display_name: contactInfo?.display_name || activity.display_name,
           username: contactInfo?.username || null,
           avatar_url: contactInfo?.avatar_url || null,
+          action_state: actionStateMap.get(activity.user_id)?.action_state || null,
+          recency_status: actionStateMap.get(activity.user_id)?.recency_status || null,
           hasNewUpdate: isNew,
           checkin_timezone: activity.checkin_timezone,
           checkin_timezone_label: activity.checkin_timezone_label || null,
@@ -400,7 +430,7 @@ export default function ActivityScreen() {
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
-        .eq('type', 'checkin_response')
+        .in('type', [...ACTIVITY_NOTIFICATION_TYPES])
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -465,7 +495,7 @@ export default function ActivityScreen() {
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
-        .eq('type', 'checkin_response')
+        .in('type', [...ACTIVITY_NOTIFICATION_TYPES])
         .eq('read', false)
         .order('created_at', { ascending: false });
 
@@ -550,7 +580,7 @@ export default function ActivityScreen() {
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
-        .eq('type', 'checkin_response')
+        .in('type', [...ACTIVITY_NOTIFICATION_TYPES])
         .gte('created_at', startOfDayUTC.toISOString())
         .order('created_at', { ascending: false });
 
@@ -651,8 +681,11 @@ export default function ActivityScreen() {
             lastCheckinTimes.current.set(updated.user_id, updated.last_checked_in_utc);
           }
 
-          const enriched = {
-            ...updated,
+          const enriched: Activity = {
+            user_id: updated.user_id,
+            last_checked_in_utc: updated.last_checked_in_utc,
+            priority: updated.priority,
+            wellness_score: updated.wellness_score ?? null,
             display_name: contactInfo?.display_name || updated.display_name,
             username: contactInfo?.username || null,
             avatar_url: contactInfo?.avatar_url || null,
@@ -798,7 +831,7 @@ export default function ActivityScreen() {
           filter: `user_id=eq.${user.id}`,
         },
         async (payload) => {
-          if (payload.new.type === 'checkin_response') {
+          if (isActivityNotificationType(payload.new.type)) {
             console.log('📬 New response notification received');
 
             let parsedData = {};
@@ -887,7 +920,7 @@ export default function ActivityScreen() {
           filter: `user_id=eq.${user.id}`,
         },
         async (payload) => {
-          if (payload.new.type === 'checkin_response' &&
+          if (isActivityNotificationType(payload.new.type) &&
             isTodayLocal(payload.new.created_at, ownerTimezoneRef.current)) {
 
             // Parse data
@@ -1016,41 +1049,6 @@ export default function ActivityScreen() {
   // ============================================
   // Action Functions
   // ============================================
-  const markResponseAsRead = async (notificationId: string) => {
-    try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('id', notificationId);
-
-      if (error) throw error;
-
-      setResponses(prev => prev.map(r => r.id === notificationId ? { ...r, read: true } : r));
-      setUnreadResponses(prev => prev.filter(r => r.id !== notificationId));
-    } catch (error) {
-      console.error('Error marking response as read:', error);
-    }
-  };
-
-  const markAllResponsesAsRead = async () => {
-    try {
-      if (!user || unreadResponses.length === 0) return;
-
-      const unreadIds = unreadResponses.map(r => r.id);
-      const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .in('id', unreadIds);
-
-      if (error) throw error;
-
-      setResponses(prev => prev.map(r => unreadIds.includes(r.id) ? { ...r, read: true } : r));
-      setUnreadResponses([]);
-    } catch (error) {
-      console.error('Error marking all responses as read:', error);
-    }
-  };
-
   // ============================================
   // Initialization
   // ============================================
@@ -1145,39 +1143,6 @@ export default function ActivityScreen() {
   // ============================================
   // ResponseItem Component
   // ============================================
-  const ResponseItem = ({ response, onPress }: { response: ResponseNotification; onPress: () => void }) => {
-    const formattedTime = new Date(response.created_at).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const formattedDate = new Date(response.created_at).toLocaleDateString();
-    const fromName = response.sender?.display_name || response.data?.senderName || 'Someone';
-    const message = response.body || 'responded to your check-in';
-
-    return (
-      <TouchableOpacity
-        style={[styles.responseItem, !response.read && styles.responseItemUnread]}
-        onPress={onPress}
-      >
-        <View style={styles.responseIcon}>
-          <Ionicons
-            name="hand-left"
-            size={24}
-            color={response.read ? BaseColors.neutral[400] : BaseColors.primary}
-          />
-        </View>
-        <View style={styles.responseContent}>
-          <Text style={styles.responseText}>
-            <Text style={styles.responseSender}>{fromName}</Text> {message}
-          </Text>
-          <Text style={styles.responseTime}>{formattedDate} at {formattedTime}</Text>
-        </View>
-        {!response.read && <View style={styles.unreadDot} />}
-      </TouchableOpacity>
-    );
-  };
-
   // ============================================
   // ActivityItem Component
   // ============================================
@@ -1193,6 +1158,8 @@ export default function ActivityScreen() {
     isLast = false,
     checkin_timezone,
     checkin_timezone_label,
+    action_state,
+    recency_status,
     wellness_score,
     shared_location,
   }: {
@@ -1207,6 +1174,8 @@ export default function ActivityScreen() {
     isLast?: boolean;
     checkin_timezone?: string | null;
     checkin_timezone_label?: string | null;
+    action_state?: Activity['action_state'];
+    recency_status?: Activity['recency_status'];
     wellness_score?: number | null;
     shared_location?: SharedLocationInfo | null;
   }) => {
@@ -1214,9 +1183,12 @@ export default function ActivityScreen() {
     const { user, capabilities } = useAuth();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
+    const displayAvatarUrl = avatarUrl?.trim() || '';
 
     const [sendingResponse, setSendingResponse] = useState(false);
     const [sendingWelfareCheck, setSendingWelfareCheck] = useState(false);
+    const [fetchingLocation, setFetchingLocation] = useState(false);
+    const [avatarLoadFailed, setAvatarLoadFailed] = useState(false);
     const [responseSent, setResponseSent] = useState(() => {
       if (!user || !timestamp || isOwner) return false;
       const cacheKey = `${userId}_${user.id}_${timestamp}`;
@@ -1225,41 +1197,12 @@ export default function ActivityScreen() {
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean | null>(null);
 
     useEffect(() => {
-      const checkIfResponded = async () => {
-        if (!user || !timestamp || isOwner || responseSent) return;
-        const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
-        if (alreadyResponded) setResponseSent(true);
-      };
-      checkIfResponded();
-    }, [userId, user?.id, timestamp, isOwner, responseSent]);
+      setAvatarLoadFailed(false);
+    }, [displayAvatarUrl]);
 
-    useEffect(() => {
-      const checkIfWelfareSent = async () => {
-        if (!user || !timestamp || isOwner) return;
-        const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp);
-        setWelfareCheckSent(alreadySent);
-      };
-      checkIfWelfareSent();
-    }, [userId, user?.id, timestamp, isOwner]);
-
-    useFocusEffect(
-      useCallback(() => {
-        const checkOnFocus = async () => {
-          if (!user || !timestamp || isOwner) return;
-          const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
-          setResponseSent(alreadyResponded);
-          const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp);
-          setWelfareCheckSent(alreadySent);
-        };
-        checkOnFocus();
-      }, [userId, user?.id, timestamp, isOwner])
-    );
-
-    const isOverdue = !!timestamp && (Date.now() - new Date(timestamp).getTime()) > 24 * 60 * 60 * 1000;
-
-    const getCheckInStatus = useCallback(() => {
+    const getFallbackRecencyStatus = useCallback((): NonNullable<Activity['recency_status']> => {
       if (!timestamp) {
-        return { icon: 'help-circle-outline', color: BaseColors.warning || '#FFA500', status: 'never' };
+        return 'none';
       }
 
       try {
@@ -1287,7 +1230,7 @@ export default function ActivityScreen() {
         }
 
         if (adjustedLastDate === adjustedToday) {
-          return { icon: 'checkmark-circle', color: BaseColors.success || '#4CAF50', status: 'checked-today' };
+          return 'today';
         }
 
         const yesterday = new Date(adjustedToday);
@@ -1296,26 +1239,67 @@ export default function ActivityScreen() {
         const yesterdayStr = yesterday.toISOString().split('T')[0];
 
         if (adjustedLastDate === yesterdayStr) {
-          return { icon: 'time-outline', color: BaseColors.warning || '#FFA500', status: 'yesterday' };
+          return 'yesterday';
         }
 
-        return { icon: 'alert-circle', color: BaseColors.error || '#F44336', status: 'older' };
-      } catch (error) {
-        return { icon: 'help-circle-outline', color: BaseColors.neutral[400], status: 'error' };
+        return 'older';
+      } catch {
+        return 'none';
       }
     }, [timestamp]);
 
-    const status = getCheckInStatus();
-    const isLikeMode = status.status === 'checked-today';
-    const isWelfareMode =
-      ENABLE_WELFARE_CHECK &&
-      capabilities.canUseWelfareGreeting &&
-      !isLikeMode &&
-      isOverdue;
+    const resolvedRecencyStatus = recency_status || getFallbackRecencyStatus();
+    const fallbackActionState: Activity['action_state'] =
+      resolvedRecencyStatus === 'today'
+        ? 'like'
+        : resolvedRecencyStatus === 'yesterday'
+          ? 'today_check'
+          : resolvedRecencyStatus === 'older'
+            ? 'overdue_check'
+            : 'none';
+    const resolvedActionState = action_state || fallbackActionState;
+
+    useEffect(() => {
+      const checkIfResponded = async () => {
+        if (!user || !timestamp || isOwner || responseSent) return;
+        const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
+        if (alreadyResponded) setResponseSent(true);
+      };
+      checkIfResponded();
+    }, [userId, user?.id, timestamp, isOwner, responseSent]);
+
+    useEffect(() => {
+      const checkIfWelfareSent = async () => {
+        if (!user || !timestamp || isOwner) return;
+        const currentWelfareKind = resolvedActionState === 'today_check' ? 'today_check' : 'overdue_check';
+        const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+        setWelfareCheckSent(alreadySent);
+      };
+      checkIfWelfareSent();
+    }, [userId, user?.id, timestamp, isOwner, resolvedActionState]);
+
+    useFocusEffect(
+      useCallback(() => {
+        const checkOnFocus = async () => {
+          if (!user || !timestamp || isOwner) return;
+          const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
+          setResponseSent(alreadyResponded);
+          const currentWelfareKind = resolvedActionState === 'today_check' ? 'today_check' : 'overdue_check';
+          const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+          setWelfareCheckSent(alreadySent);
+        };
+        checkOnFocus();
+      }, [userId, user?.id, timestamp, isOwner, resolvedActionState])
+    );
+
+    const isLikeMode = resolvedActionState === 'like';
+    const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
+    const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
     const isWelfareResolved = welfareCheckSent !== null;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
-      (isLikeMode && !responseSent) || (isWelfareMode && isWelfareResolved && !welfareCheckSent);
+      (isLikeMode && !responseSent) ||
+      ((isTodayCheckMode || isWelfareMode) && isWelfareResolved && !welfareCheckSent);
 
     const handleSendResponse = async () => {
       if (sendingResponse || !isButtonEnabled || !user) return;
@@ -1345,7 +1329,7 @@ export default function ActivityScreen() {
     };
 
     const handleSendWelfareCheck = async () => {
-      if (sendingWelfareCheck || !isWelfareMode || welfareCheckSent || !user || !timestamp) return;
+      if (sendingWelfareCheck || (!isTodayCheckMode && !isWelfareMode) || welfareCheckSent || !user || !timestamp) return;
 
       setSendingWelfareCheck(true);
       try {
@@ -1354,6 +1338,7 @@ export default function ActivityScreen() {
           senderUserId: user.id,
           senderName: user.user_metadata?.display_name || user.user_metadata?.name,
           checkinTime: timestamp,
+          welfareKind: isTodayCheckMode ? 'today_check' : 'overdue_check',
         });
 
         if (result.success) {
@@ -1379,6 +1364,39 @@ export default function ActivityScreen() {
       } catch (error) {
         console.error('Error opening shared location:', error);
         Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+      }
+    };
+
+    const openCurrentLocation = async () => {
+      if (fetchingLocation) return;
+      setFetchingLocation(true);
+      try {
+        const locationModule = await import('expo-location');
+        const Location = locationModule?.default ?? locationModule;
+
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+          return;
+        }
+
+        const position = await Promise.race([
+          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy?.Balanced ?? 3 }),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+        ]);
+
+        if (!position) {
+          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+          return;
+        }
+
+        const url = `https://www.google.com/maps/search/?api=1&query=${position.coords.latitude},${position.coords.longitude}`;
+        await Linking.openURL(url);
+      } catch (error) {
+        console.error('Error opening current location:', error);
+        Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+      } finally {
+        setFetchingLocation(false);
       }
     };
 
@@ -1451,25 +1469,22 @@ export default function ActivityScreen() {
 
       if (score <= -2) {
         return {
-          emoji: '😔',
-          color: '#7A7A7A',
-          backgroundColor: '#F4F4F4',
-          borderColor: '#DCDCDC',
+          color: '#7A5C4D',
+          backgroundColor: '#F3F3F3',
+          borderColor: '#D0D0D0',
         };
       }
 
       if (score === -1) {
         return {
-          emoji: '😕',
-          color: '#6F6F6F',
-          backgroundColor: '#F5F5F5',
-          borderColor: '#DDDDDD',
+          color: '#A8A8A8',
+          backgroundColor: '#F7F7F7',
+          borderColor: '#E0E0E0',
         };
       }
 
       if (score === 0) {
         return {
-          emoji: '🙂',
           color: BaseColors.primary,
           backgroundColor: BaseColors.primaryLight,
           borderColor: BaseColors.primaryBorder,
@@ -1478,18 +1493,16 @@ export default function ActivityScreen() {
 
       if (score === 1) {
         return {
-          emoji: '☺️',
-          color: BaseColors.primaryDark,
-          backgroundColor: '#E8F7EE',
-          borderColor: '#B7E2C7',
+          color: '#D4AF37',
+          backgroundColor: '#FFF5D8',
+          borderColor: '#F1D26B',
         };
       }
 
       return {
-        emoji: '😊',
-        color: '#A56A00',
-        backgroundColor: '#FFF6D9',
-        borderColor: '#F1D26B',
+        color: '#FFD700',
+        backgroundColor: '#FFF8DC',
+        borderColor: '#E8C64A',
       };
     };
 
@@ -1505,27 +1518,39 @@ export default function ActivityScreen() {
         <View style={styles.activityRow}>
           <View style={styles.leftIconsColumn}>
             <View style={styles.iconContainer}>
-              {avatarUrl ? (
-                <Image source={{ uri: avatarUrl }} style={styles.activityAvatar} />
+              {displayAvatarUrl && !avatarLoadFailed ? (
+                <Image
+                  source={{ uri: displayAvatarUrl }}
+                  style={styles.activityAvatar}
+                  onError={() => setAvatarLoadFailed(true)}
+                />
               ) : (
                 <Ionicons name="person-circle" size={48} color={BaseColors.primary} />
               )}
-              <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-                <Ionicons name={status.icon} size={14} color="#FFFFFF" />
-              </View>
             </View>
-            {wellnessMeta && (
-              <View
-                style={[
-                  styles.wellnessBadge,
-                  {
-                    backgroundColor: wellnessMeta.backgroundColor,
-                    borderColor: wellnessMeta.borderColor,
-                  },
-                ]}
+            {capabilities.canShareLocation && (isOwner || shared_location) && (
+              <TouchableOpacity
+                style={styles.locationInlineButton}
+                onPress={isOwner ? openCurrentLocation : openSharedLocation}
+                activeOpacity={0.7}
+                disabled={fetchingLocation}
               >
-                <Text style={styles.wellnessEmoji}>{wellnessMeta.emoji}</Text>
-              </View>
+                {fetchingLocation ? (
+                  <ActivityIndicator size="small" color={BaseColors.primaryDark} />
+                ) : (
+                  <Ionicons name="location" size={30} color={BaseColors.primaryDark} />
+                )}
+              </TouchableOpacity>
+            )}
+            {!isOwner && shared_location?.checkinTimeIso && (
+              <Text style={styles.locationTime}>
+                {new Date(shared_location.checkinTimeIso).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                  timeZone: checkin_timezone || undefined,
+                })}
+              </Text>
             )}
           </View>
 
@@ -1534,11 +1559,6 @@ export default function ActivityScreen() {
               <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
                 {isOwner ? t('activity.you') : name}
               </Text>
-              {username && (
-                <Text style={styles.email} numberOfLines={1} ellipsizeMode="tail">
-                  @{username}
-                </Text>
-              )}
             </View>
 
             {isValidTimestamp ? (
@@ -1556,20 +1576,14 @@ export default function ActivityScreen() {
                   ]}
                   numberOfLines={1}
                 >
-                  <Text>🎯 </Text>
-                  {timeText}  {dateText}
+                  {t('activity.checkedInAt', {
+                    defaultValue: 'Checked in @ {{time}} {{date}}',
+                    time: timeText,
+                    date: dateText,
+                  })}
                 </Animated.Text>
                 <View style={styles.timezoneRow}>
                   <Text style={styles.timezone}>({timezoneText})</Text>
-                  {!isOwner && capabilities.canShareLocation && shared_location && (
-                    <TouchableOpacity
-                      style={styles.locationInlineButton}
-                      onPress={openSharedLocation}
-                      activeOpacity={0.7}
-                    >
-                      <Ionicons name="location" size={22} color={BaseColors.primaryDark} />
-                    </TouchableOpacity>
-                  )}
                 </View>
               </>
             ) : (
@@ -1582,35 +1596,44 @@ export default function ActivityScreen() {
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
-                    isWelfareMode ? styles.welfareButton : styles.responseButton,
+                    isWelfareMode
+                      ? styles.welfareButton
+                      : (isTodayCheckMode ? styles.todayCheckButton : styles.responseButton),
                     !isSingleActionEnabled && styles.responseButtonDisabled,
                     (sendingResponse || sendingWelfareCheck) && styles.responseButtonSending
                   ]}
-                  onPress={isWelfareMode ? handleSendWelfareCheck : handleSendResponse}
+                  onPress={(isTodayCheckMode || isWelfareMode) ? handleSendWelfareCheck : handleSendResponse}
                   disabled={!isSingleActionEnabled || sendingResponse || sendingWelfareCheck}
                   activeOpacity={0.7}
                 >
-                  {(sendingResponse || sendingWelfareCheck) ? (
+                  {(sendingResponse || sendingWelfareCheck || ((isTodayCheckMode || isWelfareMode) && welfareCheckSent === null)) ? (
                     <ActivityIndicator
                       size="small"
                       color={isWelfareMode ? BaseColors.error : BaseColors.primary}
                     />
-                  ) : isWelfareMode ? (
+                  ) : (isTodayCheckMode || isWelfareMode) ? (
                     <View style={styles.welfareButtonContent}>
                       <Text style={[
-                        styles.welfareButtonText,
+                        isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
                         !isSingleActionEnabled && styles.responseButtonTextDisabled
                       ]}>
-                        {t('activity.welfareButton.send') || 'Are you alright?'}
+                        {welfareCheckSent
+                          ? (isTodayCheckMode
+                            ? (t('activity.todayCheckButton.sent') || 'Greeting sent ✓')
+                            : (t('activity.welfareButton.sent') || 'Greeting sent ✓'))
+                          : isTodayCheckMode
+                            ? (t('activity.todayCheckButton.send') || 'How are you today?')
+                            : (t('activity.welfareButton.send') || 'Are you alright?')}
                       </Text>
-                      <Text style={styles.welfareButtonEmoji}>💛</Text>
                     </View>
                   ) : (
                     <Text style={[
                       styles.responseButtonText,
                       !isSingleActionEnabled && styles.responseButtonTextDisabled
                     ]}>
-                      {t('activity.responseButton.sendResponse') || 'Send a Like'}
+                      {responseSent
+                        ? (t('activity.responseButton.sent') || 'Sent')
+                        : (t('activity.responseButton.sendResponse') || 'Send a Like')}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -1618,14 +1641,59 @@ export default function ActivityScreen() {
             )}
           </View>
 
+          {(username || wellnessMeta) && (
+            <View style={styles.rightColumn}>
+              {username && (
+                <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
+                  @{username}
+                </Text>
+              )}
+              {wellnessMeta && (
+                <View style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}>
+                  <Ionicons name="heart" size={30} color={wellnessMeta.color} />
+                </View>
+              )}
+            </View>
+          )}
+
         </View>
       </View>
     );
   };
 
+  const stripSenderPrefix = (body: string, senderName?: string) => {
+    const trimmed = body.trim();
+    if (!senderName) return trimmed;
+    const escapedName = senderName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return trimmed.replace(new RegExp(`^${escapedName}\\s*[:：]\\s*`), '');
+  };
+
+  const parseNotificationMessage = (body: string, senderName?: string) => {
+    const trimmed = body.trim();
+    if (!senderName) {
+      return { leadingMark: '', name: '', content: trimmed };
+    }
+
+    const escapedName = senderName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = trimmed.match(new RegExp(`^([^\\p{L}\\p{N}]*)\\s*(${escapedName})\\s*[:：]?\\s*(.*)$`, 'u'));
+
+    if (!match) {
+      return { leadingMark: '', name: '', content: trimmed };
+    }
+
+    return {
+      leadingMark: (match[1] || '').trim(),
+      name: match[2] || '',
+      content: (match[3] || '').trim(),
+    };
+  };
+
   // ============================================
   // Render
   // ============================================
+  const todayLikeResponses = todayResponses.filter((response) => response.type === 'checkin_response');
+  const todayWelfareResponses = todayResponses.filter((response) => response.type === 'welfare_check');
+
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
       <Animated.View style={[styles.contentWrapper, { opacity: fadeAnim }]}>
@@ -1653,7 +1721,11 @@ export default function ActivityScreen() {
                     <Text style={styles.cardTitle}>{t('activity.you')}</Text>
                     {todayResponses.length > 0 && (
                       <View style={styles.responseBadge}>
-                        <Ionicons name="heart" size={14} color={BaseColors.primary} />
+                        <Ionicons
+                          name={todayWelfareResponses.length > 0 && todayLikeResponses.length === 0 ? 'help-circle' : 'heart'}
+                          size={14}
+                          color={todayWelfareResponses.length > 0 && todayLikeResponses.length === 0 ? BaseColors.error : BaseColors.primary}
+                        />
                         <Text style={styles.responseBadgeText}>{todayResponses.length}</Text>
                       </View>
                     )}
@@ -1675,19 +1747,25 @@ export default function ActivityScreen() {
                     isLast
                   />
 
-                  {todayResponses.length > 0 && (
+                  {todayWelfareResponses.length > 0 && (
                     <View style={styles.todayResponses}>
                       <Text style={styles.todayResponsesTitle}>
-                        {t("activity.checkinResponse.todayLikes", { count: todayResponses.length })}
+                        {t("activity.welfareCheck.todayGreetings", { count: todayWelfareResponses.length })}
                       </Text>
-                      {todayResponses.map((response) => (
+                      {todayWelfareResponses.map((response) => {
+                        const parsed = parseNotificationMessage(response.body || response.title, response.sender?.display_name);
+                        return (
                         <View key={response.id} style={styles.todayResponseItem}>
-                          <Ionicons name="heart" size={16} color={BaseColors.primary} />
+                          <Text style={styles.greetingMark}>{parsed.leadingMark || '❓'}</Text>
                           <Text style={styles.todayResponseText}>
-                            <Text style={styles.todayResponseName}>
-                              {response.sender?.display_name} {t('activity.checkinResponse.prefix')}:
-                            </Text>
-                            {response.body ? ` ${response.body}` : ` ${t('activity.checkinResponse.defaultMessage')}`}
+                            {parsed.name ? (
+                              <>
+                                <Text style={styles.todayResponseName}>{parsed.name}</Text>
+                                {`: ${parsed.content}`}
+                              </>
+                            ) : (
+                              response.body || response.title
+                            )}
                           </Text>
                           <Text style={styles.responseTimeRight}>
                             {new Date(response.created_at).toLocaleTimeString([], {
@@ -1698,7 +1776,42 @@ export default function ActivityScreen() {
                           </Text>
                           {!response.read && <View style={styles.smallUnreadDot} />}
                         </View>
-                      ))}
+                        );
+                      })}
+                    </View>
+                  )}
+
+                  {todayLikeResponses.length > 0 && (
+                    <View style={styles.todayResponses}>
+                      <Text style={styles.todayResponsesTitle}>
+                        {t("activity.checkinResponse.todayLikes", { count: todayLikeResponses.length })}
+                      </Text>
+                      {todayLikeResponses.map((response) => {
+                        const parsed = parseNotificationMessage(response.body || response.title, response.sender?.display_name);
+                        return (
+                        <View key={response.id} style={styles.todayResponseItem}>
+                          <Ionicons name="heart" size={16} color={BaseColors.primary} />
+                          <Text style={styles.todayResponseText}>
+                            {parsed.name ? (
+                              <>
+                                <Text style={styles.todayResponseName}>{parsed.name}</Text>
+                                {` ${parsed.content}`}
+                              </>
+                            ) : (
+                              response.body || response.title
+                            )}
+                          </Text>
+                          <Text style={styles.responseTimeRight}>
+                            {new Date(response.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                          </Text>
+                          {!response.read && <View style={styles.smallUnreadDot} />}
+                        </View>
+                        );
+                      })}
                     </View>
                   )}
                 </View>
@@ -1730,6 +1843,8 @@ export default function ActivityScreen() {
                       userId={item.user_id}
                       checkin_timezone={item.checkin_timezone}
                       checkin_timezone_label={item.checkin_timezone_label}
+                      action_state={item.action_state}
+                      recency_status={item.recency_status}
                       shared_location={item.shared_location}
                       isLast={index === activities.length - 1}
                     />
@@ -1854,6 +1969,20 @@ const styles = StyleSheet.create({
     width: 56,
     marginRight: 12,
     alignItems: 'center',
+    gap: 6,
+  },
+  wellnessBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationTime: {
+    fontSize: iosFontSize(10),
+    color: BaseColors.neutral[400],
+    textAlign: 'center',
   },
   iconContainer: {
     position: 'relative',
@@ -1886,7 +2015,6 @@ const styles = StyleSheet.create({
   nameEmailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginBottom: 4,
   },
   name: {
@@ -1900,6 +2028,19 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(12),
     color: BaseColors.neutral[400],
     flexShrink: 1,
+  },
+  rightColumn: {
+    width: 60,
+    marginLeft: 8,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 2,
+  },
+  usernameText: {
+    fontSize: iosFontSize(11),
+    color: BaseColors.neutral[400],
+    textAlign: 'right',
+    marginBottom: 10,
   },
   timezone: {
     fontSize: iosFontSize(15),
@@ -1915,22 +2056,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  wellnessBadge: {
-    marginTop: 8,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   wellnessEmoji: {
     fontSize: 22,
   },
   locationInlineButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     backgroundColor: BaseColors.primaryLight,
@@ -1990,10 +2122,27 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.error,
     marginBottom: 8,
   },
+  todayCheckButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BaseColors.warningLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#B45309',
+    marginBottom: 8,
+  },
   welfareButtonText: {
     fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.error,
+  },
+  todayCheckButtonText: {
+    fontSize: iosFontSize(13),
+    fontWeight: '600',
+    color: '#B45309',
   },
   welfareButtonContent: {
     flexDirection: 'row',
@@ -2035,10 +2184,10 @@ const styles = StyleSheet.create({
     borderTopColor: BaseColors.neutral[200],
   },
   todayResponsesTitle: {
-    fontSize: iosFontSize(13),
-    fontWeight: '600',
+    fontSize: iosFontSize(16),
+    fontWeight: '700',
     color: BaseColors.text.dark,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   todayResponseItem: {
     marginLeft: 18,
@@ -2058,11 +2207,18 @@ const styles = StyleSheet.create({
   todayResponseText: {
     flex: 1,
     fontSize: iosFontSize(14),
-    color: BaseColors.text.dark,
+    color: BaseColors.primary,
   },
   todayResponseName: {
     fontWeight: '600',
     color: BaseColors.primary,
+  },
+  greetingMark: {
+    fontSize: iosFontSize(18),
+    fontWeight: '700',
+    color: BaseColors.primary,
+    width: 16,
+    textAlign: 'center',
   },
   smallUnreadDot: {
     width: 8,

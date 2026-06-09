@@ -1,5 +1,5 @@
 // app/components/HeaderWithBack.tsx
-import BaseColors from "@/constants/colors";
+import { BaseColors } from "@/constants/colors";
 import { ICON_SIZES } from "@/constants/ui";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";

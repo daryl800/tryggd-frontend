@@ -20,6 +20,7 @@ const resources = {
     no: { translation: require('./locales/no.json') },
     es: { translation: require('./locales/es.json') },
     sv: { translation: require('./locales/sv.json') },
+    th: { translation: require('./locales/th.json') },
     zh: { translation: zhHant },
     'zh-Hans': { translation: zhHans },
     'zh-Hant': { translation: zhHant },
@@ -34,7 +35,7 @@ const resources = {
 
 export const LANGUAGE_STORAGE_KEY = '@app_language';
 const SUPPORTED_LANGUAGES = [
-    'da', 'en', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'es', 'sv',
+    'da', 'en', 'fi', 'fr', 'de', 'it', 'ja', 'ko', 'no', 'es', 'sv', 'th',
     'zh', 'zh-Hans', 'zh-Hant', 'zh-hans', 'zh-hant', 'zh-CN', 'zh-SG', 'zh-TW', 'zh-HK', 'zh-MO'
 ];
 

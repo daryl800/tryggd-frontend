@@ -1,10 +1,10 @@
-// i18n/types.ts - SIMPLE VERSION
-export type TranslationKeys = string;
+import en from './locales/en.json';
 
 declare module 'i18next' {
-    interface CustomTypeOptions {
-        resources: {
-            translation: TranslationKeys;
-        };
-    }
+  interface CustomTypeOptions {
+    defaultNS: 'translation';
+    resources: {
+      translation: typeof en;
+    };
+  }
 }

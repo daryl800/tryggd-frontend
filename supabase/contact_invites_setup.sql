@@ -57,6 +57,7 @@ as $$
 declare
   v_user_id uuid;
   v_code text;
+  v_code_hash text;
   v_token text;
   v_expires_at timestamptz;
   v_suggested_username text;
@@ -82,7 +83,19 @@ begin
     end if;
   end if;
 
-  v_code := lpad((floor(random() * 1000000))::int::text, 6, '0');
+  loop
+    v_code := lpad((floor(random() * 1000000))::int::text, 6, '0');
+    v_code_hash := encode(extensions.digest(v_code, 'sha256'), 'hex');
+
+    exit when not exists (
+      select 1
+      from public.contact_invites ci
+      where ci.invite_code_hash = v_code_hash
+        and ci.status = 'pending'
+        and ci.expires_at > now()
+    );
+  end loop;
+
   v_token := encode(extensions.gen_random_bytes(24), 'hex');
   v_expires_at := now() + interval '7 days';
 
@@ -100,7 +113,7 @@ begin
     v_suggested_username,
     'signup',
     v_token,
-    encode(extensions.digest(v_code, 'sha256'), 'hex'),
+    v_code_hash,
     v_expires_at
   )
   returning
@@ -175,6 +188,7 @@ as $$
 declare
   v_user_id uuid;
   v_code text;
+  v_code_hash text;
   v_token text;
   v_expires_at timestamptz;
   v_contact_profile record;
@@ -206,7 +220,19 @@ begin
     raise exception 'This contact does not have a Tryggd ID yet.';
   end if;
 
-  v_code := lpad((floor(random() * 1000000))::int::text, 6, '0');
+  loop
+    v_code := lpad((floor(random() * 1000000))::int::text, 6, '0');
+    v_code_hash := encode(extensions.digest(v_code, 'sha256'), 'hex');
+
+    exit when not exists (
+      select 1
+      from public.contact_invites ci
+      where ci.invite_code_hash = v_code_hash
+        and ci.status = 'pending'
+        and ci.expires_at > now()
+    );
+  end loop;
+
   v_token := encode(extensions.gen_random_bytes(24), 'hex');
   v_expires_at := now() + interval '2 days';
 
@@ -224,7 +250,7 @@ begin
     'recovery',
     p_contact_user_id,
     v_token,
-    encode(extensions.digest(v_code, 'sha256'), 'hex'),
+    v_code_hash,
     v_expires_at
   )
   returning
@@ -313,7 +339,60 @@ begin
 end;
 $$;
 
+drop function if exists public.resolve_contact_invite_by_code(text);
+create or replace function public.resolve_contact_invite_by_code(p_code text)
+returns table (
+  invite_token text,
+  invite_kind text,
+  expires_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_hash text;
+  v_match_count integer;
+begin
+  update public.contact_invites
+  set
+    status = 'expired',
+    updated_at = now()
+  where public.contact_invites.status = 'pending'
+    and public.contact_invites.expires_at <= now();
+
+  v_hash := encode(extensions.digest(trim(p_code), 'sha256'), 'hex');
+
+  select count(*)
+  into v_match_count
+  from public.contact_invites ci
+  where ci.invite_code_hash = v_hash
+    and ci.status = 'pending'
+    and ci.expires_at > now();
+
+  if v_match_count = 0 then
+    return;
+  end if;
+
+  if v_match_count > 1 then
+    raise exception 'Multiple invites matched this code. Ask for a new invite.';
+  end if;
+
+  return query
+  select
+    ci.invite_token,
+    ci.invite_kind,
+    ci.expires_at
+  from public.contact_invites ci
+  where ci.invite_code_hash = v_hash
+    and ci.status = 'pending'
+    and ci.expires_at > now()
+  limit 1;
+end;
+$$;
+
 grant execute on function public.create_contact_invite(text) to authenticated;
 grant execute on function public.create_contact_recovery_invite(uuid) to authenticated;
 grant execute on function public.get_contact_invite(text) to anon, authenticated;
 grant execute on function public.verify_contact_invite_code(text, text) to anon, authenticated;
+grant execute on function public.resolve_contact_invite_by_code(text) to anon, authenticated;

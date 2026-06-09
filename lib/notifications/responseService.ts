@@ -264,7 +264,7 @@ class ResponseNotificationService {
                     user_id: recipientUserId,
                     sender_user_id: senderUserId,
                     type: 'checkin_response',
-                    body: `Good job at ${new Date(checkinTime).toLocaleTimeString()}!`,
+                    body: `${profile?.display_name || 'Someone'} sent you a Like 👍🏻`,
                     created_at: new Date().toISOString(),
                     data: {
                         senderName: profile?.display_name || 'Someone',

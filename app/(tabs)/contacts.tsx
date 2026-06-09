@@ -87,6 +87,21 @@ type GeneratedInvite = {
     target_username?: string | null;
 };
 
+type CreateInviteResult = {
+    invite_token: string;
+    invite_code: string;
+    expires_at: string;
+    suggested_username?: string | null;
+};
+
+type CreateRecoveryInviteResult = {
+    invite_token: string;
+    invite_code: string;
+    expires_at: string;
+    target_display_name?: string | null;
+    target_username?: string | null;
+};
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const getKeyboardVerticalOffset = () => {
@@ -138,7 +153,7 @@ const ContactCard = memo(
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
-        const { t, i18n } = useTranslation();
+        const { t } = useTranslation();
         const existingName =
             contact.display_name?.trim() || contact.username || contact.identifier || contact.email;
         const existingIdentifier = contact.username || contact.identifier;
@@ -368,6 +383,7 @@ const ContactCard = memo(
         );
     }
 );
+ContactCard.displayName = 'ContactCard';
 
 const ContactRequestCard = memo(
     ({
@@ -429,7 +445,7 @@ const ContactRequestCard = memo(
 
                 {request.message && (
                     <View style={styles.requestMessage}>
-                        <Text style={styles.requestMessageText}>"{request.message}"</Text>
+                        <Text style={styles.requestMessageText}>{'"'}{request.message}{'"'}</Text>
                     </View>
                 )}
 
@@ -470,6 +486,7 @@ const ContactRequestCard = memo(
         );
     }
 );
+ContactRequestCard.displayName = 'ContactRequestCard';
 
 export default function ContactsScreen() {
     const { t, i18n } = useTranslation();
@@ -517,7 +534,7 @@ export default function ContactsScreen() {
     const inputRefs = useRef<(TextInput | null)[]>([]);
     const isMountedRef = useRef(true);
     const lastFetchRef = useRef<number>(0);
-    const fetchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const fetchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
@@ -941,7 +958,7 @@ export default function ContactsScreen() {
                 .rpc('create_contact_invite', {
                     p_suggested_username: normalizedSuggestedUsername || null,
                 })
-                .single();
+                .single<CreateInviteResult>();
 
             if (error) throw error;
             if (!data) throw new Error(t('contacts.errors.createInvite'));
@@ -994,7 +1011,7 @@ export default function ContactsScreen() {
                 .rpc('create_contact_recovery_invite', {
                     p_contact_user_id: contact.user_id,
                 })
-                .single();
+                .single<CreateRecoveryInviteResult>();
 
             if (error) throw error;
             if (!data) throw new Error(t('contacts.errors.createRecoveryInvite'));
@@ -2622,6 +2639,9 @@ const styles = StyleSheet.create({
     },
     buttonIcon: {
         marginRight: 6,
+    },
+    spinning: {
+        transform: [{ rotate: '0deg' }],
     },
     buttonText: {
         color: BaseColors.surface,

@@ -116,6 +116,7 @@ export const formatTime24h = (date: Date, language: string) => {
         no: 'nb-NO',
         da: 'da-DK',
         fi: 'fi-FI',
+        th: 'th-TH',
         'zh-Hans': 'zh_Hans',
         'zh-Hant': 'zh-Hant',
         zh: 'zh-CN',

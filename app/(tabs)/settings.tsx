@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    Alert,
     LayoutAnimation,
     Linking,
     Platform,
@@ -44,6 +43,7 @@ const SUPPORTED_LANGUAGES = [
     { code: "it", label: "Italiano", flag: "🇮🇹" },
     { code: "no", label: "Norsk", flag: "🇳🇴" },
     { code: "sv", label: "Svenska", flag: "🇸🇪" },
+    { code: "th", label: "ไทย", flag: "🇹🇭" },
     { code: "zh-Hans", label: "简体中文", flag: "🇭🇰" },
     { code: "zh-Hant", label: "繁體中文", flag: "🇨🇳" },
     { code: "ja", label: "日本語", flag: "🇯🇵" },
@@ -412,7 +412,6 @@ export default function SettingsScreen() {
 
 // ==================== STYLES ====================
 
-const GAP = 16;
 const CARD_HORIZONTAL_PADDING = 16;
 const CARD_ITEM_VERTICAL_PADDING = 12;
 

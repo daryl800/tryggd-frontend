@@ -12,7 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Custom components & providers
 import { CustomText, CustomTextInput } from '@/components/CustomText';
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
-import i18n from '../i18n';
+import i18n, { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from '../i18n';
 
 // Services & utilities
 import { tokenManager } from '@/lib/auth/tokenManager';
@@ -20,7 +20,6 @@ import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { registerAndSavePushToken } from '@/lib/notifications/core';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
-import { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from '../i18n';
 import { supabase } from '../lib/supabase';
 
 // Make custom components available globally

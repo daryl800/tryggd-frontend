@@ -1,5 +1,5 @@
 // lib/client.ts (optional - if you want a generic client)
-import { tokenManager } from './auth/tokenManager';
+import { tokenManager } from '../auth/tokenManager';
 
 class ApiClient {
     async request(endpoint: string, options: RequestInit = {}) {
