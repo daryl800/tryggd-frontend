@@ -1519,13 +1519,14 @@ export default function ActivityScreen() {
         <View style={styles.activityRow}>
           <View style={styles.leftIconsColumn}>
             <View style={styles.iconContainer}>
-              <Ionicons name="person-circle" size={48} color={BaseColors.neutral[300]} style={StyleSheet.absoluteFillObject} />
-              {displayAvatarUrl && !avatarLoadFailed && (
+              {displayAvatarUrl && !avatarLoadFailed ? (
                 <Image
                   source={{ uri: displayAvatarUrl }}
                   style={styles.activityAvatar}
                   onError={() => setAvatarLoadFailed(true)}
                 />
+              ) : (
+                <Ionicons name="person-circle" size={48} color={BaseColors.neutral[300]} />
               )}
             </View>
             {capabilities.canShareLocation && (isOwner || shared_location) && (
