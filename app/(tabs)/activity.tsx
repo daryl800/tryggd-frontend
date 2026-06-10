@@ -1754,18 +1754,19 @@ export default function ActivityScreen() {
                         {t("activity.welfareCheck.todayGreetings", { count: todayWelfareResponses.length })}
                       </Text>
                       {todayWelfareResponses.map((response) => {
-                        const parsed = parseNotificationMessage(response.body || response.title, response.sender?.display_name);
+                        const senderName = response.sender?.display_name;
+                        const body = response.body || response.title;
                         return (
                         <View key={response.id} style={styles.todayResponseItem}>
-                          <Text style={styles.greetingMark}>{parsed.leadingMark || '❓'}</Text>
+                          <Ionicons name="heart" size={16} color={BaseColors.primary} />
                           <Text style={styles.todayResponseText}>
-                            {parsed.name ? (
+                            {senderName ? (
                               <>
-                                <Text style={styles.todayResponseName}>{parsed.name}</Text>
-                                {`: ${parsed.content}`}
+                                <Text style={styles.todayResponseName}>{senderName}</Text>
+                                {`: ${body}`}
                               </>
                             ) : (
-                              response.body || response.title
+                              body
                             )}
                           </Text>
                           <Text style={styles.responseTimeRight}>
