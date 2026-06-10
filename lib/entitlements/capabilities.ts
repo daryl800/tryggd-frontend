@@ -10,7 +10,7 @@ export type UserCapabilities = {
   maxContacts: number;
 };
 
-export function getCapabilities(plan: UserPlan): UserCapabilities {
+export function getCapabilities(plan: UserPlan, contactLimit?: number): UserCapabilities {
   const isPlus = plan === 'plus';
 
   return {
@@ -20,6 +20,6 @@ export function getCapabilities(plan: UserPlan): UserCapabilities {
     canUseWellnessSlider: isPlus,
     canControlCheckinRecipients: isPlus,
     canAddUnlimitedContacts: isPlus,
-    maxContacts: isPlus ? 999 : 3,
+    maxContacts: contactLimit ?? (isPlus ? 999 : 3),
   };
 }

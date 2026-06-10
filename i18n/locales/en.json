@@ -181,6 +181,10 @@
         "title": "Limit reached",
         "message": "You can only add up to 3 contacts."
       },
+      "senderLimitReached": {
+        "title": "Cannot accept request",
+        "message": "This person's contact list is full."
+      },
       "delete": {
         "title": "Delete contact",
         "message": "Are you sure you want to delete {{name}}?"

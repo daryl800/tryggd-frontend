@@ -181,6 +181,10 @@
         "title": "Límite alcanzado",
         "message": "Solo puedes agregar hasta 3 contactos."
       },
+      "senderLimitReached": {
+        "title": "No se puede aceptar la solicitud",
+        "message": "La lista de contactos de esta persona está llena."
+      },
       "delete": {
         "title": "Eliminar contacto",
         "message": "¿Seguro que quieres eliminar a {{name}}?"

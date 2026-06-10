@@ -182,6 +182,10 @@
         "title": "Raja saavutettu",
         "message": "Voit lisätä vain enintään 3 yhteystietoa."
       },
+      "senderLimitReached": {
+        "title": "Pyyntöä ei voi hyväksyä",
+        "message": "Tämän henkilön yhteystietoluettelo on täynnä."
+      },
       "delete": {
         "title": "Poista yhteystieto",
         "message": "Haluatko varmasti poistaa {{name}}?"

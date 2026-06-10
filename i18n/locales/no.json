@@ -182,6 +182,10 @@
         "title": "Grense nådd",
         "message": "Du kan legge til maks 3 kontakter."
       },
+      "senderLimitReached": {
+        "title": "Kan ikke godta forespørselen",
+        "message": "Denne personens kontaktliste er full."
+      },
       "delete": {
         "title": "Slett kontakt",
         "message": "Er du sikker på at du vil slette {{name}}?"

@@ -217,6 +217,10 @@
         "title": "已達上限",
         "message": "最多只能新增3個聯絡人。"
       },
+      "senderLimitReached": {
+        "title": "無法接受請求",
+        "message": "對方的聯絡人名單已滿。"
+      },
       "delete": {
         "title": "刪除聯絡人",
         "message": "確定要刪除 {{name}} 嗎？"

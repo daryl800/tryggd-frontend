@@ -181,6 +181,10 @@
         "title": "上限に達しました",
         "message": "追加できる連絡先は最大 3 件です。"
       },
+      "senderLimitReached": {
+        "title": "リクエストを承認できません",
+        "message": "この方の連絡先リストがいっぱいです。"
+      },
       "delete": {
         "title": "連絡先を削除",
         "message": "{{name}} を削除してもよろしいですか?"

@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<any | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [plan, setPlan] = useState<UserPlan>(DEFAULT_PLAN);
+    const [contactLimit, setContactLimit] = useState<number>(3);
     const [initialized, setInitialized] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
 
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setProfileLoading(true);
 
-            const [profileResult, entitlementResult] = await Promise.all([
+            const [profileResult, entitlementResult, limitResult] = await Promise.all([
                 supabase
                     .from("profiles")
                     .select("*")
@@ -71,6 +72,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     .select("plan")
                     .eq("user_id", user.id)
                     .maybeSingle(),
+                supabase
+                    .rpc("get_contact_limit", { p_user_id: user.id }),
             ]);
 
             const { data, error } = profileResult;
@@ -85,6 +88,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             } else {
                 setPlan(entitlementData?.plan === "plus" ? "plus" : DEFAULT_PLAN);
             }
+
+            setContactLimit(limitResult.data ?? 3);
 
             console.log("[AuthContext] Profile loaded:", data, error);
 
@@ -168,6 +173,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!user) {
             setProfile(null);
             setPlan(DEFAULT_PLAN);
+            setContactLimit(3);
             return;
         }
 
@@ -175,7 +181,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [refreshProfile, user]);
 
     const loading = !initialized || profileLoading;
-    const capabilities = getCapabilities(plan);
+    const capabilities = getCapabilities(plan, contactLimit);
     const hasValidDisplayName = Boolean(
         profile?.display_name?.trim() &&
         !isLikelyGeneratedDisplayName(profile.display_name)

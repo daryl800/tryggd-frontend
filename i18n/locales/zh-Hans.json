@@ -217,6 +217,10 @@
         "title": "已达上限",
         "message": "最多只能添加3个联系人。"
       },
+      "senderLimitReached": {
+        "title": "无法接受请求",
+        "message": "对方的联系人列表已满。"
+      },
       "delete": {
         "title": "删除联系人",
         "message": "确定要删除 {{name}} 吗？"

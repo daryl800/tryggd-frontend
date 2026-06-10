@@ -182,6 +182,10 @@
         "title": "Gräns uppnådd",
         "message": "Du kan lägga till max 3 kontakter."
       },
+      "senderLimitReached": {
+        "title": "Kan inte acceptera begäran",
+        "message": "Den här personens kontaktlista är full."
+      },
       "delete": {
         "title": "Ta bort kontakt",
         "message": "Vill du verkligen ta bort {{name}}?"

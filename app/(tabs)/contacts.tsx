@@ -1718,18 +1718,32 @@ export default function ContactsScreen() {
                 .eq('status', 'pending')
                 .maybeSingle();
 
-            if (totalContactsCount >= capabilities.maxContacts) {
-                Alert.alert(
-                    t('contacts.alerts.limitReached.title'),
-                    t('contacts.alerts.limitReached.message'),
-                    [{ text: t('common.ok') }]
-                );
-                return;
-            }
-
             if (fetchError || !requestData) {
                 Alert.alert(t('errors.title'), t('contacts.errors.requestNotFound'));
                 setIncomingRequests((prev) => prev.filter((req) => req.id !== requestId));
+                return;
+            }
+
+            const { data: canAdd, error: canAddError } = await supabase.rpc('check_can_add_contact', {
+                p_other_user_id: requestData.sender_user_id,
+            });
+
+            if (canAddError) throw canAddError;
+
+            if (canAdd && !canAdd.ok) {
+                if (canAdd.reason === 'requester_full') {
+                    Alert.alert(
+                        t('contacts.alerts.limitReached.title'),
+                        t('contacts.alerts.limitReached.message'),
+                        [{ text: t('common.ok') }]
+                    );
+                } else if (canAdd.reason === 'receiver_full') {
+                    Alert.alert(
+                        t('contacts.alerts.senderLimitReached.title'),
+                        t('contacts.alerts.senderLimitReached.message'),
+                        [{ text: t('common.ok') }]
+                    );
+                }
                 return;
             }
 
@@ -1981,21 +1995,6 @@ export default function ContactsScreen() {
                                     color={BaseColors.primary}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={handleOpenScanner}
-                                style={styles.inviteButton}
-                                disabled={scannerProcessing}
-                            >
-                                {scannerProcessing ? (
-                                    <ActivityIndicator size="small" color={BaseColors.primary} />
-                                ) : (
-                                    <Ionicons
-                                        name="scan-outline"
-                                        size={ICON_SIZES.LG}
-                                        color={BaseColors.primary}
-                                    />
-                                )}
-                            </TouchableOpacity>
                             {/* <TouchableOpacity
                                 onPress={handleManualRefresh}
                                 style={styles.refreshButton}
@@ -2022,6 +2021,21 @@ export default function ContactsScreen() {
                                             : BaseColors.primary
                                     }
                                 />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleOpenScanner}
+                                style={styles.inviteButton}
+                                disabled={scannerProcessing}
+                            >
+                                {scannerProcessing ? (
+                                    <ActivityIndicator size="small" color={BaseColors.primary} />
+                                ) : (
+                                    <Ionicons
+                                        name="scan-outline"
+                                        size={ICON_SIZES.LG}
+                                        color={BaseColors.primary}
+                                    />
+                                )}
                             </TouchableOpacity>
                         </View>
                     }
@@ -2978,7 +2992,7 @@ const styles = StyleSheet.create({
     headerActions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
+        gap: 6,
     },
     refreshButton: {
         padding: 4,

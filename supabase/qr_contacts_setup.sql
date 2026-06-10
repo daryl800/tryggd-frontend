@@ -68,6 +68,27 @@ $$;
 grant execute on function public.generate_qr_token() to authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- get_contact_limit(p_user_id uuid) — internal helper
+-- Returns the max contacts for a user based on their plan.
+-- Change the numbers here to update limits across all flows.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+drop function if exists public.get_contact_limit(uuid);
+create or replace function public.get_contact_limit(p_user_id uuid)
+returns int
+language sql
+security definer
+set search_path = public
+as $$
+  select coalesce(
+    (select case when coalesce(plan, 'free') = 'plus' then 999 else 3 end
+     from public.user_entitlements
+     where user_id = p_user_id),
+    3
+  );
+$$;
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- add_contact_via_qr(p_token text)
 -- Called by the scanner after reading a QR code.
 -- Validates the token, then directly inserts both sides of the contact
@@ -114,22 +135,14 @@ begin
   end if;
 
   -- check contact limit for scanner
-  if (
-    select count(*) from public.contacts where owner_user_id = v_scanner_id
-  ) >= (
-    select case when coalesce(plan, 'free') = 'plus' then 999 else 3 end
-    from public.user_entitlements where user_id = v_scanner_id
-  ) then
+  if (select count(*) from public.contacts where owner_user_id = v_scanner_id)
+     >= public.get_contact_limit(v_scanner_id) then
     return jsonb_build_object('error', 'contact_limit_reached');
   end if;
 
   -- check contact limit for the QR owner (their list also gains a new entry)
-  if (
-    select count(*) from public.contacts where owner_user_id = v_owner_id
-  ) >= (
-    select case when coalesce(plan, 'free') = 'plus' then 999 else 3 end
-    from public.user_entitlements where user_id = v_owner_id
-  ) then
+  if (select count(*) from public.contacts where owner_user_id = v_owner_id)
+     >= public.get_contact_limit(v_owner_id) then
     return jsonb_build_object('error', 'owner_contact_limit_reached');
   end if;
 
@@ -188,3 +201,47 @@ end;
 $$;
 
 grant execute on function public.add_contact_via_qr(text) to authenticated;
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- check_can_add_contact(p_other_user_id uuid)
+-- Server-side two-way capacity check used before accepting a contact request.
+-- Returns: { ok: true } or { ok: false, reason: 'self' | 'requester_full' | 'receiver_full' }
+-- Limit numbers live only here — no hardcoded values in the client.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+drop function if exists public.check_can_add_contact(uuid);
+create or replace function public.check_can_add_contact(p_other_user_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_caller_id uuid;
+begin
+  v_caller_id := auth.uid();
+
+  if v_caller_id is null then
+    raise exception 'Not authenticated';
+  end if;
+
+  if v_caller_id = p_other_user_id then
+    return jsonb_build_object('ok', false, 'reason', 'self');
+  end if;
+
+  if (select count(*) from public.contacts where owner_user_id = v_caller_id)
+     >= public.get_contact_limit(v_caller_id) then
+    return jsonb_build_object('ok', false, 'reason', 'requester_full');
+  end if;
+
+  if (select count(*) from public.contacts where owner_user_id = p_other_user_id)
+     >= public.get_contact_limit(p_other_user_id) then
+    return jsonb_build_object('ok', false, 'reason', 'receiver_full');
+  end if;
+
+  return jsonb_build_object('ok', true);
+end;
+$$;
+
+grant execute on function public.get_contact_limit(uuid)       to authenticated;
+grant execute on function public.check_can_add_contact(uuid)   to authenticated;
