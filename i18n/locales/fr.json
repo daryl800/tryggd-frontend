@@ -261,7 +261,8 @@
       "scanHint": "Pointez vers un QR code Tryggd pour ajouter un contact",
       "successTitle": "Contact ajouté",
       "successMessage": "{{name}} a été ajouté à vos contacts",
-      "newContact": "Nouveau contact"
+      "newContact": "Nouveau contact",
+      "ownerLimitReached": "La liste de contacts de cette personne est pleine. Elle ne peut pas accepter de nouveaux contacts pour l'instant."
     },
     "messages": {
       "contactDefault": "This contact"

@@ -262,7 +262,8 @@
       "scanHint": "Peg på en Tryggd QR-kode for at tilføje en kontakt",
       "successTitle": "Kontakt tilføjet",
       "successMessage": "{{name}} er blevet tilføjet til dine kontakter",
-      "newContact": "Ny kontakt"
+      "newContact": "Ny kontakt",
+      "ownerLimitReached": "Denne persons kontaktliste er fuld. De kan ikke acceptere nye kontakter lige nu."
     },
     "messages": {
       "contactDefault": "This contact"

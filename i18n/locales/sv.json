@@ -262,7 +262,8 @@
       "scanHint": "Rikta kameran mot en Tryggd QR-kod för att lägga till en kontakt",
       "successTitle": "Kontakt tillagd",
       "successMessage": "{{name}} har lagts till i dina kontakter",
-      "newContact": "Ny kontakt"
+      "newContact": "Ny kontakt",
+      "ownerLimitReached": "Den här personens kontaktlista är full. De kan inte ta emot nya kontakter just nu."
     },
     "messages": {
       "contactDefault": "This contact"

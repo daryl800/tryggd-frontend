@@ -985,6 +985,10 @@ export default function ContactsScreen() {
                 Alert.alert(t('contacts.alerts.limitReached.title'), t('contacts.alerts.limitReached.message'));
                 return;
             }
+            if (result?.error === 'owner_contact_limit_reached') {
+                Alert.alert(t('contacts.alerts.limitReached.title'), t('contacts.qr.ownerLimitReached'));
+                return;
+            }
             if (result?.warning === 'already_connected') {
                 Alert.alert(t('contacts.alerts.contactExists.title'), t('contacts.alerts.alreadyInContacts'));
                 return;

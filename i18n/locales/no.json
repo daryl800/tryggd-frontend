@@ -262,7 +262,8 @@
       "scanHint": "Pek mot en Tryggd QR-kode for å legge til en kontakt",
       "successTitle": "Kontakt lagt til",
       "successMessage": "{{name}} er lagt til i kontaktene dine",
-      "newContact": "Ny kontakt"
+      "newContact": "Ny kontakt",
+      "ownerLimitReached": "Denne personens kontaktliste er full. De kan ikke ta imot nye kontakter nå."
     },
     "messages": {
       "contactDefault": "This contact"

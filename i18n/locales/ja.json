@@ -261,7 +261,8 @@
       "scanHint": "TryggdのQRコードにカメラを向けて連絡先を追加",
       "successTitle": "連絡先を追加しました",
       "successMessage": "{{name}} が連絡先に追加されました",
-      "newContact": "新しい連絡先"
+      "newContact": "新しい連絡先",
+      "ownerLimitReached": "この人の連絡先リストがいっぱいです。現在、新しい連絡先を受け入れることができません。"
     },
     "messages": {
       "contactDefault": "This contact"

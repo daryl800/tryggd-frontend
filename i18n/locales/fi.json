@@ -262,7 +262,8 @@
       "scanHint": "Osoita Tryggd QR-koodiin lisätäksesi yhteystiedon",
       "successTitle": "Yhteystieto lisätty",
       "successMessage": "{{name}} on lisätty yhteystietoihisi",
-      "newContact": "Uusi yhteystieto"
+      "newContact": "Uusi yhteystieto",
+      "ownerLimitReached": "Tämän henkilön yhteystietoluettelo on täynnä. He eivät voi hyväksyä uusia yhteystietoja juuri nyt."
     },
     "messages": {
       "contactDefault": "This contact"

@@ -261,7 +261,8 @@
       "scanHint": "Tryggd QR 코드를 향해 카메라를 대세요",
       "successTitle": "연락처 추가됨",
       "successMessage": "{{name}}이(가) 연락처에 추가되었습니다",
-      "newContact": "새 연락처"
+      "newContact": "새 연락처",
+      "ownerLimitReached": "이 사람의 연락처 목록이 가득 찼습니다. 지금은 새 연락처를 받을 수 없습니다."
     },
     "messages": {
       "contactDefault": "This contact"

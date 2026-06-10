@@ -302,7 +302,8 @@
       "scanHint": "将镜头对准 Tryggd QR 码即可添加联系人",
       "successTitle": "已添加联系人",
       "successMessage": "{{name}} 已加入你的联系人",
-      "newContact": "新联系人"
+      "newContact": "新联系人",
+      "ownerLimitReached": "对方的联系人名单已满，目前无法接受新联系人。"
     },
     "messages": {
       "contactDefault": "此联系人"

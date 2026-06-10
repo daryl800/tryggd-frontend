@@ -261,7 +261,8 @@
       "scanHint": "Richte die Kamera auf einen Tryggd QR-Code, um einen Kontakt hinzuzufügen",
       "successTitle": "Kontakt hinzugefügt",
       "successMessage": "{{name}} wurde zu deinen Kontakten hinzugefügt",
-      "newContact": "Neuer Kontakt"
+      "newContact": "Neuer Kontakt",
+      "ownerLimitReached": "Die Kontaktliste dieser Person ist voll. Sie können gerade keine neuen Kontakte annehmen."
     },
     "messages": {
       "contactDefault": "This contact"
