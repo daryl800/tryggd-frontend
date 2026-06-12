@@ -399,6 +399,20 @@ export default function SettingsScreen() {
                             </View>
                             <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.settingItem}
+                            onPress={() => Linking.openURL("mailto:support@tryggd.com?subject=Tryggd%20Feedback")}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.settingContent}>
+                                <View style={styles.settingIcon}>
+                                    <Ionicons name="mail" size={22} color={BaseColors.primary} />
+                                </View>
+                                <Text style={styles.settingTitle}>{t("settings.feedback")}</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={20} color={BaseColors.neutral[400]} />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
