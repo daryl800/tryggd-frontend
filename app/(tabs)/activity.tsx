@@ -16,6 +16,7 @@ import {
   AppState,
   Image,
   Linking,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -1229,6 +1230,7 @@ export default function ActivityScreen() {
       return responseService.hasCachedResponse(cacheKey);
     });
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
+    const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1511,6 +1513,7 @@ export default function ActivityScreen() {
           color: '#7A5C4D',
           backgroundColor: '#F3F3F3',
           borderColor: '#D0D0D0',
+          labelKey: 'activity.wellness.veryLow',
         };
       }
 
@@ -1519,6 +1522,7 @@ export default function ActivityScreen() {
           color: '#6B8DA4',
           backgroundColor: '#E4EFF6',
           borderColor: '#A8C4D6',
+          labelKey: 'activity.wellness.low',
         };
       }
 
@@ -1527,6 +1531,7 @@ export default function ActivityScreen() {
           color: BaseColors.primary,
           backgroundColor: BaseColors.primaryLight,
           borderColor: BaseColors.primaryBorder,
+          labelKey: 'activity.wellness.neutral',
         };
       }
 
@@ -1535,6 +1540,7 @@ export default function ActivityScreen() {
           color: '#AFC04A',
           backgroundColor: '#F4F7E0',
           borderColor: '#CFDA8A',
+          labelKey: 'activity.wellness.good',
         };
       }
 
@@ -1542,6 +1548,7 @@ export default function ActivityScreen() {
         color: '#FFD700',
         backgroundColor: '#FFF8DC',
         borderColor: '#E8C64A',
+        labelKey: 'activity.wellness.great',
       };
     };
 
@@ -1712,8 +1719,20 @@ export default function ActivityScreen() {
                 </Text>
               )}
               {wellnessMeta && (
-                <View style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}>
-                  <Ionicons name="heart" size={30} color={wellnessMeta.color} />
+                <View style={styles.wellnessBadgeWrapper}>
+                  {wellnessTooltipVisible && (
+                    <View style={[styles.wellnessTooltip, { borderColor: wellnessMeta.borderColor, backgroundColor: wellnessMeta.backgroundColor }]}>
+                      <Text style={[styles.wellnessTooltipText, { color: wellnessMeta.color }]}>
+                        {t(wellnessMeta.labelKey).split('\n')[0]}
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable
+                    onPress={() => setWellnessTooltipVisible(v => !v)}
+                    style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}
+                  >
+                    <Ionicons name="heart" size={30} color={wellnessMeta.color} />
+                  </Pressable>
                 </View>
               )}
             </View>
@@ -2036,6 +2055,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  wellnessBadgeWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+  },
   wellnessBadge: {
     width: 56,
     height: 56,
@@ -2043,6 +2066,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  wellnessTooltip: {
+    position: 'absolute',
+    bottom: 64,
+    right: 0,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    minWidth: 120,
+    maxWidth: 180,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 4,
+    zIndex: 100,
+  },
+  wellnessTooltipText: {
+    fontSize: iosFontSize(13),
+    fontWeight: '600',
+    textAlign: 'center',
   },
   locationTime: {
     fontSize: iosFontSize(10),
