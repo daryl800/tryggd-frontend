@@ -1555,8 +1555,8 @@ const styles = StyleSheet.create({
     backgroundColor: BaseColors.surface,
   },
   wellnessThumbEmoji: {
-    fontSize: 18,
-    lineHeight: 20,
+    fontSize: 22,
+    lineHeight: 24,
     textAlign: 'center',
   },
   wellnessThumbLockBadge: {
