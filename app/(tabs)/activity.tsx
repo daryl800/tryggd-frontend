@@ -1655,29 +1655,49 @@ export default function ActivityScreen() {
                       color={isWelfareMode ? BaseColors.error : BaseColors.primary}
                     />
                   ) : (isTodayCheckMode || isWelfareMode) ? (
-                    <View style={styles.welfareButtonContent}>
-                      <Text style={[
-                        isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
-                        !isSingleActionEnabled && styles.responseButtonTextDisabled
-                      ]}>
-                        {welfareCheckSent
-                          ? (isTodayCheckMode
-                            ? t('activity.todayCheckButton.sent')
-                            : t('activity.welfareButton.sent'))
-                          : isTodayCheckMode
-                            ? t('activity.todayCheckButton.send')
-                            : t('activity.welfareButton.send')}
-                      </Text>
-                    </View>
+                    (() => {
+                      const label = welfareCheckSent
+                        ? (isTodayCheckMode ? t('activity.todayCheckButton.sent') : t('activity.welfareButton.sent'))
+                        : (isTodayCheckMode ? t('activity.todayCheckButton.send') : t('activity.welfareButton.send'));
+                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
+                      const emoji = emojiMatch?.[0] ?? '';
+                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      return (
+                        <View style={styles.welfareButtonContent}>
+                          <Text style={[
+                            isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
+                            !isSingleActionEnabled && styles.responseButtonTextDisabled
+                          ]}>
+                            {text}
+                          </Text>
+                          {!!emoji && (
+                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          )}
+                        </View>
+                      );
+                    })()
                   ) : (
-                    <Text style={[
-                      styles.responseButtonText,
-                      !isSingleActionEnabled && styles.responseButtonTextDisabled
-                    ]}>
-                      {responseSent
+                    (() => {
+                      const label = responseSent
                         ? t('activity.responseButton.sent')
-                        : t('activity.responseButton.sendResponse')}
-                    </Text>
+                        : t('activity.responseButton.sendResponse');
+                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
+                      const emoji = emojiMatch?.[0] ?? '';
+                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      return (
+                        <View style={styles.welfareButtonContent}>
+                          <Text style={[
+                            styles.responseButtonText,
+                            !isSingleActionEnabled && styles.responseButtonTextDisabled
+                          ]}>
+                            {text}
+                          </Text>
+                          {!!emoji && (
+                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          )}
+                        </View>
+                      );
+                    })()
                   )}
                 </TouchableOpacity>
               </View>
