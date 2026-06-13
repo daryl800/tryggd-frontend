@@ -1223,16 +1223,28 @@ export default function HomeScreen() {
                     {/* Text Content */}
                     <View style={styles.textContainer}>
                       {checkedInToday ? (
-                        <Text
-                          style={[
-                            styles.checkedInText,
-                            { color: checkedMessageColor },
-                            chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
-                          ]}
-                          ellipsizeMode="clip"
-                        >
-                          {checkedInMessage}
-                        </Text>
+                        (() => {
+                          const [msgText, msgEmoji] = checkedInMessage.includes('\n')
+                            ? checkedInMessage.split('\n')
+                            : [checkedInMessage, ''];
+                          return (
+                            <>
+                              <Text
+                                style={[
+                                  styles.checkedInText,
+                                  { color: checkedMessageColor },
+                                  chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                                ]}
+                                ellipsizeMode="clip"
+                              >
+                                {msgText}
+                              </Text>
+                              {!!msgEmoji && (
+                                <Text style={styles.checkedInEmoji}>{msgEmoji}</Text>
+                              )}
+                            </>
+                          );
+                        })()
                       ) : (
                         <>
                           <Text
@@ -1585,6 +1597,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
     flexWrap: 'wrap',
+  },
+  checkedInEmoji: {
+    fontSize: 36,
+    textAlign: 'center',
+    lineHeight: 42,
   },
   circleBorder: {
     position: 'absolute',
