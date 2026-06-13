@@ -2214,7 +2214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welfareButtonEmoji: {
-    fontSize: iosFontSize(13),
+    fontSize: iosFontSize(17),
     marginLeft: 4,
   },
   activityItem: {
