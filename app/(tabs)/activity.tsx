@@ -1470,9 +1470,9 @@ export default function ActivityScreen() {
           const yesterdayLocalStr = yesterday.toLocaleDateString('en-CA', { timeZone: tz });
 
           if (dLocalStr === todayLocalStr) {
-            dateText = t('activity.day.today') || 'Today';
+            dateText = t('activity.day.today');
           } else if (dLocalStr === yesterdayLocalStr) {
-            dateText = t('activity.day.yesterday') || 'Yesterday';
+            dateText = t('activity.day.yesterday');
           } else {
             const weekday = d.toLocaleDateString(t('activity.time.locale'), {
               weekday: 'short',
@@ -1662,11 +1662,11 @@ export default function ActivityScreen() {
                       ]}>
                         {welfareCheckSent
                           ? (isTodayCheckMode
-                            ? (t('activity.todayCheckButton.sent') || 'Greeting sent ✓')
-                            : (t('activity.welfareButton.sent') || 'Greeting sent ✓'))
+                            ? t('activity.todayCheckButton.sent')
+                            : t('activity.welfareButton.sent'))
                           : isTodayCheckMode
-                            ? (t('activity.todayCheckButton.send') || 'How are you today?')
-                            : (t('activity.welfareButton.send') || 'Are you alright?')}
+                            ? t('activity.todayCheckButton.send')
+                            : t('activity.welfareButton.send')}
                       </Text>
                     </View>
                   ) : (
@@ -1675,8 +1675,8 @@ export default function ActivityScreen() {
                       !isSingleActionEnabled && styles.responseButtonTextDisabled
                     ]}>
                       {responseSent
-                        ? (t('activity.responseButton.sent') || 'Sent')
-                        : (t('activity.responseButton.sendResponse') || 'Send a Like')}
+                        ? t('activity.responseButton.sent')
+                        : t('activity.responseButton.sendResponse')}
                     </Text>
                   )}
                 </TouchableOpacity>
