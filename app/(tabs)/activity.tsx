@@ -1104,7 +1104,10 @@ export default function ActivityScreen() {
         console.log('📱 App became active - refreshing data');
         fetchOwnerActivity();
         fetchActivities();
-        fetchUnreadResponseNotifications();
+        fetchResponseNotifications();
+        loadInitialTodayResponses();
+        setupResponsesSubscription();
+        setupTodayResponsesSubscription();
       }
     });
 
@@ -1137,7 +1140,8 @@ export default function ActivityScreen() {
       console.log('🎯 Screen focused - refreshing data');
       fetchOwnerActivity();
       fetchActivities();
-      fetchUnreadResponseNotifications();
+      fetchResponseNotifications();
+      loadInitialTodayResponses();
     }, [])
   );
 
@@ -1195,7 +1199,8 @@ export default function ActivityScreen() {
       const cacheKey = `${userId}_${user.id}_${timestamp}`;
       return responseService.hasCachedResponse(cacheKey);
     });
-    const [welfareCheckSent, setWelfareCheckSent] = useState<boolean | null>(null);
+    const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
+    const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
       setAvatarLoadFailed(false);
@@ -1281,6 +1286,10 @@ export default function ActivityScreen() {
 
     useFocusEffect(
       useCallback(() => {
+        if (!welfareCheckMountedRef.current) {
+          welfareCheckMountedRef.current = true;
+          return;
+        }
         const checkOnFocus = async () => {
           if (!user || !timestamp || isOwner) return;
           const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
@@ -1296,7 +1305,7 @@ export default function ActivityScreen() {
     const isLikeMode = resolvedActionState === 'like';
     const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
-    const isWelfareResolved = welfareCheckSent !== null;
+    const isWelfareResolved = true;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
       (isLikeMode && !responseSent) ||
@@ -1607,7 +1616,7 @@ export default function ActivityScreen() {
                   disabled={!isSingleActionEnabled || sendingResponse || sendingWelfareCheck}
                   activeOpacity={0.7}
                 >
-                  {(sendingResponse || sendingWelfareCheck || ((isTodayCheckMode || isWelfareMode) && welfareCheckSent === null)) ? (
+                  {(sendingResponse || sendingWelfareCheck) ? (
                     <ActivityIndicator
                       size="small"
                       color={isWelfareMode ? BaseColors.error : BaseColors.primary}
