@@ -1338,7 +1338,7 @@ export default function ActivityScreen() {
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
       (isLikeMode && !responseSent) ||
-      ((isTodayCheckMode || isWelfareMode) && isWelfareResolved && !welfareCheckSent);
+      ((isTodayCheckMode || isWelfareMode) && !welfareCheckSent);
 
     const handleSendResponse = async () => {
       if (sendingResponse || !isButtonEnabled || !user) return;
