@@ -163,10 +163,14 @@
       "send": "你今天怎麼樣？👋",
       "sent": "已發送問候 ✓"
     },
-    "checkedInAt": "已簽到 @ {{time}} {{date}}",
+    "checkedInAt": "簽到 @ {{time}} {{date}}",
     "welfareCheck": {
       "todayGreetings_one": "💛 你今天收到 {{count}} 個問候：",
       "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
+    },
+    "supportButton": {
+      "send": "發送支持 🫂",
+      "sent": "已發送支持 ✓"
     }
   },
   "contacts": {

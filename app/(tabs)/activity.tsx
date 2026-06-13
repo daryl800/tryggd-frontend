@@ -1336,6 +1336,7 @@ export default function ActivityScreen() {
     const isLikeMode = resolvedActionState === 'like';
     const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
+    const isSupportMode = isLikeMode && typeof wellness_score === 'number' && wellness_score <= -1;
     const isWelfareResolved = true;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
@@ -1357,6 +1358,7 @@ export default function ActivityScreen() {
           recipientUserId: userId,
           senderUserId: user.id,
           checkinTime: timestamp || '',
+          responseKind: isSupportMode ? 'support' : 'like',
         });
 
         if (result.success) {
@@ -1648,7 +1650,7 @@ export default function ActivityScreen() {
                   style={[
                     isWelfareMode
                       ? styles.welfareButton
-                      : (isTodayCheckMode ? styles.todayCheckButton : styles.responseButton),
+                      : (isTodayCheckMode || isSupportMode) ? styles.todayCheckButton : styles.responseButton,
                     !isSingleActionEnabled && styles.responseButtonDisabled,
                     (sendingResponse || sendingWelfareCheck) && styles.responseButtonSending
                   ]}
@@ -1685,16 +1687,16 @@ export default function ActivityScreen() {
                     })()
                   ) : (
                     (() => {
-                      const label = responseSent
-                        ? t('activity.responseButton.sent')
-                        : t('activity.responseButton.sendResponse');
+                      const label = isSupportMode
+                        ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
+                        : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
                       const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
                       const emoji = emojiMatch?.[0] ?? '';
                       const text = emoji ? label.slice(0, -emoji.length).trim() : label;
                       return (
                         <View style={styles.welfareButtonContent}>
                           <Text style={[
-                            styles.responseButtonText,
+                            isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
                             !isSingleActionEnabled && styles.responseButtonTextDisabled
                           ]}>
                             {text}

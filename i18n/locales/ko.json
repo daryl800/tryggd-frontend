@@ -131,6 +131,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 오늘 {{count}}개의 안부를 받았습니다:",
       "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
+    },
+    "supportButton": {
+      "send": "응원 보내기 🫂",
+      "sent": "응원 보냄 ✓"
     }
   },
   "contacts": {

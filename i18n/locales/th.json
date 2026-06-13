@@ -131,6 +131,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:",
       "todayGreetings_other": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:"
+    },
+    "supportButton": {
+      "send": "ส่งกำลังใจ 🫂",
+      "sent": "ส่งแล้ว ✓"
     }
   },
   "contacts": {

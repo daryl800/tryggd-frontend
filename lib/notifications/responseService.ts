@@ -189,10 +189,12 @@ class ResponseNotificationService {
         recipientUserId,
         senderUserId,
         checkinTime,
+        responseKind = 'like',
     }: {
         recipientUserId: string;
         senderUserId: string;
         checkinTime: string;
+        responseKind?: 'like' | 'support';
     }) {
         try {
             await this.initialize();
@@ -208,6 +210,7 @@ class ResponseNotificationService {
                 recipientUserId,
                 senderUserId,
                 checkinTime,
+                responseKind,
                 timestamp: new Date().toISOString(),
             };
 
@@ -264,7 +267,9 @@ class ResponseNotificationService {
                     user_id: recipientUserId,
                     sender_user_id: senderUserId,
                     type: 'checkin_response',
-                    body: `${profile?.display_name || 'Someone'} sent you a Like 👍🏻`,
+                    body: responseKind === 'support'
+                        ? `${profile?.display_name || 'Someone'} sent you support 🫂`
+                        : `${profile?.display_name || 'Someone'} sent you a like 👍`,
                     created_at: new Date().toISOString(),
                     data: {
                         senderName: profile?.display_name || 'Someone',
