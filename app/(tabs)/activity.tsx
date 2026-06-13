@@ -616,7 +616,6 @@ export default function ActivityScreen() {
       if (error) throw error;
 
       if (!notifications || notifications.length === 0) {
-        setTodayResponses([]);
         return;
       }
 
@@ -663,7 +662,14 @@ export default function ActivityScreen() {
         };
       });
 
-      setTodayResponses(enriched);
+      // Merge with existing realtime items — never wipe state, only add/update
+      setTodayResponses(prev => {
+        const map = new Map(prev.map(r => [r.id, r]));
+        enriched.forEach(r => map.set(r.id, r));
+        return [...map.values()].sort((a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      });
       console.log(`✅ Loaded ${enriched.length} today's responses`);
 
     } catch (error) {
