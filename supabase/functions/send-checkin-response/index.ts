@@ -134,7 +134,6 @@ serve(async (req) => {
       data: { senderName, senderUserId, checkinTime, checkinTimeLocal: formattedTime, respondedAt: new Date().toISOString(), timezone, language: recipientLanguage, responseKind },
       sender_user_id: senderUserId,
       read: false,
-      delivery_method: 'push',
     }).select().single()
 
     if (insertError) throw insertError

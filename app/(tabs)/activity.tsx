@@ -583,26 +583,10 @@ export default function ActivityScreen() {
       if (!user) return;
 
       const userTimezone = ownerTimezoneRef.current;
-      const now = new Date();
-      const formatter = new Intl.DateTimeFormat('en-CA', {
-        timeZone: userTimezone,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
 
-      const [
-        { value: year },
-        { value: month },
-        { value: day }
-      ] = formatter.formatToParts(now).filter(p => p.type !== 'literal');
-
-      const startOfDayUTC = new Date(Date.UTC(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        0, 0, 0, 0
-      ));
+      // 36-hour lookback covers any UTC offset (max is UTC+14).
+      // Client-side isTodayLocal then filters to only today in the user's timezone.
+      const cutoff = new Date(Date.now() - 36 * 60 * 60 * 1000);
 
       // First, fetch the notifications
       const { data: notifications, error } = await supabase
@@ -610,7 +594,7 @@ export default function ActivityScreen() {
         .select('*')
         .eq('user_id', user.id)
         .in('type', [...ACTIVITY_NOTIFICATION_TYPES])
-        .gte('created_at', startOfDayUTC.toISOString())
+        .gte('created_at', cutoff.toISOString())
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -662,15 +646,18 @@ export default function ActivityScreen() {
         };
       });
 
+      // Filter to only today in the user's local timezone (36h window may include yesterday)
+      const todayEnriched = enriched.filter(n => isTodayLocal(n.created_at, userTimezone));
+
       // Merge with existing realtime items — never wipe state, only add/update
       setTodayResponses(prev => {
         const map = new Map(prev.map(r => [r.id, r]));
-        enriched.forEach(r => map.set(r.id, r));
+        todayEnriched.forEach(r => map.set(r.id, r));
         return [...map.values()].sort((a, b) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       });
-      console.log(`✅ Loaded ${enriched.length} today's responses`);
+      console.log(`✅ Loaded ${todayEnriched.length} today's responses`);
 
     } catch (error) {
       console.error('Error loading today responses:', error);
