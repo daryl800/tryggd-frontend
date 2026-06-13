@@ -34,20 +34,20 @@ const LIKE_MESSAGES: Record<string, LangMessages> = {
 }
 
 const SUPPORT_MESSAGES: Record<string, LangMessages> = {
-  en:       { title: '🫂 Someone is thinking of you.',       body: (n) => `${n} sent you support 🫂`,              someone: 'Someone' },
-  da:       { title: '🫂 Nogen tænker på dig.',              body: (n) => `${n} sender dig støtte 🫂`,             someone: 'Nogen' },
-  fi:       { title: '🫂 Joku ajattelee sinua.',             body: (n) => `${n} lähetti sinulle tukensa 🫂`,       someone: 'Joku' },
-  no:       { title: '🫂 Noen tenker på deg.',               body: (n) => `${n} sender deg støtte 🫂`,             someone: 'Noen' },
-  sv:       { title: '🫂 Någon tänker på dig.',              body: (n) => `${n} skickar dig stöd 🫂`,              someone: 'Någon' },
-  ja:       { title: '🫂 誰かがあなたのことを思っています。', body: (n) => `${n} さんがサポートを送りました 🫂`,    someone: '誰か' },
-  ko:       { title: '🫂 누군가 당신을 생각하고 있어요.',     body: (n) => `${n}님이 당신을 응원해요 🫂`,           someone: '누군가' },
-  fr:       { title: '🫂 Quelqu\'un pense à vous.',          body: (n) => `${n} vous envoie son soutien 🫂`,       someone: 'Quelqu\'un' },
-  de:       { title: '🫂 Jemand denkt an dich.',             body: (n) => `${n} schickt dir Unterstützung 🫂`,     someone: 'Jemand' },
-  it:       { title: '🫂 Qualcuno sta pensando a te.',       body: (n) => `${n} ti manda supporto 🫂`,             someone: 'Qualcuno' },
-  es:       { title: '🫂 Alguien está pensando en ti.',      body: (n) => `${n} te envió su apoyo 🫂`,             someone: 'Alguien' },
-  'zh-Hans':{ title: '🫂 有人在想你。',                       body: (n) => `${n} 给你发送了支持 🫂`,                someone: '有人' },
-  'zh-Hant':{ title: '🫂 有人在想著你。',                     body: (n) => `${n} 給你發送了支持 🫂`,                someone: '有人' },
-  th:       { title: '🫂 มีคนคิดถึงคุณอยู่',                body: (n) => `${n} ส่งกำลังใจให้คุณ 🫂`,             someone: 'ใครบางคน' },
+  en:       { title: '💪 Someone is thinking of you.',       body: (n) => `${n} sent you support 💪`,              someone: 'Someone' },
+  da:       { title: '💪 Nogen tænker på dig.',              body: (n) => `${n} sender dig støtte 💪`,             someone: 'Nogen' },
+  fi:       { title: '💪 Joku ajattelee sinua.',             body: (n) => `${n} lähetti sinulle tukensa 💪`,       someone: 'Joku' },
+  no:       { title: '💪 Noen tenker på deg.',               body: (n) => `${n} sender deg støtte 💪`,             someone: 'Noen' },
+  sv:       { title: '💪 Någon tänker på dig.',              body: (n) => `${n} skickar dig stöd 💪`,              someone: 'Någon' },
+  ja:       { title: '💪 誰かがあなたのことを思っています。', body: (n) => `${n} さんがサポートを送りました 💪`,    someone: '誰か' },
+  ko:       { title: '💪 누군가 당신을 생각하고 있어요.',     body: (n) => `${n}님이 당신을 응원해요 💪`,           someone: '누군가' },
+  fr:       { title: '💪 Quelqu\'un pense à vous.',          body: (n) => `${n} vous envoie son soutien 💪`,       someone: 'Quelqu\'un' },
+  de:       { title: '💪 Jemand denkt an dich.',             body: (n) => `${n} schickt dir Unterstützung 💪`,     someone: 'Jemand' },
+  it:       { title: '💪 Qualcuno sta pensando a te.',       body: (n) => `${n} ti manda supporto 💪`,             someone: 'Qualcuno' },
+  es:       { title: '💪 Alguien está pensando en ti.',      body: (n) => `${n} te envió su apoyo 💪`,             someone: 'Alguien' },
+  'zh-Hans':{ title: '💪 有人在想你。',                       body: (n) => `${n} 给你发送了支持 💪`,                someone: '有人' },
+  'zh-Hant':{ title: '💪 有人在想著你。',                     body: (n) => `${n} 給你發送了支持 💪`,                someone: '有人' },
+  th:       { title: '💪 มีคนคิดถึงคุณอยู่',                body: (n) => `${n} ส่งกำลังใจให้คุณ 💪`,             someone: 'ใครบางคน' },
 }
 
 const DEFAULT_LANG = 'en'

@@ -169,7 +169,7 @@
       "todayGreetings_other": "💛 你今天收到 {{count}} 个问候："
     },
     "supportButton": {
-      "send": "发送支持 🫂",
+      "send": "发送支持 💪",
       "sent": "已发送支持 ✓"
     }
   },
