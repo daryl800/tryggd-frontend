@@ -18,6 +18,19 @@ const STORAGE_KEYS = {
 // Check environment
 export const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
+// In-memory welfare sent cache — populated on send and on async lookup hit,
+// so subsequent renders can read the state synchronously without a flash.
+const welfareSentMemoryCache = new Set<string>();
+
+export function hasCachedWelfareCheck(
+    recipientUserId: string,
+    senderUserId: string,
+    checkinTime: string,
+    welfareKind: 'today_check' | 'overdue_check'
+): boolean {
+    return welfareSentMemoryCache.has(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`);
+}
+
 /**
  * Register for push notifications and save token + preferences to Supabase
  */
@@ -351,6 +364,7 @@ export async function hasSentWelfareCheck(
 }
 
 async function cacheWelfareCheckStatus(cacheKey: string): Promise<void> {
+    welfareSentMemoryCache.add(cacheKey);
     const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
     const parsed = cached ? JSON.parse(cached) as Record<string, boolean> : {};
     parsed[cacheKey] = true;
