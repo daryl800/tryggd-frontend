@@ -42,6 +42,7 @@ type Activity = {
   checkin_timezone?: string | null;
   checkin_timezone_label?: string | null;
   shared_location?: SharedLocationInfo | null;
+  isNewContact?: boolean;
 };
 
 type SharedLocationInfo = {
@@ -80,6 +81,7 @@ type ResponseNotification = {
 };
 
 const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check'] as const;
+const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
 const isActivityNotificationType = (type?: string | null) =>
   !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
 
@@ -384,6 +386,8 @@ export default function ActivityScreen() {
 
       if (error) throw error;
 
+      const checkedInIds = new Set((data || []).map(a => a.user_id));
+
       const enriched = (data || []).map((activity) => {
         const contactInfo = freshContactMap.get(activity.user_id);
         const isNew = !lastCheckinTimes.current.has(activity.user_id) ||
@@ -407,10 +411,33 @@ export default function ActivityScreen() {
             activity.last_checked_in_utc
               ? locationMap.get(`${activity.user_id}:${activity.last_checked_in_utc}`) || null
               : null,
+          isNewContact: false,
         };
       });
 
-      const sorted = enriched.sort((a, b) => {
+      const placeholders: Activity[] = contactIds
+        .filter(id => !checkedInIds.has(id))
+        .map(id => {
+          const contactInfo = freshContactMap.get(id);
+          return {
+            user_id: id,
+            display_name: contactInfo?.display_name || '',
+            username: contactInfo?.username || null,
+            avatar_url: contactInfo?.avatar_url || null,
+            last_checked_in_utc: PLACEHOLDER_TIMESTAMP,
+            priority: -1,
+            action_state: 'overdue_check',
+            recency_status: null,
+            wellness_score: null,
+            hasNewUpdate: false,
+            checkin_timezone: null,
+            checkin_timezone_label: null,
+            shared_location: null,
+            isNewContact: true,
+          };
+        });
+
+      const sorted = [...enriched, ...placeholders].sort((a, b) => {
         if (b.priority !== a.priority) return b.priority - a.priority;
         return (b.last_checked_in_utc ?? '').localeCompare(a.last_checked_in_utc ?? '');
       });
@@ -1167,6 +1194,7 @@ export default function ActivityScreen() {
     recency_status,
     wellness_score,
     shared_location,
+    isNewContact = false,
   }: {
     name: string;
     username?: string | null;
@@ -1183,6 +1211,7 @@ export default function ActivityScreen() {
     recency_status?: Activity['recency_status'];
     wellness_score?: number | null;
     shared_location?: SharedLocationInfo | null;
+    isNewContact?: boolean;
   }) => {
     const { t } = useTranslation();
     const { user, capabilities } = useAuth();
@@ -1571,7 +1600,11 @@ export default function ActivityScreen() {
               </Text>
             </View>
 
-            {isValidTimestamp ? (
+            {isNewContact ? (
+              <Text style={[styles.time, styles.noCheckIn]}>
+                {t('contacts.newContact')}
+              </Text>
+            ) : isValidTimestamp ? (
               <>
                 <Animated.Text
                   style={[
@@ -1602,7 +1635,7 @@ export default function ActivityScreen() {
               </Text>
             )}
 
-            {!isOwner && isValidTimestamp && (
+            {!isOwner && (isValidTimestamp || isNewContact) && (
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
@@ -1857,6 +1890,7 @@ export default function ActivityScreen() {
                       action_state={item.action_state}
                       recency_status={item.recency_status}
                       shared_location={item.shared_location}
+                      isNewContact={item.isNewContact}
                       isLast={index === activities.length - 1}
                     />
                   ))
