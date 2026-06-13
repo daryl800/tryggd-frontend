@@ -8,7 +8,7 @@
       "evening": "Bonsoir",
       "night": "Bonne nuit"
     },
-    "everythingIsFine": "Tout va bien !",
+    "everythingIsFine": "Tout va bien",
     "dontForget": "N'oubliez pas de faire votre check-in aujourd'hui !",
     "youCheckedInTodayAt": "Vous avez fait votre check-in aujourd'hui à {{time}}",
     "pressMeToCheckIn": "FAIRE LE CHECK-IN ICI",

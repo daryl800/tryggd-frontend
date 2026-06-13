@@ -274,7 +274,7 @@ const interpolateColor = (from: string, to: string, ratio: number) => {
 const getWellnessHeartColor = (score: number) => {
   const clampedScore = clampWellnessValue(score);
   const veryLowColor = '#7A5C4D';
-  const lowColor = '#A8A8A8';
+  const lowColor = '#6B8DA4';
   const midColor = BaseColors.primary;
   const highColor = '#FFD700';
 
@@ -1030,6 +1030,9 @@ export default function HomeScreen() {
   const checkedInMessage = capabilities.canUseWellnessSlider
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
+  const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
+    ? checkedInMessage.split('\n') as [string, string]
+    : [checkedInMessage, ''] as [string, string];
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
     checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
@@ -1195,6 +1198,11 @@ export default function HomeScreen() {
                         top: INNER_BUTTON_OFFSET,
                       },
                       checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
+                      capabilities.isPlus && {
+                        justifyContent: 'flex-start',
+                        paddingTop: INNER_BUTTON_SIZE * 0.07,
+                        paddingBottom: INNER_BUTTON_SIZE * 0.06,
+                      },
                     ]}
                   >
                     {/* Icon */}
@@ -1221,30 +1229,17 @@ export default function HomeScreen() {
                     </View>
 
                     {/* Text Content */}
-                    <View style={styles.textContainer}>
+                    <View style={[styles.textContainer, capabilities.isPlus ? { flex: 1 } : { marginTop: 14 }]}>
                       {checkedInToday ? (
-                        (() => {
-                          const [msgText, msgEmoji] = checkedInMessage.includes('\n')
-                            ? checkedInMessage.split('\n')
-                            : [checkedInMessage, ''];
-                          return (
-                            <>
-                              <Text
-                                style={[
-                                  styles.checkedInText,
-                                  { color: checkedMessageColor },
-                                  chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
-                                ]}
-                                ellipsizeMode="clip"
-                              >
-                                {msgText}
-                              </Text>
-                              {!!msgEmoji && (
-                                <Text style={styles.checkedInEmoji}>{msgEmoji}</Text>
-                              )}
-                            </>
-                          );
-                        })()
+                        <Text
+                          style={[
+                            styles.checkedInText,
+                            { color: checkedMessageColor },
+                            chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                          ]}
+                        >
+                          {checkedInMsgText}
+                        </Text>
                       ) : (
                         <>
                           <Text
@@ -1283,6 +1278,9 @@ export default function HomeScreen() {
                         </>
                       )}
                     </View>
+                    {checkedInToday && !!checkedInMsgEmoji && (
+                      <Text style={styles.checkedInEmoji}>{checkedInMsgEmoji}</Text>
+                    )}
                   </View>
                 </TouchableOpacity>
               </Animated.View>
@@ -1592,7 +1590,7 @@ const styles = StyleSheet.create({
   checkedInText: {
     color: BaseColors.surface,
     fontSize: iosFontSize(22),
-    lineHeight: iosFontSize(34),
+    lineHeight: iosFontSize(26),
     fontWeight: '800',
     textAlign: 'center',
     width: '100%',
@@ -1601,7 +1599,8 @@ const styles = StyleSheet.create({
   checkedInEmoji: {
     fontSize: 36,
     textAlign: 'center',
-    lineHeight: 42,
+    lineHeight: 58,
+    width: '100%',
   },
   circleBorder: {
     position: 'absolute',
@@ -1618,11 +1617,10 @@ const styles = StyleSheet.create({
   innerButton: {
     position: 'absolute',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     borderWidth: 3,
     margin: 0,
     padding: 0,
-    paddingTop: INNER_BUTTON_SIZE * 0.15,
   },
   innerButtonUnchecked: {
     backgroundColor: BaseColors.primaryLight,
@@ -1633,8 +1631,6 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
   },
   iconContainer: {
-    marginBottom: Platform.OS === 'ios' ? 8 : 4,
-    marginTop: 4,
     minHeight: ICON_SIZES.SUPER_HUGE,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1648,10 +1644,10 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 14,
     maxWidth: '100%',
     width: '100%',
-    marginTop: Platform.OS === 'ios' ? 0 : -4,
   },
   ctaText: {
     color: BaseColors.text.dark,

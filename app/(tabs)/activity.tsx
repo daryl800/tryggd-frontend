@@ -1516,9 +1516,9 @@ export default function ActivityScreen() {
 
       if (score === -1) {
         return {
-          color: '#A8A8A8',
-          backgroundColor: '#F7F7F7',
-          borderColor: '#E0E0E0',
+          color: '#6B8DA4',
+          backgroundColor: '#E4EFF6',
+          borderColor: '#A8C4D6',
         };
       }
 
@@ -1532,9 +1532,9 @@ export default function ActivityScreen() {
 
       if (score === 1) {
         return {
-          color: '#D4AF37',
-          backgroundColor: '#FFF5D8',
-          borderColor: '#F1D26B',
+          color: '#AFC04A',
+          backgroundColor: '#F4F7E0',
+          borderColor: '#CFDA8A',
         };
       }
 

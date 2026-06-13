@@ -8,7 +8,7 @@
       "evening": "こんばんは",
       "night": "おやすみなさい"
     },
-    "everythingIsFine": "すべて順調です!!",
+    "everythingIsFine": "すべて順調です",
     "dontForget": "今日のチェックインをお忘れなく!",
     "youCheckedInTodayAt": "今日は {{time}} にチェックインしました",
     "pressMeToCheckIn": "ここを押してチェックイン",
