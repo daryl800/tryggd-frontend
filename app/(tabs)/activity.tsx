@@ -1224,6 +1224,7 @@ export default function ActivityScreen() {
     });
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
+    const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1723,7 +1724,15 @@ export default function ActivityScreen() {
                     </View>
                   )}
                   <Pressable
-                    onPress={() => setWellnessTooltipVisible(v => !v)}
+                    onPress={() => {
+                      if (wellnessTooltipTimerRef.current) clearTimeout(wellnessTooltipTimerRef.current);
+                      setWellnessTooltipVisible(v => {
+                        if (!v) {
+                          wellnessTooltipTimerRef.current = setTimeout(() => setWellnessTooltipVisible(false), 3000);
+                        }
+                        return !v;
+                      });
+                    }}
                     style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}
                   >
                     <Ionicons name="heart" size={30} color={wellnessMeta.color} />
@@ -1868,7 +1877,11 @@ export default function ActivityScreen() {
                         const parsed = parseNotificationMessage(response.body || response.title, response.sender?.display_name);
                         return (
                         <View key={response.id} style={styles.todayResponseItem}>
-                          <Ionicons name="heart" size={16} color={BaseColors.primary} />
+                          <Ionicons
+                            name={response.data?.responseKind === 'support' ? 'heart' : 'happy-outline'}
+                            size={16}
+                            color={BaseColors.primary}
+                          />
                           <Text style={styles.todayResponseText}>
                             {parsed.name ? (
                               <>

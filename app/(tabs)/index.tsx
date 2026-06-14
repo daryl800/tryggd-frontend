@@ -1232,6 +1232,7 @@ export default function HomeScreen() {
                     <View style={[styles.textContainer, capabilities.isPlus ? { flex: 1 } : { marginTop: 14 }]}>
                       {checkedInToday ? (
                         <Text
+                          numberOfLines={2}
                           style={[
                             styles.checkedInText,
                             { color: checkedMessageColor },
@@ -1565,8 +1566,8 @@ const styles = StyleSheet.create({
     backgroundColor: BaseColors.surface,
   },
   wellnessThumbEmoji: {
-    fontSize: 22,
-    lineHeight: 24,
+    fontSize: 26,
+    lineHeight: 30,
     textAlign: 'center',
   },
   wellnessThumbLockBadge: {
@@ -1589,12 +1590,11 @@ const styles = StyleSheet.create({
   },
   checkedInText: {
     color: BaseColors.surface,
-    fontSize: iosFontSize(22),
-    lineHeight: iosFontSize(26),
+    fontSize: 24,
+    lineHeight: 28,
     fontWeight: '800',
     textAlign: 'center',
     width: '100%',
-    flexWrap: 'wrap',
   },
   checkedInEmoji: {
     fontSize: 36,

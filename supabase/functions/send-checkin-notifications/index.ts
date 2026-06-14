@@ -35,9 +35,10 @@ type NotificationPayload = {
   data: Record<string, any>
 }
 
+
 const CHECKIN_MESSAGES = {
   en: {
-    title: (name: string) => `🎯 ${name} checked in.`,
+    title: (name: string) => `${name} checked in.`,
     fallback: (time: string) => `All is well! - ${time}`,
     very_low: () => `Not feeling well today 😔`,
     low: () => `A little low today 😕`,
@@ -46,7 +47,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Feeling very happy today 😊`,
   },
   da: {
-    title: (name: string) => `🎯 ${name} har tjekket ind.`,
+    title: (name: string) => `${name} har tjekket ind.`,
     fallback: (time: string) => `Alt er godt! - ${time}`,
     very_low: () => `Har det ikke så godt i dag 😔`,
     low: () => `Er lidt nede i dag 😕`,
@@ -55,7 +56,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Føler sig meget glad i dag 😊`,
   },
   de: {
-    title: (name: string) => `🎯 ${name} hat eingecheckt.`,
+    title: (name: string) => `${name} hat eingecheckt.`,
     fallback: (time: string) => `Alles ist gut! - ${time}`,
     very_low: () => `Fühlt sich heute nicht gut 😔`,
     low: () => `Ist heute etwas niedergeschlagen 😕`,
@@ -64,7 +65,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Ist heute sehr glücklich 😊`,
   },
   es: {
-    title: (name: string) => `🎯 ${name} ha hecho check-in.`,
+    title: (name: string) => `${name} ha hecho check-in.`,
     fallback: (time: string) => `¡Todo está bien! - ${time}`,
     very_low: () => `No se siente bien hoy 😔`,
     low: () => `Se siente un poco decaído hoy 😕`,
@@ -73,7 +74,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Se siente muy feliz hoy 😊`,
   },
   fi: {
-    title: (name: string) => `🎯 ${name} on kirjautunut.`,
+    title: (name: string) => `${name} on kirjautunut.`,
     fallback: (time: string) => `Kaikki on hyvin! - ${time}`,
     very_low: () => `Olo ei ole tänään hyvä 😔`,
     low: () => `Olo on tänään hieman alakuloinen 😕`,
@@ -82,7 +83,7 @@ const CHECKIN_MESSAGES = {
     great: () => `On tänään todella iloinen 😊`,
   },
   fr: {
-    title: (name: string) => `🎯 ${name} a pointé.`,
+    title: (name: string) => `${name} a pointé.`,
     fallback: (time: string) => `Tout va bien ! - ${time}`,
     very_low: () => `Ne se sent pas bien aujourd’hui 😔`,
     low: () => `Se sent un peu triste aujourd’hui 😕`,
@@ -91,7 +92,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Se sent très heureux aujourd’hui 😊`,
   },
   it: {
-    title: (name: string) => `🎯 ${name} ha fatto il check-in.`,
+    title: (name: string) => `${name} ha fatto il check-in.`,
     fallback: (time: string) => `Va tutto bene! - ${time}`,
     very_low: () => `Oggi non si sente bene 😔`,
     low: () => `Oggi si sente un po' giù 😕`,
@@ -100,7 +101,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Si sente molto felice oggi 😊`,
   },
   ja: {
-    title: (name: string) => `🎯 ${name}さんがチェックインしました。`,
+    title: (name: string) => `${name}さんがチェックインしました。`,
     fallback: (time: string) => `すべて順調です！ - ${time}`,
     very_low: () => `今日はかなりつらそうです 😔`,
     low: () => `今日は少し落ち込んでいます 😕`,
@@ -109,7 +110,7 @@ const CHECKIN_MESSAGES = {
     great: () => `今日はとても嬉しい気分です 😊`,
   },
   ko: {
-    title: (name: string) => `🎯 ${name}님이 체크인했어요.`,
+    title: (name: string) => `${name}님이 체크인했어요.`,
     fallback: (time: string) => `모든 것이 괜찮아요! - ${time}`,
     very_low: () => `오늘은 몸 상태가 좋지 않아요 😔`,
     low: () => `오늘은 조금 우울해요 😕`,
@@ -118,7 +119,7 @@ const CHECKIN_MESSAGES = {
     great: () => `오늘은 정말 행복해요 😊`,
   },
   no: {
-    title: (name: string) => `🎯 ${name} har sjekket inn.`,
+    title: (name: string) => `${name} har sjekket inn.`,
     fallback: (time: string) => `Alt er bra! - ${time}`,
     very_low: () => `Føler seg ikke bra i dag 😔`,
     low: () => `Er litt nedfor i dag 😕`,
@@ -127,7 +128,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Er veldig glad i dag 😊`,
   },
   sv: {
-    title: (name: string) => `🎯 ${name} har checkat in.`,
+    title: (name: string) => `${name} har checkat in.`,
     fallback: (time: string) => `Allt är väl! - ${time}`,
     very_low: () => `Mår inte bra idag 😔`,
     low: () => `Känner sig lite låg idag 😕`,
@@ -136,7 +137,7 @@ const CHECKIN_MESSAGES = {
     great: () => `Känner sig väldigt glad idag 😊`,
   },
   'zh-Hans': {
-    title: (name: string) => `🎯 ${name} 签到`,
+    title: (name: string) => `${name} 签到`,
     fallback: (time: string) => `一切安好！- ${time}`,
     very_low: () => `😔 太不舒服`,
     low: () => `😕 有点低落`,
@@ -145,7 +146,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 今天很开心`,
   },
   'zh-Hant': {
-    title: (name: string) => `🎯 ${name} 簽到`,
+    title: (name: string) => `${name} 簽到`,
     fallback: (time: string) => `一切安好！- ${time}`,
     very_low: () => `😔 太不舒服`,
     low: () => `😕 有點低落`,
@@ -284,8 +285,10 @@ function buildContactCheckinNotification(
       ? locale.fallback(formattedTime)
       : `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
 
+  const locationPrefix = location ? '📍 ' : ''
+
   return {
-    title: locale.title(contactDisplayName),
+    title: `${locationPrefix}${locale.title(contactDisplayName)}`,
     body,
     type: 'contact_checkin',
     data
