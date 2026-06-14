@@ -56,6 +56,19 @@
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "旅立ちます 🧳",
+        "boarding": "搭乗・出発間近 🛫",
+        "layover": "乗り継ぎ中 🛑",
+        "landed": "無事着陸 🛬",
+        "on_the_move": "移動中 🚕",
+        "at_hotel": "ホテルに到着 🏨",
+        "on_trip": "旅行中 🗺️",
+        "heading_home": "帰宅中 🏠",
+        "trip_ended": "旅行終了・無事帰宅 ✅"
+      }
     }
   },
   "activity": {
@@ -407,6 +420,13 @@
     "finnish": "フィンランド語",
     "chineseSimplified": "中国語（簡体字）",
     "chineseTraditional": "中国語（繁体字）",
+    "tripMode": {
+      "title": "チェックインモード",
+      "home": "通常",
+      "trip": "旅行",
+      "homeDescription": "毎日の標準チェックイン",
+      "tripDescription": "旅行状況を連絡先と共有"
+    },
     "resetWarning": "よろしいですか? すべてのデータが削除されます。",
     "logoutConfirm": "本当にログアウトしますか?",
     "confirmReset": "リセット",

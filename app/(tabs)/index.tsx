@@ -25,6 +25,7 @@ import {
   LayoutChangeEvent,
   PixelRatio,
   Platform,
+  ScrollView as RNScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -54,6 +55,7 @@ const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
+const MODE_ITEM_HEIGHT = 36;
 
 const clampWellnessValue = (value: number) =>
   Math.max(WELLNESS_MIN, Math.min(WELLNESS_MAX, value));
@@ -376,7 +378,7 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
         >
           <Ionicons
             name="sad-outline"
-            size={24}
+            size={20}
             color={edgeLowColor}
             style={styles.wellnessEdgeIcon}
           />
@@ -421,7 +423,7 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
         >
           <Ionicons
             name="happy-outline"
-            size={24}
+            size={20}
             color={edgeHighColor}
             style={styles.wellnessEdgeIcon}
           />
@@ -456,6 +458,11 @@ export default function HomeScreen() {
   const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
+  const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
+  const [tripStatus, setTripStatus] = useState<string | null>(null);
+  const [modeCardWidth, setModeCardWidth] = useState(0);
+
+  const modeScrollRef = useRef<any>(null);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -527,6 +534,47 @@ export default function HomeScreen() {
 
     loadState();
   }, [t]);
+
+  // Load checkin mode from Supabase / AsyncStorage
+  useEffect(() => {
+    const loadCheckinMode = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('@settings_checkin_mode');
+        if (saved === 'home' || saved === 'trip') setCheckinMode(saved);
+        if (!user) return;
+        const { data } = await supabase
+          .from('user_settings')
+          .select('checkin_mode')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip') {
+          setCheckinMode(data.checkin_mode as 'home' | 'trip');
+          await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
+        }
+        // Also load last trip_status from users_latest_checkin
+        const { data: checkinData } = await supabase
+          .from('users_latest_checkin')
+          .select('trip_status')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (checkinData?.trip_status) {
+          setTripStatus(checkinData.trip_status);
+        }
+      } catch (_) {}
+    };
+    loadCheckinMode();
+  }, [user]);
+
+  // Sync drum picker scroll position when checkinMode or card width changes
+  useEffect(() => {
+    const modeKeys = ['home', 'trip'];
+    const idx = modeKeys.indexOf(checkinMode);
+    if (idx >= 0 && modeCardWidth > 0) {
+      setTimeout(() => {
+        modeScrollRef.current?.scrollTo({ x: idx * modeCardWidth, y: 0, animated: false });
+      }, 50);
+    }
+  }, [checkinMode, modeCardWidth]);
 
   // Fetch contacts count
   const fetchContactsCount = useCallback(async () => {
@@ -985,6 +1033,15 @@ export default function HomeScreen() {
 
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
+
+            // Write trip_status to users_latest_checkin if in trip mode
+            if (checkinMode === 'trip') {
+              supabase
+                .from('users_latest_checkin')
+                .update({ trip_status: tripStatus })
+                .eq('user_id', user.id)
+                .then(() => {});
+            }
           })
       ]).catch(err => {
         // If something fails, revert the optimistic update
@@ -1022,17 +1079,31 @@ export default function HomeScreen() {
     );
   }
 
+  const TRIP_STATUS_KEYS = [
+    'leaving', 'boarding', 'layover', 'landed', 'on_the_move', 'at_hotel', 'on_trip', 'heading_home', 'trip_ended',
+  ] as const;
+
+  const CHECKIN_MODES: { key: 'home' | 'trip'; label: string; icon: string }[] = [
+    { key: 'home', label: t('settings.tripMode.home'), icon: 'home-outline' },
+    { key: 'trip', label: t('settings.tripMode.trip'), icon: 'airplane' },
+  ];
+
   const greetingInfo = getGreetingInfo(now, t);
   const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus;
   const showWellnessModule = capabilities.isPlus || showLockedPlusWellness;
   const displayWellnessScore = capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT;
   const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
-  const checkedInMessage = capabilities.canUseWellnessSlider
+  const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
+    ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
+    : null;
+  const wellnessMessage = capabilities.canUseWellnessSlider
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
+  const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
+  const checkedInMessage = activeTripStatusLabel ?? wellnessMessage;
   const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
-    : [checkedInMessage, ''] as [string, string];
+    : [checkedInMessage, wellnessEmoji] as [string, string];
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
     checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
@@ -1081,18 +1152,13 @@ export default function HomeScreen() {
             setCheckedInToday(false);
             setShowResetButton(false);
             setLastCheckinUtc(null);
-            console.log('🧹 Cleared local storage');
           }}
         >
           <View style={styles.warningContainer}>
             <View style={styles.warningIconContainer}>
               <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
             </View>
-            <Text
-              style={styles.warningText}
-            >
-              Clear Storage (DEBUG  ONLY)
-            </Text>
+            <Text style={styles.warningText}>Reset check-in (DEBUG)</Text>
           </View>
         </TouchableOpacity> */}
         {/* END - ABOVE CODE IS FOR DEBUGGING PURPOSES */}
@@ -1198,7 +1264,7 @@ export default function HomeScreen() {
                         top: INNER_BUTTON_OFFSET,
                       },
                       checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
-                      capabilities.isPlus && {
+                      !checkedInToday && capabilities.isPlus && {
                         justifyContent: 'flex-start',
                         paddingTop: INNER_BUTTON_SIZE * 0.07,
                         paddingBottom: INNER_BUTTON_SIZE * 0.06,
@@ -1244,10 +1310,7 @@ export default function HomeScreen() {
                       ) : (
                         <>
                           <Text
-                            style={[
-                              styles.ctaText,
-                              fontScale > 1.2 && styles.compactCtaText
-                            ]}
+                            style={[styles.ctaText, fontScale > 1.2 && styles.compactCtaText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1255,10 +1318,7 @@ export default function HomeScreen() {
                             {t('home.pressMeToCheckIn')}
                           </Text>
                           <Text
-                            style={[
-                              styles.countdownText,
-                              fontScale > 1.2 && styles.compactCountdownText
-                            ]}
+                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1266,10 +1326,7 @@ export default function HomeScreen() {
                             {formatTimeLeft(remainingMs)}
                           </Text>
                           <Text
-                            style={[
-                              styles.timeLeftText,
-                              fontScale > 1.2 && styles.compactTimeLeftText
-                            ]}
+                            style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1299,30 +1356,141 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
+          <View style={[styles.tripStatusGroup, styles.groupContainer]}>
+            <View style={styles.tripStatusRow}>
+            <RNScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tripPillsRow}
+              scrollEnabled={checkinMode === 'trip'}
+            >
+              {TRIP_STATUS_KEYS.map((key) => {
+                const isActive = tripStatus === key;
+                const isTrip = checkinMode === 'trip';
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    style={[styles.tripPill, isActive && styles.tripPillActive, !isTrip && styles.tripPillDisabled]}
+                    onPress={() => isTrip && setTripStatus(isActive ? null : key)}
+                    activeOpacity={isTrip ? 0.75 : 1}
+                  >
+                    <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive, !isTrip && styles.tripPillTextDisabled]}>
+                      {t(`home.tripMode.statuses.${key}` as any) as string}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </RNScrollView>
+            <View style={styles.tripScrollHint}>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={checkinMode === 'trip' ? BaseColors.primary : BaseColors.neutral[300]}
+              />
+            </View>
+            </View>
+          </View>
+
           {/* ACTION CARDS */}
           <View style={[styles.cardsGroup, styles.groupContainer]}>
             <View style={styles.cardsContainer}>
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/activity')}
-                style={styles.card}
-                activeOpacity={0.8}
-              >
+              <View style={styles.card}>
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                    <Ionicons name="pulse" size={ICON_SIZES.LG} color={BaseColors.primary} />
+                    <Ionicons
+                      name={checkinMode === 'trip' ? 'airplane' : 'home-outline'}
+                      size={ICON_SIZES.LG}
+                      color={BaseColors.primary}
+                    />
                   </View>
                 </View>
-                <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-                <Text style={styles.cardSubtext}>
-                  {t('home.contacts', { count: contactsCount })}
-                </Text>
-              </TouchableOpacity>
+                <Text style={styles.cardLabel}>{t('settings.tripMode.title')}</Text>
+                <View style={styles.modeDrumWrapper}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      const modeKeys = ['home', 'trip'] as const;
+                      const cur = modeKeys.indexOf(checkinMode);
+                      const prev = Math.max(0, cur - 1);
+                      modeScrollRef.current?.scrollTo({ x: prev * modeCardWidth, y: 0, animated: true });
+                      const selected = CHECKIN_MODES[prev];
+                      if (selected && selected.key !== checkinMode) {
+                        setCheckinMode(selected.key);
+                        if (selected.key === 'home') setTripStatus(null);
+                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
+                        supabase.from('user_settings').upsert(
+                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
+                          { onConflict: 'user_id' }
+                        ).then(() => {});
+                      }
+                    }}
+                    style={styles.modeDrumArrow}
+                    activeOpacity={0.6}
+                  >
+                    <Ionicons name="chevron-back" size={14} color={checkinMode === 'home' ? BaseColors.neutral[300] : BaseColors.primary} />
+                  </TouchableOpacity>
+                <View
+                  style={styles.modeDrumOuter}
+                  onLayout={(e) => setModeCardWidth(e.nativeEvent.layout.width)}
+                >
+                  <RNScrollView
+                    ref={modeScrollRef}
+                    style={styles.modeDrumScroller}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    snapToInterval={modeCardWidth}
+                    decelerationRate="fast"
+                    bounces={false}
+                    contentContainerStyle={styles.modeDrumContent}
+                    onMomentumScrollEnd={(e) => {
+                      const idx = Math.round(e.nativeEvent.contentOffset.x / (modeCardWidth || 1));
+                      const clamped = Math.max(0, Math.min(CHECKIN_MODES.length - 1, idx));
+                      const selected = CHECKIN_MODES[clamped];
+                      if (selected && selected.key !== checkinMode) {
+                        setCheckinMode(selected.key);
+                        if (selected.key === 'home') setTripStatus(null);
+                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
+                        supabase.from('user_settings').upsert(
+                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
+                          { onConflict: 'user_id' }
+                        ).then(() => {});
+                      }
+                    }}
+                  >
+                    {CHECKIN_MODES.map(({ key, label }) => (
+                      <View key={key} style={[styles.modeDrumItem, { width: modeCardWidth }]}>
+                        <Text style={[styles.modeDrumText, checkinMode === key && styles.modeDrumTextActive]}>
+                          {label}
+                        </Text>
+                      </View>
+                    ))}
+                  </RNScrollView>
+                </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      const modeKeys = ['home', 'trip'] as const;
+                      const cur = modeKeys.indexOf(checkinMode);
+                      const next = Math.min(CHECKIN_MODES.length - 1, cur + 1);
+                      modeScrollRef.current?.scrollTo({ x: next * modeCardWidth, y: 0, animated: true });
+                      const selected = CHECKIN_MODES[next];
+                      if (selected && selected.key !== checkinMode) {
+                        setCheckinMode(selected.key);
+                        if (selected.key === 'home') setTripStatus(null);
+                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
+                        supabase.from('user_settings').upsert(
+                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
+                          { onConflict: 'user_id' }
+                        ).then(() => {});
+                      }
+                    }}
+                    style={styles.modeDrumArrow}
+                    activeOpacity={0.6}
+                  >
+                    <Ionicons name="chevron-forward" size={14} color={checkinMode === 'trip' ? BaseColors.neutral[300] : BaseColors.primary} />
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-              <TouchableOpacity
-                // onPress={() => router.push('/(tabs)/statistics')}
-                style={styles.card}
-                activeOpacity={0.8}
-              >
+              <View style={styles.card}>
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
                     <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
@@ -1332,44 +1500,10 @@ export default function HomeScreen() {
                 <Text style={styles.cardSubtext}>
                   {t('home.days', { count: streak })}
                 </Text>
-              </TouchableOpacity>
+              </View>
             </View>
           </View>
 
-          {/* WARNING MESSAGE */}
-          <View style={[styles.warningGroup, styles.groupContainer]}>
-            {checkedInToday ? (
-              <View style={styles.messageContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                </View>
-                <Text
-                  style={styles.messageText}
-                  numberOfLines={2}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.youCheckedInTodayAt', {
-                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
-                  })}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.warningContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
-                </View>
-                <Text
-                  style={styles.warningText}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.dontForget')}
-                </Text>
-              </View>
-            )}
-          </View>
 
           {/* Bottom padding */}
           <View style={styles.bottomPadding} />
@@ -1380,7 +1514,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 14;
+const GROUP_GAP = 10;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -1433,18 +1567,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    paddingTop: Platform.OS === 'ios' ? 10 : 2,
+    paddingTop: Platform.OS === 'ios' ? 6 : 2,
   },
   timeText: {
-    fontSize: iosFontSize(36),
-    lineHeight: iosFontSize(40),
+    fontSize: iosFontSize(26),
+    lineHeight: iosFontSize(30),
     fontWeight: '700',
     color: BaseColors.text.dark,
     textAlign: 'center',
   },
   dateText: {
-    fontSize: iosFontSize(16),
-    lineHeight: iosFontSize(18),
+    fontSize: iosFontSize(14),
+    lineHeight: iosFontSize(16),
     color: BaseColors.neutral[500],
     marginTop: 2,
     textTransform: 'capitalize',
@@ -1454,10 +1588,55 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginTop: 8,
   },
   wellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
+  tripStatusGroup: {
+    paddingLeft: SCREEN_PADDING.horizontal,
+  },
+  tripStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tripScrollHint: {
+    paddingHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tripPillsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: SCREEN_PADDING.horizontal,
+  },
+  tripPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.surface,
+  },
+  tripPillActive: {
+    backgroundColor: BaseColors.primary,
+    borderColor: BaseColors.primary,
+  },
+  tripPillText: {
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(20),
+    fontWeight: '500',
+    color: BaseColors.text.dark,
+  },
+  tripPillTextActive: {
+    color: BaseColors.surface,
+  },
+  tripPillDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.surface,
+    opacity: 0.4,
+  },
+  tripPillTextDisabled: {
+    color: BaseColors.neutral[400],
   },
   checkInContainer: {
     alignItems: 'center',
@@ -1469,7 +1648,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 5,
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
@@ -1498,8 +1677,8 @@ const styles = StyleSheet.create({
   wellnessEdgeButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
   },
   wellnessTrackTouchArea: {
     flex: 1,
@@ -1566,8 +1745,8 @@ const styles = StyleSheet.create({
     backgroundColor: BaseColors.surface,
   },
   wellnessThumbEmoji: {
-    fontSize: 26,
-    lineHeight: 30,
+    fontSize: 22,
+    lineHeight: 26,
     textAlign: 'center',
   },
   wellnessThumbLockBadge: {
@@ -1634,6 +1813,7 @@ const styles = StyleSheet.create({
     minHeight: ICON_SIZES.SUPER_HUGE,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 12,
   },
   checkedHeartStack: {
     alignItems: 'center',
@@ -1692,16 +1872,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
+  modeCardGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
+  modeCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: BaseColors.neutral[200],
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  modeCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  modeCardLabel: {
+    fontSize: iosFontSize(14),
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+  },
+  streakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  streakRowText: {
+    fontSize: iosFontSize(14),
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+  },
   card: {
     flex: 1,
     backgroundColor: BaseColors.surface,
     borderRadius: 20,
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 6,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: BaseColors.neutral[200],
-    minHeight: 92,
+    minHeight: 76,
     justifyContent: 'space-between',
     ...Platform.select({
       ios: {
@@ -1716,23 +1940,23 @@ const styles = StyleSheet.create({
     }),
   },
   cardIcon: {
-    marginBottom: 8,
+    marginBottom: 4,
   },
   cardLabel: {
     fontSize: iosFontSize(16),
     fontWeight: '800',
     textAlign: 'center',
-    marginTop: 4,
+    marginTop: 2,
     color: BaseColors.text.dark,
-    lineHeight: iosFontSize(20),
+    lineHeight: iosFontSize(18),
   },
   cardSubtext: {
     fontSize: iosFontSize(16),
     fontWeight: '600',
-    marginTop: 6,
+    marginTop: 4,
     color: BaseColors.primary,
     textAlign: 'center',
-    lineHeight: iosFontSize(20),
+    lineHeight: iosFontSize(18),
   },
   iconContainerBase: {
     width: 30,
@@ -1741,8 +1965,61 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  cardActive: {
+    backgroundColor: BaseColors.primary,
+    borderColor: BaseColors.primary,
+  },
+  cardLabelActive: {
+    color: BaseColors.surface,
+  },
+  cardSubtextActive: {
+    color: BaseColors.surface,
+    opacity: 0.85,
+  },
   activityIconContainer: {
     backgroundColor: '#EDF7F4',
+  },
+  tripIconContainer: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  modeDrumWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    width: '100%',
+  },
+  modeDrumArrow: {
+    paddingHorizontal: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeDrumOuter: {
+    flex: 1,
+    backgroundColor: BaseColors.primaryLight,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  modeDrumScroller: {
+    height: MODE_ITEM_HEIGHT,
+    width: '100%',
+  },
+
+  modeDrumContent: {
+  },
+  modeDrumItem: {
+    height: MODE_ITEM_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeDrumText: {
+    fontSize: iosFontSize(13),
+    fontWeight: '500',
+    color: BaseColors.text.dark,
+  },
+  modeDrumTextActive: {
+    opacity: 1,
+    fontWeight: '700',
+    color: BaseColors.primary,
   },
   streakIconContainer: {
     backgroundColor: '#FFF7ED',

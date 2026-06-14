@@ -51,6 +51,19 @@
         "December"
       ]
     },
+    "tripMode": {
+      "statuses": {
+        "leaving": "Leaving for the trip 🧳",
+        "boarding": "Boarding / departing soon 🛫",
+        "layover": "Layover / connecting 🛑",
+        "landed": "Landed safely 🛬",
+        "on_the_move": "On the move 🚕",
+        "at_hotel": "Arrived at hotel 🏨",
+        "on_trip": "On the trip 🗺️",
+        "heading_home": "Heading home 🏠",
+        "trip_ended": "Trip ended — home safely ✅"
+      }
+    },
     "errors": {
       "fetchLastCheckin": "Failed to fetch last check-in",
       "noUser": "No user found",
@@ -407,6 +420,13 @@
     "finnish": "Finnish",
     "chineseSimplified": "Chinese (Simplified)",
     "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Check-in Mode",
+      "home": "Home",
+      "trip": "Trip",
+      "homeDescription": "Standard daily check-in",
+      "tripDescription": "Share your travel status"
+    },
     "resetWarning": "Are you sure? All your data will be deleted.",
     "logoutConfirm": "Are you sure you want to log out?",
     "confirmReset": "Reset",

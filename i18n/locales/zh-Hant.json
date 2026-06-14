@@ -87,6 +87,19 @@
         "31": "三十一号"
       }
     },
+    "tripMode": {
+      "statuses": {
+        "leaving": "出發了 🧳",
+        "boarding": "登機／準備起飛 🛫",
+        "layover": "中途停留／轉機 🛑",
+        "landed": "已安全著陸 🛬",
+        "on_the_move": "在移動中 🚕",
+        "at_hotel": "已抵達酒店 🏨",
+        "on_trip": "旅程中 🗺️",
+        "heading_home": "正在回家途中 🏠",
+        "trip_ended": "旅程結束——已安全到家 ✅"
+      }
+    },
     "errors": {
       "fetchLastCheckin": "無法取得最後簽到記錄",
       "noUser": "找不到使用者",
@@ -443,6 +456,13 @@
     "finnish": "芬蘭語",
     "chineseSimplified": "簡體中文",
     "chineseTraditional": "繁體中文",
+    "tripMode": {
+      "title": "簽到模式",
+      "home": "日常",
+      "trip": "旅程",
+      "homeDescription": "標準每日簽到",
+      "tripDescription": "與聯絡人分享旅行狀態"
+    },
     "resetWarning": "確定嗎？所有資料將被刪除。",
     "logoutConfirm": "確定要登出嗎？",
     "confirmReset": "重置",

@@ -156,6 +156,28 @@ const CHECKIN_MESSAGES = {
   },
 } as const
 
+const TRIP_STATUS_LABELS: Record<string, Record<string, string>> = {
+  en:       { leaving: 'Leaving for the trip 🧳', boarding: 'Boarding / departing soon 🛫', layover: 'Layover / connecting 🛑', landed: 'Landed safely 🛬', on_the_move: 'On the move 🚕', at_hotel: 'Arrived at hotel 🏨', on_trip: 'On the trip 🗺️', heading_home: 'Heading home 🏠', trip_ended: 'Trip ended — home safely ✅' },
+  da:       { leaving: 'Afsted på rejsen 🧳', boarding: 'Boarding / afgang snart 🛫', layover: 'Mellemlanding / forbindelse 🛑', landed: 'Landet sikkert 🛬', on_the_move: 'På farten 🚕', at_hotel: 'Ankommet til hotellet 🏨', on_trip: 'På rejsen 🗺️', heading_home: 'På vej hjem 🏠', trip_ended: 'Rejsen slut — hjemme sikkert ✅' },
+  de:       { leaving: 'Auf zur Reise 🧳', boarding: 'Boarding / Abflug bald 🛫', layover: 'Zwischenstopp / Umstieg 🛑', landed: 'Sicher gelandet 🛬', on_the_move: 'Unterwegs 🚕', at_hotel: 'Im Hotel angekommen 🏨', on_trip: 'Auf der Reise 🗺️', heading_home: 'Auf dem Heimweg 🏠', trip_ended: 'Reise beendet — sicher zu Hause ✅' },
+  es:       { leaving: 'Saliendo de viaje 🧳', boarding: 'Embarcando / saliendo pronto 🛫', layover: 'Escala / conexión 🛑', landed: 'Aterrizando con seguridad 🛬', on_the_move: 'En movimiento 🚕', at_hotel: 'Llegué al hotel 🏨', on_trip: 'De viaje 🗺️', heading_home: 'Camino a casa 🏠', trip_ended: 'Viaje terminado — en casa sano/a ✅' },
+  fi:       { leaving: 'Lähden matkalle 🧳', boarding: 'Boarding / lähtö pian 🛫', layover: 'Välilaskeutuminen / vaihto 🛑', landed: 'Laskeutunut turvallisesti 🛬', on_the_move: 'Liikkeellä 🚕', at_hotel: 'Saapunut hotelliin 🏨', on_trip: 'Matkalla 🗺️', heading_home: 'Matkalla kotiin 🏠', trip_ended: 'Matka päättyi — kotona turvassa ✅' },
+  fr:       { leaving: 'Je pars en voyage 🧳', boarding: 'Embarquement / départ imminent 🛫', layover: 'Escale / correspondance 🛑', landed: 'Atterri en sécurité 🛬', on_the_move: 'En déplacement 🚕', at_hotel: "Arrivé à l'hôtel 🏨", on_trip: 'En voyage 🗺️', heading_home: 'En route pour la maison 🏠', trip_ended: 'Voyage terminé — rentré sain et sauf ✅' },
+  it:       { leaving: 'Parto per il viaggio 🧳', boarding: 'Imbarco / partenza imminente 🛫', layover: 'Scalo / coincidenza 🛑', landed: 'Atterrato in sicurezza 🛬', on_the_move: 'In movimento 🚕', at_hotel: 'Arrivato in hotel 🏨', on_trip: 'In viaggio 🗺️', heading_home: 'Tornando a casa 🏠', trip_ended: 'Viaggio concluso — a casa sano/a ✅' },
+  ja:       { leaving: '旅立ちます 🧳', boarding: '搭乗・出発間近 🛫', layover: '乗り継ぎ中 🛑', landed: '無事着陸 🛬', on_the_move: '移動中 🚕', at_hotel: 'ホテルに到着 🏨', on_trip: '旅行中 🗺️', heading_home: '帰宅中 🏠', trip_ended: '旅行終了・無事帰宅 ✅' },
+  ko:       { leaving: '여행 출발 🧳', boarding: '탑승 / 곧 출발 🛫', layover: '경유 / 환승 중 🛑', landed: '안전하게 착륙 🛬', on_the_move: '이동 중 🚕', at_hotel: '호텔 도착 🏨', on_trip: '여행 중 🗺️', heading_home: '집으로 향하는 중 🏠', trip_ended: '여행 종료 — 안전하게 귀가 ✅' },
+  no:       { leaving: 'Drar på tur 🧳', boarding: 'Ombordstigning / avgang snart 🛫', layover: 'Mellomlanding / tilkobling 🛑', landed: 'Landet trygt 🛬', on_the_move: 'På farten 🚕', at_hotel: 'Ankommet hotellet 🏨', on_trip: 'På reisen 🗺️', heading_home: 'På vei hjem 🏠', trip_ended: 'Turen er over — trygt hjemme ✅' },
+  sv:       { leaving: 'Ger mig iväg 🧳', boarding: 'Ombordstigning / avresa snart 🛫', layover: 'Mellanlandning / byte 🛑', landed: 'Landat säkert 🛬', on_the_move: 'På väg 🚕', at_hotel: 'Framme på hotellet 🏨', on_trip: 'På resan 🗺️', heading_home: 'På väg hem 🏠', trip_ended: 'Resan slut — hemma säkert ✅' },
+  th:       { leaving: 'ออกเดินทางแล้ว 🧳', boarding: 'กำลังขึ้นเครื่อง / ใกล้ออกเดินทาง 🛫', layover: 'แวะพัก / ต่อเที่ยวบิน 🛑', landed: 'ลงจอดปลอดภัย 🛬', on_the_move: 'กำลังเดินทาง 🚕', at_hotel: 'ถึงโรงแรมแล้ว 🏨', on_trip: 'อยู่ระหว่างการเดินทาง 🗺️', heading_home: 'กำลังกลับบ้าน 🏠', trip_ended: 'ทริปสิ้นสุด — กลับบ้านปลอดภัย ✅' },
+  'zh-Hans': { leaving: '出发了 🧳', boarding: '登机／准备起飞 🛫', layover: '中途停留/转机 🛑', landed: '已安全着陆 🛬', on_the_move: '在移动中 🚕', at_hotel: '已抵达酒店 🏨', on_trip: '旅程中 🗺️', heading_home: '正在回家途中 🏠', trip_ended: '旅程结束——已安全到家 ✅' },
+  'zh-Hant': { leaving: '出發了 🧳', boarding: '登機／準備起飛 🛫', layover: '中途停留／轉機 🛑', landed: '已安全著陸 🛬', on_the_move: '在移動中 🚕', at_hotel: '已抵達酒店 🏨', on_trip: '旅程中 🗺️', heading_home: '正在回家途中 🏠', trip_ended: '旅程結束——已安全到家 ✅' },
+}
+
+function getTripStatusLabel(status: string, lang: string): string {
+  const langMap = TRIP_STATUS_LABELS[lang] ?? TRIP_STATUS_LABELS.en
+  return langMap[status] ?? TRIP_STATUS_LABELS.en[status] ?? status
+}
+
 type CheckinLocaleKey = keyof typeof CHECKIN_MESSAGES
 
 function getCheckinLocale(language?: string | null) {
@@ -261,7 +283,9 @@ function buildContactCheckinNotification(
   checkin_time: string,
   timezone: string,
   location: SharedLocation | null,
-  wellnessScore: number | null
+  wellnessScore: number | null,
+  tripStatus: string | null,
+  recipientLang: string
 ): NotificationPayload {
   const data: Record<string, any> = {
     contactUserId: user_id,
@@ -280,10 +304,18 @@ function buildContactCheckinNotification(
     data.wellnessScore = wellnessScore
   }
 
-  const body =
-    wellnessScore === null
-      ? locale.fallback(formattedTime)
-      : `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
+  if (tripStatus) {
+    data.tripStatus = tripStatus
+  }
+
+  let body: string
+  if (tripStatus) {
+    body = `${getTripStatusLabel(tripStatus, recipientLang)} · ${formattedTime}`
+  } else if (wellnessScore !== null) {
+    body = `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
+  } else {
+    body = locale.fallback(formattedTime)
+  }
 
   const locationPrefix = location ? '📍 ' : ''
 
@@ -396,6 +428,15 @@ serve(async (req) => {
     if (latestCheckinError) {
       throw latestCheckinError
     }
+
+    // Fetch trip_status from users_latest_checkin (nullable — null means not in trip mode)
+    const { data: latestCheckinMeta } = await supabase
+      .from('users_latest_checkin')
+      .select('trip_status')
+      .eq('user_id', user_id)
+      .maybeSingle()
+
+    const tripStatus: string | null = latestCheckinMeta?.trip_status ?? null
 
     const sharedLocation: SharedLocation | null =
       isPlusSender &&
@@ -516,7 +557,8 @@ serve(async (req) => {
         continue
       }
 
-      const locale = getCheckinLocale(recipientLanguageMap.get(recipient.user_id))
+      const recipientLang = recipientLanguageMap.get(recipient.user_id) ?? 'en'
+      const locale = getCheckinLocale(recipientLang)
 
       const payload = buildContactCheckinNotification(
         locale,
@@ -529,7 +571,9 @@ serve(async (req) => {
         sharedLocation && locationRecipientIds.has(recipient.user_id)
           ? sharedLocation
           : null,
-        wellnessScore
+        wellnessScore,
+        tripStatus,
+        recipientLang
       )
 
       notificationsToInsert.push({

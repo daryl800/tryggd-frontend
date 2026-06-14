@@ -56,6 +56,19 @@
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "Ger mig iväg 🧳",
+        "boarding": "Ombordstigning / avresa snart 🛫",
+        "layover": "Mellanlandning / byte 🛑",
+        "landed": "Landat säkert 🛬",
+        "on_the_move": "På väg 🚕",
+        "at_hotel": "Framme på hotellet 🏨",
+        "on_trip": "På resan 🗺️",
+        "heading_home": "På väg hem 🏠",
+        "trip_ended": "Resan slut — hemma säkert ✅"
+      }
     }
   },
   "activity": {
@@ -412,7 +425,14 @@
     "cancel": "Avbryt",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Incheckningsläge",
+      "home": "Hem",
+      "trip": "Resa",
+      "homeDescription": "Standardmässig daglig incheckning",
+      "tripDescription": "Dela resestatus med dina kontakter"
+    }
   },
   "common": {
     "ok": "OK",

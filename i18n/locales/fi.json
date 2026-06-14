@@ -56,6 +56,19 @@
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "Lähden matkalle 🧳",
+        "boarding": "Boarding / lähtö pian 🛫",
+        "layover": "Välilaskeutuminen / vaihto 🛑",
+        "landed": "Laskeutunut turvallisesti 🛬",
+        "on_the_move": "Liikkeellä 🚕",
+        "at_hotel": "Saapunut hotelliin 🏨",
+        "on_trip": "Matkalla 🗺️",
+        "heading_home": "Matkalla kotiin 🏠",
+        "trip_ended": "Matka päättyi — kotona turvassa ✅"
+      }
     }
   },
   "activity": {
@@ -412,7 +425,14 @@
     "cancel": "Peruuta",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Kirjautumistila",
+      "home": "Koti",
+      "trip": "Matka",
+      "homeDescription": "Tavallinen päivittäinen kirjautuminen",
+      "tripDescription": "Jaa matkastatus yhteystiedoille"
+    }
   },
   "common": {
     "ok": "OK",

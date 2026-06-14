@@ -56,6 +56,19 @@
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "Afsted på rejsen 🧳",
+        "boarding": "Boarding / afgang snart 🛫",
+        "layover": "Mellemlanding / forbindelse 🛑",
+        "landed": "Landet sikkert 🛬",
+        "on_the_move": "På farten 🚕",
+        "at_hotel": "Ankommet til hotellet 🏨",
+        "on_trip": "På rejsen 🗺️",
+        "heading_home": "På vej hjem 🏠",
+        "trip_ended": "Rejsen slut — hjemme sikkert ✅"
+      }
     }
   },
   "activity": {
@@ -412,7 +425,14 @@
     "cancel": "Annuller",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Indtrædningstilstand",
+      "home": "Hjem",
+      "trip": "Rejse",
+      "homeDescription": "Standard daglig indtjekning",
+      "tripDescription": "Del din rejsestatus"
+    }
   },
   "common": {
     "ok": "OK",

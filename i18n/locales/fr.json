@@ -56,6 +56,19 @@
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "Je pars en voyage 🧳",
+        "boarding": "Embarquement / départ imminent 🛫",
+        "layover": "Escale / correspondance 🛑",
+        "landed": "Atterri en sécurité 🛬",
+        "on_the_move": "En déplacement 🚕",
+        "at_hotel": "Arrivé à l'hôtel 🏨",
+        "on_trip": "En voyage 🗺️",
+        "heading_home": "En route pour la maison 🏠",
+        "trip_ended": "Voyage terminé — rentré sain et sauf ✅"
+      }
     }
   },
   "activity": {
@@ -407,6 +420,13 @@
     "finnish": "Finnois",
     "chineseSimplified": "Chinois (simplifié)",
     "chineseTraditional": "Chinois (traditionnel)",
+    "tripMode": {
+      "title": "Mode d'enregistrement",
+      "home": "Maison",
+      "trip": "Voyage",
+      "homeDescription": "Enregistrement quotidien standard",
+      "tripDescription": "Partagez votre statut de voyage"
+    },
     "resetWarning": "Êtes-vous sûr ? Toutes vos données seront supprimées.",
     "logoutConfirm": "Voulez-vous vraiment vous déconnecter ?",
     "confirmReset": "Réinitialiser",
