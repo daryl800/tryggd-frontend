@@ -5,6 +5,7 @@ export type UserCapabilities = {
   canUseWelfareGreeting: boolean;
   canShareLocation: boolean;
   canUseWellnessSlider: boolean;
+  canUseTripMode: boolean;
   canControlCheckinRecipients: boolean;
   canAddUnlimitedContacts: boolean;
   maxContacts: number;
@@ -18,6 +19,7 @@ export function getCapabilities(plan: UserPlan, contactLimit?: number): UserCapa
     canUseWelfareGreeting: true,
     canShareLocation: isPlus,
     canUseWellnessSlider: isPlus,
+    canUseTripMode: isPlus,
     canControlCheckinRecipients: isPlus,
     canAddUnlimitedContacts: isPlus,
     maxContacts: contactLimit ?? (isPlus ? 999 : 3),

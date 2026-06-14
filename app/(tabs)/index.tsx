@@ -539,6 +539,11 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadCheckinMode = async () => {
       try {
+        if (!capabilities.canUseTripMode) {
+          setCheckinMode('home');
+          setTripStatus(null);
+          return;
+        }
         const saved = await AsyncStorage.getItem('@settings_checkin_mode');
         if (saved === 'home' || saved === 'trip') setCheckinMode(saved);
         if (!user) return;
@@ -1034,8 +1039,8 @@ export default function HomeScreen() {
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
 
-            // Write trip_status to users_latest_checkin if in trip mode
-            if (checkinMode === 'trip') {
+            // Write trip_status to users_latest_checkin if in trip mode (Plus only)
+            if (capabilities.canUseTripMode && checkinMode === 'trip') {
               supabase
                 .from('users_latest_checkin')
                 .update({ trip_status: tripStatus })
@@ -1356,7 +1361,7 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          <View style={[styles.tripStatusGroup, styles.groupContainer]}>
+          {capabilities.canUseTripMode && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
             <View style={styles.tripStatusRow}>
             <RNScrollView
               horizontal
@@ -1389,12 +1394,12 @@ export default function HomeScreen() {
               />
             </View>
             </View>
-          </View>
+          </View>}
 
           {/* ACTION CARDS */}
           <View style={[styles.cardsGroup, styles.groupContainer]}>
             <View style={styles.cardsContainer}>
-              <View style={styles.card}>
+              {capabilities.canUseTripMode && <View style={styles.card}>
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
                     <Ionicons
@@ -1488,7 +1493,7 @@ export default function HomeScreen() {
                     <Ionicons name="chevron-forward" size={14} color={checkinMode === 'trip' ? BaseColors.neutral[300] : BaseColors.primary} />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </View>}
 
               <View style={styles.card}>
                 <View style={styles.cardIcon}>
