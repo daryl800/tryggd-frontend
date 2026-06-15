@@ -1725,7 +1725,7 @@ export default function ActivityScreen() {
                   {wellnessTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: wellnessMeta.borderColor, backgroundColor: wellnessMeta.backgroundColor }]}>
                       <Text style={[styles.wellnessTooltipText, { color: wellnessMeta.color }]}>
-                        {t(wellnessMeta.labelKey).split('\n')[0]}
+                        {(t(wellnessMeta.labelKey as any) as string).split('\n')[0]}
                       </Text>
                     </View>
                   )}

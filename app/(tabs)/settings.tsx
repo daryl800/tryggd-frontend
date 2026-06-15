@@ -1,5 +1,11 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import {
+    DEFAULT_HOME_STYLE,
+    HOME_STYLE_STORAGE_KEY,
+    isHomeStyle,
+    type HomeStyle,
+} from '@/constants/homeLayout';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { updateContactCheckInPreference } from '@/lib/notifications/core';
 import Constants from 'expo-constants';
@@ -26,6 +32,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { iosFontSize } from '@/constants/typography';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -60,10 +67,12 @@ const STORAGE_KEYS = {
 
 export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
+    const { capabilities } = useAuth();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
+    const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
     const appVersion = Constants.expoConfig?.version || 'Unknown';
     const buildNumber = Constants.nativeBuildVersion;
     const versionLabel = buildNumber
@@ -80,6 +89,7 @@ export default function SettingsScreen() {
             const savedCheckInReminder = await AsyncStorage.getItem(STORAGE_KEYS.CHECK_IN_REMINDER);
             const savedContactCheckIn = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
             const savedLanguage = await AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE);
+            const savedHomeStyle = await AsyncStorage.getItem(HOME_STYLE_STORAGE_KEY);
 
             if (savedCheckInReminder !== null) {
                 setCheckInReminderEnabled(savedCheckInReminder === 'true');
@@ -87,13 +97,16 @@ export default function SettingsScreen() {
             if (savedContactCheckIn !== null) {
                 setContactCheckInEnabled(savedContactCheckIn === 'true');
             }
+            if (isHomeStyle(savedHomeStyle)) {
+                setHomeStyle(savedHomeStyle);
+            }
 
             // Load language from Supabase and sync with i18n if needed
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data: settings, error } = await supabase
                     .from('user_settings')
-                    .select('language')
+                    .select('language, home_style')
                     .eq('user_id', user.id)
                     .single();
 
@@ -110,6 +123,19 @@ export default function SettingsScreen() {
                         .upsert({
                             user_id: user.id,
                             language: savedLanguage,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'user_id' });
+                }
+
+                if (!error && isHomeStyle(settings?.home_style)) {
+                    setHomeStyle(settings.home_style);
+                    await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, settings.home_style);
+                } else if (isHomeStyle(savedHomeStyle)) {
+                    await supabase
+                        .from('user_settings')
+                        .upsert({
+                            user_id: user.id,
+                            home_style: savedHomeStyle,
                             updated_at: new Date().toISOString()
                         }, { onConflict: 'user_id' });
                 }
@@ -197,6 +223,30 @@ export default function SettingsScreen() {
         );
     };
 
+    const saveHomeStyle = async (style: HomeStyle) => {
+        setHomeStyle(style);
+        await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, style);
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { error } = await supabase
+                    .from('user_settings')
+                    .upsert({
+                        user_id: user.id,
+                        home_style: style,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+
+                if (error) {
+                    console.error("Failed to update home style in Supabase:", error);
+                }
+            }
+        } catch (error) {
+            console.error("Error updating home style in Supabase:", error);
+        }
+    };
+
 
     return (
         <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -271,6 +321,53 @@ export default function SettingsScreen() {
                         )}
                     </View>
                 </View>
+
+                {capabilities.isPlus && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionLabel}>{t("settings.homeStyle.title")}</Text>
+                        <View style={styles.card}>
+                            <View style={styles.homeStyleSegment}>
+                                {(['simple', 'detailed'] as const).map((style) => {
+                                    const selected = homeStyle === style;
+                                    return (
+                                        <TouchableOpacity
+                                            key={style}
+                                            style={[
+                                                styles.homeStyleOption,
+                                                selected && styles.homeStyleOptionSelected,
+                                            ]}
+                                            onPress={() => saveHomeStyle(style)}
+                                            activeOpacity={0.75}
+                                        >
+                                            <Ionicons
+                                                name={style === 'simple' ? 'heart-circle' : 'options'}
+                                                size={20}
+                                                color={selected ? BaseColors.surface : BaseColors.primary}
+                                            />
+                                            <Text
+                                                style={[
+                                                    styles.homeStyleOptionTitle,
+                                                    selected && styles.homeStyleOptionTitleSelected,
+                                                ]}
+                                            >
+                                                {t(`settings.homeStyle.${style}.title`)}
+                                            </Text>
+                                            <Text
+                                                style={[
+                                                    styles.homeStyleOptionSubtitle,
+                                                    selected && styles.homeStyleOptionSubtitleSelected,
+                                                ]}
+                                                numberOfLines={2}
+                                            >
+                                                {t(`settings.homeStyle.${style}.description`)}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                    </View>
+                )}
 
                 {/* Notifications */}
                 {/* Notifications */}
@@ -545,6 +642,46 @@ const styles = StyleSheet.create({
                 elevation: 2,
             },
         }),
+    },
+    homeStyleSegment: {
+        flexDirection: 'row',
+        gap: 10,
+        padding: 10,
+    },
+    homeStyleOption: {
+        flex: 1,
+        minHeight: 112,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
+        backgroundColor: BaseColors.surface,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        justifyContent: 'center',
+    },
+    homeStyleOptionSelected: {
+        borderColor: BaseColors.primary,
+        backgroundColor: BaseColors.primary,
+    },
+    homeStyleOptionTitle: {
+        fontSize: iosFontSize(15),
+        lineHeight: iosFontSize(20),
+        fontWeight: '800',
+        color: BaseColors.text.dark,
+        marginTop: 8,
+    },
+    homeStyleOptionTitleSelected: {
+        color: BaseColors.surface,
+    },
+    homeStyleOptionSubtitle: {
+        fontSize: iosFontSize(12),
+        lineHeight: iosFontSize(16),
+        color: BaseColors.neutral[500],
+        marginTop: 3,
+        fontWeight: '600',
+    },
+    homeStyleOptionSubtitleSelected: {
+        color: 'rgba(255,255,255,0.82)',
     },
     bottomSpacing: {
         height: 20,

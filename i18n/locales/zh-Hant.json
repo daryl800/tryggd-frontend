@@ -14,6 +14,28 @@
     "youCheckedInTodayAt": "您今天已於 {{time}} 完成簽到",
     "checkIn": "簽到",
     "pressMeToCheckIn": "點擊此處簽到",
+    "simple": {
+      "cta": "我很好",
+      "tapHint": "點擊簽到",
+      "checkedIn": "我很好",
+      "statusReady": "今天已準備好",
+      "statusChecked": "今天已簽到",
+      "statusQuiet": "一切正常"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} 已簽到",
+      "sentWave": "{{name}} 向你揮手",
+      "messageFrom": "來自 {{name}} 的訊息",
+      "justNow": "剛剛",
+      "minutesAgo_one": "{{count}} 分鐘 前",
+      "minutesAgo_other": "{{count}} 分鐘 前",
+      "hoursAgo_one": "{{count}} 小時 前",
+      "hoursAgo_other": "{{count}} 小時 前",
+      "hoursAgoDecimal": "{{value}} 小時 前",
+      "daysAgo_one": "{{count}} 天 前",
+      "daysAgo_other": "{{count}} 天 前",
+      "lastCheckinAgo": "上次簽到：{{timeAgo}}"
+    },
     "wellnessPrompt": "您今天感覺如何？",
     "plusWellness": {
       "title": "Plus 功能",

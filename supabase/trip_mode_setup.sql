@@ -38,7 +38,20 @@ do $$ begin
   end if;
 end $$;
 
--- 4. Optional: add a check constraint for valid trip_status values
+-- 4. Add home_style to user_settings table
+do $$ begin
+  if not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'user_settings'
+      and column_name = 'home_style'
+  ) then
+    alter table public.user_settings add column home_style text default 'simple'
+      check (home_style in ('simple', 'detailed'));
+  end if;
+end $$;
+
+-- 5. Optional: add a check constraint for valid trip_status values
 do $$ begin
   if not exists (
     select 1 from information_schema.table_constraints

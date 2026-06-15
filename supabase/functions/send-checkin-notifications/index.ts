@@ -23,6 +23,7 @@ type SharedLocation = {
 }
 
 type UserPlan = 'free' | 'plus'
+type HomeStyle = 'simple' | 'detailed'
 
 type AuthorizedRequest =
   | { kind: 'user'; userId: string }
@@ -228,6 +229,24 @@ async function getUserPlan(
   return data?.plan === 'plus' ? 'plus' : 'free'
 }
 
+async function getUserHomeStyle(
+  supabase: ReturnType<typeof createClient>,
+  userId: string
+): Promise<HomeStyle> {
+  const { data, error } = await supabase
+    .from('user_settings')
+    .select('home_style')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load user home style, defaulting to simple:', error.message)
+    return 'simple'
+  }
+
+  return data?.home_style === 'detailed' ? 'detailed' : 'simple'
+}
+
 // ============================================
 // AUTH FUNCTION (embedded directly)
 // ============================================
@@ -376,7 +395,10 @@ serve(async (req) => {
 
     const senderPlan = await getUserPlan(supabase, user_id)
     const isPlusSender = senderPlan === 'plus'
-    console.log('💳 Sender plan:', senderPlan)
+    const senderHomeStyle = await getUserHomeStyle(supabase, user_id)
+    const canSendWellness = isPlusSender
+    const canSendTripStatus = isPlusSender && senderHomeStyle === 'detailed'
+    console.log('💳 Sender plan/style:', { senderPlan, senderHomeStyle })
 
     if (rateLimit?.last_contact_checkin_push_at) {
       const lastPush = new Date(rateLimit.last_contact_checkin_push_at)
@@ -436,7 +458,9 @@ serve(async (req) => {
       .eq('user_id', user_id)
       .maybeSingle()
 
-    const tripStatus: string | null = latestCheckinMeta?.trip_status ?? null
+    const tripStatus: string | null = canSendTripStatus
+      ? latestCheckinMeta?.trip_status ?? null
+      : null
 
     const sharedLocation: SharedLocation | null =
       isPlusSender &&
@@ -456,7 +480,7 @@ serve(async (req) => {
     )
 
     const wellnessScore =
-      typeof latestCheckinRow?.wellness_score === 'number'
+      canSendWellness && typeof latestCheckinRow?.wellness_score === 'number'
         ? latestCheckinRow.wellness_score
         : null
 

@@ -12,6 +12,28 @@
     "dontForget": "Don't forget to check in today!",
     "youCheckedInTodayAt": "You checked in today @ {{time}}",
     "pressMeToCheckIn": "CHECK IN HERE",
+    "simple": {
+      "cta": "I'm okay",
+      "tapHint": "Tap to check in",
+      "checkedIn": "I'm okay",
+      "statusReady": "Ready for today",
+      "statusChecked": "Checked in today",
+      "statusQuiet": "All quiet"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} checked in",
+      "sentWave": "{{name}} sent you a wave",
+      "messageFrom": "Message from {{name}}",
+      "justNow": "Just now",
+      "minutesAgo_one": "{{count}} minute ago",
+      "minutesAgo_other": "{{count}} minutes ago",
+      "hoursAgo_one": "{{count}} hour ago",
+      "hoursAgo_other": "{{count}} hours ago",
+      "hoursAgoDecimal": "{{value}} hours ago",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago",
+      "lastCheckinAgo": "Last check-in {{timeAgo}}"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "plusWellness": {
       "title": "Plus feature",
@@ -402,6 +424,17 @@
       "contactActivity": {
         "title": "Contact activity",
         "description": "Notify me when my contacts complete their check-ins"
+      }
+    },
+    "homeStyle": {
+      "title": "Home style",
+      "simple": {
+        "title": "Simple",
+        "description": "One main action"
+      },
+      "detailed": {
+        "title": "Detailed",
+        "description": "Trip mode and more"
       }
     },
     "about": "About",
