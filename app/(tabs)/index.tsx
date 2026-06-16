@@ -2027,11 +2027,15 @@ export default function HomeScreen() {
               styles.simpleStatusGroup,
               isCompactSimpleHome && styles.simpleStatusGroupCompact,
             ]}>
-              <View style={[
-                styles.simpleStatusCard,
-                isCompactSimpleHome && styles.simpleStatusCardCompact,
-                isTightSimpleHome && styles.simpleStatusCardTight,
-              ]}>
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => router.push('/(tabs)/activity')}
+                style={[
+                  styles.simpleStatusCard,
+                  isCompactSimpleHome && styles.simpleStatusCardCompact,
+                  isTightSimpleHome && styles.simpleStatusCardTight,
+                ]}
+              >
                   {latestStatusNotification ? (
                     <>
                       {latestStatusAvatarUrl ? (
@@ -2179,7 +2183,7 @@ export default function HomeScreen() {
                       </View>
                     </>
                   )}
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
 
