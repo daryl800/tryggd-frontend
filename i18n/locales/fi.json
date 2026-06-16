@@ -422,6 +422,18 @@
     "information": "Tiedot",
     "language": "Kieli",
     "theme": "Teema",
+    "homeStyle": {
+      "title": "Valitse kotinäkymä",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Yksinkertainen",
+        "description": "Yhden napautuksen kuittaus, ei häiriötekijöitä."
+      },
+      "enhanced": {
+        "title": "Laajennettu",
+        "description": "Jaa mielialasi, matkatilasi ja sijaintisi."
+      }
+    },
     "notifications": {
       "title": "Ilmoitukset",
       "preferences": "Ilmoitusasetukset",

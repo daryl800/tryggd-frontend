@@ -421,6 +421,18 @@
     "information": "Informationen",
     "language": "Sprache",
     "theme": "Design",
+    "homeStyle": {
+      "title": "Startansicht wählen",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Einfach",
+        "description": "Check-in mit einem Tipp, ohne Ablenkungen."
+      },
+      "enhanced": {
+        "title": "Erweitert",
+        "description": "Teile Stimmung, Reisestatus und Standort."
+      }
+    },
     "notifications": {
       "title": "Benachrichtigungen",
       "preferences": "Benachrichtigungseinstellungen",

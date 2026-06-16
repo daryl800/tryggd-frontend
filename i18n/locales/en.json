@@ -447,14 +447,15 @@
       }
     },
     "homeStyle": {
-      "title": "Home style",
+      "title": "Choose Home View",
+      "plusBadge": "Plus",
       "simple": {
         "title": "Simple",
-        "description": "One main action"
+        "description": "One-tap check-in with no distractions."
       },
       "enhanced": {
         "title": "Enhanced",
-        "description": "Trip mode and more"
+        "description": "Share mood, trip status, and location."
       }
     },
     "about": "About",

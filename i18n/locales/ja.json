@@ -421,6 +421,18 @@
     "information": "情報",
     "language": "言語",
     "theme": "テーマ",
+    "homeStyle": {
+      "title": "ホーム表示を選択",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "シンプル",
+        "description": "ワンタップでチェックイン、気を散らすものなし。"
+      },
+      "enhanced": {
+        "title": "拡張",
+        "description": "気分、外出状況、位置情報を共有。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "preferences": "通知設定",

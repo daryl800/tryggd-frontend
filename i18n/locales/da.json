@@ -422,6 +422,18 @@
     "information": "Information",
     "language": "Sprog",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Vælg hjemmevisning",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Et-tryk-tjek-in uden distraktioner."
+      },
+      "enhanced": {
+        "title": "Udvidet",
+        "description": "Del stemning, rejsestatus og placering."
+      }
+    },
     "notifications": {
       "title": "Notifikationer",
       "preferences": "Notifikationsindstillinger",

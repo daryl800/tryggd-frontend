@@ -422,6 +422,18 @@
     "information": "Informasjon",
     "language": "Språk",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Velg hjemmevisning",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Et trykk for innsjekking, uten distraksjoner."
+      },
+      "enhanced": {
+        "title": "Utvidet",
+        "description": "Del humør, reisestatus og posisjon."
+      }
+    },
     "notifications": {
       "title": "Varsler",
       "preferences": "Varselinnstillinger",

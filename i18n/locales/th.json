@@ -421,6 +421,18 @@
     "information": "ข้อมูล",
     "language": "ภาษา",
     "theme": "ธีม",
+    "homeStyle": {
+      "title": "เลือกมุมมองหน้าหลัก",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "เรียบง่าย",
+        "description": "เช็กอินด้วยแท็บเดียว ไม่มีสิ่งรบกวน"
+      },
+      "enhanced": {
+        "title": "ขั้นสูง",
+        "description": "แชร์อารมณ์ สถานะการเดินทาง และตำแหน่ง"
+      }
+    },
     "notifications": {
       "title": "การแจ้งเตือน",
       "preferences": "การตั้งค่าการแจ้งเตือน",

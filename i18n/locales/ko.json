@@ -421,6 +421,18 @@
     "information": "정보",
     "language": "언어",
     "theme": "테마",
+    "homeStyle": {
+      "title": "홈 화면 선택",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "심플",
+        "description": "한 번 탭으로 체크인, 방해 요소 없음."
+      },
+      "enhanced": {
+        "title": "확장",
+        "description": "기분, 외출 상태, 위치를 공유하세요."
+      }
+    },
     "notifications": {
       "title": "알림",
       "preferences": "알림 설정",

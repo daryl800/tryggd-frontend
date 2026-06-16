@@ -348,9 +348,18 @@ export default function SettingsScreen() {
                                         />
                                     </View>
                                     <View style={styles.settingText}>
-                                        <Text style={styles.settingTitle}>
-                                            {t(`settings.homeStyle.${homeStyle}.title`)}
-                                        </Text>
+                                        <View style={styles.homeStyleTitleRow}>
+                                            <Text style={styles.settingTitle}>
+                                                {t(`settings.homeStyle.${homeStyle}.title`)}
+                                            </Text>
+                                            {homeStyle === 'enhanced' && (
+                                                <View style={styles.plusBadge}>
+                                                    <Text style={styles.plusBadgeText}>
+                                                        {t('settings.homeStyle.plusBadge')}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
                                         <Text style={styles.settingSubtitle}>
                                             {t(`settings.homeStyle.${homeStyle}.description`)}
                                         </Text>
@@ -387,9 +396,18 @@ export default function SettingsScreen() {
                                                             />
                                                         </View>
                                                         <View style={styles.settingText}>
-                                                            <Text style={styles.settingTitle}>
-                                                                {t(`settings.homeStyle.${style}.title`)}
-                                                            </Text>
+                                                            <View style={styles.homeStyleTitleRow}>
+                                                                <Text style={styles.settingTitle}>
+                                                                    {t(`settings.homeStyle.${style}.title`)}
+                                                                </Text>
+                                                                {style === 'enhanced' && (
+                                                                    <View style={styles.plusBadge}>
+                                                                        <Text style={styles.plusBadgeText}>
+                                                                            {t('settings.homeStyle.plusBadge')}
+                                                                        </Text>
+                                                                    </View>
+                                                                )}
+                                                            </View>
                                                             <Text style={styles.settingSubtitle}>
                                                                 {t(`settings.homeStyle.${style}.description`)}
                                                             </Text>
@@ -571,7 +589,7 @@ const CARD_ITEM_VERTICAL_PADDING = 12;
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     scrollContent: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -638,6 +656,24 @@ const styles = StyleSheet.create({
         fontSize: iosFontSize(13),
         color: BaseColors.neutral[500],
         marginTop: 2,
+    },
+    homeStyleTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    plusBadge: {
+        paddingHorizontal: 7,
+        paddingVertical: 2,
+        borderRadius: 999,
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
+    plusBadgeText: {
+        fontSize: iosFontSize(11),
+        fontWeight: '700',
+        color: BaseColors.primaryDark,
     },
     expandedSection: {
         marginTop: 4,

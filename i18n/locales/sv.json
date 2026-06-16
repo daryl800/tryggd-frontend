@@ -422,6 +422,18 @@
     "information": "Information",
     "language": "Språk",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Välj hemvy",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Incheckning med ett tryck, utan distraktioner."
+      },
+      "enhanced": {
+        "title": "Utökad",
+        "description": "Dela humör, resestatus och plats."
+      }
+    },
     "notifications": {
       "title": "Notiser",
       "preferences": "Notisinställningar",

@@ -2050,7 +2050,7 @@ export default function HomeScreen() {
                       ) : (
                         <Ionicons
                           name="person-circle"
-                          size={isCompactSimpleHome ? 46 : 52}
+                          size={isCompactSimpleHome ? 50 : 56}
                           color={BaseColors.neutral[300]}
                           style={[
                             styles.simpleStatusAvatarFallback,
@@ -2113,7 +2113,7 @@ export default function HomeScreen() {
                           >
                             <Ionicons
                               name="location"
-                              size={isCompactSimpleHome ? 22 : 26}
+                              size={isCompactSimpleHome ? 19 : 23}
                               color={BaseColors.primaryDark}
                             />
                           </TouchableOpacity>
@@ -2145,7 +2145,7 @@ export default function HomeScreen() {
                             >
                               <Ionicons
                                 name="heart"
-                                size={isCompactSimpleHome ? 22 : 26}
+                                size={isCompactSimpleHome ? 19 : 23}
                                 color={latestStatusWellnessMeta.color}
                               />
                             </TouchableOpacity>
@@ -2441,7 +2441,7 @@ const styles = StyleSheet.create({
     minHeight: 54,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: BaseColors.border,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
@@ -2974,18 +2974,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   simpleStatusAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     marginRight: 12,
     backgroundColor: BaseColors.neutral[100],
     borderWidth: 2,
     borderColor: BaseColors.primaryLight,
   },
   simpleStatusAvatarCompact: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     marginRight: 10,
   },
   simpleStatusAvatarFallback: {
@@ -3024,21 +3024,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 6,
-    marginLeft: 10,
+    gap: 4,
+    marginLeft: 8,
     minWidth: 32,
   },
   simpleStatusEmojiCircle: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     alignItems: 'center',
     justifyContent: 'center',
   },
   simpleStatusEmojiCircleCompact: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   simpleStatusTripEmojiCircle: {
     backgroundColor: BaseColors.primaryLight,
@@ -3046,12 +3046,12 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primaryBorder,
   },
   simpleStatusEmoji: {
-    fontSize: iosFontSize(26),
-    lineHeight: iosFontSize(30),
+    fontSize: iosFontSize(23),
+    lineHeight: iosFontSize(27),
   },
   simpleStatusEmojiCompact: {
-    fontSize: iosFontSize(22),
-    lineHeight: iosFontSize(26),
+    fontSize: iosFontSize(19),
+    lineHeight: iosFontSize(23),
   },
   simpleStatusBadgeWrapper: {
     position: 'relative',

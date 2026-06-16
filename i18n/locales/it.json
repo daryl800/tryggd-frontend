@@ -421,6 +421,18 @@
     "information": "Informazioni",
     "language": "Lingua",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Scegli la vista home",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Semplice",
+        "description": "Check-in con un tocco, senza distrazioni."
+      },
+      "enhanced": {
+        "title": "Avanzata",
+        "description": "Condividi umore, stato del viaggio e posizione."
+      }
+    },
     "notifications": {
       "title": "Notifiche",
       "preferences": "Preferenze di notifica",

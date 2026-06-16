@@ -34,8 +34,8 @@
       "hoursAgoDecimal": "{{value}} 小时 前",
       "daysAgo_one": "{{count}} 天 前",
       "daysAgo_other": "{{count}} 天 前",
-      "lastCheckinAgo": "上次签到：{{timeAgo}}",
-      "lastCheckinLabel": "上次签到："
+      "lastCheckinAgo": "你上次签到：{{timeAgo}}",
+      "lastCheckinLabel": "你上次签到："
     },
     "wellnessPrompt": "您今天感觉如何？",
     "context": {
@@ -465,6 +465,18 @@
     "information": "信息",
     "language": "语言",
     "theme": "主题",
+    "homeStyle": {
+      "title": "选择主页显示",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "简易",
+        "description": "一键签到，没有多余干扰。"
+      },
+      "enhanced": {
+        "title": "加强",
+        "description": "分享心情、出行状态和位置。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "preferences": "通知偏好",

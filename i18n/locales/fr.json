@@ -421,6 +421,18 @@
     "information": "Informations",
     "language": "Langue",
     "theme": "Thème",
+    "homeStyle": {
+      "title": "Choisir l'affichage d'accueil",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Simple",
+        "description": "Pointage en un geste, sans distraction."
+      },
+      "enhanced": {
+        "title": "Avancé",
+        "description": "Partagez votre humeur, votre statut de voyage et votre position."
+      }
+    },
     "notifications": {
       "title": "Notifications",
       "preferences": "Préférences de notification",

@@ -2087,7 +2087,7 @@ const styles = StyleSheet.create({
   // ... (keep all your existing styles exactly as they were)
   mainContainer: {
     flex: 1,
-    backgroundColor: BaseColors.background,
+    backgroundColor: '#F7F3EA',
   },
   contentWrapper: {
     flex: 1,

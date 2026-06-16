@@ -755,13 +755,13 @@ const GAP = 16;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     loadingIcon: {
         marginBottom: 12,
