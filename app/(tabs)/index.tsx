@@ -29,9 +29,7 @@ import {
   Animated,
   AppState,
   Dimensions,
-  GestureResponderEvent,
   Image,
-  LayoutChangeEvent,
   PixelRatio,
   Platform,
   ScrollView as RNScrollView,
@@ -50,7 +48,6 @@ import { iosFontSize } from '@/constants/typography';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 250);
 const STROKE_WIDTH = 40;
 
 const STORAGE_KEY = '@checkin_state';
@@ -59,9 +56,7 @@ const MS_IN_DAY = 24 * 60 * 60 * 1000;
 const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
-const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
-const MODE_ITEM_HEIGHT = 36;
 const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
 
 type HomeStatusNotification = {
@@ -246,28 +241,15 @@ const getChineseFontFamily = (language?: string) => {
   return undefined;
 };
 
-type WellnessSliderProps = {
-  value: number;
-  onChange: (value: number) => void;
-  disabled?: boolean;
-  onLockedPress?: () => void;
-};
+type WellnessOption = { value: number; iconName: 'heart' | 'heart-sharp' };
 
-type SimpleWellnessPickerProps = {
+type WellnessButtonPickerProps = {
   value: number;
   onChange: (value: number) => void;
   title: string;
+  options: readonly WellnessOption[];
   tooltipLabels: Record<number, string>;
   compactness?: 'regular' | 'compact' | 'tight';
-};
-
-const getWellnessValueFromPosition = (positionX: number, width: number) => {
-  if (width <= 0) return WELLNESS_DEFAULT;
-
-  const clampedX = Math.min(width, Math.max(0, positionX));
-  const ratio = clampedX / width;
-  const stepIndex = Math.round(ratio * (WELLNESS_STEPS - 1));
-  return clampWellnessValue(WELLNESS_MIN + stepIndex);
 };
 
 const hexToRgb = (hex: string) => {
@@ -334,15 +316,6 @@ const getWellnessMessageKey = (score: number) => {
   return 'activity.wellness.great';
 };
 
-const getWellnessHandleEmoji = (score: number) => {
-  const clampedScore = clampWellnessValue(score);
-  if (clampedScore <= -2) return '😔';
-  if (clampedScore === -1) return '😕';
-  if (clampedScore === 0) return '🙂';
-  if (clampedScore === 1) return '☺️';
-  return '😊';
-};
-
 const getWellnessStatusMeta = (score?: number | null) => {
   if (typeof score !== 'number') return null;
   const clampedScore = clampWellnessValue(score);
@@ -381,134 +354,37 @@ const getLocalDayBounds = (date: Date) => {
   };
 };
 
-const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: WellnessSliderProps) => {
-  const [trackWidth, setTrackWidth] = useState(0);
-  const lastValueRef = useRef(value);
-
-  useEffect(() => {
-    lastValueRef.current = value;
-  }, [value]);
-
-  const updateValueFromEvent = useCallback(
-    (event: GestureResponderEvent) => {
-      const nextValue = getWellnessValueFromPosition(event.nativeEvent.locationX, trackWidth);
-
-      if (nextValue === lastValueRef.current) return;
-
-      lastValueRef.current = nextValue;
-      onChange(nextValue);
-      void Haptics.selectionAsync();
-    },
-    [onChange, trackWidth]
-  );
-
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
-    setTrackWidth(event.nativeEvent.layout.width);
-  }, []);
-
-  const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
-  const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
-  const handleEmoji = getWellnessHandleEmoji(value);
-  const edgeLowColor = disabled ? BaseColors.neutral[300] : BaseColors.neutral[400];
-  const edgeHighColor = disabled ? BaseColors.neutral[300] : BaseColors.primary;
-
-  return (
-    <TouchableOpacity
-      activeOpacity={disabled ? 0.85 : 1}
-      disabled={!disabled}
-      onPress={onLockedPress}
-      style={[
-        styles.wellnessCard,
-        disabled && styles.wellnessCardDisabled,
-      ]}
-    >
-      <View style={styles.wellnessSliderRow}>
-        <TouchableOpacity
-          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MIN)}
-          activeOpacity={0.7}
-          style={styles.wellnessEdgeButton}
-        >
-          <Ionicons
-            name="sad-outline"
-            size={20}
-            color={edgeLowColor}
-            style={styles.wellnessEdgeIcon}
-          />
-        </TouchableOpacity>
-        <View
-          style={styles.wellnessTrackTouchArea}
-          onLayout={handleLayout}
-          onStartShouldSetResponder={() => !disabled}
-          onMoveShouldSetResponder={() => !disabled}
-          onResponderGrant={disabled ? undefined : updateValueFromEvent}
-          onResponderMove={disabled ? undefined : updateValueFromEvent}
-        >
-          <View style={[styles.wellnessTrack, disabled && styles.wellnessTrackDisabled]} />
-          <View style={styles.wellnessMarkersRow} pointerEvents="none">
-            {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
-              <View
-                key={`wellness-marker-${index}`}
-                style={[
-                  styles.wellnessMarker,
-                  disabled && styles.wellnessMarkerDisabled,
-                  index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarker,
-                  disabled && index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarkerDisabled,
-                ]}
-              />
-            ))}
-          </View>
-          <View
-            pointerEvents="none"
-            style={[
-              styles.wellnessThumb,
-              disabled && styles.wellnessThumbDisabled,
-              trackWidth > 0 && { left: handleLeft - 16 },
-            ]}
-          >
-            <Text style={styles.wellnessThumbEmoji}>{handleEmoji}</Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MAX)}
-          activeOpacity={0.7}
-          style={styles.wellnessEdgeButton}
-        >
-          <Ionicons
-            name="happy-outline"
-            size={20}
-            color={edgeHighColor}
-            style={styles.wellnessEdgeIcon}
-          />
-        </TouchableOpacity>
-      </View>
-      {disabled ? (
-        <View style={styles.wellnessThumbLockBadge} pointerEvents="none">
-          <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
-        </View>
-      ) : null}
-    </TouchableOpacity>
-  );
-};
-
-const SIMPLE_WELLNESS_OPTIONS = [
+const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: -1, iconName: 'heart-sharp' },
   { value: 0, iconName: 'heart' },
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const SimpleWellnessPicker = ({
+const ENHANCED_WELLNESS_OPTIONS: readonly WellnessOption[] = [
+  { value: -2, iconName: 'heart-sharp' },
+  { value: -1, iconName: 'heart-sharp' },
+  { value: 0, iconName: 'heart' },
+  { value: 1, iconName: 'heart-sharp' },
+  { value: 2, iconName: 'heart-sharp' },
+] as const;
+
+const WellnessButtonPicker = ({
   value,
   onChange,
   title,
+  options,
   tooltipLabels,
   compactness = 'regular',
-}: SimpleWellnessPickerProps) => {
+}: WellnessButtonPickerProps) => {
   const isCompact = compactness !== 'regular';
   const isTight = compactness === 'tight';
+  const isDense = options.length > 3;
   const [activeTooltipValue, setActiveTooltipValue] = useState<number | null>(null);
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const optionWidth = isTight ? 78 : isCompact ? 84 : 92;
-  const optionGap = isCompact ? 10 : 16;
+  const baseOptionWidth = isTight ? 78 : isCompact ? 84 : 92;
+  const optionWidth = isDense ? Math.round(baseOptionWidth * 0.62) : baseOptionWidth;
+  const optionGap = isDense ? (isCompact ? 6 : 8) : isCompact ? 10 : 16;
+  const iconSize = isDense ? (isCompact ? 22 : 24) : isCompact ? 28 : 32;
   const tooltipWidth = activeTooltipValue === 0
     ? isCompact ? 120 : 130
     : isCompact ? 142 : 154;
@@ -555,8 +431,9 @@ const SimpleWellnessPicker = ({
         <View style={[
           styles.simpleWellnessOptions,
           isCompact && styles.simpleWellnessOptionsCompact,
+          { gap: optionGap },
         ]}>
-          {SIMPLE_WELLNESS_OPTIONS.map((option) => {
+          {options.map((option) => {
             const selected = clampWellnessValue(value) === option.value;
             const isActiveTooltip = activeTooltipValue === option.value;
             const tw = tooltipWidth;
@@ -572,6 +449,7 @@ const SimpleWellnessPicker = ({
                   isCompact && styles.simpleWellnessOptionCompact,
                   isTight && styles.simpleWellnessOptionTight,
                   selected && styles.simpleWellnessOptionSelected,
+                  { width: ow },
                 ]}
                 onPress={() => {
                   onChange(option.value);
@@ -597,7 +475,7 @@ const SimpleWellnessPicker = ({
                 )}
                 <Ionicons
                   name={option.iconName}
-                  size={isCompact ? 28 : 32}
+                  size={iconSize}
                   color={getWellnessHeartColor(option.value)}
                 />
               </TouchableOpacity>
@@ -632,13 +510,11 @@ export default function HomeScreen() {
   const [contentHeight, setContentHeight] = useState(0);
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
   const [tripStatus, setTripStatus] = useState<string | null>(null);
-  const [modeCardWidth, setModeCardWidth] = useState(0);
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
 
-  const modeScrollRef = useRef<any>(null);
   const latestStatusChannelRef = useRef<any>(null);
 
   // Animation refs
@@ -713,40 +589,40 @@ export default function HomeScreen() {
   }, [t]);
 
   // Load home layout preference from Supabase / AsyncStorage
-  useEffect(() => {
-    const loadHomeStyle = async () => {
-      try {
-        const saved = await AsyncStorage.getItem(HOME_STYLE_STORAGE_KEY);
-        if (isHomeStyle(saved)) {
-          setHomeStyle(saved);
-        }
-
-        if (!user) return;
-
-        const { data } = await supabase
-          .from('user_settings')
-          .select('home_style')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (isHomeStyle(data?.home_style)) {
-          setHomeStyle(data.home_style);
-          await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, data.home_style);
-        } else if (isHomeStyle(saved)) {
-          await supabase
-            .from('user_settings')
-            .upsert(
-              { user_id: user.id, home_style: saved, updated_at: new Date().toISOString() },
-              { onConflict: 'user_id' }
-            );
-        }
-      } catch (error) {
-        console.warn('Failed to load home style:', error);
+  const loadHomeStyle = useCallback(async () => {
+    try {
+      const saved = await AsyncStorage.getItem(HOME_STYLE_STORAGE_KEY);
+      if (isHomeStyle(saved)) {
+        setHomeStyle(saved);
       }
-    };
 
-    loadHomeStyle();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('user_settings')
+        .select('home_style')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (isHomeStyle(data?.home_style)) {
+        setHomeStyle(data.home_style);
+        await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, data.home_style);
+      } else if (isHomeStyle(saved)) {
+        await supabase
+          .from('user_settings')
+          .upsert(
+            { user_id: user.id, home_style: saved, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' }
+          );
+      }
+    } catch (error) {
+      console.warn('Failed to load home style:', error);
+    }
   }, [user]);
+
+  useEffect(() => {
+    loadHomeStyle();
+  }, [loadHomeStyle]);
 
   const homeLayout = getHomeLayout(capabilities.isPlus, homeStyle);
   const canUseEnhancedHome = homeLayout === 'plus-enhanced';
@@ -787,16 +663,22 @@ export default function HomeScreen() {
     loadCheckinMode();
   }, [canUseEnhancedHome, user]);
 
-  // Sync drum picker scroll position when checkinMode or card width changes
-  useEffect(() => {
-    const modeKeys = ['home', 'trip'];
-    const idx = modeKeys.indexOf(checkinMode);
-    if (idx >= 0 && modeCardWidth > 0) {
-      setTimeout(() => {
-        modeScrollRef.current?.scrollTo({ x: idx * modeCardWidth, y: 0, animated: false });
-      }, 50);
+  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip') => {
+    if (mode === checkinMode) return;
+    void Haptics.selectionAsync();
+    setCheckinMode(mode);
+    if (mode === 'home') setTripStatus(null);
+    await AsyncStorage.setItem('@settings_checkin_mode', mode);
+    if (user) {
+      await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          checkin_mode: mode,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
     }
-  }, [checkinMode, modeCardWidth]);
+  }, [checkinMode, user]);
 
   // Fetch contacts count
   const fetchContactsCount = useCallback(async () => {
@@ -1035,7 +917,8 @@ export default function HomeScreen() {
       console.log('📱 Home screen focused - fetching fresh data');
       fetchLastCheckin();
       fetchContactsCount();
-    }, [fetchLastCheckin, fetchContactsCount])
+      loadHomeStyle();
+    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle])
   );
 
   const triggerCheckInAnimation = () => {
@@ -1069,10 +952,6 @@ export default function HomeScreen() {
     ]).start();
   };
 
-  const handleWellnessUpgradePress = useCallback(() => {
-    router.push('/(tabs)/plus');
-  }, [router]);
-
   const enrichHomeStatusNotification = useCallback(async (notification: any): Promise<HomeStatusNotification> => {
     const parsedData = parseNotificationData(notification.data);
     let senderName =
@@ -1083,11 +962,10 @@ export default function HomeScreen() {
     let senderAvatarUrl: string | null = null;
 
     if (notification.sender_user_id) {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('display_name, avatar_url')
-        .eq('id', notification.sender_user_id)
-        .maybeSingle();
+      const { data: profileRows } = await supabase.rpc('get_contact_usernames', {
+        contact_ids: [notification.sender_user_id],
+      });
+      const profileData = profileRows?.[0];
 
       senderName =
         profileData?.display_name ||
@@ -1416,11 +1294,6 @@ export default function HomeScreen() {
     'leaving', 'boarding', 'layover', 'landed', 'on_the_move', 'at_hotel', 'on_trip', 'heading_home', 'trip_ended',
   ] as const;
 
-  const CHECKIN_MODES: { key: 'home' | 'trip'; label: string; icon: string }[] = [
-    { key: 'home', label: t('settings.tripMode.home'), icon: 'home-outline' },
-    { key: 'trip', label: t('settings.tripMode.trip'), icon: 'airplane' },
-  ];
-
   const greetingInfo = getGreetingInfo(now, t);
   const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus && homeLayout !== 'free';
   const showWellnessModule = canUseWellnessHome || showLockedPlusWellness;
@@ -1442,29 +1315,24 @@ export default function HomeScreen() {
     checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const simpleDateTimeText = `${formatDateWithTranslation(now, t, i18n.language)} · ${formatTime24h(now, i18n.language)}`;
-  const isSimpleHome = homeLayout === 'free' || homeLayout === 'plus-simple';
   const isPlusSimpleHome = homeLayout === 'plus-simple';
   const showDebugResetCheckin = __DEV__;
   const currentFontScale = windowDimensions.fontScale || fontScale;
   const currentScreenWidth = windowDimensions.width || SCREEN_WIDTH;
   const currentScreenHeight = windowDimensions.height || SCREEN_HEIGHT;
-  const simpleHomeCompactness: NonNullable<SimpleWellnessPickerProps['compactness']> =
+  const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> =
     currentScreenHeight < 700 || currentFontScale >= 1.2
       ? 'tight'
       : currentScreenHeight < 780 || currentFontScale >= 1.1
         ? 'compact'
         : 'regular';
-  const isCompactSimpleHome = isSimpleHome && simpleHomeCompactness !== 'regular';
-  const isTightSimpleHome = isSimpleHome && simpleHomeCompactness === 'tight';
-  const circleSize = isSimpleHome
-    ? Math.min(
-      currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
-      isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250,
-    )
-    : CIRCLE_SIZE;
-  const strokeWidth = isSimpleHome
-    ? isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH
-    : STROKE_WIDTH;
+  const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
+  const isTightSimpleHome = simpleHomeCompactness === 'tight';
+  const circleSize = Math.min(
+    currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
+    isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250,
+  );
+  const strokeWidth = isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH;
   const maxStroke = strokeWidth + 3;
   const circleRadius = (circleSize - maxStroke) / 2;
   const innerButtonSize = circleSize - strokeWidth;
@@ -1523,13 +1391,13 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.mainContainer, isSimpleHome && styles.simpleMainContainer]} edges={['top']}>
+    <SafeAreaView style={[styles.mainContainer, styles.simpleMainContainer]} edges={['top']}>
       {/* HEADER - OUTSIDE SCROLLVIEW (FIXED) */}
       <ScreenHeader
         title={profile?.display_name || t('home.welcome')}
         subtitle={greetingInfo.greeting}
         iconName={greetingInfo.iconName as any}
-        style={isSimpleHome ? styles.simpleHeader : undefined}
+        style={styles.simpleHeader}
         showGreetingInLine={true}
         rightElement={
           <View style={styles.headerActions}>
@@ -1552,14 +1420,12 @@ export default function HomeScreen() {
           </View>
         }
       />
-      {isSimpleHome ? (
-        <Text style={[
-          styles.simpleHeaderDate,
-          isCompactSimpleHome && styles.simpleHeaderDateCompact,
-        ]}>
-          {simpleDateTimeText}
-        </Text>
-      ) : null}
+      <Text style={[
+        styles.simpleHeaderDate,
+        isCompactSimpleHome && styles.simpleHeaderDateCompact,
+      ]}>
+        {simpleDateTimeText}
+      </Text>
 
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
       <ScrollView
@@ -1578,20 +1444,12 @@ export default function HomeScreen() {
         minimumZoomScale={1}
         overScrollMode="never"
       >
-        <Animated.View style={[{ opacity: fadeAnim }, isSimpleHome && styles.simpleAnimatedContent]}>
-          {/* DATE & TIME */}
-          {!isSimpleHome ? (
-            <View style={[styles.dateTimeGroup, styles.groupContainer]}>
-              <Text style={styles.timeText}>{formatTime24h(now, i18n.language)}</Text>
-              <Text style={styles.dateText}>{formatDateWithTranslation(now, t, i18n.language)}</Text>
-            </View>
-          ) : null}
-
+        <Animated.View style={[{ opacity: fadeAnim }, styles.simpleAnimatedContent]}>
           {/* MAIN CHECK-IN */}
           <View style={[
             styles.checkInGroup,
             styles.groupContainer,
-            isSimpleHome && styles.simpleCheckInGroup,
+            styles.simpleCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
           ]}>
@@ -1766,33 +1624,32 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
-            {isSimpleHome ? (
-              <View style={[
-                styles.simpleCheckinInfoRow,
-                isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
+            <View style={[
+              styles.simpleCheckinInfoRow,
+              isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
+            ]}>
+              <Ionicons
+                name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
+                size={isCompactSimpleHome ? 16 : 18}
+                color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
+                style={styles.simpleCheckinInfoIcon}
+              />
+              <Text style={[
+                styles.simpleCheckinInfoText,
+                isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
+                { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
               ]}>
-                <Ionicons
-                  name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
-                  size={isCompactSimpleHome ? 16 : 18}
-                  color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
-                  style={styles.simpleCheckinInfoIcon}
-                />
-                <Text style={[
-                  styles.simpleCheckinInfoText,
-                  isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
-                  { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
-                ]}>
-                  {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
-                </Text>
-              </View>
-            ) : null}
+                {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
+              </Text>
+            </View>
           </View>
 
           {isPlusSimpleHome ? (
-            <SimpleWellnessPicker
+            <WellnessButtonPicker
               value={wellnessScore}
               onChange={setWellnessScore}
               title={t('home.wellnessPrompt')}
+              options={SIMPLE_WELLNESS_OPTIONS}
               tooltipLabels={{
                 [-1]: getWellnessTooltipLabel(-1),
                 [0]: getWellnessTooltipLabel(0),
@@ -1802,20 +1659,96 @@ export default function HomeScreen() {
             />
           ) : null}
 
-          {isSimpleHome ? (
+          {canUseEnhancedHome && showWellnessModule ? (
+            <View style={styles.groupContainer}>
+              <WellnessButtonPicker
+                value={wellnessScore}
+                onChange={setWellnessScore}
+                title={t('home.wellnessPrompt')}
+                options={ENHANCED_WELLNESS_OPTIONS}
+                tooltipLabels={{
+                  [-2]: getWellnessTooltipLabel(-2),
+                  [-1]: getWellnessTooltipLabel(-1),
+                  [0]: getWellnessTooltipLabel(0),
+                  [1]: getWellnessTooltipLabel(1),
+                  [2]: getWellnessTooltipLabel(2),
+                }}
+                compactness={simpleHomeCompactness}
+              />
+            </View>
+          ) : null}
+
+          {canUseEnhancedHome && (
+            <View style={styles.modeToggleRow}>
+              <TouchableOpacity
+                style={[styles.modeToggleOption, checkinMode === 'home' && styles.modeToggleOptionActive]}
+                onPress={() => handleCheckinModeChange('home')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.modeToggleText, checkinMode === 'home' && styles.modeToggleTextActive]}>
+                  {t('settings.tripMode.home')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modeToggleOption, checkinMode === 'trip' && styles.modeToggleOptionActive]}
+                onPress={() => handleCheckinModeChange('trip')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.modeToggleText, checkinMode === 'trip' && styles.modeToggleTextActive]}>
+                  {t('settings.tripMode.trip')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {canUseEnhancedHome && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
+            <View style={styles.tripStatusRow}>
+            <RNScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tripPillsRow}
+              scrollEnabled={checkinMode === 'trip'}
+            >
+              {TRIP_STATUS_KEYS.map((key) => {
+                const isActive = tripStatus === key;
+                const isTrip = checkinMode === 'trip';
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    style={[styles.tripPill, isActive && styles.tripPillActive, !isTrip && styles.tripPillDisabled]}
+                    onPress={() => isTrip && setTripStatus(isActive ? null : key)}
+                    activeOpacity={isTrip ? 0.75 : 1}
+                  >
+                    <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive, !isTrip && styles.tripPillTextDisabled]}>
+                      {t(`home.tripMode.statuses.${key}` as any) as string}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </RNScrollView>
+            <View style={styles.tripScrollHint}>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={checkinMode === 'trip' ? BaseColors.primary : BaseColors.neutral[300]}
+              />
+            </View>
+            </View>
+          </View>}
+
+          <View style={[
+            styles.simpleStatusDock,
+            isCompactSimpleHome && styles.simpleStatusDockCompact,
+          ]}>
             <View style={[
-              styles.simpleStatusDock,
-              isCompactSimpleHome && styles.simpleStatusDockCompact,
+              styles.simpleStatusGroup,
+              isCompactSimpleHome && styles.simpleStatusGroupCompact,
             ]}>
               <View style={[
-                styles.simpleStatusGroup,
-                isCompactSimpleHome && styles.simpleStatusGroupCompact,
+                styles.simpleStatusCard,
+                isCompactSimpleHome && styles.simpleStatusCardCompact,
+                isTightSimpleHome && styles.simpleStatusCardTight,
               ]}>
-                <View style={[
-                  styles.simpleStatusCard,
-                  isCompactSimpleHome && styles.simpleStatusCardCompact,
-                  isTightSimpleHome && styles.simpleStatusCardTight,
-                ]}>
                   {latestStatusNotification ? (
                     <>
                       {latestStatusAvatarUrl ? (
@@ -1914,160 +1847,9 @@ export default function HomeScreen() {
                       </View>
                     </>
                   )}
-                </View>
               </View>
             </View>
-          ) : null}
-
-          {!isSimpleHome && showWellnessModule ? (
-            <View style={[styles.wellnessGroup, styles.groupContainer]}>
-              <WellnessSlider
-                value={canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT}
-                onChange={setWellnessScore}
-                disabled={!canUseWellnessHome}
-                onLockedPress={handleWellnessUpgradePress}
-              />
-            </View>
-          ) : null}
-
-          {canUseEnhancedHome && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
-            <View style={styles.tripStatusRow}>
-            <RNScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.tripPillsRow}
-              scrollEnabled={checkinMode === 'trip'}
-            >
-              {TRIP_STATUS_KEYS.map((key) => {
-                const isActive = tripStatus === key;
-                const isTrip = checkinMode === 'trip';
-                return (
-                  <TouchableOpacity
-                    key={key}
-                    style={[styles.tripPill, isActive && styles.tripPillActive, !isTrip && styles.tripPillDisabled]}
-                    onPress={() => isTrip && setTripStatus(isActive ? null : key)}
-                    activeOpacity={isTrip ? 0.75 : 1}
-                  >
-                    <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive, !isTrip && styles.tripPillTextDisabled]}>
-                      {t(`home.tripMode.statuses.${key}` as any) as string}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </RNScrollView>
-            <View style={styles.tripScrollHint}>
-              <Ionicons
-                name="chevron-forward"
-                size={16}
-                color={checkinMode === 'trip' ? BaseColors.primary : BaseColors.neutral[300]}
-              />
-            </View>
-            </View>
-          </View>}
-
-          {/* ACTION CARDS */}
-          {!isSimpleHome ? (
-          <View style={[styles.cardsGroup, styles.groupContainer]}>
-            <View style={styles.cardsContainer}>
-              {canUseEnhancedHome && <View style={styles.card}>
-                <View style={styles.cardIcon}>
-                  <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                    <Ionicons
-                      name={checkinMode === 'trip' ? 'airplane' : 'home-outline'}
-                      size={ICON_SIZES.LG}
-                      color={BaseColors.primary}
-                    />
-                  </View>
-                </View>
-                <Text style={styles.cardLabel}>{t('settings.tripMode.title')}</Text>
-                <View style={styles.modeDrumWrapper}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      const modeKeys = ['home', 'trip'] as const;
-                      const cur = modeKeys.indexOf(checkinMode);
-                      const prev = Math.max(0, cur - 1);
-                      modeScrollRef.current?.scrollTo({ x: prev * modeCardWidth, y: 0, animated: true });
-                      const selected = CHECKIN_MODES[prev];
-                      if (selected && selected.key !== checkinMode) {
-                        setCheckinMode(selected.key);
-                        if (selected.key === 'home') setTripStatus(null);
-                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
-                        supabase.from('user_settings').upsert(
-                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
-                          { onConflict: 'user_id' }
-                        ).then(() => {});
-                      }
-                    }}
-                    style={styles.modeDrumArrow}
-                    activeOpacity={0.6}
-                  >
-                    <Ionicons name="chevron-back" size={14} color={checkinMode === 'home' ? BaseColors.neutral[300] : BaseColors.primary} />
-                  </TouchableOpacity>
-                <View
-                  style={styles.modeDrumOuter}
-                  onLayout={(e) => setModeCardWidth(e.nativeEvent.layout.width)}
-                >
-                  <RNScrollView
-                    ref={modeScrollRef}
-                    style={styles.modeDrumScroller}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    snapToInterval={modeCardWidth}
-                    decelerationRate="fast"
-                    bounces={false}
-                    contentContainerStyle={styles.modeDrumContent}
-                    onMomentumScrollEnd={(e) => {
-                      const idx = Math.round(e.nativeEvent.contentOffset.x / (modeCardWidth || 1));
-                      const clamped = Math.max(0, Math.min(CHECKIN_MODES.length - 1, idx));
-                      const selected = CHECKIN_MODES[clamped];
-                      if (selected && selected.key !== checkinMode) {
-                        setCheckinMode(selected.key);
-                        if (selected.key === 'home') setTripStatus(null);
-                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
-                        supabase.from('user_settings').upsert(
-                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
-                          { onConflict: 'user_id' }
-                        ).then(() => {});
-                      }
-                    }}
-                  >
-                    {CHECKIN_MODES.map(({ key, label }) => (
-                      <View key={key} style={[styles.modeDrumItem, { width: modeCardWidth }]}>
-                        <Text style={[styles.modeDrumText, checkinMode === key && styles.modeDrumTextActive]}>
-                          {label}
-                        </Text>
-                      </View>
-                    ))}
-                  </RNScrollView>
-                </View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      const modeKeys = ['home', 'trip'] as const;
-                      const cur = modeKeys.indexOf(checkinMode);
-                      const next = Math.min(CHECKIN_MODES.length - 1, cur + 1);
-                      modeScrollRef.current?.scrollTo({ x: next * modeCardWidth, y: 0, animated: true });
-                      const selected = CHECKIN_MODES[next];
-                      if (selected && selected.key !== checkinMode) {
-                        setCheckinMode(selected.key);
-                        if (selected.key === 'home') setTripStatus(null);
-                        AsyncStorage.setItem('@settings_checkin_mode', selected.key);
-                        supabase.from('user_settings').upsert(
-                          { user_id: user?.id, checkin_mode: selected.key, updated_at: new Date().toISOString() },
-                          { onConflict: 'user_id' }
-                        ).then(() => {});
-                      }
-                    }}
-                    style={styles.modeDrumArrow}
-                    activeOpacity={0.6}
-                  >
-                    <Ionicons name="chevron-forward" size={14} color={checkinMode === 'trip' ? BaseColors.neutral[300] : BaseColors.primary} />
-                  </TouchableOpacity>
-                </View>
-              </View>}
-            </View>
           </View>
-          ) : null}
-
 
           {/* Bottom padding */}
           <View style={styles.bottomPadding} />
@@ -2165,27 +1947,6 @@ const styles = StyleSheet.create({
   },
   simpleAnimatedContent: {
     flexGrow: 1,
-  },
-  dateTimeGroup: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: SCREEN_PADDING.horizontal,
-    paddingTop: Platform.OS === 'ios' ? 6 : 2,
-  },
-  timeText: {
-    fontSize: iosFontSize(26),
-    lineHeight: iosFontSize(30),
-    fontWeight: '700',
-    color: BaseColors.text.dark,
-    textAlign: 'center',
-  },
-  dateText: {
-    fontSize: iosFontSize(14),
-    lineHeight: iosFontSize(16),
-    color: BaseColors.neutral[500],
-    marginTop: 2,
-    textTransform: 'capitalize',
-    textAlign: 'center',
   },
   checkInGroup: {
     alignItems: 'center',
@@ -2378,8 +2139,41 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
     backgroundColor: '#FBFFFD',
   },
-  wellnessGroup: {
-    paddingHorizontal: SCREEN_PADDING.horizontal,
+  modeToggleRow: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    backgroundColor: BaseColors.neutral[100],
+    borderRadius: 18,
+    padding: 3,
+    gap: 3,
+    marginBottom: 10,
+  },
+  modeToggleOption: {
+    paddingHorizontal: 18,
+    paddingVertical: 7,
+    borderRadius: 15,
+  },
+  modeToggleOptionActive: {
+    backgroundColor: BaseColors.surface,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  modeToggleText: {
+    fontSize: iosFontSize(14),
+    fontWeight: '600',
+    color: BaseColors.neutral[400],
+  },
+  modeToggleTextActive: {
+    color: BaseColors.primary,
   },
   tripStatusGroup: {
     paddingLeft: SCREEN_PADDING.horizontal,
@@ -2428,126 +2222,6 @@ const styles = StyleSheet.create({
     color: BaseColors.neutral[400],
   },
   checkInContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  wellnessCard: {
-    backgroundColor: BaseColors.surface,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    ...Platform.select({
-      ios: {
-        shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.08,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  wellnessCardDisabled: {
-    borderColor: BaseColors.neutral[200],
-    backgroundColor: BaseColors.neutral[50],
-  },
-  wellnessSliderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  wellnessEdgeIcon: {
-    width: 24,
-    textAlign: 'center',
-  },
-  wellnessEdgeButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 24,
-    height: 24,
-  },
-  wellnessTrackTouchArea: {
-    flex: 1,
-    height: 36,
-    justifyContent: 'center',
-  },
-  wellnessTrack: {
-    height: 8,
-    borderRadius: 999,
-    backgroundColor: BaseColors.primaryBorder,
-  },
-  wellnessTrackDisabled: {
-    backgroundColor: BaseColors.neutral[200],
-  },
-  wellnessMarkersRow: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 2,
-  },
-  wellnessMarker: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: BaseColors.neutral[300],
-  },
-  wellnessMarkerDisabled: {
-    backgroundColor: BaseColors.neutral[200],
-  },
-  wellnessCenterMarker: {
-    backgroundColor: BaseColors.primary,
-  },
-  wellnessCenterMarkerDisabled: {
-    backgroundColor: BaseColors.neutral[400],
-  },
-  wellnessThumb: {
-    position: 'absolute',
-    top: 2,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: BaseColors.surface,
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  wellnessThumbDisabled: {
-    borderColor: BaseColors.neutral[200],
-    backgroundColor: BaseColors.surface,
-  },
-  wellnessThumbEmoji: {
-    fontSize: 22,
-    lineHeight: 26,
-    textAlign: 'center',
-  },
-  wellnessThumbLockBadge: {
-    position: 'absolute',
-    right: -2,
-    bottom: -2,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: BaseColors.primaryLight,
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -2652,10 +2326,6 @@ const styles = StyleSheet.create({
   compactTimeLeftText: {
     fontSize: iosFontSize(9),
     marginTop: 0,
-  },
-  cardsGroup: {
-    paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginBottom: 24,
   },
   simpleStatusDock: {
     marginTop: 'auto',
@@ -2832,10 +2502,6 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(22),
     lineHeight: iosFontSize(26),
   },
-  cardsContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
   modeCardGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
   },
@@ -2880,40 +2546,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: BaseColors.text.dark,
   },
-  card: {
-    flex: 1,
-    backgroundColor: BaseColors.surface,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: BaseColors.neutral[200],
-    minHeight: 76,
-    justifyContent: 'space-between',
-    ...Platform.select({
-      ios: {
-        shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  cardIcon: {
-    marginBottom: 4,
-  },
-  cardLabel: {
-    fontSize: iosFontSize(16),
-    fontWeight: '800',
-    textAlign: 'center',
-    marginTop: 2,
-    color: BaseColors.text.dark,
-    lineHeight: iosFontSize(18),
-  },
   cardSubtext: {
     fontSize: iosFontSize(16),
     fontWeight: '600',
@@ -2921,13 +2553,6 @@ const styles = StyleSheet.create({
     color: BaseColors.primary,
     textAlign: 'center',
     lineHeight: iosFontSize(18),
-  },
-  iconContainerBase: {
-    width: 30,
-    height: 30,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   cardActive: {
     backgroundColor: BaseColors.primary,
@@ -2940,50 +2565,8 @@ const styles = StyleSheet.create({
     color: BaseColors.surface,
     opacity: 0.85,
   },
-  activityIconContainer: {
-    backgroundColor: '#EDF7F4',
-  },
   tripIconContainer: {
     backgroundColor: 'rgba(255,255,255,0.25)',
-  },
-  modeDrumWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-    width: '100%',
-  },
-  modeDrumArrow: {
-    paddingHorizontal: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modeDrumOuter: {
-    flex: 1,
-    backgroundColor: BaseColors.primaryLight,
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  modeDrumScroller: {
-    height: MODE_ITEM_HEIGHT,
-    width: '100%',
-  },
-
-  modeDrumContent: {
-  },
-  modeDrumItem: {
-    height: MODE_ITEM_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  modeDrumText: {
-    fontSize: iosFontSize(13),
-    fontWeight: '500',
-    color: BaseColors.text.dark,
-  },
-  modeDrumTextActive: {
-    opacity: 1,
-    fontWeight: '700',
-    color: BaseColors.primary,
   },
   bottomPadding: {
     height: 12,
