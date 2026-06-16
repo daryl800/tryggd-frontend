@@ -60,9 +60,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 旅立ちます",
-        "boarding": "🛫 搭乗・出発間近",
+        "boarding": "🛫 搭乗・🚆 運転",
         "layover": "🛑 乗り継ぎ中",
-        "landed": "🛬 無事着陸",
+        "landed": "🛬 無事到着",
         "on_the_move": "🚕 移動中",
         "at_hotel": "🏨 ホテルに到着",
         "on_trip": "🗺️ 旅行中",

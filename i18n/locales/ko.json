@@ -60,9 +60,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 여행 출발",
-        "boarding": "🛫 탑승 / 곧 출발",
+        "boarding": "🛫 탑승 / 🚆 운전",
         "layover": "🛑 경유 / 환승 중",
-        "landed": "🛬 안전하게 착륙",
+        "landed": "🛬 안전하게 도착",
         "on_the_move": "🚕 이동 중",
         "at_hotel": "🏨 호텔 도착",
         "on_trip": "🗺️ 여행 중",

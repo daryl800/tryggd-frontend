@@ -60,9 +60,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Lähden matkalle",
-        "boarding": "🛫 Boarding / lähtö pian",
+        "boarding": "🛫 Boarding / 🚆 Ajaa",
         "layover": "🛑 Välilaskeutuminen / vaihto",
-        "landed": "🛬 Laskeutunut turvallisesti",
+        "landed": "🛬 Saapunut turvallisesti",
         "on_the_move": "🚕 Liikkeellä",
         "at_hotel": "🏨 Saapunut hotelliin",
         "on_trip": "🗺️ Matkalla",

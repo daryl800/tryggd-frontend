@@ -60,9 +60,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Parto per il viaggio",
-        "boarding": "🛫 Imbarco / partenza imminente",
+        "boarding": "🛫 Imbarco / 🚆 In auto",
         "layover": "🛑 Scalo / coincidenza",
-        "landed": "🛬 Atterrato in sicurezza",
+        "landed": "🛬 Arrivato in sicurezza",
         "on_the_move": "🚕 In movimento",
         "at_hotel": "🏨 Arrivato in hotel",
         "on_trip": "🗺️ In viaggio",

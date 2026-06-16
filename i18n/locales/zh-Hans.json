@@ -113,9 +113,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出发了",
-        "boarding": "🛫 登机／准备起飞",
+        "boarding": "🛫 登机／🚆开车",
         "layover": "🛑 中途停留/转机",
-        "landed": "🛬 已安全着陆",
+        "landed": "🛬 已安全抵达",
         "on_the_move": "🚕 在移动中",
         "at_hotel": "🏨 已抵达酒店",
         "on_trip": "🗺️ 旅程中",

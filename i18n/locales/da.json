@@ -60,9 +60,9 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Afsted på rejsen",
-        "boarding": "🛫 Boarding / afgang snart",
+        "boarding": "🛫 Boarding / 🚆 Kører",
         "layover": "🛑 Mellemlanding / forbindelse",
-        "landed": "🛬 Landet sikkert",
+        "landed": "🛬 Ankommet sikkert",
         "on_the_move": "🚕 På farten",
         "at_hotel": "🏨 Ankommet til hotellet",
         "on_trip": "🗺️ På rejsen",
