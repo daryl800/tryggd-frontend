@@ -12,7 +12,41 @@
     "dontForget": "อย่าลืมเช็กอินวันนี้!",
     "youCheckedInTodayAt": "คุณเช็กอินแล้ววันนี้ เวลา {{time}}",
     "pressMeToCheckIn": "เช็กอินที่นี่",
+    "status": {
+      "contactCheckedIn": "{{name}} เช็กอินแล้ว",
+      "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
+      "messageFrom": "ข้อความจาก {{name}}",
+      "justNow": "เมื่อสักครู่",
+      "minutesAgo_one": "{{count}} นาทีที่แล้ว",
+      "minutesAgo_other": "{{count}} นาทีที่แล้ว",
+      "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgoDecimal": "{{value}} ชั่วโมงที่แล้ว",
+      "daysAgo_one": "{{count}} วันที่แล้ว",
+      "daysAgo_other": "{{count}} วันที่แล้ว",
+      "lastCheckinAgo": "เช็กอินล่าสุด {{timeAgo}}",
+      "lastCheckinLabel": "เช็กอินล่าสุด:"
+    },
     "wellnessPrompt": "วันนี้คุณรู้สึกอย่างไร?",
+    "context": {
+      "title": "สถานะวันนี้",
+      "home": "อยู่ที่บ้าน",
+      "trip": "กำลังเดินทาง",
+      "homeTab": "🌿 ประจำวัน",
+      "tripTab": "✈️ เดินทาง",
+      "statusTitle": "สถานะ",
+      "tripStatusPrompt": "เลือกสถานะการเดินทาง",
+      "homeStatuses": {
+        "chilling": "🛋️ พักสมอง",
+        "home": "🏠 อยู่ที่บ้าน",
+        "outside": "🚶 ออกไปข้างนอก",
+        "busy": "💼 ไม่ว่าง",
+        "relaxing": "☕ พักผ่อน"
+      },
+      "summaryHome": "เช็กอินตามปกติ",
+      "summaryTrip": "เพิ่มสถานะการเดินทาง",
+      "summaryWithStatus": "กำลังเดินทาง · {{status}}"
+    },
     "plusWellness": {
       "title": "ฟีเจอร์ Plus",
       "message": "อัปเกรดเป็น Plus เพื่อแชร์ความรู้สึกของคุณพร้อมการเช็กอิน"
@@ -50,6 +84,19 @@
         "พฤศจิกายน",
         "ธันวาคม"
       ]
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 ออกเดินทางแล้ว",
+        "boarding": "🛫 กำลังขึ้นเครื่อง / 🚆 ขับรถ",
+        "layover": "🛑 แวะพัก / ต่อเที่ยวบิน",
+        "landed": "🛬 มาถึงอย่างปลอดภัย",
+        "on_the_move": "🚕 กำลังเดินทาง",
+        "at_hotel": "🏨 ถึงโรงแรมแล้ว",
+        "on_trip": "🗺️ อยู่ระหว่างการเดินทาง",
+        "heading_home": "🏠 กำลังกลับบ้าน",
+        "trip_ended": "✅ ทริปสิ้นสุด — กลับบ้านปลอดภัย"
+      }
     },
     "errors": {
       "fetchLastCheckin": "ไม่สามารถดึงการเช็กอินล่าสุดได้",
@@ -90,7 +137,7 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "ส่งกำลังใจ 👍",
+      "sendResponse": "👍 ส่งกำลังใจ",
       "sent": "ส่งกำลังใจแล้ว ✓"
     },
     "checkinResponse": {
@@ -100,7 +147,7 @@
       "defaultMessage": "ส่งกำลังใจ 👍 ให้การเช็กอินของคุณ!"
     },
     "welfareButton": {
-      "send": "คุณโอเคไหม? 🍀",
+      "send": "🍀 คุณโอเคไหม?",
       "sent": "ส่งคำทักทายแล้ว ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "วันนี้มีความสุขมาก\n😊"
     },
     "todayCheckButton": {
-      "send": "วันนี้คุณเป็นอย่างไรบ้าง? 👋",
+      "send": "👋 วันนี้คุณเป็นอย่างไรบ้าง?",
       "sent": "ส่งคำทักทายแล้ว ✓"
     },
     "checkedInAt": "เช็กอินเมื่อ {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:"
     },
     "supportButton": {
-      "send": "ส่งกำลังใจ 💪",
+      "send": "💪 ส่งกำลังใจ",
       "sent": "ส่งแล้ว ✓"
     }
   },
@@ -374,6 +421,18 @@
     "information": "ข้อมูล",
     "language": "ภาษา",
     "theme": "ธีม",
+    "homeStyle": {
+      "title": "เลือกมุมมองหน้าหลัก",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "เรียบง่าย",
+        "description": "เช็กอินด้วยแท็บเดียว ไม่มีสิ่งรบกวน"
+      },
+      "enhanced": {
+        "title": "ขั้นสูง",
+        "description": "แชร์อารมณ์ สถานะการเดินทาง และตำแหน่ง"
+      }
+    },
     "notifications": {
       "title": "การแจ้งเตือน",
       "preferences": "การตั้งค่าการแจ้งเตือน",
@@ -407,6 +466,13 @@
     "finnish": "ฟินแลนด์",
     "chineseSimplified": "จีน (ตัวย่อ)",
     "chineseTraditional": "จีน (ตัวเต็ม)",
+    "tripMode": {
+      "title": "โหมดเช็คอิน",
+      "home": "บ้าน",
+      "trip": "การเดินทาง",
+      "homeDescription": "การเช็คอินประจำวันมาตรฐาน",
+      "tripDescription": "แชร์สถานะการเดินทางของคุณ"
+    },
     "resetWarning": "แน่ใจหรือไม่? ข้อมูลทั้งหมดของคุณจะถูกลบ",
     "logoutConfirm": "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?",
     "confirmReset": "รีเซ็ต",
@@ -483,7 +549,7 @@
       "create": "สร้างบัญชี",
       "creating": "กำลังสร้างบัญชี...",
       "success": {
-        "title": "สร้างบัญชีแล้ว 🎉",
+        "title": "🎉 สร้างบัญชีแล้ว",
         "message": "บัญชีของคุณพร้อมแล้ว ตอนนี้คุณสามารถเข้าสู่ระบบได้"
       },
       "verifyEmail": {

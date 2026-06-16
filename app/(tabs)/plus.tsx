@@ -92,7 +92,7 @@ export default function PlusScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BaseColors.background,
+    backgroundColor: '#F7F3EA',
   },
   closeButton: {
     width: 36,

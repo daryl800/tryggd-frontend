@@ -52,10 +52,57 @@
       "checkin": "Check-in non riuscito",
       "loadState": "Impossibile caricare lo stato"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} ha fatto il check-in",
+      "sentWave": "{{name}} ti ha salutato",
+      "messageFrom": "Messaggio da {{name}}",
+      "justNow": "Proprio ora",
+      "minutesAgo_one": "{{count}} minuto fa",
+      "minutesAgo_other": "{{count}} minuti fa",
+      "hoursAgo_one": "{{count}} ora fa",
+      "hoursAgo_other": "{{count}} ore fa",
+      "hoursAgoDecimal": "{{value}} ore fa",
+      "daysAgo_one": "{{count}} giorno fa",
+      "daysAgo_other": "{{count}} giorni fa",
+      "lastCheckinAgo": "Ultimo check-in {{timeAgo}}",
+      "lastCheckinLabel": "Ultimo check-in:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Contesto di oggi",
+      "home": "A casa",
+      "trip": "In viaggio",
+      "homeTab": "🌿 Quotidiano",
+      "tripTab": "✈️ Viaggio",
+      "statusTitle": "Stato",
+      "tripStatusPrompt": "Scegli uno stato di viaggio",
+      "homeStatuses": {
+        "chilling": "🛋️ Senza pensieri",
+        "home": "🏠 A casa",
+        "outside": "🚶 Fuori",
+        "busy": "💼 Occupato",
+        "relaxing": "☕ Mi rilasso"
+      },
+      "summaryHome": "Check-in normale",
+      "summaryTrip": "Aggiungi uno stato di viaggio",
+      "summaryWithStatus": "In viaggio · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Parto per il viaggio",
+        "boarding": "🛫 Imbarco / 🚆 In auto",
+        "layover": "🛑 Scalo / coincidenza",
+        "landed": "🛬 Arrivato in sicurezza",
+        "on_the_move": "🚕 In movimento",
+        "at_hotel": "🏨 Arrivato in hotel",
+        "on_trip": "🗺️ In viaggio",
+        "heading_home": "🏠 Tornando a casa",
+        "trip_ended": "✅ Viaggio concluso — a casa sano/a"
+      }
     }
   },
   "activity": {
@@ -90,7 +137,7 @@
       "other": "{{date, date, d MMMM yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Invia un like 👍",
+      "sendResponse": "👍 Invia un like",
       "sent": "Like inviato ✓"
     },
     "checkinResponse": {
@@ -100,7 +147,7 @@
       "defaultMessage": "mette 👍 al tuo check-in!"
     },
     "welfareButton": {
-      "send": "Stai bene? 🍀",
+      "send": "🍀 Stai bene?",
       "sent": "Saluto inviato ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Molto felice oggi\n😊"
     },
     "todayCheckButton": {
-      "send": "Come stai oggi? 👋",
+      "send": "👋 Come stai oggi?",
       "sent": "Saluto inviato ✓"
     },
     "checkedInAt": "Check-in alle {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Hai ricevuto {{count}} saluti oggi:"
     },
     "supportButton": {
-      "send": "Invia supporto 💪",
+      "send": "💪 Invia supporto",
       "sent": "Supporto inviato ✓"
     }
   },
@@ -374,6 +421,18 @@
     "information": "Informazioni",
     "language": "Lingua",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Scegli la vista home",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Semplice",
+        "description": "Check-in con un tocco, senza distrazioni."
+      },
+      "enhanced": {
+        "title": "Avanzata",
+        "description": "Condividi umore, stato del viaggio e posizione."
+      }
+    },
     "notifications": {
       "title": "Notifiche",
       "preferences": "Preferenze di notifica",
@@ -407,6 +466,13 @@
     "finnish": "Finlandese",
     "chineseSimplified": "Cinese (semplificato)",
     "chineseTraditional": "Cinese (tradizionale)",
+    "tripMode": {
+      "title": "Modalità check-in",
+      "home": "Standard",
+      "trip": "Viaggio",
+      "homeDescription": "Check-in giornaliero standard",
+      "tripDescription": "Condividi il tuo stato di viaggio"
+    },
     "resetWarning": "Sei sicuro? Tutti i tuoi dati saranno eliminati.",
     "logoutConfirm": "Vuoi davvero uscire?",
     "confirmReset": "Reimposta",
@@ -449,7 +515,7 @@
       "create": "Crea account",
       "creating": "Creazione account...",
       "success": {
-        "title": "Account creato 🎉",
+        "title": "🎉 Account creato",
         "message": "Il tuo account è pronto. Ora puoi accedere."
       },
       "verifyEmail": {

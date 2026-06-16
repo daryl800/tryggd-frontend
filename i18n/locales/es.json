@@ -52,10 +52,57 @@
       "checkin": "El check-in falló",
       "loadState": "No se pudo cargar el estado"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} ha hecho check-in",
+      "sentWave": "{{name}} te ha enviado un saludo",
+      "messageFrom": "Mensaje de {{name}}",
+      "justNow": "Ahora mismo",
+      "minutesAgo_one": "hace {{count}} minuto",
+      "minutesAgo_other": "hace {{count}} minutos",
+      "hoursAgo_one": "hace {{count}} hora",
+      "hoursAgo_other": "hace {{count}} horas",
+      "hoursAgoDecimal": "hace {{value}} horas",
+      "daysAgo_one": "hace {{count}} día",
+      "daysAgo_other": "hace {{count}} días",
+      "lastCheckinAgo": "Último check-in {{timeAgo}}",
+      "lastCheckinLabel": "Último check-in:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Contexto de hoy",
+      "home": "En casa",
+      "trip": "De viaje",
+      "homeTab": "🌿 Diario",
+      "tripTab": "✈️ Viaje",
+      "statusTitle": "Estado",
+      "tripStatusPrompt": "Elige un estado de viaje",
+      "homeStatuses": {
+        "chilling": "🛋️ En modo chill",
+        "home": "🏠 En casa",
+        "outside": "🚶 Fuera",
+        "busy": "💼 Ocupado",
+        "relaxing": "☕ Relajándome"
+      },
+      "summaryHome": "Check-in normal",
+      "summaryTrip": "Añadir un estado de viaje",
+      "summaryWithStatus": "De viaje · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Saliendo de viaje",
+        "boarding": "🛫 Embarcando / 🚆 Conduciendo",
+        "layover": "🛑 Escala / conexión",
+        "landed": "🛬 Llegando con seguridad",
+        "on_the_move": "🚕 En movimiento",
+        "at_hotel": "🏨 Llegué al hotel",
+        "on_trip": "🗺️ De viaje",
+        "heading_home": "🏠 Camino a casa",
+        "trip_ended": "✅ Viaje terminado — en casa sano/a"
+      }
     }
   },
   "activity": {
@@ -90,7 +137,7 @@
       "other": "{{date, date, d 'de' MMMM 'de' yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Enviar un me gusta 👍",
+      "sendResponse": "👍 Enviar un me gusta",
       "sent": "Me gusta enviado ✓"
     },
     "checkinResponse": {
@@ -100,7 +147,7 @@
       "defaultMessage": "le gusta 👍 tu check-in!"
     },
     "welfareButton": {
-      "send": "¿Estás bien? 🍀",
+      "send": "🍀 ¿Estás bien?",
       "sent": "Saludo enviado ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Muy feliz hoy\n😊"
     },
     "todayCheckButton": {
-      "send": "¿Cómo estás hoy? 👋",
+      "send": "👋 ¿Cómo estás hoy?",
       "sent": "Saludo enviado ✓"
     },
     "checkedInAt": "Registró entrada a las {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Recibiste {{count}} saludos hoy:"
     },
     "supportButton": {
-      "send": "Enviar apoyo 💪",
+      "send": "💪 Enviar apoyo",
       "sent": "Apoyo enviado ✓"
     }
   },
@@ -374,6 +421,18 @@
     "information": "Información",
     "language": "Idioma",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Elegir vista de inicio",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Simple",
+        "description": "Check-in con un toque, sin distracciones."
+      },
+      "enhanced": {
+        "title": "Mejorada",
+        "description": "Comparte tu estado de ánimo, viaje y ubicación."
+      }
+    },
     "notifications": {
       "title": "Notificaciones",
       "preferences": "Preferencias de notificación",
@@ -407,6 +466,13 @@
     "finnish": "Finés",
     "chineseSimplified": "Chino (simplificado)",
     "chineseTraditional": "Chino (tradicional)",
+    "tripMode": {
+      "title": "Modo de registro",
+      "home": "Normal",
+      "trip": "Viaje",
+      "homeDescription": "Registro diario estándar",
+      "tripDescription": "Comparte tu estado de viaje"
+    },
     "resetWarning": "¿Estás seguro? Todos tus datos serán eliminados.",
     "logoutConfirm": "¿Seguro que quieres cerrar sesión?",
     "confirmReset": "Restablecer",
@@ -449,7 +515,7 @@
       "create": "Crear cuenta",
       "creating": "Creando cuenta...",
       "success": {
-        "title": "Cuenta creada 🎉",
+        "title": "🎉 Cuenta creada",
         "message": "Tu cuenta está lista. Ahora puedes iniciar sesión."
       },
       "verifyEmail": {

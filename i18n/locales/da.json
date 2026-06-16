@@ -52,10 +52,57 @@
       "checkin": "Indtjekning mislykkedes",
       "loadState": "Kunne ikke indlæse tilstand"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} har tjekket ind",
+      "sentWave": "{{name}} har sendt dig et vink",
+      "messageFrom": "Besked fra {{name}}",
+      "justNow": "Lige nu",
+      "minutesAgo_one": "{{count}} minut siden",
+      "minutesAgo_other": "{{count}} minutter siden",
+      "hoursAgo_one": "{{count}} time siden",
+      "hoursAgo_other": "{{count}} timer siden",
+      "hoursAgoDecimal": "{{value}} timer siden",
+      "daysAgo_one": "{{count}} dag siden",
+      "daysAgo_other": "{{count}} dage siden",
+      "lastCheckinAgo": "Sidste indtjekning {{timeAgo}}",
+      "lastCheckinLabel": "Sidste indtjekning:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Dagens kontekst",
+      "home": "Hjemme",
+      "trip": "På rejse",
+      "homeTab": "🌿 Daglig",
+      "tripTab": "✈️ Rejse",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Vælg en rejsestatus",
+      "homeStatuses": {
+        "chilling": "🛋️ Chiller",
+        "home": "🏠 Hjemme",
+        "outside": "🚶 Ude",
+        "busy": "💼 Optaget",
+        "relaxing": "☕ Slapper af"
+      },
+      "summaryHome": "Normal indtjekning",
+      "summaryTrip": "Tilføj en rejsestatus",
+      "summaryWithStatus": "På rejse · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Afsted på rejsen",
+        "boarding": "🛫 Boarding / 🚆 Kører",
+        "layover": "🛑 Mellemlanding / forbindelse",
+        "landed": "🛬 Ankommet sikkert",
+        "on_the_move": "🚕 På farten",
+        "at_hotel": "🏨 Ankommet til hotellet",
+        "on_trip": "🗺️ På rejsen",
+        "heading_home": "🏠 På vej hjem",
+        "trip_ended": "✅ Rejsen slut — hjemme sikkert"
+      }
     }
   },
   "activity": {
@@ -100,7 +147,7 @@
       "defaultMessage": "synes godt om 👍 din indtjekning!"
     },
     "welfareButton": {
-      "send": "Har du det godt? 🍀",
+      "send": "🍀 Har du det godt?",
       "sent": "Hilsen sendt ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Meget glad i dag\n😊"
     },
     "todayCheckButton": {
-      "send": "Hvordan har du det i dag? 👋",
+      "send": "👋 Hvordan har du det i dag?",
       "sent": "Hilsen sendt ✓"
     },
     "checkedInAt": "Tjekkede ind @ {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Du modtog {{count}} hilsener i dag:"
     },
     "supportButton": {
-      "send": "Send støtte 💪",
+      "send": "💪 Send støtte",
       "sent": "Støtte sendt ✓"
     }
   },
@@ -375,6 +422,18 @@
     "information": "Information",
     "language": "Sprog",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Vælg hjemmevisning",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Et-tryk-tjek-in uden distraktioner."
+      },
+      "enhanced": {
+        "title": "Udvidet",
+        "description": "Del stemning, rejsestatus og placering."
+      }
+    },
     "notifications": {
       "title": "Notifikationer",
       "preferences": "Notifikationsindstillinger",
@@ -412,7 +471,14 @@
     "cancel": "Annuller",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Indtrædningstilstand",
+      "home": "Hjem",
+      "trip": "Rejse",
+      "homeDescription": "Standard daglig indtjekning",
+      "tripDescription": "Del din rejsestatus"
+    }
   },
   "common": {
     "ok": "OK",
@@ -452,7 +518,7 @@
       "create": "Opret konto",
       "creating": "Opretter konto...",
       "success": {
-        "title": "Konto oprettet 🎉",
+        "title": "🎉 Konto oprettet",
         "message": "Din konto er klar. Du kan nu logge ind."
       },
       "verifyEmail": {

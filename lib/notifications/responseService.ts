@@ -268,8 +268,8 @@ class ResponseNotificationService {
                     sender_user_id: senderUserId,
                     type: 'checkin_response',
                     body: responseKind === 'support'
-                        ? `${profile?.display_name || 'Someone'} sent you support 💪`
-                        : `${profile?.display_name || 'Someone'} sent you a like 👍`,
+                        ? `💪 ${profile?.display_name || 'Someone'} sent you support`
+                        : `👍 ${profile?.display_name || 'Someone'} sent you a like`,
                     created_at: new Date().toISOString(),
                     data: {
                         senderName: profile?.display_name || 'Someone',

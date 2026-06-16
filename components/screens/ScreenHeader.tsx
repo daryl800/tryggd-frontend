@@ -125,14 +125,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     greetingText: {
-        fontSize: iosFontSize(16),
+        fontSize: iosFontSize(18),
         color: BaseColors.neutral[500],
         fontWeight: '500',
         textTransform: 'capitalize',
         marginLeft: 8,
     },
     titleLarge: {
-        fontSize: iosFontSize(32),
+        fontSize: iosFontSize(34),
         fontWeight: '800',
         color: BaseColors.text.dark,
         // Platform-specific optimizations

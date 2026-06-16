@@ -14,7 +14,49 @@
     "youCheckedInTodayAt": "您今天已於 {{time}} 完成簽到",
     "checkIn": "簽到",
     "pressMeToCheckIn": "點擊此處簽到",
+    "simple": {
+      "cta": "我很好",
+      "tapHint": "點擊簽到",
+      "checkedIn": "我很好",
+      "statusReady": "今天已準備好",
+      "statusChecked": "今天已簽到",
+      "statusQuiet": "一切正常"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} 已簽到",
+      "sentWave": "{{name}} 向你揮手",
+      "messageFrom": "來自 {{name}} 的訊息",
+      "justNow": "剛剛",
+      "minutesAgo_one": "{{count}} 分鐘 前",
+      "minutesAgo_other": "{{count}} 分鐘 前",
+      "hoursAgo_one": "{{count}} 小時 前",
+      "hoursAgo_other": "{{count}} 小時 前",
+      "hoursAgoDecimal": "{{value}} 小時 前",
+      "daysAgo_one": "{{count}} 天 前",
+      "daysAgo_other": "{{count}} 天 前",
+      "lastCheckinAgo": "你上次簽到：{{timeAgo}}",
+      "lastCheckinLabel": "你上次簽到："
+    },
     "wellnessPrompt": "您今天感覺如何？",
+    "context": {
+      "title": "今天的狀態",
+      "home": "在家",
+      "trip": "旅行中",
+      "homeTab": "🌿 日常",
+      "tripTab": "✈️ 出行",
+      "statusTitle": "狀態",
+      "tripStatusPrompt": "選擇出行狀態",
+      "homeStatuses": {
+        "chilling": "🛋️ 悠閒中",
+        "home": "🏠 在家",
+        "outside": "🚶 外出中",
+        "busy": "💼 忙碌中",
+        "relaxing": "☕ 放鬆中"
+      },
+      "summaryHome": "普通簽到",
+      "summaryTrip": "新增旅行狀態",
+      "summaryWithStatus": "旅行中 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus 功能",
       "message": "升級到 Plus，讓您在簽到時分享今天的感受。"
@@ -26,7 +68,7 @@
     "contacts_one": "{{count}} 個聯絡人",
     "contacts_other": "{{count}} 個聯絡人",
     "history": "歷史記錄",
-    "streak": "連續天數",
+    "streak": "連續簽到",
     "days_one": "{{count}} 天",
     "days_other": "{{count}} 天",
     "dateFormats": {
@@ -87,6 +129,19 @@
         "31": "三十一号"
       }
     },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 出發了",
+        "boarding": "🛫 登機／🚆啟程",
+        "layover": "🛑 中途停留／轉機",
+        "landed": "🛬 已安全抵達",
+        "on_the_move": "🚕 在移動中",
+        "at_hotel": "🏨 已抵達酒店",
+        "on_trip": "🗺️ 旅程中",
+        "heading_home": "🏠 正在回家途中",
+        "trip_ended": "✅ 旅程結束——已安全到家"
+      }
+    },
     "errors": {
       "fetchLastCheckin": "無法取得最後簽到記錄",
       "noUser": "找不到使用者",
@@ -126,7 +181,7 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "點讚 👍",
+      "sendResponse": "👍 點讚",
       "sent": "已點讚 ✓"
     },
     "checkinResponse": {
@@ -136,7 +191,7 @@
       "defaultMessage": "為您的簽到按讚 👍！"
     },
     "welfareButton": {
-      "send": "你最近還好嗎？🍀",
+      "send": "🍀 你最近還好嗎？",
       "sent": "已發送問候 ✓"
     },
     "sharedLocation": {
@@ -160,7 +215,7 @@
       "great": "今天很開心\n😊"
     },
     "todayCheckButton": {
-      "send": "你今天怎麼樣？👋",
+      "send": "👋 你今天怎麼樣？",
       "sent": "已發送問候 ✓"
     },
     "checkedInAt": "簽到 @ {{time}} {{date}}",
@@ -169,7 +224,7 @@
       "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
     },
     "supportButton": {
-      "send": "發送支持 💪",
+      "send": "💪 發送支持",
       "sent": "已發送支持 ✓"
     }
   },
@@ -410,6 +465,18 @@
     "information": "資訊",
     "language": "語言",
     "theme": "主題",
+    "homeStyle": {
+      "title": "選擇主頁顯示",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "簡易",
+        "description": "一鍵簽到，沒有多餘干擾。"
+      },
+      "enhanced": {
+        "title": "加強",
+        "description": "分享心情、出行狀態和位置。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "preferences": "通知偏好",
@@ -443,6 +510,13 @@
     "finnish": "芬蘭語",
     "chineseSimplified": "簡體中文",
     "chineseTraditional": "繁體中文",
+    "tripMode": {
+      "title": "簽到模式",
+      "home": "日常",
+      "trip": "旅程",
+      "homeDescription": "標準每日簽到",
+      "tripDescription": "與聯絡人分享旅行狀態"
+    },
     "resetWarning": "確定嗎？所有資料將被刪除。",
     "logoutConfirm": "確定要登出嗎？",
     "confirmReset": "重置",
@@ -519,7 +593,7 @@
       "create": "建立帳戶",
       "creating": "建立帳戶中...",
       "success": {
-        "title": "帳戶建立成功 🎉",
+        "title": "🎉 帳戶建立成功",
         "message": "您的帳戶已準備好。現在可以登入了。"
       },
       "verifyEmail": {

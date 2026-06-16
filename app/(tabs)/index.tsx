@@ -2,6 +2,13 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
+import {
+  DEFAULT_HOME_STYLE,
+  getHomeLayout,
+  HOME_STYLE_STORAGE_KEY,
+  isHomeStyle,
+  type HomeStyle,
+} from '@/constants/homeLayout';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
@@ -9,6 +16,7 @@ import { getOptionalCheckinLocation } from '@/lib/location/checkinLocation';
 import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
+import { isLocalAvatarUri } from '@/lib/profile/avatarStorage';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
@@ -18,16 +26,21 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Animated,
   AppState,
   Dimensions,
   GestureResponderEvent,
+  Image,
   LayoutChangeEvent,
+  Linking,
   PixelRatio,
   Platform,
+  ScrollView as RNScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -37,16 +50,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const CIRCLE_SIZE = Math.min(SCREEN_WIDTH * 0.7, 250);
 const STROKE_WIDTH = 40;
-const MAX_STROKE = STROKE_WIDTH + 3;
-const CIRCLE_RADIUS = (CIRCLE_SIZE - MAX_STROKE) / 2;
-const INNER_BUTTON_SIZE = CIRCLE_SIZE - STROKE_WIDTH;
-const INNER_BUTTON_OFFSET = STROKE_WIDTH / 2;
 
 const STORAGE_KEY = '@checkin_state';
+const HOME_PRESENCE_STORAGE_KEY = '@settings_home_presence';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const WELLNESS_MIN = -2;
@@ -54,6 +63,20 @@ const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
+const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
+type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing';
+
+type HomeStatusNotification = {
+  id: string;
+  sender_user_id: string | null;
+  type: string;
+  body: string | null;
+  title: string | null;
+  data: any;
+  created_at: string;
+  senderName: string;
+  senderAvatarUrl: string | null;
+};
 
 const clampWellnessValue = (value: number) =>
   Math.max(WELLNESS_MIN, Math.min(WELLNESS_MAX, value));
@@ -225,11 +248,22 @@ const getChineseFontFamily = (language?: string) => {
   return undefined;
 };
 
+type WellnessOption = { value: number; iconName: 'heart' | 'heart-sharp' };
 type WellnessSliderProps = {
   value: number;
   onChange: (value: number) => void;
+  tooltipText: string;
   disabled?: boolean;
   onLockedPress?: () => void;
+};
+
+type WellnessButtonPickerProps = {
+  value: number;
+  onChange: (value: number) => void;
+  title: string;
+  options: readonly WellnessOption[];
+  tooltipLabels: Record<number, string>;
+  compactness?: 'regular' | 'compact' | 'tight';
 };
 
 const getWellnessValueFromPosition = (positionX: number, width: number) => {
@@ -305,13 +339,29 @@ const getWellnessMessageKey = (score: number) => {
   return 'activity.wellness.great';
 };
 
-const getWellnessHandleEmoji = (score: number) => {
+const getWellnessStatusMeta = (score?: number | null) => {
+  if (typeof score !== 'number') return null;
   const clampedScore = clampWellnessValue(score);
-  if (clampedScore <= -2) return '😔';
-  if (clampedScore === -1) return '😕';
-  if (clampedScore === 0) return '🙂';
-  if (clampedScore === 1) return '☺️';
-  return '😊';
+  if (clampedScore <= -2) return { color: '#7A5C4D', backgroundColor: '#F3F3F3', borderColor: '#D0D0D0' };
+  if (clampedScore === -1) return { color: '#6B8DA4', backgroundColor: '#E4EFF6', borderColor: '#A8C4D6' };
+  if (clampedScore === 0) return { color: BaseColors.primary, backgroundColor: BaseColors.primaryLight, borderColor: BaseColors.primaryBorder };
+  if (clampedScore === 1) return { color: '#AFC04A', backgroundColor: '#F4F7E0', borderColor: '#CFDA8A' };
+  return { color: '#FFD700', backgroundColor: '#FFF8DC', borderColor: '#E8C64A' };
+};
+
+const TRIP_STATUS_EMOJI_PATTERN = /^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u;
+
+const parseNotificationData = (value: unknown) => {
+  if (!value) return {};
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return {};
+    }
+  }
+
+  return typeof value === 'object' ? value as Record<string, any> : {};
 };
 
 const getLocalDayBounds = (date: Date) => {
@@ -327,25 +377,58 @@ const getLocalDayBounds = (date: Date) => {
   };
 };
 
-const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: WellnessSliderProps) => {
+const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
+  { value: -1, iconName: 'heart-sharp' },
+  { value: 0, iconName: 'heart' },
+  { value: 1, iconName: 'heart-sharp' },
+] as const;
+
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['chilling', 'home', 'outside', 'busy', 'relaxing'] as const;
+
+const isHomePresence = (value: unknown): value is HomePresence =>
+  typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
+
+const WellnessSlider = ({ value, onChange, tooltipText, disabled = false, onLockedPress }: WellnessSliderProps) => {
   const [trackWidth, setTrackWidth] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
   const lastValueRef = useRef(value);
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     lastValueRef.current = value;
   }, [value]);
 
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const revealTooltip = useCallback(() => {
+    setShowTooltip(true);
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      tooltipTimeoutRef.current = null;
+    }, 3000);
+  }, []);
+
   const updateValueFromEvent = useCallback(
     (event: GestureResponderEvent) => {
       const nextValue = getWellnessValueFromPosition(event.nativeEvent.locationX, trackWidth);
 
+      revealTooltip();
       if (nextValue === lastValueRef.current) return;
 
       lastValueRef.current = nextValue;
       onChange(nextValue);
       void Haptics.selectionAsync();
     },
-    [onChange, trackWidth]
+    [onChange, revealTooltip, trackWidth]
   );
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
@@ -354,9 +437,11 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
 
   const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
   const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
-  const handleEmoji = getWellnessHandleEmoji(value);
-  const edgeLowColor = disabled ? BaseColors.neutral[300] : BaseColors.neutral[400];
-  const edgeHighColor = disabled ? BaseColors.neutral[300] : BaseColors.primary;
+  const handleHeartColor = getWellnessHeartColor(value);
+  const sliderTooltipWidth = 154;
+  const sliderTooltipLeft = trackWidth > 0
+    ? Math.max(0, Math.min(trackWidth - sliderTooltipWidth, handleLeft - sliderTooltipWidth / 2))
+    : 0;
 
   return (
     <TouchableOpacity
@@ -370,14 +455,17 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
     >
       <View style={styles.wellnessSliderRow}>
         <TouchableOpacity
-          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MIN)}
+          onPress={disabled ? onLockedPress : () => {
+            onChange(WELLNESS_MIN);
+            revealTooltip();
+          }}
           activeOpacity={0.7}
           style={styles.wellnessEdgeButton}
         >
           <Ionicons
-            name="sad-outline"
-            size={24}
-            color={edgeLowColor}
+            name="heart-sharp"
+            size={20}
+            color={getWellnessHeartColor(WELLNESS_MIN)}
             style={styles.wellnessEdgeIcon}
           />
         </TouchableOpacity>
@@ -390,6 +478,20 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
           onResponderMove={disabled ? undefined : updateValueFromEvent}
         >
           <View style={[styles.wellnessTrack, disabled && styles.wellnessTrackDisabled]} />
+          {showTooltip ? (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.wellnessSliderTooltip,
+                { width: sliderTooltipWidth, left: sliderTooltipLeft },
+              ]}
+            >
+              <Text style={styles.wellnessSliderTooltipText}>
+                {tooltipText}
+              </Text>
+              <View style={styles.wellnessSliderTooltipArrow} />
+            </View>
+          ) : null}
           <View style={styles.wellnessMarkersRow} pointerEvents="none">
             {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
               <View
@@ -411,18 +513,25 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
               trackWidth > 0 && { left: handleLeft - 16 },
             ]}
           >
-            <Text style={styles.wellnessThumbEmoji}>{handleEmoji}</Text>
+            <Ionicons
+              name={value >= 0 ? 'heart' : 'heart-sharp'}
+              size={20}
+              color={handleHeartColor}
+            />
           </View>
         </View>
         <TouchableOpacity
-          onPress={disabled ? onLockedPress : () => onChange(WELLNESS_MAX)}
+          onPress={disabled ? onLockedPress : () => {
+            onChange(WELLNESS_MAX);
+            revealTooltip();
+          }}
           activeOpacity={0.7}
           style={styles.wellnessEdgeButton}
         >
           <Ionicons
-            name="happy-outline"
-            size={24}
-            color={edgeHighColor}
+            name="heart-sharp"
+            size={20}
+            color={getWellnessHeartColor(WELLNESS_MAX)}
             style={styles.wellnessEdgeIcon}
           />
         </TouchableOpacity>
@@ -436,10 +545,130 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
   );
 };
 
+const WellnessButtonPicker = ({
+  value,
+  onChange,
+  title,
+  options,
+  tooltipLabels,
+  compactness = 'regular',
+}: WellnessButtonPickerProps) => {
+  const isCompact = compactness !== 'regular';
+  const isTight = compactness === 'tight';
+  const isDense = options.length > 3;
+  const [activeTooltipValue, setActiveTooltipValue] = useState<number | null>(null);
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const baseOptionWidth = isTight ? 78 : isCompact ? 84 : 92;
+  const optionWidth = isDense ? Math.round(baseOptionWidth * 0.62) : baseOptionWidth;
+  const optionGap = isDense ? (isCompact ? 6 : 8) : isCompact ? 10 : 16;
+  const iconSize = isDense ? (isCompact ? 22 : 24) : isCompact ? 28 : 32;
+  const tooltipWidth = activeTooltipValue === 0
+    ? isCompact ? 120 : 130
+    : isCompact ? 142 : 154;
+
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const showHeartTooltip = useCallback((nextValue: number) => {
+    setActiveTooltipValue(nextValue);
+
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setActiveTooltipValue(null);
+      tooltipTimeoutRef.current = null;
+    }, 3000);
+  }, []);
+
+  return (
+    <View style={[
+      styles.simpleWellnessGroup,
+      isCompact && styles.simpleWellnessGroupCompact,
+      isTight && styles.simpleWellnessGroupTight,
+    ]}>
+      <View style={[
+        styles.simpleWellnessCard,
+        isCompact && styles.simpleWellnessCardCompact,
+        isTight && styles.simpleWellnessCardTight,
+      ]}>
+        <Text style={[
+          styles.simpleWellnessTitle,
+          isCompact && styles.simpleWellnessTitleCompact,
+          isTight && styles.simpleWellnessTitleTight,
+        ]}>
+          {title}
+        </Text>
+        <View style={[
+          styles.simpleWellnessOptions,
+          isCompact && styles.simpleWellnessOptionsCompact,
+          { gap: optionGap },
+        ]}>
+          {options.map((option) => {
+            const selected = clampWellnessValue(value) === option.value;
+            const isActiveTooltip = activeTooltipValue === option.value;
+            const tw = tooltipWidth;
+            const ow = optionWidth;
+            return (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.simpleWellnessOption,
+                  option.value < 0 && styles.simpleWellnessOptionLow,
+                  option.value === 0 && styles.simpleWellnessOptionNeutral,
+                  option.value > 0 && styles.simpleWellnessOptionHigh,
+                  isCompact && styles.simpleWellnessOptionCompact,
+                  isTight && styles.simpleWellnessOptionTight,
+                  selected && styles.simpleWellnessOptionSelected,
+                  { width: ow },
+                ]}
+                onPress={() => {
+                  onChange(option.value);
+                  showHeartTooltip(option.value);
+                  void Haptics.selectionAsync();
+                }}
+                activeOpacity={0.78}
+              >
+                {isActiveTooltip && (
+                  <View style={[
+                    styles.simpleWellnessTooltip,
+                    isCompact && styles.simpleWellnessTooltipCompact,
+                    { width: tw, left: ow / 2 - tw / 2 },
+                  ]}>
+                    <Text style={[
+                      styles.simpleWellnessTooltipText,
+                      isCompact && styles.simpleWellnessTooltipTextCompact,
+                    ]}>
+                      {tooltipLabels[option.value]}
+                    </Text>
+                    <View style={styles.simpleWellnessTooltipArrow} />
+                  </View>
+                )}
+                <Ionicons
+                  name={option.iconName}
+                  size={iconSize}
+                  color={getWellnessHeartColor(option.value)}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    </View>
+  );
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { user, profile, loading, capabilities } = useAuth();
+  const windowDimensions = useWindowDimensions();
 
   // State
   const [now, setNow] = useState(new Date());
@@ -456,6 +685,19 @@ export default function HomeScreen() {
   const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
+  const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
+  const [tripStatus, setTripStatus] = useState<string | null>(null);
+  const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
+  const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
+  const [latestStatusNotification, setLatestStatusNotification] =
+    useState<HomeStatusNotification | null>(null);
+  const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
+  const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
+  const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
+
+  const latestStatusChannelRef = useRef<any>(null);
+  const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -527,6 +769,127 @@ export default function HomeScreen() {
 
     loadState();
   }, [t]);
+
+  // Load home layout preference from Supabase / AsyncStorage
+  const loadHomeStyle = useCallback(async () => {
+    try {
+      const saved = await AsyncStorage.getItem(HOME_STYLE_STORAGE_KEY);
+      if (isHomeStyle(saved)) {
+        setHomeStyle(saved);
+      }
+
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('user_settings')
+        .select('home_style')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (isHomeStyle(data?.home_style)) {
+        setHomeStyle(data.home_style);
+        await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, data.home_style);
+      } else if (isHomeStyle(saved)) {
+        await supabase
+          .from('user_settings')
+          .upsert(
+            { user_id: user.id, home_style: saved, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' }
+          );
+      }
+    } catch (error) {
+      console.warn('Failed to load home style:', error);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    loadHomeStyle();
+  }, [loadHomeStyle]);
+
+  const homeLayout = getHomeLayout(capabilities.isPlus, homeStyle);
+  const canUseEnhancedHome = homeLayout === 'plus-enhanced';
+  const canUseWellnessHome = homeLayout !== 'free';
+
+  // Load checkin mode from Supabase / AsyncStorage
+  useEffect(() => {
+    const loadCheckinMode = async () => {
+      try {
+        if (!canUseEnhancedHome) {
+          setCheckinMode('home');
+          setTripStatus(null);
+          return;
+        }
+        const saved = await AsyncStorage.getItem('@settings_checkin_mode');
+        if (saved === 'home' || saved === 'trip') setCheckinMode(saved);
+        if (!user) return;
+        const { data } = await supabase
+          .from('user_settings')
+          .select('checkin_mode')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip') {
+          setCheckinMode(data.checkin_mode as 'home' | 'trip');
+          await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
+        }
+        // Also load last trip_status / home_presence from users_latest_checkin
+        const { data: checkinData } = await supabase
+          .from('users_latest_checkin')
+          .select('trip_status, home_presence')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (checkinData?.trip_status) {
+          setTripStatus(checkinData.trip_status);
+        }
+        if (isHomePresence(checkinData?.home_presence)) {
+          setHomePresence(checkinData.home_presence);
+          await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, checkinData.home_presence);
+        }
+      } catch (_) {}
+    };
+    loadCheckinMode();
+  }, [canUseEnhancedHome, user]);
+
+  useEffect(() => {
+    const loadHomePresence = async () => {
+      try {
+        if (!canUseEnhancedHome) {
+          setHomePresence('chilling');
+          return;
+        }
+
+        const saved = await AsyncStorage.getItem(HOME_PRESENCE_STORAGE_KEY);
+        if (isHomePresence(saved)) {
+          setHomePresence(saved);
+        }
+      } catch {}
+    };
+
+    loadHomePresence();
+  }, [canUseEnhancedHome]);
+
+  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip') => {
+    if (mode === checkinMode) return;
+    void Haptics.selectionAsync();
+    setCheckinMode(mode);
+    if (mode === 'home') setTripStatus(null);
+    await AsyncStorage.setItem('@settings_checkin_mode', mode);
+    if (user) {
+      await supabase
+        .from('user_settings')
+        .upsert({
+          user_id: user.id,
+          checkin_mode: mode,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+    }
+  }, [checkinMode, user]);
+
+  const handleHomePresenceChange = useCallback(async (value: HomePresence) => {
+    if (value === homePresence) return;
+    void Haptics.selectionAsync();
+    setHomePresence(value);
+    await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, value);
+  }, [homePresence]);
 
   // Fetch contacts count
   const fetchContactsCount = useCallback(async () => {
@@ -765,7 +1128,8 @@ export default function HomeScreen() {
       console.log('📱 Home screen focused - fetching fresh data');
       fetchLastCheckin();
       fetchContactsCount();
-    }, [fetchLastCheckin, fetchContactsCount])
+      loadHomeStyle();
+    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle])
   );
 
   const triggerCheckInAnimation = () => {
@@ -799,9 +1163,108 @@ export default function HomeScreen() {
     ]).start();
   };
 
-  const handleWellnessUpgradePress = useCallback(() => {
-    router.push('/(tabs)/plus');
-  }, [router]);
+  const enrichHomeStatusNotification = useCallback(async (notification: any): Promise<HomeStatusNotification> => {
+    const parsedData = parseNotificationData(notification.data);
+    let senderName =
+      parsedData.contactDisplayName ||
+      parsedData.senderName ||
+      notification.title ||
+      'Someone';
+    let senderAvatarUrl: string | null = null;
+
+    if (notification.sender_user_id) {
+      const { data: profileRows } = await supabase.rpc('get_contact_usernames', {
+        contact_ids: [notification.sender_user_id],
+      });
+      const profileData = profileRows?.[0];
+
+      senderName =
+        profileData?.display_name ||
+        senderName;
+      senderAvatarUrl = profileData?.avatar_url || null;
+    }
+
+    return {
+      id: notification.id,
+      sender_user_id: notification.sender_user_id || null,
+      type: notification.type,
+      body: notification.body || null,
+      title: notification.title || null,
+      data: parsedData,
+      created_at: notification.created_at,
+      senderName,
+      senderAvatarUrl,
+    };
+  }, []);
+
+  const fetchLatestStatusNotification = useCallback(async () => {
+    if (!user) {
+      setLatestStatusNotification(null);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching latest home status notification:', error);
+      return;
+    }
+
+    setLatestStatusNotification(data ? await enrichHomeStatusNotification(data) : null);
+  }, [enrichHomeStatusNotification, user]);
+
+  useEffect(() => {
+    void fetchLatestStatusNotification();
+  }, [fetchLatestStatusNotification]);
+
+  useEffect(() => {
+    setLatestStatusAvatarLoadFailed(false);
+  }, [latestStatusNotification?.senderAvatarUrl]);
+
+  useEffect(() => {
+    if (latestStatusChannelRef.current) {
+      supabase.removeChannel(latestStatusChannelRef.current);
+      latestStatusChannelRef.current = null;
+    }
+
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`home-status-notifications:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          if (!HOME_STATUS_NOTIFICATION_TYPES.includes(payload.new.type as any)) return;
+
+          enrichHomeStatusNotification(payload.new)
+            .then(setLatestStatusNotification)
+            .catch((error) => {
+              console.error('Error enriching realtime home status notification:', error);
+            });
+        }
+      )
+      .subscribe();
+
+    latestStatusChannelRef.current = channel;
+
+    return () => {
+      supabase.removeChannel(channel);
+      latestStatusChannelRef.current = null;
+    };
+  }, [enrichHomeStatusNotification, user]);
 
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
@@ -938,7 +1401,7 @@ export default function HomeScreen() {
               p_checkin_timezone: timeZone,
               p_local_day_start_utc: startIso,
               p_local_day_end_utc: endIso,
-              p_wellness_score: capabilities.canUseWellnessSlider ? wellnessScore : null,
+              p_wellness_score: canUseWellnessHome ? wellnessScore : null,
               p_location_latitude: locationPayload?.location_latitude ?? null,
               p_location_longitude: locationPayload?.location_longitude ?? null,
               p_location_accuracy_meters: locationPayload?.location_accuracy_meters ?? null,
@@ -972,7 +1435,7 @@ export default function HomeScreen() {
             // Update with real data
             setLastCheckinUtc(checkinRow.checked_in_at_utc);
             setLastCheckinId(checkinRow.id);
-            setSubmittedWellnessScore(capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT);
+            setSubmittedWellnessScore(canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT);
 
             await AsyncStorage.setItem(
               STORAGE_KEY,
@@ -985,6 +1448,16 @@ export default function HomeScreen() {
 
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
+
+            // Keep trip status and home presence aligned with the active home layout/mode so
+            // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
+            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripStatus : null;
+            const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
+            supabase
+              .from('users_latest_checkin')
+              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence })
+              .eq('user_id', user.id)
+              .then(() => {});
           })
       ]).catch(err => {
         // If something fails, revert the optimistic update
@@ -996,7 +1469,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [capabilities.canShareLocation, capabilities.canUseWellnessSlider, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
+  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore, homePresence]);
 
 
   const startOfDay = new Date();
@@ -1022,40 +1495,188 @@ export default function HomeScreen() {
     );
   }
 
+  const TRIP_STATUS_KEYS = [
+    'leaving', 'boarding', 'layover', 'landed', 'on_the_move', 'at_hotel', 'on_trip', 'heading_home', 'trip_ended',
+  ] as const;
+
   const greetingInfo = getGreetingInfo(now, t);
-  const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus;
-  const showWellnessModule = capabilities.isPlus || showLockedPlusWellness;
-  const displayWellnessScore = capabilities.canUseWellnessSlider ? wellnessScore : WELLNESS_DEFAULT;
-  const heartColor = capabilities.canUseWellnessSlider ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
-  const checkedInMessage = capabilities.canUseWellnessSlider
+  const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus && homeLayout !== 'free';
+  const showWellnessModule = canUseWellnessHome || showLockedPlusWellness;
+  const displayWellnessScore = canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT;
+  const heartColor = canUseWellnessHome ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
+  const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
+    ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
+    : null;
+  const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
+  const wellnessMessage = canUseWellnessHome
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
-  const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
+  const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
+  const checkedInMessage = activeTripStatusLabel
+    ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
+    ?? wellnessMessage;
+  const [checkedInMsgTextRaw, checkedInMsgEmoji] = checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
-    : [checkedInMessage, ''] as [string, string];
+    : [checkedInMessage, wellnessEmoji] as [string, string];
+  const checkedInMsgText = checkedInMsgTextRaw.replace(/\s*[/／]\s*/g, '\n');
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
-    checkedInToday && capabilities.canUseWellnessSlider ? BaseColors.surface : BaseColors.surface;
+    checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
+  const simpleDateTimeText = `${formatDateWithTranslation(now, t, i18n.language)} · ${formatTime24h(now, i18n.language)}`;
+  const isPlusSimpleHome = homeLayout === 'plus-simple';
+  const showDebugResetCheckin = __DEV__;
+  const currentFontScale = windowDimensions.fontScale || fontScale;
+  const currentScreenWidth = windowDimensions.width || SCREEN_WIDTH;
+  const currentScreenHeight = windowDimensions.height || SCREEN_HEIGHT;
+  const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> =
+    currentScreenHeight < 700 || currentFontScale >= 1.2
+      ? 'tight'
+      : currentScreenHeight < 780 || currentFontScale >= 1.1
+        ? 'compact'
+        : 'regular';
+  const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
+  const isTightSimpleHome = simpleHomeCompactness === 'tight';
+  const circleSize = Math.min(
+    currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
+    isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250,
+  );
+  const strokeWidth = isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH;
+  const maxStroke = strokeWidth + 3;
+  const circleRadius = (circleSize - maxStroke) / 2;
+  const innerButtonSize = circleSize - strokeWidth;
+  const innerButtonOffset = strokeWidth / 2;
+  const formatHomeStatusAgo = (createdAt?: string | null) => {
+    if (!createdAt) return '';
+
+    const diffSeconds = Math.max(0, Math.floor((now.getTime() - new Date(createdAt).getTime()) / 1000));
+    if (diffSeconds < 60) return t('home.status.justNow');
+
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    if (diffMinutes < 60) return t('home.status.minutesAgo', { count: diffMinutes });
+
+    const preciseHours = diffMinutes / 60;
+    if (preciseHours < 24) {
+      const roundedHalfHour = Math.round(preciseHours * 2) / 2;
+      if (Number.isInteger(roundedHalfHour)) {
+        return t('home.status.hoursAgo', { count: roundedHalfHour });
+      }
+
+      return t('home.status.hoursAgoDecimal', { value: roundedHalfHour.toFixed(1) });
+    }
+
+    const diffDays = Math.floor(preciseHours / 24);
+    return t('home.status.daysAgo', { count: diffDays });
+  };
+  const simpleCheckinSummary = checkedInToday && lastCheckinUtc
+    ? null
+    : t('home.dontForget');
+  const simpleCheckinLabel = checkedInToday && lastCheckinUtc
+    ? t('home.status.lastCheckinLabel' as any) as string
+    : null;
+  const simpleCheckinTimeAgo = checkedInToday && lastCheckinUtc
+    ? formatHomeStatusAgo(lastCheckinUtc)
+    : null;
+  const latestStatusTitle = latestStatusNotification
+    ? latestStatusNotification.type === 'contact_checkin'
+      ? t('home.status.contactCheckedIn', { name: latestStatusNotification.senderName })
+      : t('home.status.sentWave', { name: latestStatusNotification.senderName })
+    : null;
+  const latestStatusTripStatus = latestStatusNotification?.data?.tripStatus;
+  const latestStatusTripEmoji = latestStatusTripStatus
+    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  const latestStatusHomePresence = !latestStatusTripStatus ? latestStatusNotification?.data?.homePresence : null;
+  const latestStatusHomePresenceEmoji = latestStatusHomePresence
+    ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  const latestStatusLocation = !!latestStatusNotification?.data?.location;
+  const latestStatusBadgeLabel = latestStatusTripStatus
+    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
+    : latestStatusHomePresence
+      ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string)
+      : null;
+  const latestStatusBadgeText = latestStatusBadgeLabel
+    ? latestStatusBadgeLabel.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim()
+    : null;
+  const toggleLatestStatusBadgeTooltip = () => {
+    if (latestStatusBadgeTooltipTimerRef.current) clearTimeout(latestStatusBadgeTooltipTimerRef.current);
+    setLatestStatusBadgeTooltipVisible((visible) => {
+      if (!visible) {
+        latestStatusBadgeTooltipTimerRef.current = setTimeout(() => setLatestStatusBadgeTooltipVisible(false), 3000);
+      }
+      return !visible;
+    });
+  };
+  const toggleLatestStatusWellnessTooltip = () => {
+    if (latestStatusWellnessTooltipTimerRef.current) clearTimeout(latestStatusWellnessTooltipTimerRef.current);
+    setLatestStatusWellnessTooltipVisible((visible) => {
+      if (!visible) {
+        latestStatusWellnessTooltipTimerRef.current = setTimeout(() => setLatestStatusWellnessTooltipVisible(false), 3000);
+      }
+      return !visible;
+    });
+  };
+  const openLatestStatusLocation = async () => {
+    const location = latestStatusNotification?.data?.location;
+    if (!location) return;
+    const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening shared location:', error);
+      Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+    }
+  };
+  const latestStatusWellnessScore = latestStatusNotification?.data?.wellnessScore;
+  const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
+  const latestStatusAvatarUrl =
+    latestStatusNotification?.senderAvatarUrl?.trim() &&
+    !isLocalAvatarUri(latestStatusNotification.senderAvatarUrl) &&
+    !latestStatusAvatarLoadFailed
+      ? latestStatusNotification.senderAvatarUrl.trim()
+      : '';
+  const getWellnessTooltipLabel = (score: number) => {
+    const message = t(getWellnessMessageKey(score));
+    return message.includes('\n') ? message.split('\n')[0] : message;
+  };
 
   return (
-    <SafeAreaView style={styles.mainContainer} edges={['top']}>
+    <SafeAreaView style={[styles.mainContainer, styles.simpleMainContainer]} edges={['top']}>
       {/* HEADER - OUTSIDE SCROLLVIEW (FIXED) */}
       <ScreenHeader
         title={profile?.display_name || t('home.welcome')}
         subtitle={greetingInfo.greeting}
         iconName={greetingInfo.iconName as any}
+        style={styles.simpleHeader}
         showGreetingInLine={true}
         rightElement={
-          <TouchableOpacity
-            onPress={() => router.push('/(tabs)/profile')}
-            style={styles.profileButton}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="person-outline" size={ICON_SIZES.MD} color={BaseColors.primary} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {showDebugResetCheckin ? (
+              <TouchableOpacity
+                onPress={resetAllState}
+                style={styles.headerDebugButton}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/profile')}
+              style={styles.profileButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="person-outline" size={ICON_SIZES.MD} color={BaseColors.primary} />
+            </TouchableOpacity>
+          </View>
         }
       />
+      <Text style={[
+        styles.simpleHeaderDate,
+        isCompactSimpleHome && styles.simpleHeaderDateCompact,
+      ]}>
+        {simpleDateTimeText}
+      </Text>
 
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
       <ScrollView
@@ -1074,38 +1695,41 @@ export default function HomeScreen() {
         minimumZoomScale={1}
         overScrollMode="never"
       >
-        {/* BEGIN - BELOW CODE IS FOR DEBUGGING PURPOSES - enable when needed */}
-        {/* <TouchableOpacity
-          onPress={async () => {
-            await AsyncStorage.removeItem(STORAGE_KEY);
-            setCheckedInToday(false);
-            setShowResetButton(false);
-            setLastCheckinUtc(null);
-            console.log('🧹 Cleared local storage');
-          }}
-        >
-          <View style={styles.warningContainer}>
-            <View style={styles.warningIconContainer}>
-              <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
+        <Animated.View style={[{ opacity: fadeAnim }, styles.simpleAnimatedContent]}>
+          {canUseEnhancedHome ? (
+            <View style={[styles.modeTabsContainer, styles.groupContainer]}>
+              <View style={styles.modeTabsRow}>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'home' && styles.modeTabActive]}
+                  onPress={() => handleCheckinModeChange('home')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'home' && styles.modeTabTextActive]}>
+                    {t('home.context.homeTab')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'trip' && styles.modeTabActive]}
+                  onPress={() => handleCheckinModeChange('trip')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'trip' && styles.modeTabTextActive]}>
+                    {t('home.context.tripTab')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <Text
-              style={styles.warningText}
-            >
-              Clear Storage (DEBUG  ONLY)
-            </Text>
-          </View>
-        </TouchableOpacity> */}
-        {/* END - ABOVE CODE IS FOR DEBUGGING PURPOSES */}
-
-        <Animated.View style={{ opacity: fadeAnim }}>
-          {/* DATE & TIME */}
-          <View style={[styles.dateTimeGroup, styles.groupContainer]}>
-            <Text style={styles.timeText}>{formatTime24h(now, i18n.language)}</Text>
-            <Text style={styles.dateText}>{formatDateWithTranslation(now, t, i18n.language)}</Text>
-          </View>
+          ) : null}
 
           {/* MAIN CHECK-IN */}
-          <View style={[styles.checkInGroup, styles.groupContainer]}>
+          <View style={[
+            styles.checkInGroup,
+            styles.groupContainer,
+            styles.simpleCheckInGroup,
+            canUseEnhancedHome && styles.enhancedCheckInGroup,
+            isCompactSimpleHome && styles.simpleCheckInGroupCompact,
+            isTightSimpleHome && styles.simpleCheckInGroupTight,
+          ]}>
             <View style={styles.checkInContainer}>
               <Animated.View
                 style={{
@@ -1119,8 +1743,8 @@ export default function HomeScreen() {
                   style={[
                     styles.checkInButton,
                     {
-                      width: CIRCLE_SIZE,
-                      height: CIRCLE_SIZE,
+                      width: circleSize,
+                      height: circleSize,
                     }
                   ]}
                 >
@@ -1128,9 +1752,9 @@ export default function HomeScreen() {
                   <View style={[
                     styles.circleBorder,
                     {
-                      width: CIRCLE_SIZE,
-                      height: CIRCLE_SIZE,
-                      borderRadius: CIRCLE_SIZE / 2,
+                      width: circleSize,
+                      height: circleSize,
+                      borderRadius: circleSize / 2,
                     }
                   ]} />
 
@@ -1138,47 +1762,47 @@ export default function HomeScreen() {
                   <View style={[
                     styles.svgContainer,
                     {
-                      width: CIRCLE_SIZE,
-                      height: CIRCLE_SIZE,
+                      width: circleSize,
+                      height: circleSize,
                     }
                   ]}>
                     <Svg
-                      width={CIRCLE_SIZE}
-                      height={CIRCLE_SIZE}
+                      width={circleSize}
+                      height={circleSize}
                       style={{ transform: [{ rotate: '-90deg' }] }}
-                      viewBox={`0 0 ${CIRCLE_SIZE} ${CIRCLE_SIZE}`}
+                      viewBox={`0 0 ${circleSize} ${circleSize}`}
                     >
                       {/* Background circle */}
                       <Circle
-                        cx={CIRCLE_SIZE / 2}
-                        cy={CIRCLE_SIZE / 2}
-                        r={CIRCLE_RADIUS}
+                        cx={circleSize / 2}
+                        cy={circleSize / 2}
+                        r={circleRadius}
                         stroke={BaseColors.primary}
-                        strokeWidth={STROKE_WIDTH + 3}
+                        strokeWidth={strokeWidth + 3}
                         fill="none"
                       />
 
                       {/* Progress circle */}
                       {!checkedInToday ? (
                         <Circle
-                          cx={CIRCLE_SIZE / 2}
-                          cy={CIRCLE_SIZE / 2}
-                          r={CIRCLE_RADIUS}
+                          cx={circleSize / 2}
+                          cy={circleSize / 2}
+                          r={circleRadius}
                           stroke={BaseColors.primaryLight}
-                          strokeWidth={STROKE_WIDTH}
+                          strokeWidth={strokeWidth}
                           fill="none"
-                          strokeDasharray={2 * Math.PI * CIRCLE_RADIUS}
-                          strokeDashoffset={2 * Math.PI * CIRCLE_RADIUS * (1 - progress)}
+                          strokeDasharray={2 * Math.PI * circleRadius}
+                          strokeDashoffset={2 * Math.PI * circleRadius * (1 - progress)}
                           opacity={0.7}
                           strokeLinecap="butt"
                         />
                       ) : (
                         <Circle
-                          cx={CIRCLE_SIZE / 2}
-                          cy={CIRCLE_SIZE / 2}
-                          r={CIRCLE_RADIUS}
+                          cx={circleSize / 2}
+                          cy={circleSize / 2}
+                          r={circleRadius}
                           stroke={BaseColors.primary}
-                          strokeWidth={STROKE_WIDTH}
+                          strokeWidth={strokeWidth}
                           fill="none"
                           strokeLinecap="round"
                         />
@@ -1191,17 +1815,17 @@ export default function HomeScreen() {
                     style={[
                       styles.innerButton,
                       {
-                        width: INNER_BUTTON_SIZE,
-                        height: INNER_BUTTON_SIZE,
-                        borderRadius: INNER_BUTTON_SIZE / 2,
-                        left: INNER_BUTTON_OFFSET,
-                        top: INNER_BUTTON_OFFSET,
+                        width: innerButtonSize,
+                        height: innerButtonSize,
+                        borderRadius: innerButtonSize / 2,
+                        left: innerButtonOffset,
+                        top: innerButtonOffset,
                       },
                       checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
-                      capabilities.isPlus && {
+                      !checkedInToday && capabilities.isPlus && {
                         justifyContent: 'flex-start',
-                        paddingTop: INNER_BUTTON_SIZE * 0.07,
-                        paddingBottom: INNER_BUTTON_SIZE * 0.06,
+                        paddingTop: innerButtonSize * 0.07,
+                        paddingBottom: innerButtonSize * 0.06,
                       },
                     ]}
                   >
@@ -1244,10 +1868,7 @@ export default function HomeScreen() {
                       ) : (
                         <>
                           <Text
-                            style={[
-                              styles.ctaText,
-                              fontScale > 1.2 && styles.compactCtaText
-                            ]}
+                            style={[styles.ctaText, fontScale > 1.2 && styles.compactCtaText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1255,10 +1876,7 @@ export default function HomeScreen() {
                             {t('home.pressMeToCheckIn')}
                           </Text>
                           <Text
-                            style={[
-                              styles.countdownText,
-                              fontScale > 1.2 && styles.compactCountdownText
-                            ]}
+                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1266,10 +1884,7 @@ export default function HomeScreen() {
                             {formatTimeLeft(remainingMs)}
                           </Text>
                           <Text
-                            style={[
-                              styles.timeLeftText,
-                              fontScale > 1.2 && styles.compactTimeLeftText
-                            ]}
+                            style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
@@ -1286,89 +1901,290 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
+            <View style={[
+              styles.simpleCheckinInfoRow,
+              isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
+            ]}>
+              <Ionicons
+                name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
+                size={isCompactSimpleHome ? 16 : 18}
+                color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
+                style={styles.simpleCheckinInfoIcon}
+              />
+              <Text style={[
+                styles.simpleCheckinInfoText,
+                isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
+                { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+              ]}>
+                {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
+              </Text>
+            </View>
           </View>
 
-          {showWellnessModule ? (
-            <View style={[styles.wellnessGroup, styles.groupContainer]}>
+          {isPlusSimpleHome ? (
+            <WellnessButtonPicker
+              value={wellnessScore}
+              onChange={setWellnessScore}
+              title={t('home.wellnessPrompt')}
+              options={SIMPLE_WELLNESS_OPTIONS}
+              tooltipLabels={{
+                [-1]: getWellnessTooltipLabel(-1),
+                [0]: getWellnessTooltipLabel(0),
+                [1]: getWellnessTooltipLabel(1),
+              }}
+              compactness={simpleHomeCompactness}
+            />
+          ) : null}
+
+          {canUseEnhancedHome && showWellnessModule ? (
+            <View style={[styles.enhancedWellnessGroup, styles.groupContainer]}>
               <WellnessSlider
-                value={capabilities.isPlus ? wellnessScore : WELLNESS_DEFAULT}
+                value={wellnessScore}
                 onChange={setWellnessScore}
-                disabled={!capabilities.isPlus}
-                onLockedPress={handleWellnessUpgradePress}
+                tooltipText={getWellnessTooltipLabel(wellnessScore)}
               />
             </View>
           ) : null}
 
-          {/* ACTION CARDS */}
-          <View style={[styles.cardsGroup, styles.groupContainer]}>
-            <View style={styles.cardsContainer}>
-              <TouchableOpacity
-                onPress={() => router.push('/(tabs)/activity')}
-                style={styles.card}
-                activeOpacity={0.8}
-              >
-                <View style={styles.cardIcon}>
-                  <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
-                    <Ionicons name="pulse" size={ICON_SIZES.LG} color={BaseColors.primary} />
-                  </View>
-                </View>
-                <Text style={styles.cardLabel}>{t('home.activity')}</Text>
-                <Text style={styles.cardSubtext}>
-                  {t('home.contacts', { count: contactsCount })}
-                </Text>
-              </TouchableOpacity>
+          {canUseEnhancedHome && (
+            <View style={[styles.enhancedStatusCard, styles.groupContainer, styles.enhancedStatusCardTightGap]}>
+              {checkinMode === 'home' ? (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {HOME_PRESENCE_OPTIONS.map((option) => {
+                      const isActive = homePresence === option;
 
-              <TouchableOpacity
-                // onPress={() => router.push('/(tabs)/statistics')}
-                style={styles.card}
-                activeOpacity={0.8}
-              >
-                <View style={styles.cardIcon}>
-                  <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                    <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
+                      return (
+                        <TouchableOpacity
+                          key={option}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => handleHomePresenceChange(option)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.context.homeStatuses.${option}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
+                  <View style={styles.tripScrollHint}>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={BaseColors.primary}
+                    />
                   </View>
                 </View>
-                <Text style={styles.cardLabel}>{t('home.streak')}</Text>
-                <Text style={styles.cardSubtext}>
-                  {t('home.days', { count: streak })}
-                </Text>
+              ) : (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {TRIP_STATUS_KEYS.map((key) => {
+                      const isActive = tripStatus === key;
+
+                      return (
+                        <TouchableOpacity
+                          key={key}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => setTripStatus(isActive ? null : key)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.tripMode.statuses.${key}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
+                  <View style={styles.tripScrollHint}>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={BaseColors.primary}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+          )}
+
+          <View style={[
+            styles.simpleStatusDock,
+            canUseEnhancedHome && styles.simpleStatusDockEnhanced,
+            isCompactSimpleHome && styles.simpleStatusDockCompact,
+          ]}>
+            <View style={[
+              styles.simpleStatusGroup,
+              isCompactSimpleHome && styles.simpleStatusGroupCompact,
+            ]}>
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => router.push('/(tabs)/activity')}
+                style={[
+                  styles.simpleStatusCard,
+                  isCompactSimpleHome && styles.simpleStatusCardCompact,
+                  isTightSimpleHome && styles.simpleStatusCardTight,
+                ]}
+              >
+                  {latestStatusNotification ? (
+                    <>
+                      {latestStatusAvatarUrl ? (
+                        <Image
+                          source={{ uri: latestStatusAvatarUrl }}
+                          style={[
+                            styles.simpleStatusAvatar,
+                            isCompactSimpleHome && styles.simpleStatusAvatarCompact,
+                          ]}
+                          onError={() => setLatestStatusAvatarLoadFailed(true)}
+                        />
+                      ) : (
+                        <Ionicons
+                          name="person-circle"
+                          size={isCompactSimpleHome ? 50 : 56}
+                          color={BaseColors.neutral[300]}
+                          style={[
+                            styles.simpleStatusAvatarFallback,
+                            isCompactSimpleHome && styles.simpleStatusAvatarFallbackCompact,
+                          ]}
+                        />
+                      )}
+                      <View style={styles.simpleStatusTextGroup}>
+                        <Text style={[
+                          styles.simpleStatusTitle,
+                          isCompactSimpleHome && styles.simpleStatusTitleCompact,
+                        ]} numberOfLines={1}>
+                          {latestStatusTitle}
+                        </Text>
+                        <Text style={[
+                          styles.simpleStatusSubtitle,
+                          isCompactSimpleHome && styles.simpleStatusSubtitleCompact,
+                        ]} numberOfLines={1}>
+                          {formatHomeStatusAgo(latestStatusNotification.created_at)}
+                        </Text>
+                      </View>
+                      <View style={styles.simpleStatusEmojiGroup}>
+                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji) ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusBadgeTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: BaseColors.primary }]}>
+                                  {latestStatusBadgeText}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusBadgeTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                styles.simpleStatusTripEmojiCircle,
+                              ]}
+                            >
+                              <Text style={[
+                                styles.simpleStatusEmoji,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCompact,
+                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji}</Text>
+                            </TouchableOpacity>
+                          </View>
+                        ) : null}
+                        {latestStatusLocation ? (
+                          <TouchableOpacity
+                            onPress={openLatestStatusLocation}
+                            activeOpacity={0.7}
+                            style={[
+                              styles.simpleStatusEmojiCircle,
+                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                              styles.simpleStatusTripEmojiCircle,
+                            ]}
+                          >
+                            <Ionicons
+                              name="location"
+                              size={isCompactSimpleHome ? 19 : 23}
+                              color={BaseColors.primaryDark}
+                            />
+                          </TouchableOpacity>
+                        ) : null}
+                        {latestStatusWellnessMeta ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusWellnessTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: latestStatusWellnessMeta.borderColor, backgroundColor: latestStatusWellnessMeta.backgroundColor },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: latestStatusWellnessMeta.color }]}>
+                                  {typeof latestStatusWellnessScore === 'number' ? getWellnessTooltipLabel(latestStatusWellnessScore) : ''}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusWellnessTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                {
+                                  backgroundColor: latestStatusWellnessMeta.backgroundColor,
+                                  borderColor: latestStatusWellnessMeta.borderColor,
+                                  borderWidth: 1,
+                                },
+                              ]}
+                            >
+                              <Ionicons
+                                name="heart"
+                                size={isCompactSimpleHome ? 19 : 23}
+                                color={latestStatusWellnessMeta.color}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        ) : null}
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={[
+                        styles.simpleStatusIcon,
+                        isCompactSimpleHome && styles.simpleStatusIconCompact,
+                      ]}>
+                        <Ionicons
+                          name={checkedInToday ? 'checkmark' : 'heart'}
+                          size={isCompactSimpleHome ? 20 : 22}
+                          color={checkedInToday ? BaseColors.primary : BaseColors.highlight}
+                        />
+                      </View>
+                      <View style={styles.simpleStatusTextGroup}>
+                        <Text style={[
+                          styles.simpleStatusTitle,
+                          isCompactSimpleHome && styles.simpleStatusTitleCompact,
+                        ]}>
+                          {checkedInToday ? t('home.simple.statusChecked') : t('home.simple.statusReady')}
+                        </Text>
+                        <Text style={[
+                          styles.simpleStatusSubtitle,
+                          isCompactSimpleHome && styles.simpleStatusSubtitleCompact,
+                        ]}>
+                          {contactsCount > 0
+                            ? t('home.contacts', { count: contactsCount })
+                            : t('home.simple.statusQuiet')}
+                        </Text>
+                      </View>
+                    </>
+                  )}
               </TouchableOpacity>
             </View>
-          </View>
-
-          {/* WARNING MESSAGE */}
-          <View style={[styles.warningGroup, styles.groupContainer]}>
-            {checkedInToday ? (
-              <View style={styles.messageContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="checkmark-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
-                </View>
-                <Text
-                  style={styles.messageText}
-                  numberOfLines={2}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.youCheckedInTodayAt', {
-                    time: formatTime24h(new Date(lastCheckinUtc || ''), i18n.language)
-                  })}
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.warningContainer}>
-                <View style={styles.warningIconContainer}>
-                  <Ionicons name="alert-circle" size={ICON_SIZES.SM} color={BaseColors.error} />
-                </View>
-                <Text
-                  style={styles.warningText}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                >
-                  {t('home.dontForget')}
-                </Text>
-              </View>
-            )}
           </View>
 
           {/* Bottom padding */}
@@ -1380,12 +2196,30 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 14;
+const GROUP_GAP = 10;
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: BaseColors.background,
+  },
+  simpleMainContainer: {
+    backgroundColor: '#F7F3EA',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerDebugButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: BaseColors.errorLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: BaseColors.errorBorder,
   },
   profileButton: {
     width: 34,
@@ -1429,39 +2263,310 @@ const styles = StyleSheet.create({
   groupContainer: {
     marginBottom: GROUP_GAP,
   },
-  dateTimeGroup: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  simpleHeader: {
+    marginBottom: 0,
+    paddingTop: Platform.OS === 'ios' ? 22 : 16,
+  },
+  simpleHeaderDate: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    paddingTop: Platform.OS === 'ios' ? 10 : 2,
-  },
-  timeText: {
-    fontSize: iosFontSize(36),
-    lineHeight: iosFontSize(40),
-    fontWeight: '700',
-    color: BaseColors.text.dark,
-    textAlign: 'center',
-  },
-  dateText: {
-    fontSize: iosFontSize(16),
-    lineHeight: iosFontSize(18),
+    marginTop: 4,
+    marginBottom: 8,
+    fontSize: iosFontSize(18),
+    lineHeight: iosFontSize(23),
     color: BaseColors.neutral[500],
-    marginTop: 2,
-    textTransform: 'capitalize',
-    textAlign: 'center',
+    fontWeight: '700',
+  },
+  simpleHeaderDateCompact: {
+    marginBottom: 4,
+    fontSize: iosFontSize(17),
+    lineHeight: iosFontSize(21),
+  },
+  simpleAnimatedContent: {
+    flexGrow: 1,
   },
   checkInGroup: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginTop: 8,
   },
-  wellnessGroup: {
+  simpleCheckInGroup: {
+    flex: 1,
+    minHeight: 270,
+    paddingTop: 12,
+    paddingBottom: 10,
+  },
+  enhancedCheckInGroup: {
+    minHeight: 232,
+    paddingTop: 2,
+    paddingBottom: 6,
+  },
+  simpleCheckInGroupCompact: {
+    minHeight: 245,
+    paddingTop: 4,
+    paddingBottom: 6,
+  },
+  simpleCheckInGroupTight: {
+    minHeight: 225,
+    paddingTop: 0,
+    paddingBottom: 2,
+  },
+  simpleWellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: -2,
+    marginBottom: 12,
   },
-  checkInContainer: {
+  simpleWellnessGroupCompact: {
+    marginBottom: 8,
+  },
+  simpleWellnessGroupTight: {
+    marginTop: -6,
+    marginBottom: 6,
+  },
+  simpleWellnessCard: {
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#EEF8F3',
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  simpleWellnessCardCompact: {
+    paddingVertical: 10,
+  },
+  simpleWellnessCardTight: {
+    paddingVertical: 8,
+    borderRadius: 18,
+  },
+  simpleWellnessTitle: {
+    fontSize: iosFontSize(21),
+    lineHeight: iosFontSize(26),
+    fontWeight: '800',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  simpleWellnessTitleCompact: {
+    fontSize: iosFontSize(18),
+    lineHeight: iosFontSize(23),
+    marginBottom: 8,
+  },
+  simpleWellnessTitleTight: {
+    marginBottom: 6,
+  },
+  simpleWellnessTooltip: {
+    position: 'absolute',
+    bottom: 64,
+    minHeight: 30,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  simpleWellnessTooltipCompact: {
+    bottom: 56,
+    minHeight: 28,
+    paddingHorizontal: 6,
+    paddingVertical: 5,
+  },
+  simpleWellnessTooltipText: {
+    width: '100%',
+    flexShrink: 1,
+    fontSize: iosFontSize(17),
+    lineHeight: iosFontSize(22),
+    fontWeight: '700',
+    color: BaseColors.neutral[600],
+    textAlign: 'center',
+    flexWrap: 'wrap',
+    includeFontPadding: false,
+  },
+  simpleWellnessTooltipTextCompact: {
+    fontSize: iosFontSize(13),
+    lineHeight: iosFontSize(18),
+  },
+  simpleWellnessTooltipArrow: {
+    position: 'absolute',
+    bottom: -5,
+    width: 10,
+    height: 10,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.surface,
+    transform: [{ rotate: '45deg' }],
+  },
+  simpleWellnessOptions: {
+    width: '82%',
+    maxWidth: 328,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    overflow: 'visible',
+    zIndex: 2,
+  },
+  simpleWellnessOptionsCompact: {
+    width: '78%',
+    maxWidth: 286,
+    gap: 10,
+  },
+  simpleWellnessOption: {
+    flexGrow: 0,
+    flexShrink: 0,
+    width: 92,
+    minHeight: 54,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: BaseColors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.08,
+        shadowRadius: 20,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  simpleWellnessOptionLow: {
+    backgroundColor: '#EAF6FB',
+  },
+  simpleWellnessOptionNeutral: {
+    backgroundColor: '#EEF8F3',
+  },
+  simpleWellnessOptionHigh: {
+    backgroundColor: '#FFF0F3',
+  },
+  simpleWellnessOptionCompact: {
+    width: 84,
+    minHeight: 48,
+    borderRadius: 18,
+  },
+  simpleWellnessOptionTight: {
+    width: 78,
+    minHeight: 44,
+    borderRadius: 16,
+  },
+  simpleWellnessOptionSelected: {
+    borderColor: BaseColors.primary,
+    backgroundColor: '#FBFFFD',
+  },
+  enhancedWellnessGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
+  modeTabsContainer: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: 2,
+  },
+  modeTabsRow: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    backgroundColor: '#EEF8F3',
+    borderRadius: 18,
+    paddingHorizontal: 4,
+    paddingVertical: 3,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  modeTab: {
+    minHeight: 31,
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  modeTabActive: {
+    backgroundColor: BaseColors.surface,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  modeTabText: {
+    fontSize: iosFontSize(13),
+    lineHeight: iosFontSize(17),
+    fontWeight: '700',
+    color: BaseColors.neutral[500],
+    includeFontPadding: false,
+  },
+  modeTabTextActive: {
+    color: BaseColors.primary,
+  },
+  enhancedStatusCard: {
+    marginHorizontal: SCREEN_PADDING.horizontal,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#EEF8F3',
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    minHeight: 48,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  enhancedStatusCardTightGap: {
+    marginBottom: 4,
   },
   wellnessCard: {
     backgroundColor: BaseColors.surface,
@@ -1469,7 +2574,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 5,
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
@@ -1498,18 +2603,63 @@ const styles = StyleSheet.create({
   wellnessEdgeButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
   },
   wellnessTrackTouchArea: {
     flex: 1,
     height: 36,
     justifyContent: 'center',
+    overflow: 'visible',
   },
   wellnessTrack: {
     height: 8,
     borderRadius: 999,
     backgroundColor: BaseColors.primaryBorder,
+  },
+  wellnessSliderTooltip: {
+    position: 'absolute',
+    bottom: 38,
+    minHeight: 30,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    zIndex: 2,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  wellnessSliderTooltipText: {
+    width: '100%',
+    fontSize: iosFontSize(12),
+    lineHeight: iosFontSize(17),
+    fontWeight: '700',
+    color: BaseColors.neutral[600],
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  wellnessSliderTooltipArrow: {
+    position: 'absolute',
+    bottom: -5,
+    width: 10,
+    height: 10,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.surface,
+    transform: [{ rotate: '45deg' }],
   },
   wellnessTrackDisabled: {
     backgroundColor: BaseColors.neutral[200],
@@ -1565,11 +2715,6 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.neutral[200],
     backgroundColor: BaseColors.surface,
   },
-  wellnessThumbEmoji: {
-    fontSize: 26,
-    lineHeight: 30,
-    textAlign: 'center',
-  },
   wellnessThumbLockBadge: {
     position: 'absolute',
     right: -2,
@@ -1583,6 +2728,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  tripStatusGroupEnhanced: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tripScrollHint: {
+    paddingHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tripPillsRowEnhanced: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 8,
+  },
+  tripPill: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.surface,
+  },
+  tripPillActive: {
+    backgroundColor: BaseColors.primary,
+    borderColor: BaseColors.primary,
+  },
+  tripPillText: {
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(20),
+    fontWeight: '500',
+    color: BaseColors.text.dark,
+  },
+  tripPillTextActive: {
+    color: BaseColors.surface,
+  },
+  tripPillDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.surface,
+    opacity: 0.4,
+  },
+  tripPillTextDisabled: {
+    color: BaseColors.neutral[400],
+  },
+  checkInContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   checkInButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -1590,8 +2782,8 @@ const styles = StyleSheet.create({
   },
   checkedInText: {
     color: BaseColors.surface,
-    fontSize: 24,
-    lineHeight: 28,
+    fontSize: 28,
+    lineHeight: 32,
     fontWeight: '800',
     textAlign: 'center',
     width: '100%',
@@ -1634,6 +2826,7 @@ const styles = StyleSheet.create({
     minHeight: ICON_SIZES.SUPER_HUGE,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 12,
   },
   checkedHeartStack: {
     alignItems: 'center',
@@ -1651,7 +2844,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: BaseColors.text.dark,
-    fontSize: iosFontSize(14),
+    fontSize: iosFontSize(17),
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
@@ -1659,93 +2852,298 @@ const styles = StyleSheet.create({
   },
   countdownText: {
     color: BaseColors.primary,
-    fontSize: iosFontSize(24),
+    fontSize: iosFontSize(30),
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 2,
   },
   timeLeftText: {
     color: BaseColors.text.light,
-    fontSize: iosFontSize(14),
+    fontSize: iosFontSize(16),
     fontWeight: '600',
     textAlign: 'center',
     marginTop: 2,
   },
   compactCtaText: {
-    fontSize: iosFontSize(12),
+    fontSize: iosFontSize(14),
     letterSpacing: 0.3,
     marginBottom: 1,
   },
   compactCountdownText: {
-    fontSize: iosFontSize(16),
+    fontSize: iosFontSize(20),
     marginTop: 2,
   },
   compactTimeLeftText: {
-    fontSize: iosFontSize(9),
+    fontSize: iosFontSize(11),
     marginTop: 0,
   },
-  cardsGroup: {
+  simpleStatusDock: {
+    marginTop: 'auto',
+    paddingTop: 12,
+    paddingBottom: 2,
+    backgroundColor: 'rgba(238, 248, 243, 0.24)',
+  },
+  simpleStatusDockEnhanced: {
+    paddingTop: 6,
+  },
+  simpleStatusDockCompact: {
+    paddingTop: 9,
+  },
+  simpleStatusDockHandle: {
+    alignSelf: 'center',
+    width: 42,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(94, 121, 108, 0.22)',
+    marginBottom: 10,
+  },
+  simpleStatusGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginBottom: 24,
+    marginBottom: 12,
   },
-  cardsContainer: {
+  simpleStatusGroupCompact: {
+    marginBottom: 8,
+  },
+  simpleCheckinInfoRow: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: 10,
     flexDirection: 'row',
-    gap: 12,
-  },
-  card: {
-    flex: 1,
-    backgroundColor: BaseColors.surface,
-    borderRadius: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+  },
+  simpleCheckinInfoRowCompact: {
+    marginTop: 6,
+  },
+  simpleCheckinInfoIcon: {
+    flexShrink: 0,
+  },
+  simpleCheckinInfoText: {
+    fontSize: iosFontSize(18),
+    lineHeight: iosFontSize(22),
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  simpleCheckinInfoTextCompact: {
+    fontSize: iosFontSize(16),
+    lineHeight: iosFontSize(20),
+  },
+  simpleStatusCard: {
+    minHeight: 76,
+    borderRadius: 20,
+    backgroundColor: '#EEF8F3',
     borderWidth: 1,
-    borderColor: BaseColors.neutral[200],
-    minHeight: 92,
-    justifyContent: 'space-between',
+    borderColor: BaseColors.primaryBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
       },
       android: {
         elevation: 3,
       },
     }),
   },
-  cardIcon: {
-    marginBottom: 8,
+  simpleStatusCardCompact: {
+    minHeight: 68,
+    paddingVertical: 8,
   },
-  cardLabel: {
-    fontSize: iosFontSize(16),
+  simpleStatusCardTight: {
+    minHeight: 62,
+    borderRadius: 18,
+  },
+  simpleStatusIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: BaseColors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  simpleStatusIconCompact: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 10,
+  },
+  simpleStatusAvatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    marginRight: 12,
+    backgroundColor: BaseColors.neutral[100],
+    borderWidth: 2,
+    borderColor: BaseColors.primaryLight,
+  },
+  simpleStatusAvatarCompact: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  simpleStatusAvatarFallback: {
+    marginRight: 12,
+  },
+  simpleStatusAvatarFallbackCompact: {
+    marginRight: 10,
+  },
+  simpleStatusTextGroup: {
+    flex: 1,
+    minWidth: 0,
+  },
+  simpleStatusTitle: {
+    fontSize: iosFontSize(19),
+    lineHeight: iosFontSize(23),
     fontWeight: '800',
-    textAlign: 'center',
-    marginTop: 4,
-    color: BaseColors.text.dark,
+    color: BaseColors.primaryDark,
+  },
+  simpleStatusTitleCompact: {
+    fontSize: iosFontSize(16),
     lineHeight: iosFontSize(20),
+  },
+  simpleStatusSubtitle: {
+    fontSize: iosFontSize(16),
+    lineHeight: iosFontSize(20),
+    color: BaseColors.neutral[500],
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  simpleStatusSubtitleCompact: {
+    fontSize: iosFontSize(14),
+    lineHeight: iosFontSize(18),
+    marginTop: 1,
+  },
+  simpleStatusEmojiGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 4,
+    marginLeft: 8,
+    minWidth: 32,
+  },
+  simpleStatusEmojiCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  simpleStatusEmojiCircleCompact: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  simpleStatusTripEmojiCircle: {
+    backgroundColor: BaseColors.primaryLight,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+  },
+  simpleStatusEmoji: {
+    fontSize: iosFontSize(23),
+    lineHeight: iosFontSize(27),
+  },
+  simpleStatusEmojiCompact: {
+    fontSize: iosFontSize(19),
+    lineHeight: iosFontSize(23),
+  },
+  simpleStatusBadgeWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+  },
+  simpleStatusTooltip: {
+    position: 'absolute',
+    bottom: 54,
+    right: 0,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    minWidth: 120,
+    maxWidth: 180,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 4,
+    zIndex: 100,
+  },
+  simpleStatusTooltipText: {
+    fontSize: iosFontSize(15),
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  modeCardGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
+  modeCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: BaseColors.neutral[200],
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  modeCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  modeCardLabel: {
+    fontSize: iosFontSize(14),
+    fontWeight: '600',
+    color: BaseColors.text.dark,
+  },
+  streakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  streakRowText: {
+    fontSize: iosFontSize(14),
+    fontWeight: '600',
+    color: BaseColors.text.dark,
   },
   cardSubtext: {
     fontSize: iosFontSize(16),
     fontWeight: '600',
-    marginTop: 6,
+    marginTop: 4,
     color: BaseColors.primary,
     textAlign: 'center',
-    lineHeight: iosFontSize(20),
+    lineHeight: iosFontSize(18),
   },
-  iconContainerBase: {
-    width: 30,
-    height: 30,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+  cardActive: {
+    backgroundColor: BaseColors.primary,
+    borderColor: BaseColors.primary,
   },
-  activityIconContainer: {
-    backgroundColor: '#EDF7F4',
+  cardLabelActive: {
+    color: BaseColors.surface,
   },
-  streakIconContainer: {
-    backgroundColor: '#FFF7ED',
+  cardSubtextActive: {
+    color: BaseColors.surface,
+    opacity: 0.85,
+  },
+  tripIconContainer: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
   },
   bottomPadding: {
     height: 12,

@@ -23,6 +23,7 @@ type SharedLocation = {
 }
 
 type UserPlan = 'free' | 'plus'
+type HomeStyle = 'simple' | 'enhanced'
 
 type AuthorizedRequest =
   | { kind: 'user'; userId: string }
@@ -40,101 +41,101 @@ const CHECKIN_MESSAGES = {
   en: {
     title: (name: string) => `${name} checked in.`,
     fallback: (time: string) => `All is well! - ${time}`,
-    very_low: () => `Not feeling well today 😔`,
-    low: () => `A little low today 😕`,
-    neutral: () => `All is well 🙂`,
-    good: () => `Feeling good today ☺️`,
-    great: () => `Feeling very happy today 😊`,
+    very_low: () => `😔 Not feeling well today`,
+    low: () => `😕 A little low today`,
+    neutral: () => `🙂 All is well`,
+    good: () => `☺️ Feeling good today`,
+    great: () => `😊 Feeling very happy today`,
   },
   da: {
     title: (name: string) => `${name} har tjekket ind.`,
     fallback: (time: string) => `Alt er godt! - ${time}`,
-    very_low: () => `Har det ikke så godt i dag 😔`,
-    low: () => `Er lidt nede i dag 😕`,
-    neutral: () => `Alt er godt 🙂`,
-    good: () => `Har det godt i dag ☺️`,
-    great: () => `Føler sig meget glad i dag 😊`,
+    very_low: () => `😔 Har det ikke så godt i dag`,
+    low: () => `😕 Er lidt nede i dag`,
+    neutral: () => `🙂 Alt er godt`,
+    good: () => `☺️ Har det godt i dag`,
+    great: () => `😊 Føler sig meget glad i dag`,
   },
   de: {
     title: (name: string) => `${name} hat eingecheckt.`,
     fallback: (time: string) => `Alles ist gut! - ${time}`,
-    very_low: () => `Fühlt sich heute nicht gut 😔`,
-    low: () => `Ist heute etwas niedergeschlagen 😕`,
-    neutral: () => `Alles ist gut 🙂`,
-    good: () => `Fühlt sich heute gut ☺️`,
-    great: () => `Ist heute sehr glücklich 😊`,
+    very_low: () => `😔 Fühlt sich heute nicht gut`,
+    low: () => `😕 Ist heute etwas niedergeschlagen`,
+    neutral: () => `🙂 Alles ist gut`,
+    good: () => `☺️ Fühlt sich heute gut`,
+    great: () => `😊 Ist heute sehr glücklich`,
   },
   es: {
     title: (name: string) => `${name} ha hecho check-in.`,
     fallback: (time: string) => `¡Todo está bien! - ${time}`,
-    very_low: () => `No se siente bien hoy 😔`,
-    low: () => `Se siente un poco decaído hoy 😕`,
-    neutral: () => `Todo está bien 🙂`,
-    good: () => `Se siente bien hoy ☺️`,
-    great: () => `Se siente muy feliz hoy 😊`,
+    very_low: () => `😔 No se siente bien hoy`,
+    low: () => `😕 Se siente un poco decaído hoy`,
+    neutral: () => `🙂 Todo está bien`,
+    good: () => `☺️ Se siente bien hoy`,
+    great: () => `😊 Se siente muy feliz hoy`,
   },
   fi: {
     title: (name: string) => `${name} on kirjautunut.`,
     fallback: (time: string) => `Kaikki on hyvin! - ${time}`,
-    very_low: () => `Olo ei ole tänään hyvä 😔`,
-    low: () => `Olo on tänään hieman alakuloinen 😕`,
-    neutral: () => `Kaikki on hyvin 🙂`,
-    good: () => `Olo on hyvä tänään ☺️`,
-    great: () => `On tänään todella iloinen 😊`,
+    very_low: () => `😔 Olo ei ole tänään hyvä`,
+    low: () => `😕 Olo on tänään hieman alakuloinen`,
+    neutral: () => `🙂 Kaikki on hyvin`,
+    good: () => `☺️ Olo on hyvä tänään`,
+    great: () => `😊 On tänään todella iloinen`,
   },
   fr: {
     title: (name: string) => `${name} a pointé.`,
     fallback: (time: string) => `Tout va bien ! - ${time}`,
-    very_low: () => `Ne se sent pas bien aujourd’hui 😔`,
-    low: () => `Se sent un peu triste aujourd’hui 😕`,
-    neutral: () => `Tout va bien 🙂`,
-    good: () => `Se sent bien aujourd’hui ☺️`,
-    great: () => `Se sent très heureux aujourd’hui 😊`,
+    very_low: () => `😔 Ne se sent pas bien aujourd’hui`,
+    low: () => `😕 Se sent un peu triste aujourd’hui`,
+    neutral: () => `🙂 Tout va bien`,
+    good: () => `☺️ Se sent bien aujourd’hui`,
+    great: () => `😊 Se sent très heureux aujourd’hui`,
   },
   it: {
     title: (name: string) => `${name} ha fatto il check-in.`,
     fallback: (time: string) => `Va tutto bene! - ${time}`,
-    very_low: () => `Oggi non si sente bene 😔`,
-    low: () => `Oggi si sente un po' giù 😕`,
-    neutral: () => `Va tutto bene 🙂`,
-    good: () => `Oggi si sente bene ☺️`,
-    great: () => `Si sente molto felice oggi 😊`,
+    very_low: () => `😔 Oggi non si sente bene`,
+    low: () => `😕 Oggi si sente un po' giù`,
+    neutral: () => `🙂 Va tutto bene`,
+    good: () => `☺️ Oggi si sente bene`,
+    great: () => `😊 Si sente molto felice oggi`,
   },
   ja: {
     title: (name: string) => `${name}さんがチェックインしました。`,
     fallback: (time: string) => `すべて順調です！ - ${time}`,
-    very_low: () => `今日はかなりつらそうです 😔`,
-    low: () => `今日は少し落ち込んでいます 😕`,
-    neutral: () => `すべて順調です 🙂`,
-    good: () => `今日は気分が良さそうです ☺️`,
-    great: () => `今日はとても嬉しい気分です 😊`,
+    very_low: () => `😔 今日はかなりつらそうです`,
+    low: () => `😕 今日は少し落ち込んでいます`,
+    neutral: () => `🙂 すべて順調です`,
+    good: () => `☺️ 今日は気分が良さそうです`,
+    great: () => `😊 今日はとても嬉しい気分です`,
   },
   ko: {
     title: (name: string) => `${name}님이 체크인했어요.`,
     fallback: (time: string) => `모든 것이 괜찮아요! - ${time}`,
-    very_low: () => `오늘은 몸 상태가 좋지 않아요 😔`,
-    low: () => `오늘은 조금 우울해요 😕`,
-    neutral: () => `모든 것이 괜찮아요 🙂`,
-    good: () => `오늘은 기분이 좋아요 ☺️`,
-    great: () => `오늘은 정말 행복해요 😊`,
+    very_low: () => `😔 오늘은 몸 상태가 좋지 않아요`,
+    low: () => `😕 오늘은 조금 우울해요`,
+    neutral: () => `🙂 모든 것이 괜찮아요`,
+    good: () => `☺️ 오늘은 기분이 좋아요`,
+    great: () => `😊 오늘은 정말 행복해요`,
   },
   no: {
     title: (name: string) => `${name} har sjekket inn.`,
     fallback: (time: string) => `Alt er bra! - ${time}`,
-    very_low: () => `Føler seg ikke bra i dag 😔`,
-    low: () => `Er litt nedfor i dag 😕`,
-    neutral: () => `Alt er bra 🙂`,
-    good: () => `Føler seg bra i dag ☺️`,
-    great: () => `Er veldig glad i dag 😊`,
+    very_low: () => `😔 Føler seg ikke bra i dag`,
+    low: () => `😕 Er litt nedfor i dag`,
+    neutral: () => `🙂 Alt er bra`,
+    good: () => `☺️ Føler seg bra i dag`,
+    great: () => `😊 Er veldig glad i dag`,
   },
   sv: {
     title: (name: string) => `${name} har checkat in.`,
     fallback: (time: string) => `Allt är väl! - ${time}`,
-    very_low: () => `Mår inte bra idag 😔`,
-    low: () => `Känner sig lite låg idag 😕`,
-    neutral: () => `Allt är väl 🙂`,
-    good: () => `Känner sig bra idag ☺️`,
-    great: () => `Känner sig väldigt glad idag 😊`,
+    very_low: () => `😔 Mår inte bra idag`,
+    low: () => `😕 Känner sig lite låg idag`,
+    neutral: () => `🙂 Allt är väl`,
+    good: () => `☺️ Känner sig bra idag`,
+    great: () => `😊 Känner sig väldigt glad idag`,
   },
   'zh-Hans': {
     title: (name: string) => `${name} 签到`,
@@ -155,6 +156,71 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 今天很開心`,
   },
 } as const
+
+const TRIP_STATUS_LABELS: Record<string, Record<string, string>> = {
+  en:       { leaving: '🧳 Leaving for the trip', boarding: '🛫 Boarding / departing soon', layover: '🛑 Layover / connecting', landed: '🛬 Landed safely', on_the_move: '🚕 On the move', at_hotel: '🏨 Arrived at hotel', on_trip: '🗺️ On the trip', heading_home: '🏠 Heading home', trip_ended: '✅ Trip ended — home safely' },
+  da:       { leaving: '🧳 Afsted på rejsen', boarding: '🛫 Boarding / afgang snart', layover: '🛑 Mellemlanding / forbindelse', landed: '🛬 Landet sikkert', on_the_move: '🚕 På farten', at_hotel: '🏨 Ankommet til hotellet', on_trip: '🗺️ På rejsen', heading_home: '🏠 På vej hjem', trip_ended: '✅ Rejsen slut — hjemme sikkert' },
+  de:       { leaving: '🧳 Auf zur Reise', boarding: '🛫 Boarding / Abflug bald', layover: '🛑 Zwischenstopp / Umstieg', landed: '🛬 Sicher gelandet', on_the_move: '🚕 Unterwegs', at_hotel: '🏨 Im Hotel angekommen', on_trip: '🗺️ Auf der Reise', heading_home: '🏠 Auf dem Heimweg', trip_ended: '✅ Reise beendet — sicher zu Hause' },
+  es:       { leaving: '🧳 Saliendo de viaje', boarding: '🛫 Embarcando / saliendo pronto', layover: '🛑 Escala / conexión', landed: '🛬 Aterrizando con seguridad', on_the_move: '🚕 En movimiento', at_hotel: '🏨 Llegué al hotel', on_trip: '🗺️ De viaje', heading_home: '🏠 Camino a casa', trip_ended: '✅ Viaje terminado — en casa sano/a' },
+  fi:       { leaving: '🧳 Lähden matkalle', boarding: '🛫 Boarding / lähtö pian', layover: '🛑 Välilaskeutuminen / vaihto', landed: '🛬 Laskeutunut turvallisesti', on_the_move: '🚕 Liikkeellä', at_hotel: '🏨 Saapunut hotelliin', on_trip: '🗺️ Matkalla', heading_home: '🏠 Matkalla kotiin', trip_ended: '✅ Matka päättyi — kotona turvassa' },
+  fr:       { leaving: '🧳 Je pars en voyage', boarding: '🛫 Embarquement / départ imminent', layover: '🛑 Escale / correspondance', landed: '🛬 Atterri en sécurité', on_the_move: '🚕 En déplacement', at_hotel: "🏨 Arrivé à l'hôtel", on_trip: '🗺️ En voyage', heading_home: '🏠 En route pour la maison', trip_ended: '✅ Voyage terminé — rentré sain et sauf' },
+  it:       { leaving: '🧳 Parto per il viaggio', boarding: '🛫 Imbarco / partenza imminente', layover: '🛑 Scalo / coincidenza', landed: '🛬 Atterrato in sicurezza', on_the_move: '🚕 In movimento', at_hotel: '🏨 Arrivato in hotel', on_trip: '🗺️ In viaggio', heading_home: '🏠 Tornando a casa', trip_ended: '✅ Viaggio concluso — a casa sano/a' },
+  ja:       { leaving: '🧳 旅立ちます', boarding: '🛫 搭乗・出発間近', layover: '🛑 乗り継ぎ中', landed: '🛬 無事着陸', on_the_move: '🚕 移動中', at_hotel: '🏨 ホテルに到着', on_trip: '🗺️ 旅行中', heading_home: '🏠 帰宅中', trip_ended: '✅ 旅行終了・無事帰宅' },
+  ko:       { leaving: '🧳 여행 출발', boarding: '🛫 탑승 / 곧 출발', layover: '🛑 경유 / 환승 중', landed: '🛬 안전하게 착륙', on_the_move: '🚕 이동 중', at_hotel: '🏨 호텔 도착', on_trip: '🗺️ 여행 중', heading_home: '🏠 집으로 향하는 중', trip_ended: '✅ 여행 종료 — 안전하게 귀가' },
+  no:       { leaving: '🧳 Drar på tur', boarding: '🛫 Ombordstigning / avgang snart', layover: '🛑 Mellomlanding / tilkobling', landed: '🛬 Landet trygt', on_the_move: '🚕 På farten', at_hotel: '🏨 Ankommet hotellet', on_trip: '🗺️ På reisen', heading_home: '🏠 På vei hjem', trip_ended: '✅ Turen er over — trygt hjemme' },
+  sv:       { leaving: '🧳 Ger mig iväg', boarding: '🛫 Ombordstigning / avresa snart', layover: '🛑 Mellanlandning / byte', landed: '🛬 Landat säkert', on_the_move: '🚕 På väg', at_hotel: '🏨 Framme på hotellet', on_trip: '🗺️ På resan', heading_home: '🏠 På väg hem', trip_ended: '✅ Resan slut — hemma säkert' },
+  th:       { leaving: '🧳 ออกเดินทางแล้ว', boarding: '🛫 กำลังขึ้นเครื่อง / ใกล้ออกเดินทาง', layover: '🛑 แวะพัก / ต่อเที่ยวบิน', landed: '🛬 ลงจอดปลอดภัย', on_the_move: '🚕 กำลังเดินทาง', at_hotel: '🏨 ถึงโรงแรมแล้ว', on_trip: '🗺️ อยู่ระหว่างการเดินทาง', heading_home: '🏠 กำลังกลับบ้าน', trip_ended: '✅ ทริปสิ้นสุด — กลับบ้านปลอดภัย' },
+  'zh-Hans': { leaving: '🧳 出发了', boarding: '🛫 登机／准备起飞', layover: '🛑 中途停留/转机', landed: '🛬 已安全着陆', on_the_move: '🚕 在移动中', at_hotel: '🏨 已抵达酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程结束——已安全到家' },
+  'zh-Hant': { leaving: '🧳 出發了', boarding: '🛫 登機／準備起飛', layover: '🛑 中途停留／轉機', landed: '🛬 已安全著陸', on_the_move: '🚕 在移動中', at_hotel: '🏨 已抵達酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程結束——已安全到家' },
+}
+
+function getTripStatusLabel(status: string, lang: string): string {
+  const langMap = TRIP_STATUS_LABELS[lang] ?? TRIP_STATUS_LABELS.en
+  return langMap[status] ?? TRIP_STATUS_LABELS.en[status] ?? status
+}
+
+const HOME_PRESENCE_LABELS: Record<string, Record<string, string>> = {
+  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing' },
+  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af' },
+  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich' },
+  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome' },
+  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa' },
+  fr:       { home: '🏠 À la maison', outside: "🚶 Sorti(e)", busy: '💼 Occupé(e)', relaxing: '☕ Je me détends' },
+  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso' },
+  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中' },
+  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중' },
+  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av' },
+  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av' },
+  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน' },
+  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中' },
+  'zh-Hant': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放鬆中' },
+}
+
+function getHomePresenceLabel(status: string, lang: string): string {
+  const langMap = HOME_PRESENCE_LABELS[lang] ?? HOME_PRESENCE_LABELS.en
+  return langMap[status] ?? HOME_PRESENCE_LABELS.en[status] ?? status
+}
+
+const LOCATION_SHARED_LABELS: Record<string, string> = {
+  en: '📍 Location shared',
+  da: '📍 Position delt',
+  de: '📍 Standort geteilt',
+  es: '📍 Ubicación compartida',
+  fi: '📍 Sijainti jaettu',
+  fr: '📍 Position partagée',
+  it: '📍 Posizione condivisa',
+  ja: '📍 位置情報を共有中',
+  ko: '📍 위치 공유 중',
+  no: '📍 Posisjon delt',
+  sv: '📍 Plats delad',
+  th: '📍 แชร์ตำแหน่งแล้ว',
+  'zh-Hans': '📍 已共享位置',
+  'zh-Hant': '📍 已分享位置',
+}
+
+function getLocationSharedLabel(lang: string): string {
+  return LOCATION_SHARED_LABELS[lang] ?? LOCATION_SHARED_LABELS.en
+}
 
 type CheckinLocaleKey = keyof typeof CHECKIN_MESSAGES
 
@@ -204,6 +270,24 @@ async function getUserPlan(
   }
 
   return data?.plan === 'plus' ? 'plus' : 'free'
+}
+
+async function getUserHomeStyle(
+  supabase: ReturnType<typeof createClient>,
+  userId: string
+): Promise<HomeStyle> {
+  const { data, error } = await supabase
+    .from('user_settings')
+    .select('home_style')
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load user home style, defaulting to simple:', error.message)
+    return 'simple'
+  }
+
+  return data?.home_style === 'enhanced' ? 'enhanced' : 'simple'
 }
 
 // ============================================
@@ -261,7 +345,10 @@ function buildContactCheckinNotification(
   checkin_time: string,
   timezone: string,
   location: SharedLocation | null,
-  wellnessScore: number | null
+  wellnessScore: number | null,
+  tripStatus: string | null,
+  homePresence: string | null,
+  recipientLang: string
 ): NotificationPayload {
   const data: Record<string, any> = {
     contactUserId: user_id,
@@ -280,10 +367,31 @@ function buildContactCheckinNotification(
     data.wellnessScore = wellnessScore
   }
 
-  const body =
-    wellnessScore === null
-      ? locale.fallback(formattedTime)
-      : `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
+  if (tripStatus) {
+    data.tripStatus = tripStatus
+  }
+
+  if (homePresence) {
+    data.homePresence = homePresence
+  }
+
+  const statusLabel = tripStatus
+    ? getTripStatusLabel(tripStatus, recipientLang)
+    : homePresence
+    ? getHomePresenceLabel(homePresence, recipientLang)
+    : null
+  const emotionLabel = wellnessScore !== null
+    ? getWellnessBody(locale, contactDisplayName, wellnessScore)
+    : null
+  const locationLabel = location ? getLocationSharedLabel(recipientLang) : null
+
+  const bodyParts = [emotionLabel, statusLabel, locationLabel].filter(
+    (part): part is string => !!part
+  )
+
+  const body = bodyParts.length > 0
+    ? `${bodyParts.join(' · ')} · ${formattedTime}`
+    : locale.fallback(formattedTime)
 
   const locationPrefix = location ? '📍 ' : ''
 
@@ -344,7 +452,10 @@ serve(async (req) => {
 
     const senderPlan = await getUserPlan(supabase, user_id)
     const isPlusSender = senderPlan === 'plus'
-    console.log('💳 Sender plan:', senderPlan)
+    const senderHomeStyle = await getUserHomeStyle(supabase, user_id)
+    const canSendWellness = isPlusSender
+    const canSendEnhancedStatus = isPlusSender && senderHomeStyle === 'enhanced'
+    console.log('💳 Sender plan/style:', { senderPlan, senderHomeStyle })
 
     if (rateLimit?.last_contact_checkin_push_at) {
       const lastPush = new Date(rateLimit.last_contact_checkin_push_at)
@@ -397,6 +508,21 @@ serve(async (req) => {
       throw latestCheckinError
     }
 
+    // Fetch trip_status / home_presence from users_latest_checkin (nullable — null means not set)
+    const { data: latestCheckinMeta } = await supabase
+      .from('users_latest_checkin')
+      .select('trip_status, home_presence')
+      .eq('user_id', user_id)
+      .maybeSingle()
+
+    const tripStatus: string | null = canSendEnhancedStatus
+      ? latestCheckinMeta?.trip_status ?? null
+      : null
+
+    const homePresence: string | null = canSendEnhancedStatus && !tripStatus
+      ? latestCheckinMeta?.home_presence ?? null
+      : null
+
     const sharedLocation: SharedLocation | null =
       isPlusSender &&
       latestCheckinRow?.location_latitude != null &&
@@ -415,7 +541,7 @@ serve(async (req) => {
     )
 
     const wellnessScore =
-      typeof latestCheckinRow?.wellness_score === 'number'
+      canSendWellness && typeof latestCheckinRow?.wellness_score === 'number'
         ? latestCheckinRow.wellness_score
         : null
 
@@ -516,7 +642,8 @@ serve(async (req) => {
         continue
       }
 
-      const locale = getCheckinLocale(recipientLanguageMap.get(recipient.user_id))
+      const recipientLang = recipientLanguageMap.get(recipient.user_id) ?? 'en'
+      const locale = getCheckinLocale(recipientLang)
 
       const payload = buildContactCheckinNotification(
         locale,
@@ -529,7 +656,10 @@ serve(async (req) => {
         sharedLocation && locationRecipientIds.has(recipient.user_id)
           ? sharedLocation
           : null,
-        wellnessScore
+        wellnessScore,
+        tripStatus,
+        homePresence,
+        recipientLang
       )
 
       notificationsToInsert.push({

@@ -52,10 +52,57 @@
       "checkin": "Sisäänkirjautuminen epäonnistui",
       "loadState": "Tilaa ei voitu ladata"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} on kirjautunut sisään",
+      "sentWave": "{{name}} lähetti sinulle vilkutuksen",
+      "messageFrom": "Viesti käyttäjältä {{name}}",
+      "justNow": "Juuri nyt",
+      "minutesAgo_one": "{{count}} minuutti sitten",
+      "minutesAgo_other": "{{count}} minuuttia sitten",
+      "hoursAgo_one": "{{count}} tunti sitten",
+      "hoursAgo_other": "{{count}} tuntia sitten",
+      "hoursAgoDecimal": "{{value}} tuntia sitten",
+      "daysAgo_one": "{{count}} päivä sitten",
+      "daysAgo_other": "{{count}} päivää sitten",
+      "lastCheckinAgo": "Viimeisin kirjautuminen {{timeAgo}}",
+      "lastCheckinLabel": "Viimeisin kirjautuminen:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Päivän tilanne",
+      "home": "Kotona",
+      "trip": "Matkalla",
+      "homeTab": "🌿 Arki",
+      "tripTab": "✈️ Matka",
+      "statusTitle": "Tila",
+      "tripStatusPrompt": "Valitse matkan tila",
+      "homeStatuses": {
+        "chilling": "🛋️ Chillailen",
+        "home": "🏠 Kotona",
+        "outside": "🚶 Ulkona",
+        "busy": "💼 Kiireinen",
+        "relaxing": "☕ Rentoutumassa"
+      },
+      "summaryHome": "Normaali kirjautuminen",
+      "summaryTrip": "Lisää matkan tila",
+      "summaryWithStatus": "Matkalla · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Lähden matkalle",
+        "boarding": "🛫 Boarding / 🚆 Ajaa",
+        "layover": "🛑 Välilaskeutuminen / vaihto",
+        "landed": "🛬 Saapunut turvallisesti",
+        "on_the_move": "🚕 Liikkeellä",
+        "at_hotel": "🏨 Saapunut hotelliin",
+        "on_trip": "🗺️ Matkalla",
+        "heading_home": "🏠 Matkalla kotiin",
+        "trip_ended": "✅ Matka päättyi — kotona turvassa"
+      }
     }
   },
   "activity": {
@@ -100,7 +147,7 @@
       "defaultMessage": "tykkää 👍 kirjautumisestasi!"
     },
     "welfareButton": {
-      "send": "Oletko kunnossa? 🍀",
+      "send": "🍀 Oletko kunnossa?",
       "sent": "Tervehdys lähetetty ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Todella iloinen tänään\n😊"
     },
     "todayCheckButton": {
-      "send": "Mitä kuuluu tänään? 👋",
+      "send": "👋 Mitä kuuluu tänään?",
       "sent": "Tervehdys lähetetty ✓"
     },
     "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
     },
     "supportButton": {
-      "send": "Lähetä tukea 💪",
+      "send": "💪 Lähetä tukea",
       "sent": "Tuki lähetetty ✓"
     }
   },
@@ -375,6 +422,18 @@
     "information": "Tiedot",
     "language": "Kieli",
     "theme": "Teema",
+    "homeStyle": {
+      "title": "Valitse kotinäkymä",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Yksinkertainen",
+        "description": "Yhden napautuksen kuittaus, ei häiriötekijöitä."
+      },
+      "enhanced": {
+        "title": "Laajennettu",
+        "description": "Jaa mielialasi, matkatilasi ja sijaintisi."
+      }
+    },
     "notifications": {
       "title": "Ilmoitukset",
       "preferences": "Ilmoitusasetukset",
@@ -412,7 +471,14 @@
     "cancel": "Peruuta",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Kirjautumistila",
+      "home": "Koti",
+      "trip": "Matka",
+      "homeDescription": "Tavallinen päivittäinen kirjautuminen",
+      "tripDescription": "Jaa matkastatus yhteystiedoille"
+    }
   },
   "common": {
     "ok": "OK",
@@ -452,7 +518,7 @@
       "create": "Luo tili",
       "creating": "Luodaan tiliä...",
       "success": {
-        "title": "Tili luotu 🎉",
+        "title": "🎉 Tili luotu",
         "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
       },
       "verifyEmail": {

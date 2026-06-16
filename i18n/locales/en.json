@@ -12,7 +12,49 @@
     "dontForget": "Don't forget to check in today!",
     "youCheckedInTodayAt": "You checked in today @ {{time}}",
     "pressMeToCheckIn": "CHECK IN HERE",
+    "simple": {
+      "cta": "I'm okay",
+      "tapHint": "Tap to check in",
+      "checkedIn": "I'm okay",
+      "statusReady": "Ready for today",
+      "statusChecked": "Checked in today",
+      "statusQuiet": "All quiet"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} checked in",
+      "sentWave": "{{name}} sent you a wave",
+      "messageFrom": "Message from {{name}}",
+      "justNow": "Just now",
+      "minutesAgo_one": "{{count}} minute ago",
+      "minutesAgo_other": "{{count}} minutes ago",
+      "hoursAgo_one": "{{count}} hour ago",
+      "hoursAgo_other": "{{count}} hours ago",
+      "hoursAgoDecimal": "{{value}} hours ago",
+      "daysAgo_one": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago",
+      "lastCheckinAgo": "Last check-in {{timeAgo}}",
+      "lastCheckinLabel": "Last check-in:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Today's context",
+      "home": "At home",
+      "trip": "Travelling",
+      "homeTab": "🌿 Daily",
+      "tripTab": "✈️ Trip",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Choose a trip status",
+      "homeStatuses": {
+        "chilling": "🛋️ Chilling",
+        "home": "🏠 At home",
+        "outside": "🚶 Outside",
+        "busy": "💼 Busy",
+        "relaxing": "☕ Relaxing"
+      },
+      "summaryHome": "Normal check-in",
+      "summaryTrip": "Add a travel status",
+      "summaryWithStatus": "Travelling · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
@@ -50,6 +92,19 @@
         "November",
         "December"
       ]
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Leaving for the trip",
+        "boarding": "🛫 Boarding / 🚆 Driving",
+        "layover": "🛑 Layover / connecting",
+        "landed": "🛬 Arrived safely",
+        "on_the_move": "🚕 On the move",
+        "at_hotel": "🏨 Arrived at hotel",
+        "on_trip": "🗺️ On the trip",
+        "heading_home": "🏠 Heading home",
+        "trip_ended": "✅ Trip ended — home safely"
+      }
     },
     "errors": {
       "fetchLastCheckin": "Failed to fetch last check-in",
@@ -90,7 +145,7 @@
       "other": "{{date, date, MMMM d, yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Send a Like 👍",
+      "sendResponse": "👍 Send a Like",
       "sent": "Like sent ✓"
     },
     "checkinResponse": {
@@ -100,7 +155,7 @@
       "defaultMessage": "likes 👍 your checkin!"
     },
     "welfareButton": {
-      "send": "Are you alright? 🍀",
+      "send": "🍀 Are you alright?",
       "sent": "Greeting sent ✓"
     },
     "sharedLocation": {
@@ -124,7 +179,7 @@
       "great": "Feeling very happy today\n😊"
     },
     "todayCheckButton": {
-      "send": "How are you today? 👋",
+      "send": "👋 How are you today?",
       "sent": "Greeting sent ✓"
     },
     "checkedInAt": "Checked in @ {{time}} {{date}}",
@@ -133,7 +188,7 @@
       "todayGreetings_other": "💛 You got {{count}} greetings today:"
     },
     "supportButton": {
-      "send": "Send support 💪",
+      "send": "💪 Send support",
       "sent": "Support sent ✓"
     }
   },
@@ -391,6 +446,18 @@
         "description": "Notify me when my contacts complete their check-ins"
       }
     },
+    "homeStyle": {
+      "title": "Choose Home View",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Simple",
+        "description": "One-tap check-in with no distractions."
+      },
+      "enhanced": {
+        "title": "Enhanced",
+        "description": "Share mood, trip status, and location."
+      }
+    },
     "about": "About",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
@@ -407,6 +474,13 @@
     "finnish": "Finnish",
     "chineseSimplified": "Chinese (Simplified)",
     "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Check-in Mode",
+      "home": "Home",
+      "trip": "Trip",
+      "homeDescription": "Standard daily check-in",
+      "tripDescription": "Share your travel status"
+    },
     "resetWarning": "Are you sure? All your data will be deleted.",
     "logoutConfirm": "Are you sure you want to log out?",
     "confirmReset": "Reset",
@@ -483,7 +557,7 @@
       "create": "Create Account",
       "creating": "Creating account...",
       "success": {
-        "title": "Account Created 🎉",
+        "title": "🎉 Account Created",
         "message": "Your account is ready. You can now log in."
       },
       "verifyEmail": {

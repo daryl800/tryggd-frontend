@@ -14,7 +14,49 @@
     "youCheckedInTodayAt": "您今天已于 {{time}} 完成签到",
     "checkIn": "签到",
     "pressMeToCheckIn": "点击此处签到",
+    "simple": {
+      "cta": "我很好",
+      "tapHint": "点击签到",
+      "checkedIn": "我很好",
+      "statusReady": "今天已准备好",
+      "statusChecked": "今天已签到",
+      "statusQuiet": "一切正常"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} 已签到",
+      "sentWave": "{{name}} 向你挥手",
+      "messageFrom": "来自 {{name}} 的消息",
+      "justNow": "刚刚",
+      "minutesAgo_one": "{{count}} 分钟 前",
+      "minutesAgo_other": "{{count}} 分钟 前",
+      "hoursAgo_one": "{{count}} 小时 前",
+      "hoursAgo_other": "{{count}} 小时 前",
+      "hoursAgoDecimal": "{{value}} 小时 前",
+      "daysAgo_one": "{{count}} 天 前",
+      "daysAgo_other": "{{count}} 天 前",
+      "lastCheckinAgo": "你上次签到：{{timeAgo}}",
+      "lastCheckinLabel": "你上次签到："
+    },
     "wellnessPrompt": "您今天感觉如何？",
+    "context": {
+      "title": "今天的状态",
+      "home": "在家",
+      "trip": "旅行中",
+      "homeTab": "🌿 日常",
+      "tripTab": "✈️ 出行",
+      "statusTitle": "状态",
+      "tripStatusPrompt": "选择出行状态",
+      "homeStatuses": {
+        "chilling": "🛋️ 悠闲中",
+        "home": "🏠 在家",
+        "outside": "🚶 外出中",
+        "busy": "💼 忙碌中",
+        "relaxing": "☕ 放松中"
+      },
+      "summaryHome": "普通签到",
+      "summaryTrip": "添加旅行状态",
+      "summaryWithStatus": "旅行中 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus 功能",
       "message": "升级到 Plus，让您在签到时分享今天的感受。"
@@ -26,7 +68,7 @@
     "contacts_one": "{{count}} 个联系人",
     "contacts_other": "{{count}} 个联系人",
     "history": "历史记录",
-    "streak": "连续天数",
+    "streak": "连续签到",
     "days_one": "{{count}} 天",
     "days_other": "{{count}} 天",
     "dateFormats": {
@@ -87,6 +129,19 @@
         "31": "三十一号"
       }
     },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 出发了",
+        "boarding": "🛫 登机／🚆启程",
+        "layover": "🛑 中途停留/转机",
+        "landed": "🛬 已安全抵达",
+        "on_the_move": "🚕 在移动中",
+        "at_hotel": "🏨 已抵达酒店",
+        "on_trip": "🗺️ 旅程中",
+        "heading_home": "🏠 正在回家途中",
+        "trip_ended": "✅ 旅程结束——已安全到家"
+      }
+    },
     "errors": {
       "fetchLastCheckin": "无法获取最后签到记录",
       "noUser": "未找到用户",
@@ -126,7 +181,7 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "点赞 👍",
+      "sendResponse": "👍 点赞",
       "sent": "已点赞 ✓"
     },
     "checkinResponse": {
@@ -136,7 +191,7 @@
       "defaultMessage": "为您的签到点赞 👍！"
     },
     "welfareButton": {
-      "send": "你最近还好吗？🍀",
+      "send": "🍀 你最近还好吗？",
       "sent": "已发送问候 ✓"
     },
     "sharedLocation": {
@@ -160,7 +215,7 @@
       "great": "今天很开心\n😊"
     },
     "todayCheckButton": {
-      "send": "你今天怎么样？👋",
+      "send": "👋 你今天怎么样？",
       "sent": "已发送问候 ✓"
     },
     "checkedInAt": "签到 @ {{time}} {{date}}",
@@ -169,7 +224,7 @@
       "todayGreetings_other": "💛 你今天收到 {{count}} 个问候："
     },
     "supportButton": {
-      "send": "发送支持 💪",
+      "send": "💪 发送支持",
       "sent": "已发送支持 ✓"
     }
   },
@@ -410,6 +465,18 @@
     "information": "信息",
     "language": "语言",
     "theme": "主题",
+    "homeStyle": {
+      "title": "选择主页显示",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "简易",
+        "description": "一键签到，没有多余干扰。"
+      },
+      "enhanced": {
+        "title": "加强",
+        "description": "分享心情、出行状态和位置。"
+      }
+    },
     "notifications": {
       "title": "通知",
       "preferences": "通知偏好",
@@ -443,6 +510,13 @@
     "finnish": "芬兰语",
     "chineseSimplified": "简体中文",
     "chineseTraditional": "繁体中文",
+    "tripMode": {
+      "title": "签到模式",
+      "home": "日常",
+      "trip": "旅程",
+      "homeDescription": "标准每日签到",
+      "tripDescription": "与联系人分享旅行状态"
+    },
     "resetWarning": "确定吗？所有数据将被删除。",
     "logoutConfirm": "确定要退出登录吗？",
     "confirmReset": "重置",
@@ -519,7 +593,7 @@
       "create": "创建账户",
       "creating": "创建账户中...",
       "success": {
-        "title": "账户创建成功 🎉",
+        "title": "🎉 账户创建成功",
         "message": "您的账户已准备好。现在可以登录了。"
       },
       "verifyEmail": {

@@ -1,5 +1,11 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import {
+    DEFAULT_HOME_STYLE,
+    HOME_STYLE_STORAGE_KEY,
+    isHomeStyle,
+    type HomeStyle,
+} from '@/constants/homeLayout';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { updateContactCheckInPreference } from '@/lib/notifications/core';
 import Constants from 'expo-constants';
@@ -26,6 +32,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { iosFontSize } from '@/constants/typography';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -60,10 +67,13 @@ const STORAGE_KEYS = {
 
 export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
+    const { capabilities } = useAuth();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
+    const [isHomeStyleExpanded, setIsHomeStyleExpanded] = useState(false);
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
+    const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
     const appVersion = Constants.expoConfig?.version || 'Unknown';
     const buildNumber = Constants.nativeBuildVersion;
     const versionLabel = buildNumber
@@ -80,6 +90,7 @@ export default function SettingsScreen() {
             const savedCheckInReminder = await AsyncStorage.getItem(STORAGE_KEYS.CHECK_IN_REMINDER);
             const savedContactCheckIn = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
             const savedLanguage = await AsyncStorage.getItem(STORAGE_KEYS.LANGUAGE);
+            const savedHomeStyle = await AsyncStorage.getItem(HOME_STYLE_STORAGE_KEY);
 
             if (savedCheckInReminder !== null) {
                 setCheckInReminderEnabled(savedCheckInReminder === 'true');
@@ -87,13 +98,16 @@ export default function SettingsScreen() {
             if (savedContactCheckIn !== null) {
                 setContactCheckInEnabled(savedContactCheckIn === 'true');
             }
+            if (isHomeStyle(savedHomeStyle)) {
+                setHomeStyle(savedHomeStyle);
+            }
 
             // Load language from Supabase and sync with i18n if needed
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data: settings, error } = await supabase
                     .from('user_settings')
-                    .select('language')
+                    .select('language, home_style')
                     .eq('user_id', user.id)
                     .single();
 
@@ -110,6 +124,19 @@ export default function SettingsScreen() {
                         .upsert({
                             user_id: user.id,
                             language: savedLanguage,
+                            updated_at: new Date().toISOString()
+                        }, { onConflict: 'user_id' });
+                }
+
+                if (!error && isHomeStyle(settings?.home_style)) {
+                    setHomeStyle(settings.home_style);
+                    await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, settings.home_style);
+                } else if (isHomeStyle(savedHomeStyle)) {
+                    await supabase
+                        .from('user_settings')
+                        .upsert({
+                            user_id: user.id,
+                            home_style: savedHomeStyle,
                             updated_at: new Date().toISOString()
                         }, { onConflict: 'user_id' });
                 }
@@ -159,6 +186,11 @@ export default function SettingsScreen() {
         setIsNotificationsExpanded(!isNotificationsExpanded);
     };
 
+    const toggleHomeStyleExpand = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsHomeStyleExpanded(!isHomeStyleExpanded);
+    };
+
     // Replace saveCheckInReminder with:
     const saveCheckInReminder = async (enabled: boolean) => {
         setCheckInReminderEnabled(enabled);
@@ -195,6 +227,31 @@ export default function SettingsScreen() {
             STORAGE_KEYS.CONTACT_CHECK_IN,
             enabled.toString()
         );
+    };
+
+    const saveHomeStyle = async (style: HomeStyle) => {
+        setHomeStyle(style);
+        setIsHomeStyleExpanded(false);
+        await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, style);
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { error } = await supabase
+                    .from('user_settings')
+                    .upsert({
+                        user_id: user.id,
+                        home_style: style,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+
+                if (error) {
+                    console.error("Failed to update home style in Supabase:", error);
+                }
+            }
+        } catch (error) {
+            console.error("Error updating home style in Supabase:", error);
+        }
     };
 
 
@@ -271,6 +328,106 @@ export default function SettingsScreen() {
                         )}
                     </View>
                 </View>
+
+                {capabilities.isPlus && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionLabel}>{t("settings.homeStyle.title")}</Text>
+                        <View style={styles.card}>
+                            {/* Current Home Style Header */}
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={toggleHomeStyleExpand}
+                                activeOpacity={0.7}
+                            >
+                                <View style={styles.settingContent}>
+                                    <View style={styles.settingIcon}>
+                                        <Ionicons
+                                            name={homeStyle === 'simple' ? 'heart-circle' : 'options'}
+                                            size={20}
+                                            color={BaseColors.primary}
+                                        />
+                                    </View>
+                                    <View style={styles.settingText}>
+                                        <View style={styles.homeStyleTitleRow}>
+                                            <Text style={styles.settingTitle}>
+                                                {t(`settings.homeStyle.${homeStyle}.title`)}
+                                            </Text>
+                                            {homeStyle === 'enhanced' && (
+                                                <View style={styles.plusBadge}>
+                                                    <Text style={styles.plusBadgeText}>
+                                                        {t('settings.homeStyle.plusBadge')}
+                                                    </Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                        <Text style={styles.settingSubtitle}>
+                                            {t(`settings.homeStyle.${homeStyle}.description`)}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <Ionicons
+                                    name={isHomeStyleExpanded ? "chevron-up" : "chevron-down"}
+                                    size={22}
+                                    color={BaseColors.neutral[400]}
+                                />
+                            </TouchableOpacity>
+
+                            {/* Home Style Options */}
+                            {isHomeStyleExpanded && (
+                                <View style={styles.expandedSection}>
+                                    {(['simple', 'enhanced'] as const).map((style, index) => {
+                                        const selected = homeStyle === style;
+                                        return (
+                                            <View key={style}>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.settingItem,
+                                                        selected && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => saveHomeStyle(style)}
+                                                    activeOpacity={0.7}
+                                                >
+                                                    <View style={styles.settingContent}>
+                                                        <View style={styles.settingIcon}>
+                                                            <Ionicons
+                                                                name={style === 'simple' ? 'heart-circle' : 'options'}
+                                                                size={20}
+                                                                color={BaseColors.primary}
+                                                            />
+                                                        </View>
+                                                        <View style={styles.settingText}>
+                                                            <View style={styles.homeStyleTitleRow}>
+                                                                <Text style={styles.settingTitle}>
+                                                                    {t(`settings.homeStyle.${style}.title`)}
+                                                                </Text>
+                                                                {style === 'enhanced' && (
+                                                                    <View style={styles.plusBadge}>
+                                                                        <Text style={styles.plusBadgeText}>
+                                                                            {t('settings.homeStyle.plusBadge')}
+                                                                        </Text>
+                                                                    </View>
+                                                                )}
+                                                            </View>
+                                                            <Text style={styles.settingSubtitle}>
+                                                                {t(`settings.homeStyle.${style}.description`)}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                    {selected && (
+                                                        <View style={styles.selectedIndicator}>
+                                                            <Ionicons name="checkmark" size={18} color="#fff" />
+                                                        </View>
+                                                    )}
+                                                </TouchableOpacity>
+                                                {index === 0 && <View style={styles.divider} />}
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                )}
 
                 {/* Notifications */}
                 {/* Notifications */}
@@ -432,7 +589,7 @@ const CARD_ITEM_VERTICAL_PADDING = 12;
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     scrollContent: {
         paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -499,6 +656,24 @@ const styles = StyleSheet.create({
         fontSize: iosFontSize(13),
         color: BaseColors.neutral[500],
         marginTop: 2,
+    },
+    homeStyleTitleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+    },
+    plusBadge: {
+        paddingHorizontal: 7,
+        paddingVertical: 2,
+        borderRadius: 999,
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
+    plusBadgeText: {
+        fontSize: iosFontSize(11),
+        fontWeight: '700',
+        color: BaseColors.primaryDark,
     },
     expandedSection: {
         marginTop: 4,

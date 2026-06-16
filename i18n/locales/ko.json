@@ -52,10 +52,57 @@
       "checkin": "체크인에 실패했습니다",
       "loadState": "상태를 불러오지 못했습니다"
     },
+    "status": {
+      "contactCheckedIn": "{{name}}님이 체크인했어요",
+      "sentWave": "{{name}}님이 손을 흔들었어요",
+      "messageFrom": "{{name}}님의 메시지",
+      "justNow": "방금",
+      "minutesAgo_one": "{{count}}분 전",
+      "minutesAgo_other": "{{count}}분 전",
+      "hoursAgo_one": "{{count}}시간 전",
+      "hoursAgo_other": "{{count}}시간 전",
+      "hoursAgoDecimal": "{{value}}시간 전",
+      "daysAgo_one": "{{count}}일 전",
+      "daysAgo_other": "{{count}}일 전",
+      "lastCheckinAgo": "마지막 체크인 {{timeAgo}}",
+      "lastCheckinLabel": "마지막 체크인:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "오늘의 상태",
+      "home": "집에 있음",
+      "trip": "여행 중",
+      "homeTab": "🌿 일상",
+      "tripTab": "✈️ 여행",
+      "statusTitle": "상태",
+      "tripStatusPrompt": "여행 상태 선택",
+      "homeStatuses": {
+        "chilling": "🛋️ 멍 때리는 중",
+        "home": "🏠 집에 있음",
+        "outside": "🚶 외출 중",
+        "busy": "💼 바쁨",
+        "relaxing": "☕ 휴식 중"
+      },
+      "summaryHome": "일반 체크인",
+      "summaryTrip": "여행 상태 추가",
+      "summaryWithStatus": "여행 중 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 여행 출발",
+        "boarding": "🛫 탑승 / 🚆 운전",
+        "layover": "🛑 경유 / 환승 중",
+        "landed": "🛬 안전하게 도착",
+        "on_the_move": "🚕 이동 중",
+        "at_hotel": "🏨 호텔 도착",
+        "on_trip": "🗺️ 여행 중",
+        "heading_home": "🏠 집으로 향하는 중",
+        "trip_ended": "✅ 여행 종료 — 안전하게 귀가"
+      }
     }
   },
   "activity": {
@@ -100,7 +147,7 @@
       "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
     },
     "welfareButton": {
-      "send": "괜찮으세요? 🍀",
+      "send": "🍀 괜찮으세요?",
       "sent": "안부 전송됨 ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "오늘 아주 행복해요\n😊"
     },
     "todayCheckButton": {
-      "send": "오늘은 어떠세요? 👋",
+      "send": "👋 오늘은 어떠세요?",
       "sent": "안부 전송됨 ✓"
     },
     "checkedInAt": "{{date}} {{time}} 체크인 완료",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
     },
     "supportButton": {
-      "send": "응원 보내기 💪",
+      "send": "💪 응원 보내기",
       "sent": "응원 보냄 ✓"
     }
   },
@@ -374,6 +421,18 @@
     "information": "정보",
     "language": "언어",
     "theme": "테마",
+    "homeStyle": {
+      "title": "홈 화면 선택",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "심플",
+        "description": "한 번 탭으로 체크인, 방해 요소 없음."
+      },
+      "enhanced": {
+        "title": "확장",
+        "description": "기분, 외출 상태, 위치를 공유하세요."
+      }
+    },
     "notifications": {
       "title": "알림",
       "preferences": "알림 설정",
@@ -407,6 +466,13 @@
     "finnish": "핀란드어",
     "chineseSimplified": "중국어(간체)",
     "chineseTraditional": "중국어(번체)",
+    "tripMode": {
+      "title": "체크인 모드",
+      "home": "일반",
+      "trip": "여행",
+      "homeDescription": "일반 매일 체크인",
+      "tripDescription": "연락처와 여행 상태 공유"
+    },
     "resetWarning": "정말 진행하시겠습니까? 모든 데이터가 삭제됩니다.",
     "logoutConfirm": "정말 로그아웃하시겠습니까?",
     "confirmReset": "초기화",
@@ -449,7 +515,7 @@
       "create": "계정 만들기",
       "creating": "계정을 만드는 중...",
       "success": {
-        "title": "계정이 생성되었습니다 🎉",
+        "title": "🎉 계정이 생성되었습니다",
         "message": "계정이 준비되었습니다. 이제 로그인할 수 있습니다."
       },
       "verifyEmail": {

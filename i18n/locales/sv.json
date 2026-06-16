@@ -52,10 +52,57 @@
       "checkin": "Incheckning misslyckades",
       "loadState": "Kunde inte ladda tillståndet"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} har checkat in",
+      "sentWave": "{{name}} vinkade till dig",
+      "messageFrom": "Meddelande från {{name}}",
+      "justNow": "Just nu",
+      "minutesAgo_one": "{{count}} minut sedan",
+      "minutesAgo_other": "{{count}} minuter sedan",
+      "hoursAgo_one": "{{count}} timme sedan",
+      "hoursAgo_other": "{{count}} timmar sedan",
+      "hoursAgoDecimal": "{{value}} timmar sedan",
+      "daysAgo_one": "{{count}} dag sedan",
+      "daysAgo_other": "{{count}} dagar sedan",
+      "lastCheckinAgo": "Senaste incheckning {{timeAgo}}",
+      "lastCheckinLabel": "Senaste incheckning:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Dagens kontext",
+      "home": "Hemma",
+      "trip": "På resa",
+      "homeTab": "🌿 Vardag",
+      "tripTab": "✈️ Resa",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Välj en resestatus",
+      "homeStatuses": {
+        "chilling": "🛋️ Chillar",
+        "home": "🏠 Hemma",
+        "outside": "🚶 Ute",
+        "busy": "💼 Upptagen",
+        "relaxing": "☕ Kopplar av"
+      },
+      "summaryHome": "Vanlig incheckning",
+      "summaryTrip": "Lägg till en resestatus",
+      "summaryWithStatus": "På resa · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Ger mig iväg",
+        "boarding": "🛫 Ombordstigning / 🚆 Kör",
+        "layover": "🛑 Mellanlandning / byte",
+        "landed": "🛬 Anlänt säkert",
+        "on_the_move": "🚕 På väg",
+        "at_hotel": "🏨 Framme på hotellet",
+        "on_trip": "🗺️ På resan",
+        "heading_home": "🏠 På väg hem",
+        "trip_ended": "✅ Resan slut — hemma säkert"
+      }
     }
   },
   "activity": {
@@ -100,7 +147,7 @@
       "defaultMessage": "gillar 👍 din incheckning!"
     },
     "welfareButton": {
-      "send": "Är du okej? 🍀",
+      "send": "🍀 Är du okej?",
       "sent": "Hälsning skickad ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Väldigt glad i dag\n😊"
     },
     "todayCheckButton": {
-      "send": "Hur mår du idag? 👋",
+      "send": "👋 Hur mår du idag?",
       "sent": "Hälsning skickad ✓"
     },
     "checkedInAt": "Checkade in @ {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Du fick {{count}} hälsningar idag:"
     },
     "supportButton": {
-      "send": "Skicka stöd 💪",
+      "send": "💪 Skicka stöd",
       "sent": "Stöd skickat ✓"
     }
   },
@@ -375,6 +422,18 @@
     "information": "Information",
     "language": "Språk",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Välj hemvy",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Incheckning med ett tryck, utan distraktioner."
+      },
+      "enhanced": {
+        "title": "Utökad",
+        "description": "Dela humör, resestatus och plats."
+      }
+    },
     "notifications": {
       "title": "Notiser",
       "preferences": "Notisinställningar",
@@ -412,7 +471,14 @@
     "cancel": "Avbryt",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Incheckningsläge",
+      "home": "Hem",
+      "trip": "Resa",
+      "homeDescription": "Standardmässig daglig incheckning",
+      "tripDescription": "Dela resestatus med dina kontakter"
+    }
   },
   "common": {
     "ok": "OK",
@@ -452,7 +518,7 @@
       "create": "Skapa konto",
       "creating": "Skapar konto...",
       "success": {
-        "title": "Konto skapat 🎉",
+        "title": "🎉 Konto skapat",
         "message": "Ditt konto är klart. Du kan nu logga in."
       },
       "verifyEmail": {

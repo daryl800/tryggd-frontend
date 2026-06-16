@@ -5,6 +5,7 @@ import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
+import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -36,6 +37,8 @@ type Activity = {
   action_state?: 'like' | 'today_check' | 'overdue_check' | 'none' | null;
   recency_status?: 'today' | 'yesterday' | 'older' | 'none' | null;
   wellness_score?: number | null;
+  trip_status?: string | null;
+  home_presence?: string | null;
   username?: string | null;
   avatar_url?: string | null;
   is_owner?: boolean;
@@ -86,6 +89,22 @@ const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
 const isActivityNotificationType = (type?: string | null) =>
   !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
 
+const EMOJI_CHARS = '[\\u{1F000}-\\u{1FFFF}\\u2600-\\u27FF]';
+const LEADING_EMOJI_RE = new RegExp(`^${EMOJI_CHARS}+️?\\s*`, 'u');
+const TRAILING_EMOJI_RE = new RegExp(`\\s*${EMOJI_CHARS}+$`, 'u');
+
+const splitLabelEmoji = (label: string) => {
+  const leading = label.match(LEADING_EMOJI_RE);
+  if (leading) {
+    return { text: label.slice(leading[0].length).trim(), emoji: leading[0].trim(), position: 'leading' as const };
+  }
+  const trailing = label.match(TRAILING_EMOJI_RE);
+  if (trailing) {
+    return { text: label.slice(0, -trailing[0].length).trim(), emoji: trailing[0].trim(), position: 'trailing' as const };
+  }
+  return { text: label, emoji: '', position: 'trailing' as const };
+};
+
 export default function ActivityScreen() {
   const { t } = useTranslation();
 
@@ -107,6 +126,7 @@ export default function ActivityScreen() {
     return labelMap[normalized] || normalized;
   }, [t]);
   const { user } = useAuth();
+  const { streak } = useStreak();
 
   // State
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -708,6 +728,8 @@ export default function ActivityScreen() {
             last_checked_in_utc: updated.last_checked_in_utc,
             priority: updated.priority,
             wellness_score: updated.wellness_score ?? null,
+            trip_status: updated.trip_status ?? null,
+            home_presence: updated.home_presence ?? null,
             display_name: contactInfo?.display_name || updated.display_name,
             username: contactInfo?.username || null,
             avatar_url: contactInfo?.avatar_url || null,
@@ -793,6 +815,9 @@ export default function ActivityScreen() {
               hasNewUpdate: isNew,
               checkin_timezone: payload.new.checkin_timezone,
               checkin_timezone_label: payload.new.checkin_timezone_label || null,
+              wellness_score: payload.new.wellness_score ?? null,
+              trip_status: payload.new.trip_status ?? null,
+              home_presence: payload.new.home_presence ?? null,
               shared_location: null,
             }));
 
@@ -1187,6 +1212,8 @@ export default function ActivityScreen() {
     action_state,
     recency_status,
     wellness_score,
+    trip_status,
+    home_presence,
     shared_location,
     isNewContact = false,
   }: {
@@ -1204,6 +1231,8 @@ export default function ActivityScreen() {
     action_state?: Activity['action_state'];
     recency_status?: Activity['recency_status'];
     wellness_score?: number | null;
+    trip_status?: string | null;
+    home_presence?: string | null;
     shared_location?: SharedLocationInfo | null;
     isNewContact?: boolean;
   }) => {
@@ -1225,6 +1254,10 @@ export default function ActivityScreen() {
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
     const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [tripTooltipVisible, setTripTooltipVisible] = useState(false);
+    const tripTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [homePresenceTooltipVisible, setHomePresenceTooltipVisible] = useState(false);
+    const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1662,19 +1695,24 @@ export default function ActivityScreen() {
                       const label = welfareCheckSent
                         ? (isTodayCheckMode ? t('activity.todayCheckButton.sent') : t('activity.welfareButton.sent'))
                         : (isTodayCheckMode ? t('activity.todayCheckButton.send') : t('activity.welfareButton.send'));
-                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
-                      const emoji = emojiMatch?.[0] ?? '';
-                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      const { text, emoji, position } = splitLabelEmoji(label);
+                      const textNode = (
+                        <Text style={[
+                          isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
+                          !isSingleActionEnabled && styles.responseButtonTextDisabled
+                        ]}>
+                          {text}
+                        </Text>
+                      );
+                      const emojiNode = !!emoji && (
+                        <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                      );
                       return (
                         <View style={styles.welfareButtonContent}>
-                          <Text style={[
-                            isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
-                            !isSingleActionEnabled && styles.responseButtonTextDisabled
-                          ]}>
-                            {text}
-                          </Text>
-                          {!!emoji && (
-                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          {position === 'leading' ? (
+                            <>{emojiNode}{textNode}</>
+                          ) : (
+                            <>{textNode}{emojiNode}</>
                           )}
                         </View>
                       );
@@ -1684,19 +1722,24 @@ export default function ActivityScreen() {
                       const label = isSupportMode
                         ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
                         : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
-                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
-                      const emoji = emojiMatch?.[0] ?? '';
-                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      const { text, emoji, position } = splitLabelEmoji(label);
+                      const textNode = (
+                        <Text style={[
+                          isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
+                          !isSingleActionEnabled && styles.responseButtonTextDisabled
+                        ]}>
+                          {text}
+                        </Text>
+                      );
+                      const emojiNode = !!emoji && (
+                        <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                      );
                       return (
                         <View style={styles.welfareButtonContent}>
-                          <Text style={[
-                            isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
-                            !isSingleActionEnabled && styles.responseButtonTextDisabled
-                          ]}>
-                            {text}
-                          </Text>
-                          {!!emoji && (
-                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          {position === 'leading' ? (
+                            <>{emojiNode}{textNode}</>
+                          ) : (
+                            <>{textNode}{emojiNode}</>
                           )}
                         </View>
                       );
@@ -1707,7 +1750,7 @@ export default function ActivityScreen() {
             )}
           </View>
 
-          {(username || wellnessMeta) && (
+          {!!(username || trip_status || home_presence || wellnessMeta) && (
             <View style={styles.rightColumn}>
               {username && (
                 <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
@@ -1719,7 +1762,7 @@ export default function ActivityScreen() {
                   {wellnessTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: wellnessMeta.borderColor, backgroundColor: wellnessMeta.backgroundColor }]}>
                       <Text style={[styles.wellnessTooltipText, { color: wellnessMeta.color }]}>
-                        {t(wellnessMeta.labelKey).split('\n')[0]}
+                        {(t(wellnessMeta.labelKey as any) as string).split('\n')[0]}
                       </Text>
                     </View>
                   )}
@@ -1736,6 +1779,76 @@ export default function ActivityScreen() {
                     style={[styles.wellnessBadge, { backgroundColor: wellnessMeta.backgroundColor, borderColor: wellnessMeta.borderColor }]}
                   >
                     <Ionicons name="heart" size={30} color={wellnessMeta.color} />
+                  </Pressable>
+                </View>
+              )}
+              {trip_status && (
+                <View style={styles.wellnessBadgeWrapper}>
+                  {tripTooltipVisible && (
+                    <View style={[styles.wellnessTooltip, { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight }]}>
+                      <Text style={[styles.wellnessTooltipText, { color: BaseColors.primary }]}>
+                        {(() => {
+                          const label = t(`home.tripMode.statuses.${trip_status}` as any) as string;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m ? label.slice(m[0].length).trim() : label;
+                        })()}
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable
+                    onPress={() => {
+                      if (tripTooltipTimerRef.current) clearTimeout(tripTooltipTimerRef.current);
+                      setTripTooltipVisible(v => {
+                        if (!v) {
+                          tripTooltipTimerRef.current = setTimeout(() => setTripTooltipVisible(false), 3000);
+                        }
+                        return !v;
+                      });
+                    }}
+                    style={[styles.wellnessBadge, styles.tripEmojiBadge]}
+                  >
+                    <Text style={styles.tripEmojiText}>
+                      {(() => {
+                        const label = t(`home.tripMode.statuses.${trip_status}` as any) as string;
+                        const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                        return m?.[0] ?? '✈️';
+                      })()}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+              {!trip_status && home_presence && (
+                <View style={styles.wellnessBadgeWrapper}>
+                  {homePresenceTooltipVisible && (
+                    <View style={[styles.wellnessTooltip, { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight }]}>
+                      <Text style={[styles.wellnessTooltipText, { color: BaseColors.primary }]}>
+                        {(() => {
+                          const label = t(`home.context.homeStatuses.${home_presence}` as any) as string;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m ? label.slice(m[0].length).trim() : label;
+                        })()}
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable
+                    onPress={() => {
+                      if (homePresenceTooltipTimerRef.current) clearTimeout(homePresenceTooltipTimerRef.current);
+                      setHomePresenceTooltipVisible(v => {
+                        if (!v) {
+                          homePresenceTooltipTimerRef.current = setTimeout(() => setHomePresenceTooltipVisible(false), 3000);
+                        }
+                        return !v;
+                      });
+                    }}
+                    style={[styles.wellnessBadge, styles.tripEmojiBadge]}
+                  >
+                    <Text style={styles.tripEmojiText}>
+                      {(() => {
+                        const label = t(`home.context.homeStatuses.${home_presence}` as any) as string;
+                        const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                        return m?.[0] ?? '🏠';
+                      })()}
+                    </Text>
                   </Pressable>
                 </View>
               )}
@@ -1805,6 +1918,12 @@ export default function ActivityScreen() {
                   <View style={styles.cardHeader}>
                     <Ionicons name="person-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
                     <Text style={styles.cardTitle}>{t('activity.you')}</Text>
+                    <View style={styles.streakBadge}>
+                      <Ionicons name="flame" size={14} color={BaseColors.warning} />
+                      <Text style={styles.streakBadgeText}>
+                        {t('home.streak')} · {t('home.days', { count: streak })}
+                      </Text>
+                    </View>
                     {todayResponses.length > 0 && (
                       <View style={styles.responseBadge}>
                         <Ionicons
@@ -1824,6 +1943,8 @@ export default function ActivityScreen() {
                     timestamp={ownerActivity.last_checked_in_utc}
                     priority={ownerActivity.priority}
                     wellness_score={ownerActivity.wellness_score}
+                    trip_status={ownerActivity.trip_status}
+                    home_presence={ownerActivity.home_presence}
                     isOwner
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
@@ -1929,6 +2050,8 @@ export default function ActivityScreen() {
                       timestamp={item.last_checked_in_utc}
                       priority={item.priority}
                       wellness_score={item.wellness_score}
+                      trip_status={item.trip_status}
+                      home_presence={item.home_presence}
                       isOwner={false}
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}
@@ -1964,7 +2087,7 @@ const styles = StyleSheet.create({
   // ... (keep all your existing styles exactly as they were)
   mainContainer: {
     flex: 1,
-    backgroundColor: BaseColors.background,
+    backgroundColor: '#F7F3EA',
   },
   contentWrapper: {
     flex: 1,
@@ -2063,6 +2186,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
+  tripEmojiBadge: {
+    backgroundColor: BaseColors.primaryLight,
+    borderColor: BaseColors.primaryBorder,
+  },
+  tripEmojiText: {
+    fontSize: 26,
+  },
   wellnessBadgeWrapper: {
     position: 'relative',
     alignItems: 'center',
@@ -2153,6 +2283,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: 2,
+    gap: 6,
   },
   usernameText: {
     fontSize: iosFontSize(11),
@@ -2265,10 +2396,10 @@ const styles = StyleSheet.create({
   welfareButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
   welfareButtonEmoji: {
     fontSize: iosFontSize(17),
-    marginLeft: 4,
   },
   activityItem: {
     paddingVertical: 12,
@@ -2289,6 +2420,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     gap: 4,
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+    marginRight: 8,
+  },
+  streakBadgeText: {
+    fontSize: iosFontSize(12),
+    fontWeight: '600',
+    color: BaseColors.warning,
   },
   responseBadgeText: {
     fontSize: iosFontSize(12),

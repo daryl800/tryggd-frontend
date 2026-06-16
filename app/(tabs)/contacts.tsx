@@ -2475,7 +2475,7 @@ export default function ContactsScreen() {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     keyboardAvoidingView: {
         flex: 1,
@@ -2484,7 +2484,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 10,
         paddingBottom: 6,
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     tabContainer: {
         flexDirection: 'row',
@@ -2982,7 +2982,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: BaseColors.background,
+        backgroundColor: '#F7F3EA',
     },
     initialLoadingText: {
         marginTop: 12,

@@ -52,10 +52,57 @@
       "checkin": "Innsjekking mislyktes",
       "loadState": "Kunne ikke laste tilstand"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} har sjekket inn",
+      "sentWave": "{{name}} sendte deg en vink",
+      "messageFrom": "Melding fra {{name}}",
+      "justNow": "Akkurat nå",
+      "minutesAgo_one": "{{count}} minutt siden",
+      "minutesAgo_other": "{{count}} minutter siden",
+      "hoursAgo_one": "{{count}} time siden",
+      "hoursAgo_other": "{{count}} timer siden",
+      "hoursAgoDecimal": "{{value}} timer siden",
+      "daysAgo_one": "{{count}} dag siden",
+      "daysAgo_other": "{{count}} dager siden",
+      "lastCheckinAgo": "Siste innsjekking {{timeAgo}}",
+      "lastCheckinLabel": "Siste innsjekking:"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Dagens kontekst",
+      "home": "Hjemme",
+      "trip": "På reise",
+      "homeTab": "🌿 Daglig",
+      "tripTab": "✈️ Reise",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Velg en reisestatus",
+      "homeStatuses": {
+        "chilling": "🛋️ Chiller",
+        "home": "🏠 Hjemme",
+        "outside": "🚶 Ute",
+        "busy": "💼 Opptatt",
+        "relaxing": "☕ Slapper av"
+      },
+      "summaryHome": "Normal innsjekking",
+      "summaryTrip": "Legg til en reisestatus",
+      "summaryWithStatus": "På reise · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Drar på tur",
+        "boarding": "🛫 Ombordstigning / 🚆 Kjører",
+        "layover": "🛑 Mellomlanding / tilkobling",
+        "landed": "🛬 Ankommet trygt",
+        "on_the_move": "🚕 På farten",
+        "at_hotel": "🏨 Ankommet hotellet",
+        "on_trip": "🗺️ På reisen",
+        "heading_home": "🏠 På vei hjem",
+        "trip_ended": "✅ Turen er over — trygt hjemme"
+      }
     }
   },
   "activity": {
@@ -100,7 +147,7 @@
       "defaultMessage": "liker 👍 innsjekkingen din!"
     },
     "welfareButton": {
-      "send": "Går det bra? 🍀",
+      "send": "🍀 Går det bra?",
       "sent": "Hilsen sendt ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Veldig glad i dag\n😊"
     },
     "todayCheckButton": {
-      "send": "Hvordan har du det i dag? 👋",
+      "send": "👋 Hvordan har du det i dag?",
       "sent": "Hilsen sendt ✓"
     },
     "checkedInAt": "Sjekket inn @ {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Du fikk {{count}} hilsener i dag:"
     },
     "supportButton": {
-      "send": "Send støtte 💪",
+      "send": "💪 Send støtte",
       "sent": "Støtte sendt ✓"
     }
   },
@@ -375,6 +422,18 @@
     "information": "Informasjon",
     "language": "Språk",
     "theme": "Tema",
+    "homeStyle": {
+      "title": "Velg hjemmevisning",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Et trykk for innsjekking, uten distraksjoner."
+      },
+      "enhanced": {
+        "title": "Utvidet",
+        "description": "Del humør, reisestatus og posisjon."
+      }
+    },
     "notifications": {
       "title": "Varsler",
       "preferences": "Varselinnstillinger",
@@ -412,7 +471,14 @@
     "cancel": "Avbryt",
     "ok": "OK",
     "chineseSimplified": "Chinese (Simplified)",
-    "chineseTraditional": "Chinese (Traditional)"
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Innsjekkmodus",
+      "home": "Hjem",
+      "trip": "Reise",
+      "homeDescription": "Standard daglig innsjekk",
+      "tripDescription": "Del reisestatus med kontaktene dine"
+    }
   },
   "common": {
     "ok": "OK",
@@ -452,7 +518,7 @@
       "create": "Opprett konto",
       "creating": "Oppretter konto...",
       "success": {
-        "title": "Konto opprettet 🎉",
+        "title": "🎉 Konto opprettet",
         "message": "Din konto er klar. Du kan nå logge inn."
       },
       "verifyEmail": {

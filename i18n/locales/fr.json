@@ -52,10 +52,57 @@
       "checkin": "Le check-in a échoué",
       "loadState": "Échec du chargement de l'état"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} a pointé",
+      "sentWave": "{{name}} vous a fait signe",
+      "messageFrom": "Message de {{name}}",
+      "justNow": "À l'instant",
+      "minutesAgo_one": "il y a {{count}} minute",
+      "minutesAgo_other": "il y a {{count}} minutes",
+      "hoursAgo_one": "il y a {{count}} heure",
+      "hoursAgo_other": "il y a {{count}} heures",
+      "hoursAgoDecimal": "il y a {{value}} heures",
+      "daysAgo_one": "il y a {{count}} jour",
+      "daysAgo_other": "il y a {{count}} jours",
+      "lastCheckinAgo": "Dernier pointage {{timeAgo}}",
+      "lastCheckinLabel": "Dernier pointage :"
+    },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Contexte du jour",
+      "home": "À la maison",
+      "trip": "En voyage",
+      "homeTab": "🌿 Quotidien",
+      "tripTab": "✈️ Voyage",
+      "statusTitle": "Statut",
+      "tripStatusPrompt": "Choisissez un statut de voyage",
+      "homeStatuses": {
+        "chilling": "🛋️ Cocooning",
+        "home": "🏠 À la maison",
+        "outside": "🚶 Sorti(e)",
+        "busy": "💼 Occupé(e)",
+        "relaxing": "☕ Je me détends"
+      },
+      "summaryHome": "Pointage normal",
+      "summaryTrip": "Ajouter un statut de voyage",
+      "summaryWithStatus": "En voyage · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Je pars en voyage",
+        "boarding": "🛫 Embarquement / 🚆 En voiture",
+        "layover": "🛑 Escale / correspondance",
+        "landed": "🛬 Arrivé en sécurité",
+        "on_the_move": "🚕 En déplacement",
+        "at_hotel": "🏨 Arrivé à l'hôtel",
+        "on_trip": "🗺️ En voyage",
+        "heading_home": "🏠 En route pour la maison",
+        "trip_ended": "✅ Voyage terminé — rentré sain et sauf"
+      }
     }
   },
   "activity": {
@@ -90,7 +137,7 @@
       "other": "{{date, date, d MMMM yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Envoyer un j'aime 👍",
+      "sendResponse": "👍 Envoyer un j'aime",
       "sent": "Like envoyé ✓"
     },
     "checkinResponse": {
@@ -100,7 +147,7 @@
       "defaultMessage": "aime 👍 votre check-in !"
     },
     "welfareButton": {
-      "send": "Ça va? 🍀",
+      "send": "🍀 Ça va?",
       "sent": "Message envoyé ✓"
     },
     "sharedLocation": {
@@ -124,7 +171,7 @@
       "great": "Très heureux aujourd’hui\n😊"
     },
     "todayCheckButton": {
-      "send": "Comment ça va aujourd’hui? 👋",
+      "send": "👋 Comment ça va aujourd’hui?",
       "sent": "Message envoyé ✓"
     },
     "checkedInAt": "A pointé à {{time}} {{date}}",
@@ -133,7 +180,7 @@
       "todayGreetings_other": "💛 Vous avez reçu {{count}} messages bienveillants aujourd’hui :"
     },
     "supportButton": {
-      "send": "Envoyer du soutien 💪",
+      "send": "💪 Envoyer du soutien",
       "sent": "Soutien envoyé ✓"
     }
   },
@@ -374,6 +421,18 @@
     "information": "Informations",
     "language": "Langue",
     "theme": "Thème",
+    "homeStyle": {
+      "title": "Choisir l'affichage d'accueil",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Simple",
+        "description": "Pointage en un geste, sans distraction."
+      },
+      "enhanced": {
+        "title": "Avancé",
+        "description": "Partagez votre humeur, votre statut de voyage et votre position."
+      }
+    },
     "notifications": {
       "title": "Notifications",
       "preferences": "Préférences de notification",
@@ -407,6 +466,13 @@
     "finnish": "Finnois",
     "chineseSimplified": "Chinois (simplifié)",
     "chineseTraditional": "Chinois (traditionnel)",
+    "tripMode": {
+      "title": "Mode d'enregistrement",
+      "home": "Maison",
+      "trip": "Voyage",
+      "homeDescription": "Enregistrement quotidien standard",
+      "tripDescription": "Partagez votre statut de voyage"
+    },
     "resetWarning": "Êtes-vous sûr ? Toutes vos données seront supprimées.",
     "logoutConfirm": "Voulez-vous vraiment vous déconnecter ?",
     "confirmReset": "Réinitialiser",
@@ -449,7 +515,7 @@
       "create": "Créer un compte",
       "creating": "Création du compte...",
       "success": {
-        "title": "Compte créé 🎉",
+        "title": "🎉 Compte créé",
         "message": "Votre compte est prêt. Vous pouvez maintenant vous connecter."
       },
       "verifyEmail": {
