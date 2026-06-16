@@ -201,6 +201,27 @@ function getHomePresenceLabel(status: string, lang: string): string {
   return langMap[status] ?? HOME_PRESENCE_LABELS.en[status] ?? status
 }
 
+const LOCATION_SHARED_LABELS: Record<string, string> = {
+  en: '📍 Location shared',
+  da: '📍 Position delt',
+  de: '📍 Standort geteilt',
+  es: '📍 Ubicación compartida',
+  fi: '📍 Sijainti jaettu',
+  fr: '📍 Position partagée',
+  it: '📍 Posizione condivisa',
+  ja: '📍 位置情報を共有中',
+  ko: '📍 위치 공유 중',
+  no: '📍 Posisjon delt',
+  sv: '📍 Plats delad',
+  th: '📍 แชร์ตำแหน่งแล้ว',
+  'zh-Hans': '📍 已共享位置',
+  'zh-Hant': '📍 已分享位置',
+}
+
+function getLocationSharedLabel(lang: string): string {
+  return LOCATION_SHARED_LABELS[lang] ?? LOCATION_SHARED_LABELS.en
+}
+
 type CheckinLocaleKey = keyof typeof CHECKIN_MESSAGES
 
 function getCheckinLocale(language?: string | null) {
@@ -354,16 +375,23 @@ function buildContactCheckinNotification(
     data.homePresence = homePresence
   }
 
-  let body: string
-  if (tripStatus) {
-    body = `${getTripStatusLabel(tripStatus, recipientLang)} · ${formattedTime}`
-  } else if (homePresence) {
-    body = `${getHomePresenceLabel(homePresence, recipientLang)} · ${formattedTime}`
-  } else if (wellnessScore !== null) {
-    body = `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
-  } else {
-    body = locale.fallback(formattedTime)
-  }
+  const statusLabel = tripStatus
+    ? getTripStatusLabel(tripStatus, recipientLang)
+    : homePresence
+    ? getHomePresenceLabel(homePresence, recipientLang)
+    : null
+  const emotionLabel = wellnessScore !== null
+    ? getWellnessBody(locale, contactDisplayName, wellnessScore)
+    : null
+  const locationLabel = location ? getLocationSharedLabel(recipientLang) : null
+
+  const bodyParts = [emotionLabel, statusLabel, locationLabel].filter(
+    (part): part is string => !!part
+  )
+
+  const body = bodyParts.length > 0
+    ? `${bodyParts.join(' · ')} · ${formattedTime}`
+    : locale.fallback(formattedTime)
 
   const locationPrefix = location ? '📍 ' : ''
 

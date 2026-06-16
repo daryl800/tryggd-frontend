@@ -52,6 +52,21 @@
       "checkin": "Incheckning misslyckades",
       "loadState": "Kunde inte ladda tillståndet"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} har checkat in",
+      "sentWave": "{{name}} vinkade till dig",
+      "messageFrom": "Meddelande från {{name}}",
+      "justNow": "Just nu",
+      "minutesAgo_one": "{{count}} minut sedan",
+      "minutesAgo_other": "{{count}} minuter sedan",
+      "hoursAgo_one": "{{count}} timme sedan",
+      "hoursAgo_other": "{{count}} timmar sedan",
+      "hoursAgoDecimal": "{{value}} timmar sedan",
+      "daysAgo_one": "{{count}} dag sedan",
+      "daysAgo_other": "{{count}} dagar sedan",
+      "lastCheckinAgo": "Senaste incheckning {{timeAgo}}",
+      "lastCheckinLabel": "Senaste incheckning:"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "Dagens kontext",
@@ -62,6 +77,7 @@
       "statusTitle": "Status",
       "tripStatusPrompt": "Välj en resestatus",
       "homeStatuses": {
+        "chilling": "🛋️ Chillar",
         "home": "🏠 Hemma",
         "outside": "🚶 Ute",
         "busy": "💼 Upptagen",

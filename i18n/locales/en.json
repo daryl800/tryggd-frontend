@@ -45,6 +45,7 @@
       "statusTitle": "Status",
       "tripStatusPrompt": "Choose a trip status",
       "homeStatuses": {
+        "chilling": "🛋️ Chilling",
         "home": "🏠 At home",
         "outside": "🚶 Outside",
         "busy": "💼 Busy",

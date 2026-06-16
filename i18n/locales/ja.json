@@ -52,6 +52,21 @@
       "checkin": "チェックインに失敗しました",
       "loadState": "状態の読み込みに失敗しました"
     },
+    "status": {
+      "contactCheckedIn": "{{name}}さんがチェックインしました",
+      "sentWave": "{{name}}さんが手を振りました",
+      "messageFrom": "{{name}}さんからのメッセージ",
+      "justNow": "たった今",
+      "minutesAgo_one": "{{count}}分前",
+      "minutesAgo_other": "{{count}}分前",
+      "hoursAgo_one": "{{count}}時間前",
+      "hoursAgo_other": "{{count}}時間前",
+      "hoursAgoDecimal": "{{value}}時間前",
+      "daysAgo_one": "{{count}}日前",
+      "daysAgo_other": "{{count}}日前",
+      "lastCheckinAgo": "前回のチェックイン {{timeAgo}}",
+      "lastCheckinLabel": "前回のチェックイン："
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "今日のステータス",
@@ -62,6 +77,7 @@
       "statusTitle": "ステータス",
       "tripStatusPrompt": "旅行のステータスを選択",
       "homeStatuses": {
+        "chilling": "🛋️ のんびり中",
         "home": "🏠 在宅",
         "outside": "🚶 外出中",
         "busy": "💼 忙しい",

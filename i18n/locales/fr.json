@@ -52,6 +52,21 @@
       "checkin": "Le check-in a échoué",
       "loadState": "Échec du chargement de l'état"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} a pointé",
+      "sentWave": "{{name}} vous a fait signe",
+      "messageFrom": "Message de {{name}}",
+      "justNow": "À l'instant",
+      "minutesAgo_one": "il y a {{count}} minute",
+      "minutesAgo_other": "il y a {{count}} minutes",
+      "hoursAgo_one": "il y a {{count}} heure",
+      "hoursAgo_other": "il y a {{count}} heures",
+      "hoursAgoDecimal": "il y a {{value}} heures",
+      "daysAgo_one": "il y a {{count}} jour",
+      "daysAgo_other": "il y a {{count}} jours",
+      "lastCheckinAgo": "Dernier pointage {{timeAgo}}",
+      "lastCheckinLabel": "Dernier pointage :"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "Contexte du jour",
@@ -62,6 +77,7 @@
       "statusTitle": "Statut",
       "tripStatusPrompt": "Choisissez un statut de voyage",
       "homeStatuses": {
+        "chilling": "🛋️ Cocooning",
         "home": "🏠 À la maison",
         "outside": "🚶 Sorti(e)",
         "busy": "💼 Occupé(e)",

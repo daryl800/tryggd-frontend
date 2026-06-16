@@ -52,6 +52,21 @@
       "checkin": "체크인에 실패했습니다",
       "loadState": "상태를 불러오지 못했습니다"
     },
+    "status": {
+      "contactCheckedIn": "{{name}}님이 체크인했어요",
+      "sentWave": "{{name}}님이 손을 흔들었어요",
+      "messageFrom": "{{name}}님의 메시지",
+      "justNow": "방금",
+      "minutesAgo_one": "{{count}}분 전",
+      "minutesAgo_other": "{{count}}분 전",
+      "hoursAgo_one": "{{count}}시간 전",
+      "hoursAgo_other": "{{count}}시간 전",
+      "hoursAgoDecimal": "{{value}}시간 전",
+      "daysAgo_one": "{{count}}일 전",
+      "daysAgo_other": "{{count}}일 전",
+      "lastCheckinAgo": "마지막 체크인 {{timeAgo}}",
+      "lastCheckinLabel": "마지막 체크인:"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "오늘의 상태",
@@ -62,6 +77,7 @@
       "statusTitle": "상태",
       "tripStatusPrompt": "여행 상태 선택",
       "homeStatuses": {
+        "chilling": "🛋️ 멍 때리는 중",
         "home": "🏠 집에 있음",
         "outside": "🚶 외출 중",
         "busy": "💼 바쁨",

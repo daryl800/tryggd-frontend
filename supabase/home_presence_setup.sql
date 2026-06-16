@@ -37,7 +37,7 @@ do $$ begin
     alter table public.checkins
       add constraint checkins_home_presence_values
       check (home_presence is null or home_presence in (
-        'home', 'outside', 'busy', 'relaxing'
+        'chilling', 'home', 'outside', 'busy', 'relaxing'
       ));
   end if;
 end $$;
@@ -51,7 +51,7 @@ do $$ begin
     alter table public.users_latest_checkin
       add constraint users_latest_checkin_home_presence_values
       check (home_presence is null or home_presence in (
-        'home', 'outside', 'busy', 'relaxing'
+        'chilling', 'home', 'outside', 'busy', 'relaxing'
       ));
   end if;
 end $$;

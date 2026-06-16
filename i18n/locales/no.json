@@ -52,6 +52,21 @@
       "checkin": "Innsjekking mislyktes",
       "loadState": "Kunne ikke laste tilstand"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} har sjekket inn",
+      "sentWave": "{{name}} sendte deg en vink",
+      "messageFrom": "Melding fra {{name}}",
+      "justNow": "Akkurat nå",
+      "minutesAgo_one": "{{count}} minutt siden",
+      "minutesAgo_other": "{{count}} minutter siden",
+      "hoursAgo_one": "{{count}} time siden",
+      "hoursAgo_other": "{{count}} timer siden",
+      "hoursAgoDecimal": "{{value}} timer siden",
+      "daysAgo_one": "{{count}} dag siden",
+      "daysAgo_other": "{{count}} dager siden",
+      "lastCheckinAgo": "Siste innsjekking {{timeAgo}}",
+      "lastCheckinLabel": "Siste innsjekking:"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "Dagens kontekst",
@@ -62,6 +77,7 @@
       "statusTitle": "Status",
       "tripStatusPrompt": "Velg en reisestatus",
       "homeStatuses": {
+        "chilling": "🛋️ Chiller",
         "home": "🏠 Hjemme",
         "outside": "🚶 Ute",
         "busy": "💼 Opptatt",

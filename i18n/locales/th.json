@@ -12,6 +12,21 @@
     "dontForget": "อย่าลืมเช็กอินวันนี้!",
     "youCheckedInTodayAt": "คุณเช็กอินแล้ววันนี้ เวลา {{time}}",
     "pressMeToCheckIn": "เช็กอินที่นี่",
+    "status": {
+      "contactCheckedIn": "{{name}} เช็กอินแล้ว",
+      "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
+      "messageFrom": "ข้อความจาก {{name}}",
+      "justNow": "เมื่อสักครู่",
+      "minutesAgo_one": "{{count}} นาทีที่แล้ว",
+      "minutesAgo_other": "{{count}} นาทีที่แล้ว",
+      "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgoDecimal": "{{value}} ชั่วโมงที่แล้ว",
+      "daysAgo_one": "{{count}} วันที่แล้ว",
+      "daysAgo_other": "{{count}} วันที่แล้ว",
+      "lastCheckinAgo": "เช็กอินล่าสุด {{timeAgo}}",
+      "lastCheckinLabel": "เช็กอินล่าสุด:"
+    },
     "wellnessPrompt": "วันนี้คุณรู้สึกอย่างไร?",
     "context": {
       "title": "สถานะวันนี้",
@@ -22,6 +37,7 @@
       "statusTitle": "สถานะ",
       "tripStatusPrompt": "เลือกสถานะการเดินทาง",
       "homeStatuses": {
+        "chilling": "🛋️ พักสมอง",
         "home": "🏠 อยู่ที่บ้าน",
         "outside": "🚶 ออกไปข้างนอก",
         "busy": "💼 ไม่ว่าง",

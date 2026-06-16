@@ -47,6 +47,7 @@
       "statusTitle": "狀態",
       "tripStatusPrompt": "選擇出行狀態",
       "homeStatuses": {
+        "chilling": "🛋️ 放空中",
         "home": "🏠 在家",
         "outside": "🚶 外出中",
         "busy": "💼 忙碌中",
@@ -131,7 +132,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出發了",
-        "boarding": "🛫 登機／🚆開車",
+        "boarding": "🛫 登機／🚆啟程",
         "layover": "🛑 中途停留／轉機",
         "landed": "🛬 已安全抵達",
         "on_the_move": "🚕 在移動中",

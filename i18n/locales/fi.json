@@ -52,6 +52,21 @@
       "checkin": "Sisäänkirjautuminen epäonnistui",
       "loadState": "Tilaa ei voitu ladata"
     },
+    "status": {
+      "contactCheckedIn": "{{name}} on kirjautunut sisään",
+      "sentWave": "{{name}} lähetti sinulle vilkutuksen",
+      "messageFrom": "Viesti käyttäjältä {{name}}",
+      "justNow": "Juuri nyt",
+      "minutesAgo_one": "{{count}} minuutti sitten",
+      "minutesAgo_other": "{{count}} minuuttia sitten",
+      "hoursAgo_one": "{{count}} tunti sitten",
+      "hoursAgo_other": "{{count}} tuntia sitten",
+      "hoursAgoDecimal": "{{value}} tuntia sitten",
+      "daysAgo_one": "{{count}} päivä sitten",
+      "daysAgo_other": "{{count}} päivää sitten",
+      "lastCheckinAgo": "Viimeisin kirjautuminen {{timeAgo}}",
+      "lastCheckinLabel": "Viimeisin kirjautuminen:"
+    },
     "wellnessPrompt": "How are you feeling today?",
     "context": {
       "title": "Päivän tilanne",
@@ -62,6 +77,7 @@
       "statusTitle": "Tila",
       "tripStatusPrompt": "Valitse matkan tila",
       "homeStatuses": {
+        "chilling": "🛋️ Chillailen",
         "home": "🏠 Kotona",
         "outside": "🚶 Ulkona",
         "busy": "💼 Kiireinen",

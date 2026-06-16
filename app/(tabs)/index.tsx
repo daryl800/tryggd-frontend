@@ -26,12 +26,14 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   Animated,
   AppState,
   Dimensions,
   GestureResponderEvent,
   Image,
   LayoutChangeEvent,
+  Linking,
   PixelRatio,
   Platform,
   ScrollView as RNScrollView,
@@ -62,7 +64,7 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
-type HomePresence = 'home' | 'outside' | 'busy' | 'relaxing';
+type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing';
 
 type HomeStatusNotification = {
   id: string;
@@ -381,7 +383,7 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['home', 'outside', 'busy', 'relaxing'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['chilling', 'home', 'outside', 'busy', 'relaxing'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
@@ -685,13 +687,17 @@ export default function HomeScreen() {
   const [contentHeight, setContentHeight] = useState(0);
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
   const [tripStatus, setTripStatus] = useState<string | null>(null);
-  const [homePresence, setHomePresence] = useState<HomePresence>('home');
+  const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
+  const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
+  const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
 
   const latestStatusChannelRef = useRef<any>(null);
+  const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -847,7 +853,7 @@ export default function HomeScreen() {
     const loadHomePresence = async () => {
       try {
         if (!canUseEnhancedHome) {
-          setHomePresence('home');
+          setHomePresence('chilling');
           return;
         }
 
@@ -1509,9 +1515,10 @@ export default function HomeScreen() {
   const checkedInMessage = activeTripStatusLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
-  const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
+  const [checkedInMsgTextRaw, checkedInMsgEmoji] = checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
     : [checkedInMessage, wellnessEmoji] as [string, string];
+  const checkedInMsgText = checkedInMsgTextRaw.replace(/\s*[/／]\s*/g, '\n');
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
     checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
@@ -1579,6 +1586,48 @@ export default function HomeScreen() {
   const latestStatusTripEmoji = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
+  const latestStatusHomePresence = !latestStatusTripStatus ? latestStatusNotification?.data?.homePresence : null;
+  const latestStatusHomePresenceEmoji = latestStatusHomePresence
+    ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  const latestStatusLocation = !!latestStatusNotification?.data?.location;
+  const latestStatusBadgeLabel = latestStatusTripStatus
+    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
+    : latestStatusHomePresence
+      ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string)
+      : null;
+  const latestStatusBadgeText = latestStatusBadgeLabel
+    ? latestStatusBadgeLabel.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim()
+    : null;
+  const toggleLatestStatusBadgeTooltip = () => {
+    if (latestStatusBadgeTooltipTimerRef.current) clearTimeout(latestStatusBadgeTooltipTimerRef.current);
+    setLatestStatusBadgeTooltipVisible((visible) => {
+      if (!visible) {
+        latestStatusBadgeTooltipTimerRef.current = setTimeout(() => setLatestStatusBadgeTooltipVisible(false), 3000);
+      }
+      return !visible;
+    });
+  };
+  const toggleLatestStatusWellnessTooltip = () => {
+    if (latestStatusWellnessTooltipTimerRef.current) clearTimeout(latestStatusWellnessTooltipTimerRef.current);
+    setLatestStatusWellnessTooltipVisible((visible) => {
+      if (!visible) {
+        latestStatusWellnessTooltipTimerRef.current = setTimeout(() => setLatestStatusWellnessTooltipVisible(false), 3000);
+      }
+      return !visible;
+    });
+  };
+  const openLatestStatusLocation = async () => {
+    const location = latestStatusNotification?.data?.location;
+    if (!location) return;
+    const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening shared location:', error);
+      Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+    }
+  };
   const latestStatusWellnessScore = latestStatusNotification?.data?.wellnessScore;
   const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
@@ -2020,33 +2069,82 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <View style={styles.simpleStatusEmojiGroup}>
-                        {latestStatusTripEmoji ? (
-                          <View style={[
-                            styles.simpleStatusEmojiCircle,
-                            isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
-                            styles.simpleStatusTripEmojiCircle,
-                          ]}>
-                            <Text style={[
-                              styles.simpleStatusEmoji,
-                              isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                            ]}>{latestStatusTripEmoji}</Text>
+                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji) ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusBadgeTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: BaseColors.primary }]}>
+                                  {latestStatusBadgeText}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusBadgeTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                styles.simpleStatusTripEmojiCircle,
+                              ]}
+                            >
+                              <Text style={[
+                                styles.simpleStatusEmoji,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCompact,
+                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji}</Text>
+                            </TouchableOpacity>
                           </View>
                         ) : null}
-                        {latestStatusWellnessMeta ? (
-                          <View style={[
-                            styles.simpleStatusEmojiCircle,
-                            isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
-                            {
-                              backgroundColor: latestStatusWellnessMeta.backgroundColor,
-                              borderColor: latestStatusWellnessMeta.borderColor,
-                              borderWidth: 1,
-                            },
-                          ]}>
+                        {latestStatusLocation ? (
+                          <TouchableOpacity
+                            onPress={openLatestStatusLocation}
+                            activeOpacity={0.7}
+                            style={[
+                              styles.simpleStatusEmojiCircle,
+                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                              styles.simpleStatusTripEmojiCircle,
+                            ]}
+                          >
                             <Ionicons
-                              name="heart"
+                              name="location"
                               size={isCompactSimpleHome ? 22 : 26}
-                              color={latestStatusWellnessMeta.color}
+                              color={BaseColors.primaryDark}
                             />
+                          </TouchableOpacity>
+                        ) : null}
+                        {latestStatusWellnessMeta ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusWellnessTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: latestStatusWellnessMeta.borderColor, backgroundColor: latestStatusWellnessMeta.backgroundColor },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: latestStatusWellnessMeta.color }]}>
+                                  {typeof latestStatusWellnessScore === 'number' ? getWellnessTooltipLabel(latestStatusWellnessScore) : ''}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusWellnessTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                {
+                                  backgroundColor: latestStatusWellnessMeta.backgroundColor,
+                                  borderColor: latestStatusWellnessMeta.borderColor,
+                                  borderWidth: 1,
+                                },
+                              ]}
+                            >
+                              <Ionicons
+                                name="heart"
+                                size={isCompactSimpleHome ? 22 : 26}
+                                color={latestStatusWellnessMeta.color}
+                              />
+                            </TouchableOpacity>
                           </View>
                         ) : null}
                       </View>
@@ -2808,7 +2906,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    gap: 7,
   },
   simpleCheckinInfoRowCompact: {
     marginTop: 6,
@@ -2817,8 +2915,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   simpleCheckinInfoText: {
-    flex: 1,
-    minWidth: 0,
     fontSize: iosFontSize(15),
     lineHeight: iosFontSize(19),
     fontWeight: '600',
@@ -2952,6 +3048,32 @@ const styles = StyleSheet.create({
   simpleStatusEmojiCompact: {
     fontSize: iosFontSize(22),
     lineHeight: iosFontSize(26),
+  },
+  simpleStatusBadgeWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+  },
+  simpleStatusTooltip: {
+    position: 'absolute',
+    bottom: 54,
+    right: 0,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    minWidth: 120,
+    maxWidth: 180,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 4,
+    zIndex: 100,
+  },
+  simpleStatusTooltipText: {
+    fontSize: iosFontSize(13),
+    fontWeight: '600',
+    textAlign: 'center',
   },
   modeCardGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
