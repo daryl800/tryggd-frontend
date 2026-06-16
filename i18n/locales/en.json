@@ -47,7 +47,6 @@
       "homeStatuses": {
         "home": "🏠 At home",
         "outside": "🚶 Outside",
-        "havingFun": "😊 Having fun",
         "busy": "💼 Busy",
         "relaxing": "☕ Relaxing"
       },

@@ -62,7 +62,7 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
-type HomePresence = 'home' | 'outside' | 'havingFun' | 'busy' | 'relaxing';
+type HomePresence = 'home' | 'outside' | 'busy' | 'relaxing';
 
 type HomeStatusNotification = {
   id: string;
@@ -381,7 +381,7 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['home', 'outside', 'havingFun', 'busy', 'relaxing'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['home', 'outside', 'busy', 'relaxing'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
@@ -1509,7 +1509,7 @@ export default function HomeScreen() {
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
   const checkedInMessage = activeTripStatusLabel
-    ?? (checkinMode === 'home' ? activeHomePresenceLabel : null)
+    ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
   const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]

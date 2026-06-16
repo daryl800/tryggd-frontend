@@ -64,7 +64,6 @@
       "homeStatuses": {
         "home": "🏠 집에 있음",
         "outside": "🚶 외출 중",
-        "havingFun": "😊 즐거운 시간",
         "busy": "💼 바쁨",
         "relaxing": "☕ 휴식 중"
       },

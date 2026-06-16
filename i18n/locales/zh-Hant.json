@@ -49,7 +49,6 @@
       "homeStatuses": {
         "home": "🏠 在家",
         "outside": "🚶 外出中",
-        "havingFun": "😊 開心中",
         "busy": "💼 忙碌中",
         "relaxing": "☕ 放鬆中"
       },
