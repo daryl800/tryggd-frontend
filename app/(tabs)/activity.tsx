@@ -815,6 +815,9 @@ export default function ActivityScreen() {
               hasNewUpdate: isNew,
               checkin_timezone: payload.new.checkin_timezone,
               checkin_timezone_label: payload.new.checkin_timezone_label || null,
+              wellness_score: payload.new.wellness_score ?? null,
+              trip_status: payload.new.trip_status ?? null,
+              home_presence: payload.new.home_presence ?? null,
               shared_location: null,
             }));
 
