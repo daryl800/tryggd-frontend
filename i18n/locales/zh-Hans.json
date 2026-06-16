@@ -47,7 +47,7 @@
       "statusTitle": "状态",
       "tripStatusPrompt": "选择出行状态",
       "homeStatuses": {
-        "chilling": "🛋️ 放空中",
+        "chilling": "🛋️ 悠闲中",
         "home": "🏠 在家",
         "outside": "🚶 外出中",
         "busy": "💼 忙碌中",
