@@ -433,8 +433,8 @@
         "title": "Simple",
         "description": "One main action"
       },
-      "detailed": {
-        "title": "Detailed",
+      "enhanced": {
+        "title": "Enhanced",
         "description": "Trip mode and more"
       }
     },

@@ -327,7 +327,7 @@ export default function SettingsScreen() {
                         <Text style={styles.sectionLabel}>{t("settings.homeStyle.title")}</Text>
                         <View style={styles.card}>
                             <View style={styles.homeStyleSegment}>
-                                {(['simple', 'detailed'] as const).map((style) => {
+                                {(['simple', 'enhanced'] as const).map((style) => {
                                     const selected = homeStyle === style;
                                     return (
                                         <TouchableOpacity

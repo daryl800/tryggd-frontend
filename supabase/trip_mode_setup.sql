@@ -47,7 +47,7 @@ do $$ begin
       and column_name = 'home_style'
   ) then
     alter table public.user_settings add column home_style text default 'simple'
-      check (home_style in ('simple', 'detailed'));
+      check (home_style in ('simple', 'enhanced'));
   end if;
 end $$;
 

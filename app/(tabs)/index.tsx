@@ -749,14 +749,14 @@ export default function HomeScreen() {
   }, [user]);
 
   const homeLayout = getHomeLayout(capabilities.isPlus, homeStyle);
-  const canUseDetailedHome = homeLayout === 'plus-detailed';
+  const canUseEnhancedHome = homeLayout === 'plus-enhanced';
   const canUseWellnessHome = homeLayout !== 'free';
 
   // Load checkin mode from Supabase / AsyncStorage
   useEffect(() => {
     const loadCheckinMode = async () => {
       try {
-        if (!canUseDetailedHome) {
+        if (!canUseEnhancedHome) {
           setCheckinMode('home');
           setTripStatus(null);
           return;
@@ -785,7 +785,7 @@ export default function HomeScreen() {
       } catch (_) {}
     };
     loadCheckinMode();
-  }, [canUseDetailedHome, user]);
+  }, [canUseEnhancedHome, user]);
 
   // Sync drum picker scroll position when checkinMode or card width changes
   useEffect(() => {
@@ -1360,15 +1360,15 @@ export default function HomeScreen() {
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
 
-            // Keep trip status aligned with the active home layout so stale detailed-mode state
+            // Keep trip status aligned with the active home layout so stale enhanced-mode state
             // does not leak into simple/free experiences.
-            if (canUseDetailedHome && checkinMode === 'trip') {
+            if (canUseEnhancedHome && checkinMode === 'trip') {
               supabase
                 .from('users_latest_checkin')
                 .update({ trip_status: tripStatus })
                 .eq('user_id', user.id)
                 .then(() => {});
-            } else if (!canUseDetailedHome) {
+            } else if (!canUseEnhancedHome) {
               supabase
                 .from('users_latest_checkin')
                 .update({ trip_status: null })
@@ -1386,7 +1386,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [canUseDetailedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
+  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
 
 
   const startOfDay = new Date();
@@ -1930,7 +1930,7 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          {canUseDetailedHome && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
+          {canUseEnhancedHome && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
             <View style={styles.tripStatusRow}>
             <RNScrollView
               horizontal
@@ -1969,7 +1969,7 @@ export default function HomeScreen() {
           {!isSimpleHome ? (
           <View style={[styles.cardsGroup, styles.groupContainer]}>
             <View style={styles.cardsContainer}>
-              {canUseDetailedHome && <View style={styles.card}>
+              {canUseEnhancedHome && <View style={styles.card}>
                 <View style={styles.cardIcon}>
                   <View style={[styles.iconContainerBase, styles.activityIconContainer]}>
                     <Ionicons

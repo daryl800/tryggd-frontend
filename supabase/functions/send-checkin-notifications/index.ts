@@ -23,7 +23,7 @@ type SharedLocation = {
 }
 
 type UserPlan = 'free' | 'plus'
-type HomeStyle = 'simple' | 'detailed'
+type HomeStyle = 'simple' | 'enhanced'
 
 type AuthorizedRequest =
   | { kind: 'user'; userId: string }
@@ -244,7 +244,7 @@ async function getUserHomeStyle(
     return 'simple'
   }
 
-  return data?.home_style === 'detailed' ? 'detailed' : 'simple'
+  return data?.home_style === 'enhanced' ? 'enhanced' : 'simple'
 }
 
 // ============================================
@@ -397,7 +397,7 @@ serve(async (req) => {
     const isPlusSender = senderPlan === 'plus'
     const senderHomeStyle = await getUserHomeStyle(supabase, user_id)
     const canSendWellness = isPlusSender
-    const canSendTripStatus = isPlusSender && senderHomeStyle === 'detailed'
+    const canSendTripStatus = isPlusSender && senderHomeStyle === 'enhanced'
     console.log('💳 Sender plan/style:', { senderPlan, senderHomeStyle })
 
     if (rateLimit?.last_contact_checkin_push_at) {
