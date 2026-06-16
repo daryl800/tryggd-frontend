@@ -70,6 +70,7 @@ export default function SettingsScreen() {
     const { capabilities } = useAuth();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
+    const [isHomeStyleExpanded, setIsHomeStyleExpanded] = useState(false);
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
     const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
@@ -185,6 +186,11 @@ export default function SettingsScreen() {
         setIsNotificationsExpanded(!isNotificationsExpanded);
     };
 
+    const toggleHomeStyleExpand = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setIsHomeStyleExpanded(!isHomeStyleExpanded);
+    };
+
     // Replace saveCheckInReminder with:
     const saveCheckInReminder = async (enabled: boolean) => {
         setCheckInReminderEnabled(enabled);
@@ -225,6 +231,7 @@ export default function SettingsScreen() {
 
     const saveHomeStyle = async (style: HomeStyle) => {
         setHomeStyle(style);
+        setIsHomeStyleExpanded(false);
         await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, style);
 
         try {
@@ -326,45 +333,80 @@ export default function SettingsScreen() {
                     <View style={styles.section}>
                         <Text style={styles.sectionLabel}>{t("settings.homeStyle.title")}</Text>
                         <View style={styles.card}>
-                            <View style={styles.homeStyleSegment}>
-                                {(['simple', 'enhanced'] as const).map((style) => {
-                                    const selected = homeStyle === style;
-                                    return (
-                                        <TouchableOpacity
-                                            key={style}
-                                            style={[
-                                                styles.homeStyleOption,
-                                                selected && styles.homeStyleOptionSelected,
-                                            ]}
-                                            onPress={() => saveHomeStyle(style)}
-                                            activeOpacity={0.75}
-                                        >
-                                            <Ionicons
-                                                name={style === 'simple' ? 'heart-circle' : 'options'}
-                                                size={20}
-                                                color={selected ? BaseColors.surface : BaseColors.primary}
-                                            />
-                                            <Text
-                                                style={[
-                                                    styles.homeStyleOptionTitle,
-                                                    selected && styles.homeStyleOptionTitleSelected,
-                                                ]}
-                                            >
-                                                {t(`settings.homeStyle.${style}.title`)}
-                                            </Text>
-                                            <Text
-                                                style={[
-                                                    styles.homeStyleOptionSubtitle,
-                                                    selected && styles.homeStyleOptionSubtitleSelected,
-                                                ]}
-                                                numberOfLines={2}
-                                            >
-                                                {t(`settings.homeStyle.${style}.description`)}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
-                            </View>
+                            {/* Current Home Style Header */}
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={toggleHomeStyleExpand}
+                                activeOpacity={0.7}
+                            >
+                                <View style={styles.settingContent}>
+                                    <View style={styles.settingIcon}>
+                                        <Ionicons
+                                            name={homeStyle === 'simple' ? 'heart-circle' : 'options'}
+                                            size={20}
+                                            color={BaseColors.primary}
+                                        />
+                                    </View>
+                                    <View style={styles.settingText}>
+                                        <Text style={styles.settingTitle}>
+                                            {t(`settings.homeStyle.${homeStyle}.title`)}
+                                        </Text>
+                                        <Text style={styles.settingSubtitle}>
+                                            {t(`settings.homeStyle.${homeStyle}.description`)}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <Ionicons
+                                    name={isHomeStyleExpanded ? "chevron-up" : "chevron-down"}
+                                    size={22}
+                                    color={BaseColors.neutral[400]}
+                                />
+                            </TouchableOpacity>
+
+                            {/* Home Style Options */}
+                            {isHomeStyleExpanded && (
+                                <View style={styles.expandedSection}>
+                                    {(['simple', 'enhanced'] as const).map((style, index) => {
+                                        const selected = homeStyle === style;
+                                        return (
+                                            <View key={style}>
+                                                <TouchableOpacity
+                                                    style={[
+                                                        styles.settingItem,
+                                                        selected && styles.selectedOption,
+                                                    ]}
+                                                    onPress={() => saveHomeStyle(style)}
+                                                    activeOpacity={0.7}
+                                                >
+                                                    <View style={styles.settingContent}>
+                                                        <View style={styles.settingIcon}>
+                                                            <Ionicons
+                                                                name={style === 'simple' ? 'heart-circle' : 'options'}
+                                                                size={20}
+                                                                color={BaseColors.primary}
+                                                            />
+                                                        </View>
+                                                        <View style={styles.settingText}>
+                                                            <Text style={styles.settingTitle}>
+                                                                {t(`settings.homeStyle.${style}.title`)}
+                                                            </Text>
+                                                            <Text style={styles.settingSubtitle}>
+                                                                {t(`settings.homeStyle.${style}.description`)}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                    {selected && (
+                                                        <View style={styles.selectedIndicator}>
+                                                            <Ionicons name="checkmark" size={18} color="#fff" />
+                                                        </View>
+                                                    )}
+                                                </TouchableOpacity>
+                                                {index === 0 && <View style={styles.divider} />}
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            )}
                         </View>
                     </View>
                 )}
@@ -642,46 +684,6 @@ const styles = StyleSheet.create({
                 elevation: 2,
             },
         }),
-    },
-    homeStyleSegment: {
-        flexDirection: 'row',
-        gap: 10,
-        padding: 10,
-    },
-    homeStyleOption: {
-        flex: 1,
-        minHeight: 112,
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: BaseColors.neutral[200],
-        backgroundColor: BaseColors.surface,
-        paddingHorizontal: 12,
-        paddingVertical: 12,
-        justifyContent: 'center',
-    },
-    homeStyleOptionSelected: {
-        borderColor: BaseColors.primary,
-        backgroundColor: BaseColors.primary,
-    },
-    homeStyleOptionTitle: {
-        fontSize: iosFontSize(15),
-        lineHeight: iosFontSize(20),
-        fontWeight: '800',
-        color: BaseColors.text.dark,
-        marginTop: 8,
-    },
-    homeStyleOptionTitleSelected: {
-        color: BaseColors.surface,
-    },
-    homeStyleOptionSubtitle: {
-        fontSize: iosFontSize(12),
-        lineHeight: iosFontSize(16),
-        color: BaseColors.neutral[500],
-        marginTop: 3,
-        fontWeight: '600',
-    },
-    homeStyleOptionSubtitleSelected: {
-        color: 'rgba(255,255,255,0.82)',
     },
     bottomSpacing: {
         height: 20,

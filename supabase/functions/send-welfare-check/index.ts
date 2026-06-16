@@ -64,8 +64,8 @@ const WELFARE_MESSAGES = {
   },
   sv: {
     title: '🍀 Du har fått en hälsning',
-    today: (_name: string) => `👋Hur mår du idag❓`,
-    overdue: (_name: string) => `👋Är du okej❓`,
+    today: (_name: string) => `👋 Hur mår du idag❓`,
+    overdue: (_name: string) => `👋 Är du okej❓`,
     someone: 'Någon',
   },
   'zh-Hans': {

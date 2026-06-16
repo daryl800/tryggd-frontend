@@ -2350,10 +2350,10 @@ const styles = StyleSheet.create({
   welfareButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 4,
   },
   welfareButtonEmoji: {
     fontSize: iosFontSize(17),
-    marginLeft: 4,
   },
   activityItem: {
     paddingVertical: 12,
