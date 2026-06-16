@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "Drar på tur 🧳",
-        "boarding": "Ombordstigning / avgang snart 🛫",
-        "layover": "Mellomlanding / tilkobling 🛑",
-        "landed": "Landet trygt 🛬",
-        "on_the_move": "På farten 🚕",
-        "at_hotel": "Ankommet hotellet 🏨",
-        "on_trip": "På reisen 🗺️",
-        "heading_home": "På vei hjem 🏠",
-        "trip_ended": "Turen er over — trygt hjemme ✅"
+        "leaving": "🧳 Drar på tur",
+        "boarding": "🛫 Ombordstigning / avgang snart",
+        "layover": "🛑 Mellomlanding / tilkobling",
+        "landed": "🛬 Landet trygt",
+        "on_the_move": "🚕 På farten",
+        "at_hotel": "🏨 Ankommet hotellet",
+        "on_trip": "🗺️ På reisen",
+        "heading_home": "🏠 På vei hjem",
+        "trip_ended": "✅ Turen er over — trygt hjemme"
       }
     }
   },
@@ -113,7 +113,7 @@
       "defaultMessage": "liker 👍 innsjekkingen din!"
     },
     "welfareButton": {
-      "send": "Går det bra? 🍀",
+      "send": "🍀 Går det bra?",
       "sent": "Hilsen sendt ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "Veldig glad i dag\n😊"
     },
     "todayCheckButton": {
-      "send": "Hvordan har du det i dag? 👋",
+      "send": "👋 Hvordan har du det i dag?",
       "sent": "Hilsen sendt ✓"
     },
     "checkedInAt": "Sjekket inn @ {{time}} {{date}}",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 Du fikk {{count}} hilsener i dag:"
     },
     "supportButton": {
-      "send": "Send støtte 💪",
+      "send": "💪 Send støtte",
       "sent": "Støtte sendt ✓"
     }
   },
@@ -472,7 +472,7 @@
       "create": "Opprett konto",
       "creating": "Oppretter konto...",
       "success": {
-        "title": "Konto opprettet 🎉",
+        "title": "🎉 Konto opprettet",
         "message": "Din konto er klar. Du kan nå logge inn."
       },
       "verifyEmail": {

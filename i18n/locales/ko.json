@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "여행 출발 🧳",
-        "boarding": "탑승 / 곧 출발 🛫",
-        "layover": "경유 / 환승 중 🛑",
-        "landed": "안전하게 착륙 🛬",
-        "on_the_move": "이동 중 🚕",
-        "at_hotel": "호텔 도착 🏨",
-        "on_trip": "여행 중 🗺️",
-        "heading_home": "집으로 향하는 중 🏠",
-        "trip_ended": "여행 종료 — 안전하게 귀가 ✅"
+        "leaving": "🧳 여행 출발",
+        "boarding": "🛫 탑승 / 곧 출발",
+        "layover": "🛑 경유 / 환승 중",
+        "landed": "🛬 안전하게 착륙",
+        "on_the_move": "🚕 이동 중",
+        "at_hotel": "🏨 호텔 도착",
+        "on_trip": "🗺️ 여행 중",
+        "heading_home": "🏠 집으로 향하는 중",
+        "trip_ended": "✅ 여행 종료 — 안전하게 귀가"
       }
     }
   },
@@ -113,7 +113,7 @@
       "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
     },
     "welfareButton": {
-      "send": "괜찮으세요? 🍀",
+      "send": "🍀 괜찮으세요?",
       "sent": "안부 전송됨 ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "오늘 아주 행복해요\n😊"
     },
     "todayCheckButton": {
-      "send": "오늘은 어떠세요? 👋",
+      "send": "👋 오늘은 어떠세요?",
       "sent": "안부 전송됨 ✓"
     },
     "checkedInAt": "{{date}} {{time}} 체크인 완료",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
     },
     "supportButton": {
-      "send": "응원 보내기 💪",
+      "send": "💪 응원 보내기",
       "sent": "응원 보냄 ✓"
     }
   },
@@ -469,7 +469,7 @@
       "create": "계정 만들기",
       "creating": "계정을 만드는 중...",
       "success": {
-        "title": "계정이 생성되었습니다 🎉",
+        "title": "🎉 계정이 생성되었습니다",
         "message": "계정이 준비되었습니다. 이제 로그인할 수 있습니다."
       },
       "verifyEmail": {

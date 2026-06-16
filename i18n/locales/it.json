@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "Parto per il viaggio 🧳",
-        "boarding": "Imbarco / partenza imminente 🛫",
-        "layover": "Scalo / coincidenza 🛑",
-        "landed": "Atterrato in sicurezza 🛬",
-        "on_the_move": "In movimento 🚕",
-        "at_hotel": "Arrivato in hotel 🏨",
-        "on_trip": "In viaggio 🗺️",
-        "heading_home": "Tornando a casa 🏠",
-        "trip_ended": "Viaggio concluso — a casa sano/a ✅"
+        "leaving": "🧳 Parto per il viaggio",
+        "boarding": "🛫 Imbarco / partenza imminente",
+        "layover": "🛑 Scalo / coincidenza",
+        "landed": "🛬 Atterrato in sicurezza",
+        "on_the_move": "🚕 In movimento",
+        "at_hotel": "🏨 Arrivato in hotel",
+        "on_trip": "🗺️ In viaggio",
+        "heading_home": "🏠 Tornando a casa",
+        "trip_ended": "✅ Viaggio concluso — a casa sano/a"
       }
     }
   },
@@ -103,7 +103,7 @@
       "other": "{{date, date, d MMMM yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Invia un like 👍",
+      "sendResponse": "👍 Invia un like",
       "sent": "Like inviato ✓"
     },
     "checkinResponse": {
@@ -113,7 +113,7 @@
       "defaultMessage": "mette 👍 al tuo check-in!"
     },
     "welfareButton": {
-      "send": "Stai bene? 🍀",
+      "send": "🍀 Stai bene?",
       "sent": "Saluto inviato ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "Molto felice oggi\n😊"
     },
     "todayCheckButton": {
-      "send": "Come stai oggi? 👋",
+      "send": "👋 Come stai oggi?",
       "sent": "Saluto inviato ✓"
     },
     "checkedInAt": "Check-in alle {{time}} {{date}}",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 Hai ricevuto {{count}} saluti oggi:"
     },
     "supportButton": {
-      "send": "Invia supporto 💪",
+      "send": "💪 Invia supporto",
       "sent": "Supporto inviato ✓"
     }
   },
@@ -469,7 +469,7 @@
       "create": "Crea account",
       "creating": "Creazione account...",
       "success": {
-        "title": "Account creato 🎉",
+        "title": "🎉 Account creato",
         "message": "Il tuo account è pronto. Ora puoi accedere."
       },
       "verifyEmail": {

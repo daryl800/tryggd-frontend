@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "旅立ちます 🧳",
-        "boarding": "搭乗・出発間近 🛫",
-        "layover": "乗り継ぎ中 🛑",
-        "landed": "無事着陸 🛬",
-        "on_the_move": "移動中 🚕",
-        "at_hotel": "ホテルに到着 🏨",
-        "on_trip": "旅行中 🗺️",
-        "heading_home": "帰宅中 🏠",
-        "trip_ended": "旅行終了・無事帰宅 ✅"
+        "leaving": "🧳 旅立ちます",
+        "boarding": "🛫 搭乗・出発間近",
+        "layover": "🛑 乗り継ぎ中",
+        "landed": "🛬 無事着陸",
+        "on_the_move": "🚕 移動中",
+        "at_hotel": "🏨 ホテルに到着",
+        "on_trip": "🗺️ 旅行中",
+        "heading_home": "🏠 帰宅中",
+        "trip_ended": "✅ 旅行終了・無事帰宅"
       }
     }
   },
@@ -113,7 +113,7 @@
       "defaultMessage": "があなたのチェックインに 👍 しました!"
     },
     "welfareButton": {
-      "send": "大丈夫ですか? 🍀",
+      "send": "🍀 大丈夫ですか?",
       "sent": "挨拶送信済み ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "今日はとてもうれしいです\n😊"
     },
     "todayCheckButton": {
-      "send": "今日はどうですか? 👋",
+      "send": "👋 今日はどうですか?",
       "sent": "挨拶送信済み ✓"
     },
     "checkedInAt": "{{date}} {{time}} にチェックイン",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:"
     },
     "supportButton": {
-      "send": "サポートを送る 💪",
+      "send": "💪 サポートを送る",
       "sent": "送りました ✓"
     }
   },
@@ -469,7 +469,7 @@
       "create": "アカウントを作成",
       "creating": "アカウントを作成中...",
       "success": {
-        "title": "アカウントを作成しました 🎉",
+        "title": "🎉 アカウントを作成しました",
         "message": "アカウントの準備ができました。ログインできます。"
       },
       "verifyEmail": {

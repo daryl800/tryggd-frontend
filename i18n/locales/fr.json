@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "Je pars en voyage 🧳",
-        "boarding": "Embarquement / départ imminent 🛫",
-        "layover": "Escale / correspondance 🛑",
-        "landed": "Atterri en sécurité 🛬",
-        "on_the_move": "En déplacement 🚕",
-        "at_hotel": "Arrivé à l'hôtel 🏨",
-        "on_trip": "En voyage 🗺️",
-        "heading_home": "En route pour la maison 🏠",
-        "trip_ended": "Voyage terminé — rentré sain et sauf ✅"
+        "leaving": "🧳 Je pars en voyage",
+        "boarding": "🛫 Embarquement / départ imminent",
+        "layover": "🛑 Escale / correspondance",
+        "landed": "🛬 Atterri en sécurité",
+        "on_the_move": "🚕 En déplacement",
+        "at_hotel": "🏨 Arrivé à l'hôtel",
+        "on_trip": "🗺️ En voyage",
+        "heading_home": "🏠 En route pour la maison",
+        "trip_ended": "✅ Voyage terminé — rentré sain et sauf"
       }
     }
   },
@@ -103,7 +103,7 @@
       "other": "{{date, date, d MMMM yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Envoyer un j'aime 👍",
+      "sendResponse": "👍 Envoyer un j'aime",
       "sent": "Like envoyé ✓"
     },
     "checkinResponse": {
@@ -113,7 +113,7 @@
       "defaultMessage": "aime 👍 votre check-in !"
     },
     "welfareButton": {
-      "send": "Ça va? 🍀",
+      "send": "🍀 Ça va?",
       "sent": "Message envoyé ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "Très heureux aujourd’hui\n😊"
     },
     "todayCheckButton": {
-      "send": "Comment ça va aujourd’hui? 👋",
+      "send": "👋 Comment ça va aujourd’hui?",
       "sent": "Message envoyé ✓"
     },
     "checkedInAt": "A pointé à {{time}} {{date}}",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 Vous avez reçu {{count}} messages bienveillants aujourd’hui :"
     },
     "supportButton": {
-      "send": "Envoyer du soutien 💪",
+      "send": "💪 Envoyer du soutien",
       "sent": "Soutien envoyé ✓"
     }
   },
@@ -469,7 +469,7 @@
       "create": "Créer un compte",
       "creating": "Création du compte...",
       "success": {
-        "title": "Compte créé 🎉",
+        "title": "🎉 Compte créé",
         "message": "Votre compte est prêt. Vous pouvez maintenant vous connecter."
       },
       "verifyEmail": {

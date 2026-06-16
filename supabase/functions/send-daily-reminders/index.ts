@@ -107,24 +107,24 @@ serve(async (req) => {
     function getGreeting(hour: number, name: string): { title: string; body: string } {
       const greetings = {
         morning: [
-          { title: `🌅 Good morning ${name}!`, body: "Hope you're having a great start. Quick check-in? 💚" },
-          { title: `☀️ Rise & shine ${name}`, body: "Morning check-in? Let your people know you're okay ✨" },
-          { title: `🌤️ Hello ${name}`, body: "New day, same care. Check in when you're ready 🌱" }
+          { title: `🌅 Good morning ${name}!`, body: "💚 Hope you're having a great start. Quick check-in?" },
+          { title: `☀️ Rise & shine ${name}`, body: "✨ Morning check-in? Let your people know you're okay" },
+          { title: `🌤️ Hello ${name}`, body: "🌱 New day, same care. Check in when you're ready" }
         ],
         afternoon: [
-          { title: `☀️ Hi ${name}!`, body: "Just a gentle nudge - everything okay? Tap to check in ✨" },
-          { title: `🕊️ Thinking of you ${name}`, body: "A quick check-in brings peace of mind 💫" },
-          { title: `🌟 Hello ${name}`, body: "Your people care about you. Let them know you're fine 💚" }
+          { title: `☀️ Hi ${name}!`, body: "✨ Just a gentle nudge - everything okay? Tap to check in" },
+          { title: `🕊️ Thinking of you ${name}`, body: "💫 A quick check-in brings peace of mind" },
+          { title: `🌟 Hello ${name}`, body: "💚 Your people care about you. Let them know you're fine" }
         ],
         evening: [
-          { title: `🌆 Evening ${name}`, body: "Before the night wraps up, let your people know you're fine 💫" },
-          { title: `🌇 Hi ${name}`, body: "How was your day? Quick check-in before evening settles? 🌙" },
-          { title: `✨ Check in now, ${name}`, body: "A small moment to connect with those who care 💝" }
+          { title: `🌆 Evening ${name}`, body: "💫 Before the night wraps up, let your people know you're fine" },
+          { title: `🌇 Hi ${name}`, body: "🌙 How was your day? Quick check-in before evening settles?" },
+          { title: `✨ Check in now, ${name}`, body: "💝 A small moment to connect with those who care" }
         ],
         night: [
-          { title: `🌙 Good night ${name}`, body: "One last thing - check in before you drift off to sleep 💤" },
-          { title: `⭐ Night check-in ${name}`, body: "Peace of mind for you and your loved ones 🕊️" },
-          { title: `💫 Sweet dreams ${name}`, body: "Quick check-in? Then rest easy knowing you're connected 🌙" }
+          { title: `🌙 Good night ${name}`, body: "💤 One last thing - check in before you drift off to sleep" },
+          { title: `⭐ Night check-in ${name}`, body: "🕊️ Peace of mind for you and your loved ones" },
+          { title: `💫 Sweet dreams ${name}`, body: "🌙 Quick check-in? Then rest easy knowing you're connected" }
         ]
       }
 

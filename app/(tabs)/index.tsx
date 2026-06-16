@@ -343,26 +343,17 @@ const getWellnessHandleEmoji = (score: number) => {
   return '😊';
 };
 
-const getWellnessStatusEmoji = (score?: number | null) => {
+const getWellnessStatusMeta = (score?: number | null) => {
   if (typeof score !== 'number') return null;
-  return getWellnessHandleEmoji(score);
+  const clampedScore = clampWellnessValue(score);
+  if (clampedScore <= -2) return { color: '#7A5C4D', backgroundColor: '#F3F3F3', borderColor: '#D0D0D0' };
+  if (clampedScore === -1) return { color: '#6B8DA4', backgroundColor: '#E4EFF6', borderColor: '#A8C4D6' };
+  if (clampedScore === 0) return { color: BaseColors.primary, backgroundColor: BaseColors.primaryLight, borderColor: BaseColors.primaryBorder };
+  if (clampedScore === 1) return { color: '#AFC04A', backgroundColor: '#F4F7E0', borderColor: '#CFDA8A' };
+  return { color: '#FFD700', backgroundColor: '#FFF8DC', borderColor: '#E8C64A' };
 };
 
-const getTripStatusEmoji = (tripStatus?: string | null) => {
-  const emojiMap: Record<string, string> = {
-    leaving: '🧳',
-    boarding: '🛫',
-    layover: '🛑',
-    landed: '🛬',
-    on_the_move: '🚕',
-    at_hotel: '🏨',
-    on_trip: '🗺️',
-    heading_home: '🏠',
-    trip_ended: '✅',
-  };
-
-  return tripStatus ? emojiMap[tripStatus] ?? null : null;
-};
+const TRIP_STATUS_EMOJI_PATTERN = /^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u;
 
 const parseNotificationData = (value: unknown) => {
   if (!value) return {};
@@ -500,9 +491,9 @@ const WellnessSlider = ({ value, onChange, disabled = false, onLockedPress }: We
 };
 
 const SIMPLE_WELLNESS_OPTIONS = [
-  { value: -2, iconName: 'heart-sharp' },
+  { value: -1, iconName: 'heart-sharp' },
   { value: 0, iconName: 'heart' },
-  { value: 2, iconName: 'heart-sharp' },
+  { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
 const SimpleWellnessPicker = ({
@@ -520,9 +511,7 @@ const SimpleWellnessPicker = ({
   const optionGap = isCompact ? 10 : 16;
   const tooltipWidth = activeTooltipValue === 0
     ? isCompact ? 120 : 130
-    : activeTooltipValue === 2
-      ? isCompact ? 160 : 172
-      : isCompact ? 142 : 154;
+    : isCompact ? 142 : 154;
 
   useEffect(() => {
     return () => {
@@ -551,64 +540,70 @@ const SimpleWellnessPicker = ({
       isCompact && styles.simpleWellnessGroupCompact,
       isTight && styles.simpleWellnessGroupTight,
     ]}>
-      <Text style={[
-        styles.simpleWellnessTitle,
-        isCompact && styles.simpleWellnessTitleCompact,
-        isTight && styles.simpleWellnessTitleTight,
-      ]}>
-        {title}
-      </Text>
       <View style={[
-        styles.simpleWellnessOptions,
-        isCompact && styles.simpleWellnessOptionsCompact,
+        styles.simpleWellnessCard,
+        isCompact && styles.simpleWellnessCardCompact,
+        isTight && styles.simpleWellnessCardTight,
       ]}>
-        {SIMPLE_WELLNESS_OPTIONS.map((option) => {
-          const selected = clampWellnessValue(value) === option.value;
-          const isActiveTooltip = activeTooltipValue === option.value;
-          const tw = tooltipWidth;
-          const ow = optionWidth;
-          return (
-            <TouchableOpacity
-              key={option.value}
-              style={[
-                styles.simpleWellnessOption,
-                option.value < 0 && styles.simpleWellnessOptionLow,
-                option.value === 0 && styles.simpleWellnessOptionNeutral,
-                option.value > 0 && styles.simpleWellnessOptionHigh,
-                isCompact && styles.simpleWellnessOptionCompact,
-                isTight && styles.simpleWellnessOptionTight,
-                selected && styles.simpleWellnessOptionSelected,
-              ]}
-              onPress={() => {
-                onChange(option.value);
-                showHeartTooltip(option.value);
-                void Haptics.selectionAsync();
-              }}
-              activeOpacity={0.78}
-            >
-              {isActiveTooltip && (
-                <View style={[
-                  styles.simpleWellnessTooltip,
-                  isCompact && styles.simpleWellnessTooltipCompact,
-                  { width: tw, left: ow / 2 - tw / 2 },
-                ]}>
-                  <Text style={[
-                    styles.simpleWellnessTooltipText,
-                    isCompact && styles.simpleWellnessTooltipTextCompact,
+        <Text style={[
+          styles.simpleWellnessTitle,
+          isCompact && styles.simpleWellnessTitleCompact,
+          isTight && styles.simpleWellnessTitleTight,
+        ]}>
+          {title}
+        </Text>
+        <View style={[
+          styles.simpleWellnessOptions,
+          isCompact && styles.simpleWellnessOptionsCompact,
+        ]}>
+          {SIMPLE_WELLNESS_OPTIONS.map((option) => {
+            const selected = clampWellnessValue(value) === option.value;
+            const isActiveTooltip = activeTooltipValue === option.value;
+            const tw = tooltipWidth;
+            const ow = optionWidth;
+            return (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.simpleWellnessOption,
+                  option.value < 0 && styles.simpleWellnessOptionLow,
+                  option.value === 0 && styles.simpleWellnessOptionNeutral,
+                  option.value > 0 && styles.simpleWellnessOptionHigh,
+                  isCompact && styles.simpleWellnessOptionCompact,
+                  isTight && styles.simpleWellnessOptionTight,
+                  selected && styles.simpleWellnessOptionSelected,
+                ]}
+                onPress={() => {
+                  onChange(option.value);
+                  showHeartTooltip(option.value);
+                  void Haptics.selectionAsync();
+                }}
+                activeOpacity={0.78}
+              >
+                {isActiveTooltip && (
+                  <View style={[
+                    styles.simpleWellnessTooltip,
+                    isCompact && styles.simpleWellnessTooltipCompact,
+                    { width: tw, left: ow / 2 - tw / 2 },
                   ]}>
-                    {tooltipLabels[option.value]}
-                  </Text>
-                  <View style={styles.simpleWellnessTooltipArrow} />
-                </View>
-              )}
-              <Ionicons
-                name={option.iconName}
-                size={isCompact ? 28 : 32}
-                color={getWellnessHeartColor(option.value)}
-              />
-            </TouchableOpacity>
-          );
-        })}
+                    <Text style={[
+                      styles.simpleWellnessTooltipText,
+                      isCompact && styles.simpleWellnessTooltipTextCompact,
+                    ]}>
+                      {tooltipLabels[option.value]}
+                    </Text>
+                    <View style={styles.simpleWellnessTooltipArrow} />
+                  </View>
+                )}
+                <Ionicons
+                  name={option.iconName}
+                  size={isCompact ? 28 : 32}
+                  color={getWellnessHeartColor(option.value)}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
     </View>
   );
@@ -1497,15 +1492,25 @@ export default function HomeScreen() {
     return t('home.status.daysAgo', { count: diffDays });
   };
   const simpleCheckinSummary = checkedInToday && lastCheckinUtc
-    ? t('home.status.lastCheckinAgo', { timeAgo: formatHomeStatusAgo(lastCheckinUtc) })
+    ? null
     : t('home.dontForget');
+  const simpleCheckinLabel = checkedInToday && lastCheckinUtc
+    ? t('home.status.lastCheckinLabel' as any) as string
+    : null;
+  const simpleCheckinTimeAgo = checkedInToday && lastCheckinUtc
+    ? formatHomeStatusAgo(lastCheckinUtc)
+    : null;
   const latestStatusTitle = latestStatusNotification
     ? latestStatusNotification.type === 'contact_checkin'
       ? t('home.status.contactCheckedIn', { name: latestStatusNotification.senderName })
       : t('home.status.sentWave', { name: latestStatusNotification.senderName })
     : null;
-  const latestStatusTripEmoji = getTripStatusEmoji(latestStatusNotification?.data?.tripStatus);
-  const latestStatusEmotionEmoji = getWellnessStatusEmoji(latestStatusNotification?.data?.wellnessScore);
+  const latestStatusTripStatus = latestStatusNotification?.data?.tripStatus;
+  const latestStatusTripEmoji = latestStatusTripStatus
+    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  const latestStatusWellnessScore = latestStatusNotification?.data?.wellnessScore;
+  const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
     latestStatusNotification?.senderAvatarUrl?.trim() &&
     !isLocalAvatarUri(latestStatusNotification.senderAvatarUrl) &&
@@ -1761,6 +1766,26 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
+            {isSimpleHome ? (
+              <View style={[
+                styles.simpleCheckinInfoRow,
+                isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
+              ]}>
+                <Ionicons
+                  name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
+                  size={isCompactSimpleHome ? 16 : 18}
+                  color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
+                  style={styles.simpleCheckinInfoIcon}
+                />
+                <Text style={[
+                  styles.simpleCheckinInfoText,
+                  isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
+                  { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+                ]}>
+                  {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
           {isPlusSimpleHome ? (
@@ -1769,9 +1794,9 @@ export default function HomeScreen() {
               onChange={setWellnessScore}
               title={t('home.wellnessPrompt')}
               tooltipLabels={{
-                [-2]: getWellnessTooltipLabel(-2),
+                [-1]: getWellnessTooltipLabel(-1),
                 [0]: getWellnessTooltipLabel(0),
-                [2]: getWellnessTooltipLabel(2),
+                [1]: getWellnessTooltipLabel(1),
               }}
               compactness={simpleHomeCompactness}
             />
@@ -1782,37 +1807,6 @@ export default function HomeScreen() {
               styles.simpleStatusDock,
               isCompactSimpleHome && styles.simpleStatusDockCompact,
             ]}>
-              <View style={styles.simpleStatusDockHandle} />
-              <View style={[
-                styles.simpleCheckinSummaryGroup,
-                isCompactSimpleHome && styles.simpleCheckinSummaryGroupCompact,
-              ]}>
-                <View style={[
-                  styles.simpleCheckinSummaryCard,
-                  isCompactSimpleHome && styles.simpleCheckinSummaryCardCompact,
-                ]}>
-                  <View
-                    style={[
-                      styles.simpleCheckinSummaryIcon,
-                      isCompactSimpleHome && styles.simpleCheckinSummaryIconCompact,
-                      !checkedInToday && styles.simpleCheckinSummaryIconWarning,
-                    ]}
-                  >
-                    <Ionicons
-                      name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
-                      size={20}
-                      color={checkedInToday ? BaseColors.primary : BaseColors.warning}
-                    />
-                  </View>
-                  <Text style={[
-                    styles.simpleCheckinSummaryText,
-                    isCompactSimpleHome && styles.simpleCheckinSummaryTextCompact,
-                  ]} numberOfLines={1}>
-                    {simpleCheckinSummary}
-                  </Text>
-                </View>
-              </View>
-
               <View style={[
                 styles.simpleStatusGroup,
                 isCompactSimpleHome && styles.simpleStatusGroupCompact,
@@ -1871,16 +1865,21 @@ export default function HomeScreen() {
                             ]}>{latestStatusTripEmoji}</Text>
                           </View>
                         ) : null}
-                        {latestStatusEmotionEmoji ? (
+                        {latestStatusWellnessMeta ? (
                           <View style={[
                             styles.simpleStatusEmojiCircle,
                             isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
-                            styles.simpleStatusEmotionEmojiCircle,
+                            {
+                              backgroundColor: latestStatusWellnessMeta.backgroundColor,
+                              borderColor: latestStatusWellnessMeta.borderColor,
+                              borderWidth: 1,
+                            },
                           ]}>
-                            <Text style={[
-                              styles.simpleStatusEmoji,
-                              isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                            ]}>{latestStatusEmotionEmoji}</Text>
+                            <Ionicons
+                              name="heart"
+                              size={isCompactSimpleHome ? 22 : 26}
+                              color={latestStatusWellnessMeta.color}
+                            />
                           </View>
                         ) : null}
                       </View>
@@ -2065,18 +2064,6 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 </View>
               </View>}
-
-              <View style={styles.card}>
-                <View style={styles.cardIcon}>
-                  <View style={[styles.iconContainerBase, styles.streakIconContainer]}>
-                    <Ionicons name="flame" size={ICON_SIZES.LG} color={BaseColors.primary} />
-                  </View>
-                </View>
-                <Text style={styles.cardLabel}>{t('home.streak')}</Text>
-                <Text style={styles.cardSubtext}>
-                  {t('home.days', { count: streak })}
-                </Text>
-              </View>
             </View>
           </View>
           ) : null}
@@ -2225,7 +2212,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginTop: -2,
     marginBottom: 12,
-    alignItems: 'center',
   },
   simpleWellnessGroupCompact: {
     marginBottom: 8,
@@ -2233,6 +2219,33 @@ const styles = StyleSheet.create({
   simpleWellnessGroupTight: {
     marginTop: -6,
     marginBottom: 6,
+  },
+  simpleWellnessCard: {
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#EEF8F3',
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  simpleWellnessCardCompact: {
+    paddingVertical: 10,
+  },
+  simpleWellnessCardTight: {
+    paddingVertical: 8,
+    borderRadius: 18,
   },
   simpleWellnessTitle: {
     fontSize: iosFontSize(18),
@@ -2668,68 +2681,31 @@ const styles = StyleSheet.create({
   simpleStatusGroupCompact: {
     marginBottom: 8,
   },
-  simpleCheckinSummaryGroup: {
+  simpleCheckinInfoRow: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginBottom: 8,
-  },
-  simpleCheckinSummaryGroupCompact: {
-    marginBottom: 6,
-  },
-  simpleCheckinSummaryCard: {
-    minHeight: 50,
-    borderRadius: 16,
-    backgroundColor: '#EEF8F3',
-    borderWidth: 1,
-    borderColor: BaseColors.primaryBorder,
-    paddingHorizontal: 14,
-    paddingVertical: 9,
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: BaseColors.shadowColor,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.06,
-        shadowRadius: 18,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  simpleCheckinSummaryCardCompact: {
-    minHeight: 44,
-    paddingVertical: 7,
-  },
-  simpleCheckinSummaryIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: BaseColors.primaryLight,
-    alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    gap: 10,
   },
-  simpleCheckinSummaryIconCompact: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    marginRight: 10,
+  simpleCheckinInfoRowCompact: {
+    marginTop: 6,
   },
-  simpleCheckinSummaryIconWarning: {
-    backgroundColor: BaseColors.warningLight,
+  simpleCheckinInfoIcon: {
+    flexShrink: 0,
   },
-  simpleCheckinSummaryText: {
+  simpleCheckinInfoText: {
     flex: 1,
     minWidth: 0,
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(19),
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  simpleCheckinInfoTextCompact: {
     fontSize: iosFontSize(14),
     lineHeight: iosFontSize(18),
-    fontWeight: '700',
-    color: BaseColors.text.dark,
-  },
-  simpleCheckinSummaryTextCompact: {
-    fontSize: iosFontSize(13),
-    lineHeight: iosFontSize(17),
   },
   simpleStatusCard: {
     minHeight: 76,
@@ -2805,7 +2781,7 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(16),
     lineHeight: iosFontSize(20),
     fontWeight: '800',
-    color: BaseColors.text.dark,
+    color: BaseColors.primaryDark,
   },
   simpleStatusTitleCompact: {
     fontSize: iosFontSize(14),
@@ -2832,34 +2808,29 @@ const styles = StyleSheet.create({
     minWidth: 32,
   },
   simpleStatusEmojiCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: 'center',
     justifyContent: 'center',
   },
   simpleStatusEmojiCircleCompact: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   simpleStatusTripEmojiCircle: {
     backgroundColor: BaseColors.primaryLight,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
   },
-  simpleStatusEmotionEmojiCircle: {
-    backgroundColor: '#FFF1F2',
-    borderWidth: 1,
-    borderColor: '#FFE4E6',
-  },
   simpleStatusEmoji: {
-    fontSize: iosFontSize(16),
-    lineHeight: iosFontSize(20),
+    fontSize: iosFontSize(26),
+    lineHeight: iosFontSize(30),
   },
   simpleStatusEmojiCompact: {
-    fontSize: iosFontSize(14),
-    lineHeight: iosFontSize(18),
+    fontSize: iosFontSize(22),
+    lineHeight: iosFontSize(26),
   },
   cardsContainer: {
     flexDirection: 'row',
@@ -3013,9 +2984,6 @@ const styles = StyleSheet.create({
     opacity: 1,
     fontWeight: '700',
     color: BaseColors.primary,
-  },
-  streakIconContainer: {
-    backgroundColor: '#FFF7ED',
   },
   bottomPadding: {
     height: 12,

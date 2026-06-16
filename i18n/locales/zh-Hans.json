@@ -34,7 +34,8 @@
       "hoursAgoDecimal": "{{value}} 小时 前",
       "daysAgo_one": "{{count}} 天 前",
       "daysAgo_other": "{{count}} 天 前",
-      "lastCheckinAgo": "上次签到：{{timeAgo}}"
+      "lastCheckinAgo": "上次签到：{{timeAgo}}",
+      "lastCheckinLabel": "上次签到："
     },
     "wellnessPrompt": "您今天感觉如何？",
     "plusWellness": {
@@ -48,7 +49,7 @@
     "contacts_one": "{{count}} 个联系人",
     "contacts_other": "{{count}} 个联系人",
     "history": "历史记录",
-    "streak": "连续天数",
+    "streak": "连续签到",
     "days_one": "{{count}} 天",
     "days_other": "{{count}} 天",
     "dateFormats": {
@@ -111,15 +112,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "出发了 🧳",
-        "boarding": "登机／准备起飞 🛫",
-        "layover": "中途停留/转机 🛑",
-        "landed": "已安全着陆 🛬",
-        "on_the_move": "在移动中 🚕",
-        "at_hotel": "已抵达酒店 🏨",
-        "on_trip": "旅程中 🗺️",
-        "heading_home": "正在回家途中 🏠",
-        "trip_ended": "旅程结束——已安全到家 ✅"
+        "leaving": "🧳 出发了",
+        "boarding": "🛫 登机／准备起飞",
+        "layover": "🛑 中途停留/转机",
+        "landed": "🛬 已安全着陆",
+        "on_the_move": "🚕 在移动中",
+        "at_hotel": "🏨 已抵达酒店",
+        "on_trip": "🗺️ 旅程中",
+        "heading_home": "🏠 正在回家途中",
+        "trip_ended": "✅ 旅程结束——已安全到家"
       }
     },
     "errors": {
@@ -161,7 +162,7 @@
       "other": "{{date}}"
     },
     "responseButton": {
-      "sendResponse": "点赞 👍",
+      "sendResponse": "👍 点赞",
       "sent": "已点赞 ✓"
     },
     "checkinResponse": {
@@ -171,7 +172,7 @@
       "defaultMessage": "为您的签到点赞 👍！"
     },
     "welfareButton": {
-      "send": "你最近还好吗？🍀",
+      "send": "🍀 你最近还好吗？",
       "sent": "已发送问候 ✓"
     },
     "sharedLocation": {
@@ -195,7 +196,7 @@
       "great": "今天很开心\n😊"
     },
     "todayCheckButton": {
-      "send": "你今天怎么样？👋",
+      "send": "👋 你今天怎么样？",
       "sent": "已发送问候 ✓"
     },
     "checkedInAt": "签到 @ {{time}} {{date}}",
@@ -204,7 +205,7 @@
       "todayGreetings_other": "💛 你今天收到 {{count}} 个问候："
     },
     "supportButton": {
-      "send": "发送支持 💪",
+      "send": "💪 发送支持",
       "sent": "已发送支持 ✓"
     }
   },
@@ -561,7 +562,7 @@
       "create": "创建账户",
       "creating": "创建账户中...",
       "success": {
-        "title": "账户创建成功 🎉",
+        "title": "🎉 账户创建成功",
         "message": "您的账户已准备好。现在可以登录了。"
       },
       "verifyEmail": {

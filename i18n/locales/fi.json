@@ -59,15 +59,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "Lähden matkalle 🧳",
-        "boarding": "Boarding / lähtö pian 🛫",
-        "layover": "Välilaskeutuminen / vaihto 🛑",
-        "landed": "Laskeutunut turvallisesti 🛬",
-        "on_the_move": "Liikkeellä 🚕",
-        "at_hotel": "Saapunut hotelliin 🏨",
-        "on_trip": "Matkalla 🗺️",
-        "heading_home": "Matkalla kotiin 🏠",
-        "trip_ended": "Matka päättyi — kotona turvassa ✅"
+        "leaving": "🧳 Lähden matkalle",
+        "boarding": "🛫 Boarding / lähtö pian",
+        "layover": "🛑 Välilaskeutuminen / vaihto",
+        "landed": "🛬 Laskeutunut turvallisesti",
+        "on_the_move": "🚕 Liikkeellä",
+        "at_hotel": "🏨 Saapunut hotelliin",
+        "on_trip": "🗺️ Matkalla",
+        "heading_home": "🏠 Matkalla kotiin",
+        "trip_ended": "✅ Matka päättyi — kotona turvassa"
       }
     }
   },
@@ -113,7 +113,7 @@
       "defaultMessage": "tykkää 👍 kirjautumisestasi!"
     },
     "welfareButton": {
-      "send": "Oletko kunnossa? 🍀",
+      "send": "🍀 Oletko kunnossa?",
       "sent": "Tervehdys lähetetty ✓"
     },
     "sharedLocation": {
@@ -137,7 +137,7 @@
       "great": "Todella iloinen tänään\n😊"
     },
     "todayCheckButton": {
-      "send": "Mitä kuuluu tänään? 👋",
+      "send": "👋 Mitä kuuluu tänään?",
       "sent": "Tervehdys lähetetty ✓"
     },
     "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
@@ -146,7 +146,7 @@
       "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
     },
     "supportButton": {
-      "send": "Lähetä tukea 💪",
+      "send": "💪 Lähetä tukea",
       "sent": "Tuki lähetetty ✓"
     }
   },
@@ -472,7 +472,7 @@
       "create": "Luo tili",
       "creating": "Luodaan tiliä...",
       "success": {
-        "title": "Tili luotu 🎉",
+        "title": "🎉 Tili luotu",
         "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
       },
       "verifyEmail": {

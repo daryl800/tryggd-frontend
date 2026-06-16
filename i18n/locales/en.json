@@ -32,7 +32,8 @@
       "hoursAgoDecimal": "{{value}} hours ago",
       "daysAgo_one": "{{count}} day ago",
       "daysAgo_other": "{{count}} days ago",
-      "lastCheckinAgo": "Last check-in {{timeAgo}}"
+      "lastCheckinAgo": "Last check-in {{timeAgo}}",
+      "lastCheckinLabel": "Last check-in:"
     },
     "wellnessPrompt": "How are you feeling today?",
     "plusWellness": {
@@ -75,15 +76,15 @@
     },
     "tripMode": {
       "statuses": {
-        "leaving": "Leaving for the trip 🧳",
-        "boarding": "Boarding / departing soon 🛫",
-        "layover": "Layover / connecting 🛑",
-        "landed": "Landed safely 🛬",
-        "on_the_move": "On the move 🚕",
-        "at_hotel": "Arrived at hotel 🏨",
-        "on_trip": "On the trip 🗺️",
-        "heading_home": "Heading home 🏠",
-        "trip_ended": "Trip ended — home safely ✅"
+        "leaving": "🧳 Leaving for the trip",
+        "boarding": "🛫 Boarding / departing soon",
+        "layover": "🛑 Layover / connecting",
+        "landed": "🛬 Landed safely",
+        "on_the_move": "🚕 On the move",
+        "at_hotel": "🏨 Arrived at hotel",
+        "on_trip": "🗺️ On the trip",
+        "heading_home": "🏠 Heading home",
+        "trip_ended": "✅ Trip ended — home safely"
       }
     },
     "errors": {
@@ -125,7 +126,7 @@
       "other": "{{date, date, MMMM d, yyyy}}"
     },
     "responseButton": {
-      "sendResponse": "Send a Like 👍",
+      "sendResponse": "👍 Send a Like",
       "sent": "Like sent ✓"
     },
     "checkinResponse": {
@@ -135,7 +136,7 @@
       "defaultMessage": "likes 👍 your checkin!"
     },
     "welfareButton": {
-      "send": "Are you alright? 🍀",
+      "send": "🍀 Are you alright?",
       "sent": "Greeting sent ✓"
     },
     "sharedLocation": {
@@ -159,7 +160,7 @@
       "great": "Feeling very happy today\n😊"
     },
     "todayCheckButton": {
-      "send": "How are you today? 👋",
+      "send": "👋 How are you today?",
       "sent": "Greeting sent ✓"
     },
     "checkedInAt": "Checked in @ {{time}} {{date}}",
@@ -168,7 +169,7 @@
       "todayGreetings_other": "💛 You got {{count}} greetings today:"
     },
     "supportButton": {
-      "send": "Send support 💪",
+      "send": "💪 Send support",
       "sent": "Support sent ✓"
     }
   },
@@ -536,7 +537,7 @@
       "create": "Create Account",
       "creating": "Creating account...",
       "success": {
-        "title": "Account Created 🎉",
+        "title": "🎉 Account Created",
         "message": "Your account is ready. You can now log in."
       },
       "verifyEmail": {

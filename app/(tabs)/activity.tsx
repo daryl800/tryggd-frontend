@@ -5,6 +5,7 @@ import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
+import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -87,6 +88,22 @@ const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
 const isActivityNotificationType = (type?: string | null) =>
   !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
 
+const EMOJI_CHARS = '[\\u{1F000}-\\u{1FFFF}\\u2600-\\u27FF]';
+const LEADING_EMOJI_RE = new RegExp(`^${EMOJI_CHARS}+️?\\s*`, 'u');
+const TRAILING_EMOJI_RE = new RegExp(`\\s*${EMOJI_CHARS}+$`, 'u');
+
+const splitLabelEmoji = (label: string) => {
+  const leading = label.match(LEADING_EMOJI_RE);
+  if (leading) {
+    return { text: label.slice(leading[0].length).trim(), emoji: leading[0].trim(), position: 'leading' as const };
+  }
+  const trailing = label.match(TRAILING_EMOJI_RE);
+  if (trailing) {
+    return { text: label.slice(0, -trailing[0].length).trim(), emoji: trailing[0].trim(), position: 'trailing' as const };
+  }
+  return { text: label, emoji: '', position: 'trailing' as const };
+};
+
 export default function ActivityScreen() {
   const { t } = useTranslation();
 
@@ -108,6 +125,7 @@ export default function ActivityScreen() {
     return labelMap[normalized] || normalized;
   }, [t]);
   const { user } = useAuth();
+  const { streak } = useStreak();
 
   // State
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -1668,19 +1686,24 @@ export default function ActivityScreen() {
                       const label = welfareCheckSent
                         ? (isTodayCheckMode ? t('activity.todayCheckButton.sent') : t('activity.welfareButton.sent'))
                         : (isTodayCheckMode ? t('activity.todayCheckButton.send') : t('activity.welfareButton.send'));
-                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
-                      const emoji = emojiMatch?.[0] ?? '';
-                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      const { text, emoji, position } = splitLabelEmoji(label);
+                      const textNode = (
+                        <Text style={[
+                          isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
+                          !isSingleActionEnabled && styles.responseButtonTextDisabled
+                        ]}>
+                          {text}
+                        </Text>
+                      );
+                      const emojiNode = !!emoji && (
+                        <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                      );
                       return (
                         <View style={styles.welfareButtonContent}>
-                          <Text style={[
-                            isWelfareMode ? styles.welfareButtonText : styles.todayCheckButtonText,
-                            !isSingleActionEnabled && styles.responseButtonTextDisabled
-                          ]}>
-                            {text}
-                          </Text>
-                          {!!emoji && (
-                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          {position === 'leading' ? (
+                            <>{emojiNode}{textNode}</>
+                          ) : (
+                            <>{textNode}{emojiNode}</>
                           )}
                         </View>
                       );
@@ -1690,19 +1713,24 @@ export default function ActivityScreen() {
                       const label = isSupportMode
                         ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
                         : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
-                      const emojiMatch = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
-                      const emoji = emojiMatch?.[0] ?? '';
-                      const text = emoji ? label.slice(0, -emoji.length).trim() : label;
+                      const { text, emoji, position } = splitLabelEmoji(label);
+                      const textNode = (
+                        <Text style={[
+                          isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
+                          !isSingleActionEnabled && styles.responseButtonTextDisabled
+                        ]}>
+                          {text}
+                        </Text>
+                      );
+                      const emojiNode = !!emoji && (
+                        <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                      );
                       return (
                         <View style={styles.welfareButtonContent}>
-                          <Text style={[
-                            isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
-                            !isSingleActionEnabled && styles.responseButtonTextDisabled
-                          ]}>
-                            {text}
-                          </Text>
-                          {!!emoji && (
-                            <Text style={styles.welfareButtonEmoji}>{emoji}</Text>
+                          {position === 'leading' ? (
+                            <>{emojiNode}{textNode}</>
+                          ) : (
+                            <>{textNode}{emojiNode}</>
                           )}
                         </View>
                       );
@@ -1752,8 +1780,8 @@ export default function ActivityScreen() {
                       <Text style={[styles.wellnessTooltipText, { color: BaseColors.primary }]}>
                         {(() => {
                           const label = t(`home.tripMode.statuses.${trip_status}` as any) as string;
-                          const m = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
-                          return m ? label.slice(0, -m[0].length).trim() : label;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m ? label.slice(m[0].length).trim() : label;
                         })()}
                       </Text>
                     </View>
@@ -1773,7 +1801,7 @@ export default function ActivityScreen() {
                     <Text style={styles.tripEmojiText}>
                       {(() => {
                         const label = t(`home.tripMode.statuses.${trip_status}` as any) as string;
-                        const m = label.match(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+$/u);
+                        const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
                         return m?.[0] ?? '✈️';
                       })()}
                     </Text>
@@ -1846,6 +1874,12 @@ export default function ActivityScreen() {
                   <View style={styles.cardHeader}>
                     <Ionicons name="person-circle" size={ICON_SIZES.SM} color={BaseColors.primary} />
                     <Text style={styles.cardTitle}>{t('activity.you')}</Text>
+                    <View style={styles.streakBadge}>
+                      <Ionicons name="flame" size={14} color={BaseColors.warning} />
+                      <Text style={styles.streakBadgeText}>
+                        {t('home.streak')} · {t('home.days', { count: streak })}
+                      </Text>
+                    </View>
                     {todayResponses.length > 0 && (
                       <View style={styles.responseBadge}>
                         <Ionicons
@@ -2340,6 +2374,21 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     gap: 4,
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+    marginRight: 8,
+  },
+  streakBadgeText: {
+    fontSize: iosFontSize(12),
+    fontWeight: '600',
+    color: BaseColors.warning,
   },
   responseBadgeText: {
     fontSize: iosFontSize(12),
