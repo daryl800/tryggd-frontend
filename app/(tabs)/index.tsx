@@ -825,14 +825,18 @@ export default function HomeScreen() {
           setCheckinMode(data.checkin_mode as 'home' | 'trip');
           await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
         }
-        // Also load last trip_status from users_latest_checkin
+        // Also load last trip_status / home_presence from users_latest_checkin
         const { data: checkinData } = await supabase
           .from('users_latest_checkin')
-          .select('trip_status')
+          .select('trip_status, home_presence')
           .eq('user_id', user.id)
           .maybeSingle();
         if (checkinData?.trip_status) {
           setTripStatus(checkinData.trip_status);
+        }
+        if (isHomePresence(checkinData?.home_presence)) {
+          setHomePresence(checkinData.home_presence);
+          await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, checkinData.home_presence);
         }
       } catch (_) {}
     };
@@ -1439,21 +1443,15 @@ export default function HomeScreen() {
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
 
-            // Keep trip status aligned with the active home layout so stale enhanced-mode state
-            // does not leak into simple/free experiences.
-            if (canUseEnhancedHome && checkinMode === 'trip') {
-              supabase
-                .from('users_latest_checkin')
-                .update({ trip_status: tripStatus })
-                .eq('user_id', user.id)
-                .then(() => {});
-            } else if (!canUseEnhancedHome) {
-              supabase
-                .from('users_latest_checkin')
-                .update({ trip_status: null })
-                .eq('user_id', user.id)
-                .then(() => {});
-            }
+            // Keep trip status and home presence aligned with the active home layout/mode so
+            // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
+            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripStatus : null;
+            const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
+            supabase
+              .from('users_latest_checkin')
+              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence })
+              .eq('user_id', user.id)
+              .then(() => {});
           })
       ]).catch(err => {
         // If something fails, revert the optimistic update
@@ -1465,7 +1463,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore]);
+  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore, homePresence]);
 
 
   const startOfDay = new Date();

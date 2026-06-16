@@ -179,6 +179,28 @@ function getTripStatusLabel(status: string, lang: string): string {
   return langMap[status] ?? TRIP_STATUS_LABELS.en[status] ?? status
 }
 
+const HOME_PRESENCE_LABELS: Record<string, Record<string, string>> = {
+  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing' },
+  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af' },
+  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich' },
+  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome' },
+  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa' },
+  fr:       { home: '🏠 À la maison', outside: "🚶 Sorti(e)", busy: '💼 Occupé(e)', relaxing: '☕ Je me détends' },
+  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso' },
+  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中' },
+  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중' },
+  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av' },
+  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av' },
+  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน' },
+  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中' },
+  'zh-Hant': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放鬆中' },
+}
+
+function getHomePresenceLabel(status: string, lang: string): string {
+  const langMap = HOME_PRESENCE_LABELS[lang] ?? HOME_PRESENCE_LABELS.en
+  return langMap[status] ?? HOME_PRESENCE_LABELS.en[status] ?? status
+}
+
 type CheckinLocaleKey = keyof typeof CHECKIN_MESSAGES
 
 function getCheckinLocale(language?: string | null) {
@@ -304,6 +326,7 @@ function buildContactCheckinNotification(
   location: SharedLocation | null,
   wellnessScore: number | null,
   tripStatus: string | null,
+  homePresence: string | null,
   recipientLang: string
 ): NotificationPayload {
   const data: Record<string, any> = {
@@ -327,9 +350,15 @@ function buildContactCheckinNotification(
     data.tripStatus = tripStatus
   }
 
+  if (homePresence) {
+    data.homePresence = homePresence
+  }
+
   let body: string
   if (tripStatus) {
     body = `${getTripStatusLabel(tripStatus, recipientLang)} · ${formattedTime}`
+  } else if (homePresence) {
+    body = `${getHomePresenceLabel(homePresence, recipientLang)} · ${formattedTime}`
   } else if (wellnessScore !== null) {
     body = `${getWellnessBody(locale, contactDisplayName, wellnessScore)} · ${formattedTime}`
   } else {
@@ -397,7 +426,7 @@ serve(async (req) => {
     const isPlusSender = senderPlan === 'plus'
     const senderHomeStyle = await getUserHomeStyle(supabase, user_id)
     const canSendWellness = isPlusSender
-    const canSendTripStatus = isPlusSender && senderHomeStyle === 'enhanced'
+    const canSendEnhancedStatus = isPlusSender && senderHomeStyle === 'enhanced'
     console.log('💳 Sender plan/style:', { senderPlan, senderHomeStyle })
 
     if (rateLimit?.last_contact_checkin_push_at) {
@@ -451,15 +480,19 @@ serve(async (req) => {
       throw latestCheckinError
     }
 
-    // Fetch trip_status from users_latest_checkin (nullable — null means not in trip mode)
+    // Fetch trip_status / home_presence from users_latest_checkin (nullable — null means not set)
     const { data: latestCheckinMeta } = await supabase
       .from('users_latest_checkin')
-      .select('trip_status')
+      .select('trip_status, home_presence')
       .eq('user_id', user_id)
       .maybeSingle()
 
-    const tripStatus: string | null = canSendTripStatus
+    const tripStatus: string | null = canSendEnhancedStatus
       ? latestCheckinMeta?.trip_status ?? null
+      : null
+
+    const homePresence: string | null = canSendEnhancedStatus && !tripStatus
+      ? latestCheckinMeta?.home_presence ?? null
       : null
 
     const sharedLocation: SharedLocation | null =
@@ -597,6 +630,7 @@ serve(async (req) => {
           : null,
         wellnessScore,
         tripStatus,
+        homePresence,
         recipientLang
       )
 

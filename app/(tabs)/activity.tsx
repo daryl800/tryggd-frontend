@@ -38,6 +38,7 @@ type Activity = {
   recency_status?: 'today' | 'yesterday' | 'older' | 'none' | null;
   wellness_score?: number | null;
   trip_status?: string | null;
+  home_presence?: string | null;
   username?: string | null;
   avatar_url?: string | null;
   is_owner?: boolean;
@@ -728,6 +729,7 @@ export default function ActivityScreen() {
             priority: updated.priority,
             wellness_score: updated.wellness_score ?? null,
             trip_status: updated.trip_status ?? null,
+            home_presence: updated.home_presence ?? null,
             display_name: contactInfo?.display_name || updated.display_name,
             username: contactInfo?.username || null,
             avatar_url: contactInfo?.avatar_url || null,
@@ -1208,6 +1210,7 @@ export default function ActivityScreen() {
     recency_status,
     wellness_score,
     trip_status,
+    home_presence,
     shared_location,
     isNewContact = false,
   }: {
@@ -1226,6 +1229,7 @@ export default function ActivityScreen() {
     recency_status?: Activity['recency_status'];
     wellness_score?: number | null;
     trip_status?: string | null;
+    home_presence?: string | null;
     shared_location?: SharedLocationInfo | null;
     isNewContact?: boolean;
   }) => {
@@ -1249,6 +1253,8 @@ export default function ActivityScreen() {
     const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [tripTooltipVisible, setTripTooltipVisible] = useState(false);
     const tripTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [homePresenceTooltipVisible, setHomePresenceTooltipVisible] = useState(false);
+    const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1741,7 +1747,7 @@ export default function ActivityScreen() {
             )}
           </View>
 
-          {!!(username || trip_status || wellnessMeta) && (
+          {!!(username || trip_status || home_presence || wellnessMeta) && (
             <View style={styles.rightColumn}>
               {username && (
                 <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
@@ -1803,6 +1809,41 @@ export default function ActivityScreen() {
                         const label = t(`home.tripMode.statuses.${trip_status}` as any) as string;
                         const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
                         return m?.[0] ?? '✈️';
+                      })()}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+              {!trip_status && home_presence && (
+                <View style={styles.wellnessBadgeWrapper}>
+                  {homePresenceTooltipVisible && (
+                    <View style={[styles.wellnessTooltip, { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight }]}>
+                      <Text style={[styles.wellnessTooltipText, { color: BaseColors.primary }]}>
+                        {(() => {
+                          const label = t(`home.context.homeStatuses.${home_presence}` as any) as string;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m ? label.slice(m[0].length).trim() : label;
+                        })()}
+                      </Text>
+                    </View>
+                  )}
+                  <Pressable
+                    onPress={() => {
+                      if (homePresenceTooltipTimerRef.current) clearTimeout(homePresenceTooltipTimerRef.current);
+                      setHomePresenceTooltipVisible(v => {
+                        if (!v) {
+                          homePresenceTooltipTimerRef.current = setTimeout(() => setHomePresenceTooltipVisible(false), 3000);
+                        }
+                        return !v;
+                      });
+                    }}
+                    style={[styles.wellnessBadge, styles.tripEmojiBadge]}
+                  >
+                    <Text style={styles.tripEmojiText}>
+                      {(() => {
+                        const label = t(`home.context.homeStatuses.${home_presence}` as any) as string;
+                        const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                        return m?.[0] ?? '🏠';
                       })()}
                     </Text>
                   </Pressable>
@@ -1900,6 +1941,7 @@ export default function ActivityScreen() {
                     priority={ownerActivity.priority}
                     wellness_score={ownerActivity.wellness_score}
                     trip_status={ownerActivity.trip_status}
+                    home_presence={ownerActivity.home_presence}
                     isOwner
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
@@ -2006,6 +2048,7 @@ export default function ActivityScreen() {
                       priority={item.priority}
                       wellness_score={item.wellness_score}
                       trip_status={item.trip_status}
+                      home_presence={item.home_presence}
                       isOwner={false}
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}
