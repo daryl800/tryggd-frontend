@@ -53,6 +53,25 @@
       "loadState": "No se pudo cargar el estado"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Contexto de hoy",
+      "home": "En casa",
+      "trip": "De viaje",
+      "homeTab": "🌿 Diario",
+      "tripTab": "✈️ Viaje",
+      "statusTitle": "Estado",
+      "tripStatusPrompt": "Elige un estado de viaje",
+      "homeStatuses": {
+        "home": "🏠 En casa",
+        "outside": "🚶 Fuera",
+        "havingFun": "😊 Pasándolo bien",
+        "busy": "💼 Ocupado",
+        "relaxing": "☕ Relajándome"
+      },
+      "summaryHome": "Check-in normal",
+      "summaryTrip": "Añadir un estado de viaje",
+      "summaryWithStatus": "De viaje · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

@@ -13,6 +13,25 @@
     "youCheckedInTodayAt": "คุณเช็กอินแล้ววันนี้ เวลา {{time}}",
     "pressMeToCheckIn": "เช็กอินที่นี่",
     "wellnessPrompt": "วันนี้คุณรู้สึกอย่างไร?",
+    "context": {
+      "title": "สถานะวันนี้",
+      "home": "อยู่ที่บ้าน",
+      "trip": "กำลังเดินทาง",
+      "homeTab": "🌿 ประจำวัน",
+      "tripTab": "✈️ เดินทาง",
+      "statusTitle": "สถานะ",
+      "tripStatusPrompt": "เลือกสถานะการเดินทาง",
+      "homeStatuses": {
+        "home": "🏠 อยู่ที่บ้าน",
+        "outside": "🚶 ออกไปข้างนอก",
+        "havingFun": "😊 กำลังสนุก",
+        "busy": "💼 ไม่ว่าง",
+        "relaxing": "☕ พักผ่อน"
+      },
+      "summaryHome": "เช็กอินตามปกติ",
+      "summaryTrip": "เพิ่มสถานะการเดินทาง",
+      "summaryWithStatus": "กำลังเดินทาง · {{status}}"
+    },
     "plusWellness": {
       "title": "ฟีเจอร์ Plus",
       "message": "อัปเกรดเป็น Plus เพื่อแชร์ความรู้สึกของคุณพร้อมการเช็กอิน"

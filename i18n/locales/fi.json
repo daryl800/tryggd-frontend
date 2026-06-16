@@ -53,6 +53,25 @@
       "loadState": "Tilaa ei voitu ladata"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Päivän tilanne",
+      "home": "Kotona",
+      "trip": "Matkalla",
+      "homeTab": "🌿 Arki",
+      "tripTab": "✈️ Matka",
+      "statusTitle": "Tila",
+      "tripStatusPrompt": "Valitse matkan tila",
+      "homeStatuses": {
+        "home": "🏠 Kotona",
+        "outside": "🚶 Ulkona",
+        "havingFun": "😊 Pidän hauskaa",
+        "busy": "💼 Kiireinen",
+        "relaxing": "☕ Rentoutumassa"
+      },
+      "summaryHome": "Normaali kirjautuminen",
+      "summaryTrip": "Lisää matkan tila",
+      "summaryWithStatus": "Matkalla · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

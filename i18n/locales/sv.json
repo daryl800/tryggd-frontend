@@ -53,6 +53,25 @@
       "loadState": "Kunde inte ladda tillståndet"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Dagens kontext",
+      "home": "Hemma",
+      "trip": "På resa",
+      "homeTab": "🌿 Vardag",
+      "tripTab": "✈️ Resa",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Välj en resestatus",
+      "homeStatuses": {
+        "home": "🏠 Hemma",
+        "outside": "🚶 Ute",
+        "havingFun": "😊 Har kul",
+        "busy": "💼 Upptagen",
+        "relaxing": "☕ Kopplar av"
+      },
+      "summaryHome": "Vanlig incheckning",
+      "summaryTrip": "Lägg till en resestatus",
+      "summaryWithStatus": "På resa · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

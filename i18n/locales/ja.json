@@ -53,6 +53,25 @@
       "loadState": "状態の読み込みに失敗しました"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "今日のステータス",
+      "home": "在宅",
+      "trip": "旅行中",
+      "homeTab": "🌿 日常",
+      "tripTab": "✈️ 旅行",
+      "statusTitle": "ステータス",
+      "tripStatusPrompt": "旅行のステータスを選択",
+      "homeStatuses": {
+        "home": "🏠 在宅",
+        "outside": "🚶 外出中",
+        "havingFun": "😊 楽しんでいます",
+        "busy": "💼 忙しい",
+        "relaxing": "☕ くつろぎ中"
+      },
+      "summaryHome": "通常のチェックイン",
+      "summaryTrip": "旅行のステータスを追加",
+      "summaryWithStatus": "旅行中 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

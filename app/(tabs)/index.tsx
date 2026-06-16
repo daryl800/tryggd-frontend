@@ -29,7 +29,9 @@ import {
   Animated,
   AppState,
   Dimensions,
+  GestureResponderEvent,
   Image,
+  LayoutChangeEvent,
   PixelRatio,
   Platform,
   ScrollView as RNScrollView,
@@ -51,13 +53,16 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const STROKE_WIDTH = 40;
 
 const STORAGE_KEY = '@checkin_state';
+const HOME_PRESENCE_STORAGE_KEY = '@settings_home_presence';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
 
 const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
+const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
+type HomePresence = 'home' | 'outside' | 'havingFun' | 'busy' | 'relaxing';
 
 type HomeStatusNotification = {
   id: string;
@@ -242,6 +247,13 @@ const getChineseFontFamily = (language?: string) => {
 };
 
 type WellnessOption = { value: number; iconName: 'heart' | 'heart-sharp' };
+type WellnessSliderProps = {
+  value: number;
+  onChange: (value: number) => void;
+  tooltipText: string;
+  disabled?: boolean;
+  onLockedPress?: () => void;
+};
 
 type WellnessButtonPickerProps = {
   value: number;
@@ -250,6 +262,15 @@ type WellnessButtonPickerProps = {
   options: readonly WellnessOption[];
   tooltipLabels: Record<number, string>;
   compactness?: 'regular' | 'compact' | 'tight';
+};
+
+const getWellnessValueFromPosition = (positionX: number, width: number) => {
+  if (width <= 0) return WELLNESS_DEFAULT;
+
+  const clampedX = Math.min(width, Math.max(0, positionX));
+  const ratio = clampedX / width;
+  const stepIndex = Math.round(ratio * (WELLNESS_STEPS - 1));
+  return clampWellnessValue(WELLNESS_MIN + stepIndex);
 };
 
 const hexToRgb = (hex: string) => {
@@ -360,13 +381,167 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const ENHANCED_WELLNESS_OPTIONS: readonly WellnessOption[] = [
-  { value: -2, iconName: 'heart-sharp' },
-  { value: -1, iconName: 'heart-sharp' },
-  { value: 0, iconName: 'heart' },
-  { value: 1, iconName: 'heart-sharp' },
-  { value: 2, iconName: 'heart-sharp' },
-] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['home', 'outside', 'havingFun', 'busy', 'relaxing'] as const;
+
+const isHomePresence = (value: unknown): value is HomePresence =>
+  typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
+
+const WellnessSlider = ({ value, onChange, tooltipText, disabled = false, onLockedPress }: WellnessSliderProps) => {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const lastValueRef = useRef(value);
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    lastValueRef.current = value;
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const revealTooltip = useCallback(() => {
+    setShowTooltip(true);
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      tooltipTimeoutRef.current = null;
+    }, 3000);
+  }, []);
+
+  const updateValueFromEvent = useCallback(
+    (event: GestureResponderEvent) => {
+      const nextValue = getWellnessValueFromPosition(event.nativeEvent.locationX, trackWidth);
+
+      revealTooltip();
+      if (nextValue === lastValueRef.current) return;
+
+      lastValueRef.current = nextValue;
+      onChange(nextValue);
+      void Haptics.selectionAsync();
+    },
+    [onChange, revealTooltip, trackWidth]
+  );
+
+  const handleLayout = useCallback((event: LayoutChangeEvent) => {
+    setTrackWidth(event.nativeEvent.layout.width);
+  }, []);
+
+  const normalizedValue = (value - WELLNESS_MIN) / (WELLNESS_STEPS - 1);
+  const handleLeft = trackWidth > 0 ? normalizedValue * trackWidth : 0;
+  const handleHeartColor = getWellnessHeartColor(value);
+  const sliderTooltipWidth = 154;
+  const sliderTooltipLeft = trackWidth > 0
+    ? Math.max(0, Math.min(trackWidth - sliderTooltipWidth, handleLeft - sliderTooltipWidth / 2))
+    : 0;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={disabled ? 0.85 : 1}
+      disabled={!disabled}
+      onPress={onLockedPress}
+      style={[
+        styles.wellnessCard,
+        disabled && styles.wellnessCardDisabled,
+      ]}
+    >
+      <View style={styles.wellnessSliderRow}>
+        <TouchableOpacity
+          onPress={disabled ? onLockedPress : () => {
+            onChange(WELLNESS_MIN);
+            revealTooltip();
+          }}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="heart-sharp"
+            size={20}
+            color={getWellnessHeartColor(WELLNESS_MIN)}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
+        <View
+          style={styles.wellnessTrackTouchArea}
+          onLayout={handleLayout}
+          onStartShouldSetResponder={() => !disabled}
+          onMoveShouldSetResponder={() => !disabled}
+          onResponderGrant={disabled ? undefined : updateValueFromEvent}
+          onResponderMove={disabled ? undefined : updateValueFromEvent}
+        >
+          <View style={[styles.wellnessTrack, disabled && styles.wellnessTrackDisabled]} />
+          {showTooltip ? (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.wellnessSliderTooltip,
+                { width: sliderTooltipWidth, left: sliderTooltipLeft },
+              ]}
+            >
+              <Text style={styles.wellnessSliderTooltipText}>
+                {tooltipText}
+              </Text>
+              <View style={styles.wellnessSliderTooltipArrow} />
+            </View>
+          ) : null}
+          <View style={styles.wellnessMarkersRow} pointerEvents="none">
+            {Array.from({ length: WELLNESS_STEPS }).map((_, index) => (
+              <View
+                key={`wellness-marker-${index}`}
+                style={[
+                  styles.wellnessMarker,
+                  disabled && styles.wellnessMarkerDisabled,
+                  index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarker,
+                  disabled && index === WELLNESS_DEFAULT - WELLNESS_MIN && styles.wellnessCenterMarkerDisabled,
+                ]}
+              />
+            ))}
+          </View>
+          <View
+            pointerEvents="none"
+            style={[
+              styles.wellnessThumb,
+              disabled && styles.wellnessThumbDisabled,
+              trackWidth > 0 && { left: handleLeft - 16 },
+            ]}
+          >
+            <Ionicons
+              name={value >= 0 ? 'heart' : 'heart-sharp'}
+              size={20}
+              color={handleHeartColor}
+            />
+          </View>
+        </View>
+        <TouchableOpacity
+          onPress={disabled ? onLockedPress : () => {
+            onChange(WELLNESS_MAX);
+            revealTooltip();
+          }}
+          activeOpacity={0.7}
+          style={styles.wellnessEdgeButton}
+        >
+          <Ionicons
+            name="heart-sharp"
+            size={20}
+            color={getWellnessHeartColor(WELLNESS_MAX)}
+            style={styles.wellnessEdgeIcon}
+          />
+        </TouchableOpacity>
+      </View>
+      {disabled ? (
+        <View style={styles.wellnessThumbLockBadge} pointerEvents="none">
+          <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+        </View>
+      ) : null}
+    </TouchableOpacity>
+  );
+};
 
 const WellnessButtonPicker = ({
   value,
@@ -510,6 +685,7 @@ export default function HomeScreen() {
   const [contentHeight, setContentHeight] = useState(0);
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
   const [tripStatus, setTripStatus] = useState<string | null>(null);
+  const [homePresence, setHomePresence] = useState<HomePresence>('home');
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
@@ -663,6 +839,24 @@ export default function HomeScreen() {
     loadCheckinMode();
   }, [canUseEnhancedHome, user]);
 
+  useEffect(() => {
+    const loadHomePresence = async () => {
+      try {
+        if (!canUseEnhancedHome) {
+          setHomePresence('home');
+          return;
+        }
+
+        const saved = await AsyncStorage.getItem(HOME_PRESENCE_STORAGE_KEY);
+        if (isHomePresence(saved)) {
+          setHomePresence(saved);
+        }
+      } catch {}
+    };
+
+    loadHomePresence();
+  }, [canUseEnhancedHome]);
+
   const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip') => {
     if (mode === checkinMode) return;
     void Haptics.selectionAsync();
@@ -679,6 +873,13 @@ export default function HomeScreen() {
         }, { onConflict: 'user_id' });
     }
   }, [checkinMode, user]);
+
+  const handleHomePresenceChange = useCallback(async (value: HomePresence) => {
+    if (value === homePresence) return;
+    void Haptics.selectionAsync();
+    setHomePresence(value);
+    await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, value);
+  }, [homePresence]);
 
   // Fetch contacts count
   const fetchContactsCount = useCallback(async () => {
@@ -1302,11 +1503,14 @@ export default function HomeScreen() {
   const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
     ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
     : null;
+  const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
   const wellnessMessage = canUseWellnessHome
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
-  const checkedInMessage = activeTripStatusLabel ?? wellnessMessage;
+  const checkedInMessage = activeTripStatusLabel
+    ?? (checkinMode === 'home' ? activeHomePresenceLabel : null)
+    ?? wellnessMessage;
   const [checkedInMsgText, checkedInMsgEmoji] = checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
     : [checkedInMessage, wellnessEmoji] as [string, string];
@@ -1445,11 +1649,37 @@ export default function HomeScreen() {
         overScrollMode="never"
       >
         <Animated.View style={[{ opacity: fadeAnim }, styles.simpleAnimatedContent]}>
+          {canUseEnhancedHome ? (
+            <View style={[styles.modeTabsContainer, styles.groupContainer]}>
+              <View style={styles.modeTabsRow}>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'home' && styles.modeTabActive]}
+                  onPress={() => handleCheckinModeChange('home')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'home' && styles.modeTabTextActive]}>
+                    {t('home.context.homeTab')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'trip' && styles.modeTabActive]}
+                  onPress={() => handleCheckinModeChange('trip')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'trip' && styles.modeTabTextActive]}>
+                    {t('home.context.tripTab')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : null}
+
           {/* MAIN CHECK-IN */}
           <View style={[
             styles.checkInGroup,
             styles.groupContainer,
             styles.simpleCheckInGroup,
+            canUseEnhancedHome && styles.enhancedCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
           ]}>
@@ -1660,84 +1890,90 @@ export default function HomeScreen() {
           ) : null}
 
           {canUseEnhancedHome && showWellnessModule ? (
-            <View style={styles.groupContainer}>
-              <WellnessButtonPicker
+            <View style={[styles.enhancedWellnessGroup, styles.groupContainer]}>
+              <WellnessSlider
                 value={wellnessScore}
                 onChange={setWellnessScore}
-                title={t('home.wellnessPrompt')}
-                options={ENHANCED_WELLNESS_OPTIONS}
-                tooltipLabels={{
-                  [-2]: getWellnessTooltipLabel(-2),
-                  [-1]: getWellnessTooltipLabel(-1),
-                  [0]: getWellnessTooltipLabel(0),
-                  [1]: getWellnessTooltipLabel(1),
-                  [2]: getWellnessTooltipLabel(2),
-                }}
-                compactness={simpleHomeCompactness}
+                tooltipText={getWellnessTooltipLabel(wellnessScore)}
               />
             </View>
           ) : null}
 
           {canUseEnhancedHome && (
-            <View style={styles.modeToggleRow}>
-              <TouchableOpacity
-                style={[styles.modeToggleOption, checkinMode === 'home' && styles.modeToggleOptionActive]}
-                onPress={() => handleCheckinModeChange('home')}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.modeToggleText, checkinMode === 'home' && styles.modeToggleTextActive]}>
-                  {t('settings.tripMode.home')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modeToggleOption, checkinMode === 'trip' && styles.modeToggleOptionActive]}
-                onPress={() => handleCheckinModeChange('trip')}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.modeToggleText, checkinMode === 'trip' && styles.modeToggleTextActive]}>
-                  {t('settings.tripMode.trip')}
-                </Text>
-              </TouchableOpacity>
+            <View style={[styles.enhancedStatusCard, styles.groupContainer, styles.enhancedStatusCardTightGap]}>
+              {checkinMode === 'home' ? (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {HOME_PRESENCE_OPTIONS.map((option) => {
+                      const isActive = homePresence === option;
+
+                      return (
+                        <TouchableOpacity
+                          key={option}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => handleHomePresenceChange(option)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.context.homeStatuses.${option}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
+                  <View style={styles.tripScrollHint}>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={BaseColors.primary}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {TRIP_STATUS_KEYS.map((key) => {
+                      const isActive = tripStatus === key;
+
+                      return (
+                        <TouchableOpacity
+                          key={key}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => setTripStatus(isActive ? null : key)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.tripMode.statuses.${key}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
+                  <View style={styles.tripScrollHint}>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={BaseColors.primary}
+                    />
+                  </View>
+                </View>
+              )}
             </View>
           )}
 
-          {canUseEnhancedHome && <View style={[styles.tripStatusGroup, styles.groupContainer]}>
-            <View style={styles.tripStatusRow}>
-            <RNScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.tripPillsRow}
-              scrollEnabled={checkinMode === 'trip'}
-            >
-              {TRIP_STATUS_KEYS.map((key) => {
-                const isActive = tripStatus === key;
-                const isTrip = checkinMode === 'trip';
-                return (
-                  <TouchableOpacity
-                    key={key}
-                    style={[styles.tripPill, isActive && styles.tripPillActive, !isTrip && styles.tripPillDisabled]}
-                    onPress={() => isTrip && setTripStatus(isActive ? null : key)}
-                    activeOpacity={isTrip ? 0.75 : 1}
-                  >
-                    <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive, !isTrip && styles.tripPillTextDisabled]}>
-                      {t(`home.tripMode.statuses.${key}` as any) as string}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </RNScrollView>
-            <View style={styles.tripScrollHint}>
-              <Ionicons
-                name="chevron-forward"
-                size={16}
-                color={checkinMode === 'trip' ? BaseColors.primary : BaseColors.neutral[300]}
-              />
-            </View>
-            </View>
-          </View>}
-
           <View style={[
             styles.simpleStatusDock,
+            canUseEnhancedHome && styles.simpleStatusDockEnhanced,
             isCompactSimpleHome && styles.simpleStatusDockCompact,
           ]}>
             <View style={[
@@ -1959,6 +2195,11 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 10,
   },
+  enhancedCheckInGroup: {
+    minHeight: 232,
+    paddingTop: 2,
+    paddingBottom: 6,
+  },
   simpleCheckInGroupCompact: {
     minHeight: 245,
     paddingTop: 4,
@@ -2139,21 +2380,47 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primary,
     backgroundColor: '#FBFFFD',
   },
-  modeToggleRow: {
+  enhancedWellnessGroup: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+  },
+  modeTabsContainer: {
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    marginTop: 2,
+  },
+  modeTabsRow: {
     flexDirection: 'row',
-    alignSelf: 'center',
-    backgroundColor: BaseColors.neutral[100],
+    alignSelf: 'stretch',
+    backgroundColor: '#EEF8F3',
     borderRadius: 18,
-    padding: 3,
-    gap: 3,
-    marginBottom: 10,
+    paddingHorizontal: 4,
+    paddingVertical: 3,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
-  modeToggleOption: {
-    paddingHorizontal: 18,
-    paddingVertical: 7,
-    borderRadius: 15,
+  modeTab: {
+    minHeight: 31,
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
-  modeToggleOptionActive: {
+  modeTabActive: {
     backgroundColor: BaseColors.surface,
     ...Platform.select({
       ios: {
@@ -2167,18 +2434,201 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  modeToggleText: {
-    fontSize: iosFontSize(14),
-    fontWeight: '600',
-    color: BaseColors.neutral[400],
+  modeTabText: {
+    fontSize: iosFontSize(13),
+    lineHeight: iosFontSize(17),
+    fontWeight: '700',
+    color: BaseColors.neutral[500],
+    includeFontPadding: false,
   },
-  modeToggleTextActive: {
+  modeTabTextActive: {
     color: BaseColors.primary,
   },
-  tripStatusGroup: {
-    paddingLeft: SCREEN_PADDING.horizontal,
+  enhancedStatusCard: {
+    marginHorizontal: SCREEN_PADDING.horizontal,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#EEF8F3',
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    minHeight: 48,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
-  tripStatusRow: {
+  enhancedStatusCardTightGap: {
+    marginBottom: 4,
+  },
+  wellnessCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  wellnessCardDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.neutral[50],
+  },
+  wellnessSliderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  wellnessEdgeIcon: {
+    width: 24,
+    textAlign: 'center',
+  },
+  wellnessEdgeButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 24,
+    height: 24,
+  },
+  wellnessTrackTouchArea: {
+    flex: 1,
+    height: 36,
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  wellnessTrack: {
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: BaseColors.primaryBorder,
+  },
+  wellnessSliderTooltip: {
+    position: 'absolute',
+    bottom: 38,
+    minHeight: 30,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    zIndex: 2,
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  wellnessSliderTooltipText: {
+    width: '100%',
+    fontSize: iosFontSize(12),
+    lineHeight: iosFontSize(17),
+    fontWeight: '700',
+    color: BaseColors.neutral[600],
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  wellnessSliderTooltipArrow: {
+    position: 'absolute',
+    bottom: -5,
+    width: 10,
+    height: 10,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    backgroundColor: BaseColors.surface,
+    transform: [{ rotate: '45deg' }],
+  },
+  wellnessTrackDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
+  wellnessMarkersRow: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 2,
+  },
+  wellnessMarker: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: BaseColors.neutral[300],
+  },
+  wellnessMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[200],
+  },
+  wellnessCenterMarker: {
+    backgroundColor: BaseColors.primary,
+  },
+  wellnessCenterMarkerDisabled: {
+    backgroundColor: BaseColors.neutral[400],
+  },
+  wellnessThumb: {
+    position: 'absolute',
+    top: 2,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: BaseColors.surface,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: BaseColors.shadowColor,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  wellnessThumbDisabled: {
+    borderColor: BaseColors.neutral[200],
+    backgroundColor: BaseColors.surface,
+  },
+  wellnessThumbLockBadge: {
+    position: 'absolute',
+    right: -2,
+    bottom: -2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: BaseColors.primaryLight,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tripStatusGroupEnhanced: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -2187,10 +2637,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  tripPillsRow: {
+  tripPillsRowEnhanced: {
     flexDirection: 'row',
     gap: 8,
-    paddingRight: SCREEN_PADDING.horizontal,
+    paddingRight: 8,
   },
   tripPill: {
     paddingHorizontal: 14,
@@ -2332,6 +2782,9 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 2,
     backgroundColor: 'rgba(238, 248, 243, 0.24)',
+  },
+  simpleStatusDockEnhanced: {
+    paddingTop: 6,
   },
   simpleStatusDockCompact: {
     paddingTop: 9,

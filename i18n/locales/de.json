@@ -53,6 +53,25 @@
       "loadState": "Status konnte nicht geladen werden"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Heutiger Kontext",
+      "home": "Zuhause",
+      "trip": "Auf Reisen",
+      "homeTab": "🌿 Alltag",
+      "tripTab": "✈️ Reise",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Reisestatus wählen",
+      "homeStatuses": {
+        "home": "🏠 Zuhause",
+        "outside": "🚶 Unterwegs",
+        "havingFun": "😊 Hab Spaß",
+        "busy": "💼 Beschäftigt",
+        "relaxing": "☕ Entspanne mich"
+      },
+      "summaryHome": "Normaler Check-in",
+      "summaryTrip": "Reisestatus hinzufügen",
+      "summaryWithStatus": "Auf Reisen · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

@@ -38,6 +38,25 @@
       "lastCheckinLabel": "上次簽到："
     },
     "wellnessPrompt": "您今天感覺如何？",
+    "context": {
+      "title": "今天的狀態",
+      "home": "在家",
+      "trip": "旅行中",
+      "homeTab": "🌿 日常",
+      "tripTab": "✈️ 出行",
+      "statusTitle": "狀態",
+      "tripStatusPrompt": "選擇出行狀態",
+      "homeStatuses": {
+        "home": "🏠 在家",
+        "outside": "🚶 外出中",
+        "havingFun": "😊 開心中",
+        "busy": "💼 忙碌中",
+        "relaxing": "☕ 放鬆中"
+      },
+      "summaryHome": "普通簽到",
+      "summaryTrip": "新增旅行狀態",
+      "summaryWithStatus": "旅行中 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus 功能",
       "message": "升級到 Plus，讓您在簽到時分享今天的感受。"

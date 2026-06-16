@@ -36,6 +36,25 @@
       "lastCheckinLabel": "Last check-in:"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Today's context",
+      "home": "At home",
+      "trip": "Travelling",
+      "homeTab": "🌿 Daily",
+      "tripTab": "✈️ Trip",
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Choose a trip status",
+      "homeStatuses": {
+        "home": "🏠 At home",
+        "outside": "🚶 Outside",
+        "havingFun": "😊 Having fun",
+        "busy": "💼 Busy",
+        "relaxing": "☕ Relaxing"
+      },
+      "summaryHome": "Normal check-in",
+      "summaryTrip": "Add a travel status",
+      "summaryWithStatus": "Travelling · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."

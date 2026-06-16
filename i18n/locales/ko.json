@@ -53,6 +53,25 @@
       "loadState": "상태를 불러오지 못했습니다"
     },
     "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "오늘의 상태",
+      "home": "집에 있음",
+      "trip": "여행 중",
+      "homeTab": "🌿 일상",
+      "tripTab": "✈️ 여행",
+      "statusTitle": "상태",
+      "tripStatusPrompt": "여행 상태 선택",
+      "homeStatuses": {
+        "home": "🏠 집에 있음",
+        "outside": "🚶 외출 중",
+        "havingFun": "😊 즐거운 시간",
+        "busy": "💼 바쁨",
+        "relaxing": "☕ 휴식 중"
+      },
+      "summaryHome": "일반 체크인",
+      "summaryTrip": "여행 상태 추가",
+      "summaryWithStatus": "여행 중 · {{status}}"
+    },
     "plusWellness": {
       "title": "Plus feature",
       "message": "Upgrade to Plus to share how you feel with your check-in."
