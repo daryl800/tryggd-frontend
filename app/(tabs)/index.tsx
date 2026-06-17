@@ -66,6 +66,7 @@ const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message'] as const;
 type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodnight';
+type ReachOutStatus = 'call_now' | 'call_available';
 
 type HomeStatusNotification = {
   id: string;
@@ -388,6 +389,9 @@ const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', '
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
+const REACH_OUT_STATUS_OPTIONS: readonly ReachOutStatus[] = ['call_now', 'call_available'] as const;
+const isReachOutStatus = (value: unknown): value is ReachOutStatus =>
+  value === 'call_now' || value === 'call_available';
 
 const WellnessSlider = ({ value, onChange, tooltipText, disabled = false, onLockedPress }: WellnessSliderProps) => {
   const [trackWidth, setTrackWidth] = useState(0);
@@ -686,9 +690,10 @@ export default function HomeScreen() {
   const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
-  const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
+  const [checkinMode, setCheckinMode] = useState<'home' | 'trip' | 'reach_out'>('home');
   const [tripStatus, setTripStatus] = useState<string | null>(null);
   const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
+  const [reachOutStatus, setReachOutStatus] = useState<ReachOutStatus>('call_now');
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
@@ -856,21 +861,21 @@ export default function HomeScreen() {
           return;
         }
         const saved = await AsyncStorage.getItem('@settings_checkin_mode');
-        if (saved === 'home' || saved === 'trip') setCheckinMode(saved);
+        if (saved === 'home' || saved === 'trip' || saved === 'reach_out') setCheckinMode(saved);
         if (!user) return;
         const { data } = await supabase
           .from('user_settings')
           .select('checkin_mode')
           .eq('user_id', user.id)
           .maybeSingle();
-        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip') {
-          setCheckinMode(data.checkin_mode as 'home' | 'trip');
+        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip' || data?.checkin_mode === 'reach_out') {
+          setCheckinMode(data.checkin_mode as 'home' | 'trip' | 'reach_out');
           await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
         }
-        // Also load last trip_status / home_presence from users_latest_checkin
+        // Also load last trip_status / home_presence / reach_out_status from users_latest_checkin
         const { data: checkinData } = await supabase
           .from('users_latest_checkin')
-          .select('trip_status, home_presence')
+          .select('trip_status, home_presence, reach_out_status')
           .eq('user_id', user.id)
           .maybeSingle();
         if (checkinData?.trip_status) {
@@ -879,6 +884,9 @@ export default function HomeScreen() {
         if (isHomePresence(checkinData?.home_presence)) {
           setHomePresence(checkinData.home_presence);
           await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, checkinData.home_presence);
+        }
+        if (isReachOutStatus(checkinData?.reach_out_status)) {
+          setReachOutStatus(checkinData.reach_out_status);
         }
       } catch (_) {}
     };
@@ -903,11 +911,11 @@ export default function HomeScreen() {
     loadHomePresence();
   }, [canUseEnhancedHome]);
 
-  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip') => {
+  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip' | 'reach_out') => {
     if (mode === checkinMode) return;
     void Haptics.selectionAsync();
     setCheckinMode(mode);
-    if (mode === 'home') setTripStatus(null);
+    if (mode !== 'trip') setTripStatus(null);
     await AsyncStorage.setItem('@settings_checkin_mode', mode);
     if (user) {
       await supabase
@@ -919,6 +927,12 @@ export default function HomeScreen() {
         }, { onConflict: 'user_id' });
     }
   }, [checkinMode, user]);
+
+  const handleReachOutStatusChange = useCallback((value: ReachOutStatus) => {
+    if (value === reachOutStatus) return;
+    void Haptics.selectionAsync();
+    setReachOutStatus(value);
+  }, [reachOutStatus]);
 
   const handleHomePresenceChange = useCallback(async (value: HomePresence) => {
     if (value === homePresence) return;
@@ -1497,9 +1511,10 @@ export default function HomeScreen() {
             // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
             const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripStatus : null;
             const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
+            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutStatus : null;
             supabase
               .from('users_latest_checkin')
-              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence })
+              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence, reach_out_status: nextReachOutStatus })
               .eq('user_id', user.id)
               .then(() => {});
           })
@@ -1551,12 +1566,16 @@ export default function HomeScreen() {
   const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
     ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
     : null;
+  const activeReachOutStatusLabel = checkinMode === 'reach_out'
+    ? t(`home.context.reachOutStatuses.${reachOutStatus}` as any) as string
+    : null;
   const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
   const wellnessMessage = canUseWellnessHome
     ? t(getWellnessMessageKey(displayWellnessScore))
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
   const checkedInMessage = activeTripStatusLabel
+    ?? activeReachOutStatusLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
   const [checkedInMsgTextRaw, checkedInMsgEmoji] = checkedInMessage.includes('\n')
@@ -1774,6 +1793,15 @@ export default function HomeScreen() {
                 >
                   <Text style={[styles.modeTabText, checkinMode === 'trip' && styles.modeTabTextActive]}>
                     {t('home.context.tripTab')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'reach_out' && styles.modeTabActive]}
+                  onPress={() => handleCheckinModeChange('reach_out')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'reach_out' && styles.modeTabTextActive]}>
+                    {t('home.context.reachOutTab')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -2040,7 +2068,7 @@ export default function HomeScreen() {
                     />
                   </View>
                 </View>
-              ) : (
+              ) : checkinMode === 'trip' ? (
                 <View style={styles.tripStatusGroupEnhanced}>
                   <RNScrollView
                     horizontal
@@ -2072,6 +2100,31 @@ export default function HomeScreen() {
                       color={BaseColors.primary}
                     />
                   </View>
+                </View>
+              ) : (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {REACH_OUT_STATUS_OPTIONS.map((option) => {
+                      const isActive = reachOutStatus === option;
+                      return (
+                        <TouchableOpacity
+                          key={option}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => handleReachOutStatusChange(option)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.context.reachOutStatuses.${option}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
                 </View>
               )}
             </View>

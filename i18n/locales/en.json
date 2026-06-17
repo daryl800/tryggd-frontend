@@ -43,6 +43,11 @@
       "trip": "Travelling",
       "homeTab": "🌿 Daily",
       "tripTab": "✈️ Trip",
+      "reachOutTab": "🤙 Reach out",
+      "reachOutStatuses": {
+        "call_now": "📞 Call me ASAP",
+        "call_available": "📱 Free to call"
+      },
       "statusTitle": "Status",
       "tripStatusPrompt": "Choose a trip status",
       "homeStatuses": {

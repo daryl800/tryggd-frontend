@@ -35,6 +35,11 @@
       "trip": "กำลังเดินทาง",
       "homeTab": "🌿 ประจำวัน",
       "tripTab": "✈️ เดินทาง",
+      "reachOutTab": "🤙 ติดต่อฉัน",
+      "reachOutStatuses": {
+        "call_now": "📞 โทรหาฉันด่วน",
+        "call_available": "📱 โทรได้สะดวก"
+      },
       "statusTitle": "สถานะ",
       "tripStatusPrompt": "เลือกสถานะการเดินทาง",
       "homeStatuses": {

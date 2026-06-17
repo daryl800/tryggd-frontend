@@ -45,6 +45,11 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 出行",
+      "reachOutTab": "🤙 有事",
+      "reachOutStatuses": {
+        "call_now": "📞 尽快联系我",
+        "call_available": "📱 方便打电话"
+      },
       "statusTitle": "状态",
       "tripStatusPrompt": "选择出行状态",
       "homeStatuses": {

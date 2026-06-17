@@ -201,6 +201,28 @@ function getHomePresenceLabel(status: string, lang: string): string {
   return langMap[status] ?? HOME_PRESENCE_LABELS.en[status] ?? status
 }
 
+const REACH_OUT_STATUS_LABELS: Record<string, Record<string, string>> = {
+  en:       { call_now: '📞 Call me ASAP', call_available: '📱 Free to call' },
+  da:       { call_now: '📞 Ring hurtigst muligt', call_available: '📱 Tilgængelig for opkald' },
+  de:       { call_now: '📞 Ruf mich bald an', call_available: '📱 Kann telefonieren' },
+  es:       { call_now: '📞 Llámame pronto', call_available: '📱 Disponible para llamar' },
+  fi:       { call_now: '📞 Soita pian', call_available: '📱 Vapaa puheluille' },
+  fr:       { call_now: '📞 Appelle-moi vite', call_available: '📱 Disponible pour un appel' },
+  it:       { call_now: '📞 Chiamami presto', call_available: '📱 Disponibile per una chiamata' },
+  ja:       { call_now: '📞 早めに電話して', call_available: '📱 電話OK' },
+  ko:       { call_now: '📞 빨리 전화해줘', call_available: '📱 통화 가능해' },
+  no:       { call_now: '📞 Ring snart', call_available: '📱 Tilgjengelig for samtale' },
+  sv:       { call_now: '📞 Ring snart', call_available: '📱 Tillgänglig för samtal' },
+  th:       { call_now: '📞 โทรหาฉันด่วน', call_available: '📱 โทรได้สะดวก' },
+  'zh-Hans': { call_now: '📞 尽快联系我', call_available: '📱 方便打电话' },
+  'zh-Hant': { call_now: '📞 盡快call我', call_available: '📱 方便call我' },
+}
+
+function getReachOutStatusLabel(status: string, lang: string): string {
+  const langMap = REACH_OUT_STATUS_LABELS[lang] ?? REACH_OUT_STATUS_LABELS.en
+  return langMap[status] ?? REACH_OUT_STATUS_LABELS.en[status] ?? status
+}
+
 const LOCATION_SHARED_LABELS: Record<string, string> = {
   en: '📍 Location shared',
   da: '📍 Position delt',
@@ -348,6 +370,7 @@ function buildContactCheckinNotification(
   wellnessScore: number | null,
   tripStatus: string | null,
   homePresence: string | null,
+  reachOutStatus: string | null,
   recipientLang: string
 ): NotificationPayload {
   const data: Record<string, any> = {
@@ -375,8 +398,14 @@ function buildContactCheckinNotification(
     data.homePresence = homePresence
   }
 
+  if (reachOutStatus) {
+    data.reachOutStatus = reachOutStatus
+  }
+
   const statusLabel = tripStatus
     ? getTripStatusLabel(tripStatus, recipientLang)
+    : reachOutStatus
+    ? getReachOutStatusLabel(reachOutStatus, recipientLang)
     : homePresence
     ? getHomePresenceLabel(homePresence, recipientLang)
     : null
@@ -508,10 +537,10 @@ serve(async (req) => {
       throw latestCheckinError
     }
 
-    // Fetch trip_status / home_presence from users_latest_checkin (nullable — null means not set)
+    // Fetch trip_status / home_presence / reach_out_status from users_latest_checkin
     const { data: latestCheckinMeta } = await supabase
       .from('users_latest_checkin')
-      .select('trip_status, home_presence')
+      .select('trip_status, home_presence, reach_out_status')
       .eq('user_id', user_id)
       .maybeSingle()
 
@@ -521,6 +550,10 @@ serve(async (req) => {
 
     const homePresence: string | null = canSendEnhancedStatus && !tripStatus
       ? latestCheckinMeta?.home_presence ?? null
+      : null
+
+    const reachOutStatus: string | null = canSendEnhancedStatus && !tripStatus
+      ? latestCheckinMeta?.reach_out_status ?? null
       : null
 
     const sharedLocation: SharedLocation | null =
@@ -669,6 +702,7 @@ serve(async (req) => {
         isRecipientPlus ? wellnessScore : null,
         tripStatus,
         isRecipientPlus ? homePresence : null,
+        isRecipientPlus ? reachOutStatus : null,
         recipientLang
       )
 

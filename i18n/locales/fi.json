@@ -75,6 +75,11 @@
       "trip": "Matkalla",
       "homeTab": "🌿 Arki",
       "tripTab": "✈️ Matka",
+      "reachOutTab": "🤙 Ota yhteyttä",
+      "reachOutStatuses": {
+        "call_now": "📞 Soita pian",
+        "call_available": "📱 Vapaa puheluille"
+      },
       "statusTitle": "Tila",
       "tripStatusPrompt": "Valitse matkan tila",
       "homeStatuses": {

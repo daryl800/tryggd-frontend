@@ -23,6 +23,7 @@ export type ContactCheckinRow = {
   wellness_score: number | null;
   trip_status: string | null;
   home_presence: string | null;
+  reach_out_status: string | null;
   checkin_timezone: string | null;
   checkin_timezone_label: string | null;
   display_name: string | null;
@@ -262,6 +263,7 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
           wellness_score: data.wellnessScore ?? null,
           trip_status: data.tripStatus ?? null,
           home_presence: data.homePresence ?? null,
+          reach_out_status: data.reachOutStatus ?? null,
           checkin_timezone: null,
           checkin_timezone_label: null,
           display_name: data.contactDisplayName || null,

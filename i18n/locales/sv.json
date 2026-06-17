@@ -75,6 +75,11 @@
       "trip": "På resa",
       "homeTab": "🌿 Vardag",
       "tripTab": "✈️ Resa",
+      "reachOutTab": "🤙 Kontakta mig",
+      "reachOutStatuses": {
+        "call_now": "📞 Ring snart",
+        "call_available": "📱 Tillgänglig för samtal"
+      },
       "statusTitle": "Status",
       "tripStatusPrompt": "Välj en resestatus",
       "homeStatuses": {

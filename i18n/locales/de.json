@@ -75,6 +75,11 @@
       "trip": "Auf Reisen",
       "homeTab": "🌿 Alltag",
       "tripTab": "✈️ Reise",
+      "reachOutTab": "🤙 Meld dich",
+      "reachOutStatuses": {
+        "call_now": "📞 Ruf mich bald an",
+        "call_available": "📱 Kann telefonieren"
+      },
       "statusTitle": "Status",
       "tripStatusPrompt": "Reisestatus wählen",
       "homeStatuses": {

@@ -75,6 +75,11 @@
       "trip": "En voyage",
       "homeTab": "🌿 Quotidien",
       "tripTab": "✈️ Voyage",
+      "reachOutTab": "🤙 Contacte-moi",
+      "reachOutStatuses": {
+        "call_now": "📞 Appelle-moi vite",
+        "call_available": "📱 Disponible pour un appel"
+      },
       "statusTitle": "Statut",
       "tripStatusPrompt": "Choisissez un statut de voyage",
       "homeStatuses": {

@@ -45,6 +45,11 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 出行",
+      "reachOutTab": "🤙 有事",
+      "reachOutStatuses": {
+        "call_now": "📞 盡快call我",
+        "call_available": "📱 方便call我"
+      },
       "statusTitle": "狀態",
       "tripStatusPrompt": "選擇出行狀態",
       "homeStatuses": {
@@ -142,7 +147,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出發了",
-        "boarding": "🛫 登機／🚅啟程",
+        "boarding": "🛫 登機／🚅 啟程",
         "layover": "🛑 中途停留／轉機",
         "landed": "🛬 已安全抵達",
         "on_the_move": "🚕 在移動中",
