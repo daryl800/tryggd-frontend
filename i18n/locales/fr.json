@@ -102,7 +102,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Je pars en voyage",
-        "boarding": "🛫 Embarquement / 🚆 En voiture",
+        "boarding": "🛫 Embarquement / 🚅 En voiture",
         "layover": "🛑 Escale / correspondance",
         "landed": "🛬 Arrivé en sécurité",
         "on_the_move": "🚕 En déplacement",

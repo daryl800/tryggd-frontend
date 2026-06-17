@@ -102,7 +102,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Auf zur Reise",
-        "boarding": "🛫 Boarding / 🚆 Fährt",
+        "boarding": "🛫 Boarding / 🚅 Fährt",
         "layover": "🛑 Zwischenstopp / Umstieg",
         "landed": "🛬 Sicher angekommen",
         "on_the_move": "🚕 Unterwegs",

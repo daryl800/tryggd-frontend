@@ -102,7 +102,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 旅立ちます",
-        "boarding": "🛫 搭乗・🚆 運転",
+        "boarding": "🛫 搭乗・🚅 運転",
         "layover": "🛑 乗り継ぎ中",
         "landed": "🛬 無事到着",
         "on_the_move": "🚕 移動中",

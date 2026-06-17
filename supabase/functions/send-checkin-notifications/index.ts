@@ -170,8 +170,8 @@ const TRIP_STATUS_LABELS: Record<string, Record<string, string>> = {
   no:       { leaving: '🧳 Drar på tur', boarding: '🛫 Ombordstigning / avgang snart', layover: '🛑 Mellomlanding / tilkobling', landed: '🛬 Landet trygt', on_the_move: '🚕 På farten', at_hotel: '🏨 Ankommet hotellet', on_trip: '🗺️ På reisen', heading_home: '🏠 På vei hjem', trip_ended: '✅ Turen er over — trygt hjemme' },
   sv:       { leaving: '🧳 Ger mig iväg', boarding: '🛫 Ombordstigning / avresa snart', layover: '🛑 Mellanlandning / byte', landed: '🛬 Landat säkert', on_the_move: '🚕 På väg', at_hotel: '🏨 Framme på hotellet', on_trip: '🗺️ På resan', heading_home: '🏠 På väg hem', trip_ended: '✅ Resan slut — hemma säkert' },
   th:       { leaving: '🧳 ออกเดินทางแล้ว', boarding: '🛫 กำลังขึ้นเครื่อง / ใกล้ออกเดินทาง', layover: '🛑 แวะพัก / ต่อเที่ยวบิน', landed: '🛬 ลงจอดปลอดภัย', on_the_move: '🚕 กำลังเดินทาง', at_hotel: '🏨 ถึงโรงแรมแล้ว', on_trip: '🗺️ อยู่ระหว่างการเดินทาง', heading_home: '🏠 กำลังกลับบ้าน', trip_ended: '✅ ทริปสิ้นสุด — กลับบ้านปลอดภัย' },
-  'zh-Hans': { leaving: '🧳 出发了', boarding: '🛫 登机／准备起飞', layover: '🛑 中途停留/转机', landed: '🛬 已安全着陆', on_the_move: '🚕 在移动中', at_hotel: '🏨 已抵达酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程结束——已安全到家' },
-  'zh-Hant': { leaving: '🧳 出發了', boarding: '🛫 登機／準備起飛', layover: '🛑 中途停留／轉機', landed: '🛬 已安全著陸', on_the_move: '🚕 在移動中', at_hotel: '🏨 已抵達酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程結束——已安全到家' },
+  'zh-Hans': { leaving: '🧳 出发了', boarding: '🛫 登机／🚅 启程', layover: '🛑 中途停留/转机', landed: '🛬 已安全着陆', on_the_move: '🚕 在移动中', at_hotel: '🏨 已抵达酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程结束—已安全到家' },
+  'zh-Hant': { leaving: '🧳 出發了', boarding: '🛫 登機／🚅 啟程', layover: '🛑 中途停留／轉機', landed: '🛬 已安全著陸', on_the_move: '🚕 在移動中', at_hotel: '🏨 已抵達酒店', on_trip: '🗺️ 旅程中', heading_home: '🏠 正在回家途中', trip_ended: '✅ 旅程結束—已安全到家' },
 }
 
 function getTripStatusLabel(status: string, lang: string): string {

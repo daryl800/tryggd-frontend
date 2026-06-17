@@ -102,7 +102,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Afsted på rejsen",
-        "boarding": "🛫 Boarding / 🚆 Kører",
+        "boarding": "🛫 Boarding / 🚅 Kører",
         "layover": "🛑 Mellemlanding / forbindelse",
         "landed": "🛬 Ankommet sikkert",
         "on_the_move": "🚕 På farten",

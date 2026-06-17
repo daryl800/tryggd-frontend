@@ -1505,18 +1505,27 @@ export default function ActivityScreen() {
           } else if (dLocalStr === yesterdayLocalStr) {
             dateText = t('activity.day.yesterday');
           } else {
-            const weekday = d.toLocaleDateString(t('activity.time.locale'), {
+            const locale = t('activity.time.locale');
+            const weekday = d.toLocaleDateString(locale, {
               weekday: 'short',
               timeZone: tz,
             }).replace('.', '');
 
-            const dayOfMonth = d.getDate();
-            const monthName = d.toLocaleDateString(t('activity.time.locale'), {
-              month: 'short',
-              timeZone: tz,
-            });
-
-            dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
+            if (locale.startsWith('zh')) {
+              const datePart = d.toLocaleDateString(locale, {
+                month: 'short',
+                day: 'numeric',
+                timeZone: tz,
+              });
+              dateText = `${weekday}，${datePart}`;
+            } else {
+              const dayOfMonth = d.getDate();
+              const monthName = d.toLocaleDateString(locale, {
+                month: 'short',
+                timeZone: tz,
+              });
+              dateText = `${weekday}, ${dayOfMonth} ${monthName}`;
+            }
           }
 
           if (timezoneLabel && timezoneLabel.trim() !== '') {
@@ -1653,7 +1662,6 @@ export default function ActivityScreen() {
                     },
                     hasNewUpdate && { transform: [{ scale: timeScaleAnim }] },
                   ]}
-                  numberOfLines={1}
                 >
                   {t('activity.checkedInAt', {
                     defaultValue: 'Checked in @ {{time}} {{date}}',

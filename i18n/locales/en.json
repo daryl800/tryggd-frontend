@@ -104,7 +104,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 Leaving for the trip",
-        "boarding": "🛫 Boarding / 🚆 Driving",
+        "boarding": "🛫 Boarding / 🚅 Driving",
         "layover": "🛑 Layover / connecting",
         "landed": "🛬 Arrived safely",
         "on_the_move": "🚕 On the move",
