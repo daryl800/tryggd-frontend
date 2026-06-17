@@ -1645,11 +1645,11 @@ export default function HomeScreen() {
   const latestStatusTripEmoji = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusHomePresence = !latestStatusTripStatus ? latestDisplayStatus?.data?.homePresence : null;
+  const latestStatusHomePresence = !latestStatusTripStatus && capabilities.isPlus ? latestDisplayStatus?.data?.homePresence : null;
   const latestStatusHomePresenceEmoji = latestStatusHomePresence
     ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusLocation = !!latestDisplayStatus?.data?.location;
+  const latestStatusLocation = capabilities.canShareLocation && !!latestDisplayStatus?.data?.location;
   const latestStatusBadgeLabel = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
     : latestStatusHomePresence
@@ -1687,7 +1687,7 @@ export default function HomeScreen() {
       Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
     }
   };
-  const latestStatusWellnessScore = latestDisplayStatus?.data?.wellnessScore;
+  const latestStatusWellnessScore = capabilities.canUseWellnessSlider ? latestDisplayStatus?.data?.wellnessScore : undefined;
   const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
     latestDisplayStatus?.senderAvatarUrl?.trim() &&
