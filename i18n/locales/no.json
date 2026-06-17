@@ -53,8 +53,9 @@
       "loadState": "Kunne ikke laste tilstand"
     },
     "status": {
-      "contactCheckedIn": "{{name}} har sjekket inn",
+      "contactCheckedIn": "{{name}} sjekket inn",
       "sentWave": "{{name}} sendte deg en vink",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Melding fra {{name}}",
       "justNow": "Akkurat nå",
       "minutesAgo_one": "{{count}} minutt siden",
@@ -81,7 +82,14 @@
         "home": "🏠 Hjemme",
         "outside": "🚶 Ute",
         "busy": "💼 Opptatt",
-        "relaxing": "☕ Slapper av"
+        "relaxing": "☕ Slapper av",
+        "eating": "🍽️ Spiser",
+        "exhausted": "😩 Utmattet",
+        "sleepy": "😪 Søvnig",
+        "daydreaming": "💭 Dagdrømmer",
+        "having_fun": "🎉 Morer meg masse",
+        "goodmorning": "🌅 God morgen",
+        "goodnight": "🌙 God natt"
       },
       "summaryHome": "Normal innsjekking",
       "summaryTrip": "Legg til en reisestatus",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 Du fikk {{count}} hilsen i dag:",
       "todayGreetings_other": "💛 Du fikk {{count}} hilsener i dag:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Du fikk {{count}} nødmelding i dag:",
+      "todayMessages_other": "🚨 Du fikk {{count}} nødmeldinger i dag:"
     },
     "supportButton": {
       "send": "💪 Send støtte",
@@ -322,6 +334,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Send en nødmelding til {{name}}",
+      "modalDescription": "Dette sender et push-varsel umiddelbart og vises i aktivitetsfeeden deres.",
+      "placeholder": "Hva skjer?",
+      "send": "Send",
+      "sending": "Sender…",
+      "sendError": "Kunne ikke sende nødmeldingen."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

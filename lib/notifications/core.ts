@@ -448,6 +448,66 @@ export async function sendWelfareCheckNotification({
         };
     }
 }
+export async function sendEmergencyMessageNotification({
+    receiverUserId,
+    senderUserId,
+    senderName,
+    message,
+}: {
+    receiverUserId: string;
+    senderUserId: string;
+    senderName?: string;
+    message: string;
+}): Promise<{ success: boolean; error?: string }> {
+    try {
+        console.log('📤 Sending emergency message notification...', { receiverUserId, senderUserId });
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
+        const response = await fetch(
+            'https://ygfmosuqclefhhbovghn.supabase.co/functions/v1/send-emergency-message',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    receiverUserId,
+                    senderUserId,
+                    senderName,
+                    message,
+                }),
+            }
+        );
+
+        const result = await response.json();
+        console.log('📥 Emergency message push response:', {
+            ok: response.ok,
+            status: response.status,
+            result,
+        });
+
+        if (!response.ok) {
+            console.error('❌ Emergency message failed:', result);
+            return { success: false, error: result?.error || 'Emergency message failed' };
+        }
+
+        console.log('✅ Emergency message notification sent successfully');
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error sending emergency message notification:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown emergency message error',
+        };
+    }
+}
+
 /**
  * Mark notification as read
  */

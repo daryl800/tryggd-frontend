@@ -84,7 +84,7 @@ type ResponseNotification = {
   };
 };
 
-const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check'] as const;
+const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check', 'emergency_message'] as const;
 const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
 const isActivityNotificationType = (type?: string | null) =>
   !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
@@ -1892,6 +1892,7 @@ export default function ActivityScreen() {
   // ============================================
   const todayLikeResponses = todayResponses.filter((response) => response.type === 'checkin_response');
   const todayWelfareResponses = todayResponses.filter((response) => response.type === 'welfare_check');
+  const todayEmergencyMessages = todayResponses.filter((response) => response.type === 'emergency_message');
 
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -1954,6 +1955,41 @@ export default function ActivityScreen() {
                     isLast
                   />
 
+                  {todayEmergencyMessages.length > 0 && (
+                    <View style={styles.todayResponses}>
+                      <Text style={styles.todayResponsesTitle}>
+                        {t("activity.emergencyMessage.todayMessages", { count: todayEmergencyMessages.length })}
+                      </Text>
+                      {todayEmergencyMessages.map((response) => {
+                        const senderName = response.sender?.display_name;
+                        const messageText = response.data?.message || stripSenderPrefix(response.body || response.title || '', senderName);
+                        return (
+                        <View key={response.id} style={styles.todayResponseItem}>
+                          <Ionicons name="warning" size={16} color={BaseColors.error} />
+                          <Text style={styles.todayResponseText}>
+                            {senderName ? (
+                              <>
+                                <Text style={styles.todayResponseName}>{senderName}</Text>
+                                {`: ${messageText}`}
+                              </>
+                            ) : (
+                              messageText
+                            )}
+                          </Text>
+                          <Text style={styles.responseTimeRight}>
+                            {new Date(response.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                          </Text>
+                          {!response.read && <View style={styles.smallUnreadDot} />}
+                        </View>
+                        );
+                      })}
+                    </View>
+                  )}
+
                   {todayWelfareResponses.length > 0 && (
                     <View style={styles.todayResponses}>
                       <Text style={styles.todayResponsesTitle}>
@@ -1961,7 +1997,7 @@ export default function ActivityScreen() {
                       </Text>
                       {todayWelfareResponses.map((response) => {
                         const senderName = response.sender?.display_name;
-                        const body = response.body || response.title;
+                        const body = stripSenderPrefix(response.body || response.title || '', senderName);
                         return (
                         <View key={response.id} style={styles.todayResponseItem}>
                           <Ionicons name="heart" size={16} color={BaseColors.primary} />

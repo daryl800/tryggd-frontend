@@ -3,7 +3,7 @@ import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { ICON_SIZES } from '@/constants/ui';
-import { sendContactRequestNotification } from '@/lib/notifications';
+import { sendContactRequestNotification, sendEmergencyMessageNotification } from '@/lib/notifications';
 import { useContactStore } from '@/stores/contactStore';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -126,10 +126,12 @@ const ContactCard = memo(
         onToggleCheckinNotifications,
         onToggleLocationSharing,
         onCreateRecoveryInvite,
+        onSendEmergencyMessage,
         showCheckinNotificationControl,
         showLocationSharingControl,
         canEditCheckinNotificationControl,
         canEditLocationSharingControl,
+        canSendEmergencyMessage,
         onLockedCheckinNotificationPress,
         onLockedLocationSharingPress,
         inputRef,
@@ -145,10 +147,12 @@ const ContactCard = memo(
         onToggleCheckinNotifications?: (value: boolean) => void;
         onToggleLocationSharing?: (value: boolean) => void;
         onCreateRecoveryInvite?: () => void;
+        onSendEmergencyMessage?: () => void;
         showCheckinNotificationControl: boolean;
         showLocationSharingControl: boolean;
         canEditCheckinNotificationControl?: boolean;
         canEditLocationSharingControl?: boolean;
+        canSendEmergencyMessage?: boolean;
         onLockedCheckinNotificationPress?: () => void;
         onLockedLocationSharingPress?: () => void;
         inputRef: (ref: TextInput | null) => void;
@@ -158,6 +162,18 @@ const ContactCard = memo(
         const existingName =
             contact.display_name?.trim() || contact.username || contact.identifier || contact.email;
         const existingIdentifier = contact.username || contact.identifier;
+        const lastAvatarTapRef = useRef(0);
+
+        const handleAvatarPress = () => {
+            if (!canSendEmergencyMessage) return;
+            const now = Date.now();
+            if (now - lastAvatarTapRef.current < 300) {
+                lastAvatarTapRef.current = 0;
+                onSendEmergencyMessage?.();
+            } else {
+                lastAvatarTapRef.current = now;
+            }
+        };
 
         return (
             <View
@@ -234,20 +250,22 @@ const ContactCard = memo(
                         </View>
                         <View style={styles.existingContactInfo}>
                             <View style={styles.existingContactMainRow}>
-                                {contact.avatar_url ? (
-                                    <Image
-                                        source={{ uri: contact.avatar_url }}
-                                        style={styles.contactAvatar}
-                                    />
-                                ) : (
-                                    <View style={styles.contactAvatarFallback}>
-                                        <Ionicons
-                                            name="person"
-                                            size={22}
-                                            color={BaseColors.primary}
+                                <TouchableOpacity activeOpacity={canSendEmergencyMessage ? 0.7 : 1} onPress={handleAvatarPress}>
+                                    {contact.avatar_url ? (
+                                        <Image
+                                            source={{ uri: contact.avatar_url }}
+                                            style={styles.contactAvatar}
                                         />
-                                    </View>
-                                )}
+                                    ) : (
+                                        <View style={styles.contactAvatarFallback}>
+                                            <Ionicons
+                                                name="person"
+                                                size={22}
+                                                color={BaseColors.primary}
+                                            />
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
 
                                 <View style={styles.cardHeaderActions}>
                                     {showCheckinNotificationControl && (
@@ -491,7 +509,7 @@ ContactRequestCard.displayName = 'ContactRequestCard';
 
 export default function ContactsScreen() {
     const { t, i18n } = useTranslation();
-    const { capabilities } = useAuth();
+    const { user, profile, capabilities } = useAuth();
     const router = useRouter();
     const showPlusUpsellUI = UI_FEATURE_FLAGS.showPlusUpsellUI;
     const [existingContacts, setExistingContacts] = useState<ContactSlot[]>([]);
@@ -510,6 +528,10 @@ export default function ContactsScreen() {
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
     const [suggestedInviteUsername, setSuggestedInviteUsername] = useState('');
     const [generatedInvite, setGeneratedInvite] = useState<GeneratedInvite | null>(null);
+    const [emergencyMessageModalVisible, setEmergencyMessageModalVisible] = useState(false);
+    const [emergencyMessageTarget, setEmergencyMessageTarget] = useState<ContactSlot | null>(null);
+    const [emergencyMessageText, setEmergencyMessageText] = useState('');
+    const [sendingEmergencyMessage, setSendingEmergencyMessage] = useState(false);
     const suggestedInviteValidationMessage = useMemo(
         () => getUsernameValidationMessage(suggestedInviteUsername, t),
         [suggestedInviteUsername, t]
@@ -1414,6 +1436,37 @@ export default function ContactsScreen() {
         showPlusFeatureAlert();
     }, [showPlusFeatureAlert]);
 
+    const handleOpenEmergencyMessage = useCallback((contact: ContactSlot) => {
+        setEmergencyMessageTarget(contact);
+        setEmergencyMessageText('');
+        setEmergencyMessageModalVisible(true);
+    }, []);
+
+    const handleSendEmergencyMessage = useCallback(async () => {
+        const trimmed = emergencyMessageText.trim();
+        if (!trimmed || !emergencyMessageTarget?.user_id || !user) return;
+
+        setSendingEmergencyMessage(true);
+        try {
+            const result = await sendEmergencyMessageNotification({
+                receiverUserId: emergencyMessageTarget.user_id,
+                senderUserId: user.id,
+                senderName: profile?.display_name || profile?.username || undefined,
+                message: trimmed,
+            });
+
+            if (result.success) {
+                setEmergencyMessageModalVisible(false);
+                setEmergencyMessageText('');
+                setEmergencyMessageTarget(null);
+            } else {
+                Alert.alert(t('errors.title'), result.error || t('contacts.emergencyMessage.sendError'));
+            }
+        } finally {
+            setSendingEmergencyMessage(false);
+        }
+    }, [emergencyMessageText, emergencyMessageTarget, user, profile, t]);
+
     const deleteEverythingManually = async (userId1: string, userId2: string) => {
         try {
             const { error: contactsError } = await supabase
@@ -2158,6 +2211,7 @@ export default function ContactsScreen() {
                                                 toggleContactLocationSharing(index, value)
                                             }
                                             onCreateRecoveryInvite={() => handleCreateRecoveryInvite(contact)}
+                                            onSendEmergencyMessage={() => handleOpenEmergencyMessage(contact)}
                                             showCheckinNotificationControl={
                                                 capabilities.canControlCheckinRecipients || showPlusUpsellUI
                                             }
@@ -2169,6 +2223,9 @@ export default function ContactsScreen() {
                                             }
                                             canEditLocationSharingControl={
                                                 capabilities.canShareLocation
+                                            }
+                                            canSendEmergencyMessage={
+                                                capabilities.canSendEmergencyMessage
                                             }
                                             onLockedCheckinNotificationPress={
                                                 handleLockedCheckinNotificationPress
@@ -2396,6 +2453,71 @@ export default function ContactsScreen() {
                                 >
                                     <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
                                         {creatingInvite ? t('contacts.invite.creating') : t('contacts.invite.createButton')}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
+
+                <Modal
+                    visible={emergencyMessageModalVisible}
+                    transparent
+                    animationType="fade"
+                    onRequestClose={() => setEmergencyMessageModalVisible(false)}
+                >
+                    <KeyboardAvoidingView
+                        style={styles.modalBackdrop}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    >
+                        <View style={styles.modalCard}>
+                            <Text style={styles.modalTitle} allowFontScaling={false}>
+                                {t('contacts.emergencyMessage.modalTitle', {
+                                    name:
+                                        emergencyMessageTarget?.display_name ||
+                                        emergencyMessageTarget?.username ||
+                                        emergencyMessageTarget?.identifier ||
+                                        t('contacts.messages.contactDefault'),
+                                })}
+                            </Text>
+                            <Text style={styles.modalText} allowFontScaling={false}>
+                                {t('contacts.emergencyMessage.modalDescription')}
+                            </Text>
+                            <TextInput
+                                placeholder={t('contacts.emergencyMessage.placeholder')}
+                                placeholderTextColor={BaseColors.placeholderTextColor}
+                                value={emergencyMessageText}
+                                onChangeText={setEmergencyMessageText}
+                                multiline
+                                maxLength={300}
+                                style={[styles.modalInput, styles.modalInputMultiline]}
+                                allowFontScaling={false}
+                            />
+                            <View style={styles.modalActions}>
+                                <TouchableOpacity
+                                    style={styles.modalSecondaryButton}
+                                    onPress={() => setEmergencyMessageModalVisible(false)}
+                                    disabled={sendingEmergencyMessage}
+                                >
+                                    <Text style={styles.modalSecondaryButtonText} allowFontScaling={false}>
+                                        {t('common.cancel')}
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.modalPrimaryButton,
+                                        (sendingEmergencyMessage || !emergencyMessageText.trim()) && styles.saveButtonDisabled,
+                                    ]}
+                                    onPress={() => {
+                                        Keyboard.dismiss();
+                                        void handleSendEmergencyMessage();
+                                    }}
+                                    disabled={sendingEmergencyMessage || !emergencyMessageText.trim()}
+                                >
+                                    <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
+                                        {sendingEmergencyMessage
+                                            ? t('contacts.emergencyMessage.sending')
+                                            : t('contacts.emergencyMessage.send')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -3033,6 +3155,10 @@ const styles = StyleSheet.create({
         borderColor: BaseColors.neutral[200],
         minHeight: 44,
         marginBottom: 16,
+    },
+    modalInputMultiline: {
+        minHeight: 90,
+        textAlignVertical: 'top',
     },
     modalActions: {
         flexDirection: 'row',

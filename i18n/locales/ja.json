@@ -55,6 +55,7 @@
     "status": {
       "contactCheckedIn": "{{name}}さんがチェックインしました",
       "sentWave": "{{name}}さんが手を振りました",
+      "emergencyMessage": "🚨 {{name}}：{{message}}",
       "messageFrom": "{{name}}さんからのメッセージ",
       "justNow": "たった今",
       "minutesAgo_one": "{{count}}分前",
@@ -81,7 +82,14 @@
         "home": "🏠 在宅",
         "outside": "🚶 外出中",
         "busy": "💼 忙しい",
-        "relaxing": "☕ くつろぎ中"
+        "relaxing": "☕ くつろぎ中",
+        "eating": "🍽️ 食事中",
+        "exhausted": "😩 くたくた",
+        "sleepy": "😪 眠い",
+        "daydreaming": "💭 ぼーっとしてる",
+        "having_fun": "🎉 めちゃ楽しんでる",
+        "goodmorning": "🌅 おはよう",
+        "goodnight": "🌙 おやすみ"
       },
       "summaryHome": "通常のチェックイン",
       "summaryTrip": "旅行のステータスを追加",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:",
       "todayGreetings_other": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:",
+      "todayMessages_other": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:"
     },
     "supportButton": {
       "send": "💪 サポートを送る",
@@ -321,6 +333,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "{{name}} さんに緊急メッセージを送る",
+      "modalDescription": "プッシュ通知が即座に送信され、相手のアクティビティに表示されます。",
+      "placeholder": "何が起きていますか？",
+      "send": "送信",
+      "sending": "送信中…",
+      "sendError": "緊急メッセージの送信に失敗しました。"
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

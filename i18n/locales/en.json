@@ -23,6 +23,7 @@
     "status": {
       "contactCheckedIn": "{{name}} checked in",
       "sentWave": "{{name}} sent you a wave",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Message from {{name}}",
       "justNow": "Just now",
       "minutesAgo_one": "{{count}} minute ago",
@@ -49,7 +50,14 @@
         "home": "🏠 At home",
         "outside": "🚶 Outside",
         "busy": "💼 Busy",
-        "relaxing": "☕ Relaxing"
+        "relaxing": "☕ Relaxing",
+        "eating": "🍽️ Having a meal",
+        "exhausted": "😩 Exhausted",
+        "sleepy": "😪 Sleepy",
+        "daydreaming": "💭 Daydreaming",
+        "having_fun": "🎉 Having a blast",
+        "goodmorning": "🌅 Good morning",
+        "goodnight": "🌙 Good night"
       },
       "summaryHome": "Normal check-in",
       "summaryTrip": "Add a travel status",
@@ -190,6 +198,10 @@
     "supportButton": {
       "send": "💪 Send support",
       "sent": "Support sent ✓"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 You got {{count}} emergency message today:",
+      "todayMessages_other": "🚨 You got {{count}} emergency messages today:"
     }
   },
   "contacts": {
@@ -334,6 +346,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Send an emergency message to {{name}}",
+      "modalDescription": "This sends an instant push notification and shows up in their Activity feed.",
+      "placeholder": "What's going on?",
+      "send": "Send",
+      "sending": "Sending…",
+      "sendError": "Failed to send emergency message."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

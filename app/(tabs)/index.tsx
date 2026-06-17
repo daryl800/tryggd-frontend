@@ -63,8 +63,8 @@ const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
-const HOME_STATUS_NOTIFICATION_TYPES = ['contact_checkin', 'welfare_check'] as const;
-type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing';
+const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message'] as const;
+type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'goodmorning' | 'goodnight';
 
 type HomeStatusNotification = {
   id: string;
@@ -383,7 +383,7 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['chilling', 'home', 'outside', 'busy', 'relaxing'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'relaxing', 'busy', 'exhausted', 'sleepy', 'daydreaming', 'having_fun', 'goodnight'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
@@ -691,11 +691,16 @@ export default function HomeScreen() {
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
+  const [latestCheckinStatus, setLatestCheckinStatus] =
+    useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
   const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
   const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
 
   const latestStatusChannelRef = useRef<any>(null);
+  const checkinStatusChannelRef = useRef<any>(null);
+  const contactIdsRef = useRef<string[]>([]);
+  const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -897,13 +902,14 @@ export default function HomeScreen() {
     const user = userData.user;
     if (!user) return;
 
-    const { count, error } = await supabase
+    const { data, count, error } = await supabase
       .from('contacts')
-      .select('*', { count: 'exact', head: true })
+      .select('contact_user_id', { count: 'exact' })
       .eq('owner_user_id', user.id);
 
     if (!error) {
       setContactsCount(count || 0);
+      contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
     }
   }, []);
 
@@ -1015,14 +1021,12 @@ export default function HomeScreen() {
     const handleAppStateChange = (nextAppState: string) => {
       if (nextAppState === 'active') {
         console.log('📱 App became active - refreshing data');
-        // Update time
         setNow(new Date());
-        // Check date reset
         checkDateAndReset();
-        // Fetch fresh data
         fetchLastCheckin();
         refetchStreak();
         fetchContactsCount();
+        void fetchLatestStatusNotificationRef.current();
       }
     };
 
@@ -1122,16 +1126,6 @@ export default function HomeScreen() {
     return () => subscription.remove();
   }, [fetchLastCheckin]);
 
-  // Focus effect for tab navigation
-  useFocusEffect(
-    useCallback(() => {
-      console.log('📱 Home screen focused - fetching fresh data');
-      fetchLastCheckin();
-      fetchContactsCount();
-      loadHomeStyle();
-    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle])
-  );
-
   const triggerCheckInAnimation = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -1162,6 +1156,54 @@ export default function HomeScreen() {
       }),
     ]).start();
   };
+
+  const fetchLatestContactCheckin = useCallback(async (): Promise<HomeStatusNotification | null> => {
+    if (!user) return null;
+
+    if (!contactIdsRef.current.length) {
+      const { data: contactRows } = await supabase
+        .from('contacts')
+        .select('contact_user_id')
+        .eq('owner_user_id', user.id);
+      contactIdsRef.current = (contactRows || []).map((r) => r.contact_user_id).filter(Boolean);
+    }
+
+    const contactIds = contactIdsRef.current;
+    if (!contactIds.length) return null;
+
+    const { data } = await supabase
+      .from('users_latest_checkin')
+      .select('*')
+      .in('user_id', contactIds)
+      .not('last_checked_in_utc', 'is', null)
+      .order('last_checked_in_utc', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!data?.last_checked_in_utc) return null;
+
+    const { data: profileRows } = await supabase.rpc('get_contact_usernames', {
+      contact_ids: [data.user_id],
+    });
+    const profile = profileRows?.[0];
+    const displayName = profile?.display_name || data.display_name || 'Someone';
+
+    return {
+      id: `checkin-${data.user_id}`,
+      sender_user_id: data.user_id,
+      type: 'contact_checkin',
+      body: null,
+      title: null,
+      data: {
+        tripStatus: data.trip_status || null,
+        homePresence: data.home_presence || null,
+        wellnessScore: data.wellness_score ?? null,
+      },
+      created_at: data.last_checked_in_utc,
+      senderName: displayName,
+      senderAvatarUrl: profile?.avatar_url || null,
+    };
+  }, [user]);
 
   const enrichHomeStatusNotification = useCallback(async (notification: any): Promise<HomeStatusNotification> => {
     const parsedData = parseNotificationData(notification.data);
@@ -1200,33 +1242,54 @@ export default function HomeScreen() {
   const fetchLatestStatusNotification = useCallback(async () => {
     if (!user) {
       setLatestStatusNotification(null);
+      setLatestCheckinStatus(null);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const [{ data, error }, checkin] = await Promise.all([
+      supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      fetchLatestContactCheckin(),
+    ]);
 
     if (error) {
       console.error('Error fetching latest home status notification:', error);
-      return;
+    } else {
+      setLatestStatusNotification(data ? await enrichHomeStatusNotification(data) : null);
     }
 
-    setLatestStatusNotification(data ? await enrichHomeStatusNotification(data) : null);
-  }, [enrichHomeStatusNotification, user]);
+    setLatestCheckinStatus(checkin);
+  }, [enrichHomeStatusNotification, fetchLatestContactCheckin, user]);
+
+  // Keep ref in sync so the AppState handler (declared earlier) always calls the latest version
+  useEffect(() => {
+    fetchLatestStatusNotificationRef.current = fetchLatestStatusNotification;
+  }, [fetchLatestStatusNotification]);
 
   useEffect(() => {
     void fetchLatestStatusNotification();
   }, [fetchLatestStatusNotification]);
 
+  // Focus effect for tab navigation
+  useFocusEffect(
+    useCallback(() => {
+      console.log('📱 Home screen focused - fetching fresh data');
+      fetchLastCheckin();
+      fetchContactsCount();
+      loadHomeStyle();
+      void fetchLatestStatusNotification();
+    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification])
+  );
+
   useEffect(() => {
     setLatestStatusAvatarLoadFailed(false);
-  }, [latestStatusNotification?.senderAvatarUrl]);
+  }, [latestStatusNotification?.senderAvatarUrl, latestCheckinStatus?.senderAvatarUrl]);
 
   useEffect(() => {
     if (latestStatusChannelRef.current) {
@@ -1265,6 +1328,93 @@ export default function HomeScreen() {
       latestStatusChannelRef.current = null;
     };
   }, [enrichHomeStatusNotification, user]);
+
+  useEffect(() => {
+    if (checkinStatusChannelRef.current) {
+      supabase.removeChannel(checkinStatusChannelRef.current);
+      checkinStatusChannelRef.current = null;
+    }
+
+    if (!user) return;
+
+    const setup = async () => {
+      if (!contactIdsRef.current.length) {
+        const { data } = await supabase
+          .from('contacts')
+          .select('contact_user_id')
+          .eq('owner_user_id', user.id);
+        contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
+      }
+
+      const contactIds = contactIdsRef.current;
+      if (!contactIds.length) return;
+
+      const channel = supabase
+        .channel(`home-checkin-status:${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'users_latest_checkin',
+            filter: `user_id=in.(${contactIds.join(',')})`,
+          },
+          () => {
+            fetchLatestContactCheckin()
+              .then(setLatestCheckinStatus)
+              .catch((err) => console.error('Error updating checkin status:', err));
+          }
+        )
+        .subscribe();
+
+      checkinStatusChannelRef.current = channel;
+    };
+
+    void setup();
+
+    return () => {
+      if (checkinStatusChannelRef.current) {
+        supabase.removeChannel(checkinStatusChannelRef.current);
+        checkinStatusChannelRef.current = null;
+      }
+    };
+  }, [fetchLatestContactCheckin, user]);
+
+  // Foreground push listener — update home status bar immediately when a contact checks in.
+  // contact_checkin pushes don't include `type` in data; identified by `contactUserId` presence.
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener((notification) => {
+      const data = notification.request.content.data as any;
+      if (!data?.contactUserId || !data?.checkinTimeIso) return;
+
+      const immediate: HomeStatusNotification = {
+        id: `checkin-${data.contactUserId}-${Date.now()}`,
+        sender_user_id: data.contactUserId,
+        type: 'contact_checkin',
+        body: null,
+        title: null,
+        data: {
+          tripStatus: data.tripStatus ?? null,
+          homePresence: data.homePresence ?? null,
+          wellnessScore: data.wellnessScore ?? null,
+        },
+        created_at: data.checkinTimeIso,
+        senderName: data.contactDisplayName || 'Someone',
+        senderAvatarUrl: null,
+      };
+
+      setLatestCheckinStatus((prev) =>
+        !prev || new Date(immediate.created_at) >= new Date(prev.created_at) ? immediate : prev
+      );
+
+      // Confirm with DB to get avatar_url and correct ordering across multiple contacts
+      fetchLatestContactCheckin()
+        .then((confirmed) => { if (confirmed) setLatestCheckinStatus(confirmed); })
+        .catch(console.error);
+    });
+
+    return () => subscription.remove();
+  }, [fetchLatestContactCheckin]);
 
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
@@ -1577,20 +1727,34 @@ export default function HomeScreen() {
   const simpleCheckinTimeAgo = checkedInToday && lastCheckinUtc
     ? formatHomeStatusAgo(lastCheckinUtc)
     : null;
-  const latestStatusTitle = latestStatusNotification
-    ? latestStatusNotification.type === 'contact_checkin'
-      ? t('home.status.contactCheckedIn', { name: latestStatusNotification.senderName })
-      : t('home.status.sentWave', { name: latestStatusNotification.senderName })
+  const latestDisplayStatus: HomeStatusNotification | null =
+    !latestCheckinStatus && !latestStatusNotification ? null
+    : !latestCheckinStatus ? latestStatusNotification
+    : !latestStatusNotification ? latestCheckinStatus
+    : new Date(latestCheckinStatus.created_at) >= new Date(latestStatusNotification.created_at)
+      ? latestCheckinStatus
+      : latestStatusNotification;
+
+  const latestStatusIsEmergency = latestDisplayStatus?.type === 'emergency_message';
+  const latestStatusTitle = latestDisplayStatus
+    ? latestDisplayStatus.type === 'contact_checkin'
+      ? t('home.status.contactCheckedIn', { name: latestDisplayStatus.senderName })
+      : latestStatusIsEmergency
+        ? t('home.status.emergencyMessage', {
+            name: latestDisplayStatus.senderName,
+            message: latestDisplayStatus.data?.message || latestDisplayStatus.body || '',
+          })
+        : t('home.status.sentWave', { name: latestDisplayStatus.senderName })
     : null;
-  const latestStatusTripStatus = latestStatusNotification?.data?.tripStatus;
+  const latestStatusTripStatus = latestDisplayStatus?.data?.tripStatus;
   const latestStatusTripEmoji = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusHomePresence = !latestStatusTripStatus ? latestStatusNotification?.data?.homePresence : null;
+  const latestStatusHomePresence = !latestStatusTripStatus ? latestDisplayStatus?.data?.homePresence : null;
   const latestStatusHomePresenceEmoji = latestStatusHomePresence
     ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusLocation = !!latestStatusNotification?.data?.location;
+  const latestStatusLocation = !!latestDisplayStatus?.data?.location;
   const latestStatusBadgeLabel = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
     : latestStatusHomePresence
@@ -1618,7 +1782,7 @@ export default function HomeScreen() {
     });
   };
   const openLatestStatusLocation = async () => {
-    const location = latestStatusNotification?.data?.location;
+    const location = latestDisplayStatus?.data?.location;
     if (!location) return;
     const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
     try {
@@ -1628,13 +1792,13 @@ export default function HomeScreen() {
       Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
     }
   };
-  const latestStatusWellnessScore = latestStatusNotification?.data?.wellnessScore;
+  const latestStatusWellnessScore = latestDisplayStatus?.data?.wellnessScore;
   const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
-    latestStatusNotification?.senderAvatarUrl?.trim() &&
-    !isLocalAvatarUri(latestStatusNotification.senderAvatarUrl) &&
+    latestDisplayStatus?.senderAvatarUrl?.trim() &&
+    !isLocalAvatarUri(latestDisplayStatus.senderAvatarUrl) &&
     !latestStatusAvatarLoadFailed
-      ? latestStatusNotification.senderAvatarUrl.trim()
+      ? latestDisplayStatus.senderAvatarUrl.trim()
       : '';
   const getWellnessTooltipLabel = (score: number) => {
     const message = t(getWellnessMessageKey(score));
@@ -1876,20 +2040,20 @@ export default function HomeScreen() {
                             {t('home.pressMeToCheckIn')}
                           </Text>
                           <Text
-                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                          >
-                            {formatTimeLeft(remainingMs)}
-                          </Text>
-                          <Text
                             style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
                             numberOfLines={1}
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
                           >
                             {t('home.timeLeftToday')}
+                          </Text>
+                          <Text
+                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
+                            numberOfLines={1}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.7}
+                          >
+                            {formatTimeLeft(remainingMs)}
                           </Text>
                         </>
                       )}
@@ -2036,7 +2200,7 @@ export default function HomeScreen() {
                   isTightSimpleHome && styles.simpleStatusCardTight,
                 ]}
               >
-                  {latestStatusNotification ? (
+                  {latestDisplayStatus ? (
                     <>
                       {latestStatusAvatarUrl ? (
                         <Image
@@ -2049,9 +2213,9 @@ export default function HomeScreen() {
                         />
                       ) : (
                         <Ionicons
-                          name="person-circle"
+                          name={latestStatusIsEmergency ? 'warning' : 'person-circle'}
                           size={isCompactSimpleHome ? 50 : 56}
-                          color={BaseColors.neutral[300]}
+                          color={latestStatusIsEmergency ? BaseColors.error : BaseColors.neutral[300]}
                           style={[
                             styles.simpleStatusAvatarFallback,
                             isCompactSimpleHome && styles.simpleStatusAvatarFallbackCompact,
@@ -2062,6 +2226,7 @@ export default function HomeScreen() {
                         <Text style={[
                           styles.simpleStatusTitle,
                           isCompactSimpleHome && styles.simpleStatusTitleCompact,
+                          latestStatusIsEmergency && { color: BaseColors.error },
                         ]} numberOfLines={1}>
                           {latestStatusTitle}
                         </Text>
@@ -2069,7 +2234,7 @@ export default function HomeScreen() {
                           styles.simpleStatusSubtitle,
                           isCompactSimpleHome && styles.simpleStatusSubtitleCompact,
                         ]} numberOfLines={1}>
-                          {formatHomeStatusAgo(latestStatusNotification.created_at)}
+                          {formatHomeStatusAgo(latestDisplayStatus.created_at)}
                         </Text>
                       </View>
                       <View style={styles.simpleStatusEmojiGroup}>
@@ -2844,15 +3009,16 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: BaseColors.text.dark,
-    fontSize: iosFontSize(17),
+    fontSize: iosFontSize(21),
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
+    marginTop: -18,
     marginBottom: 0,
   },
   countdownText: {
     color: BaseColors.primary,
-    fontSize: iosFontSize(30),
+    fontSize: iosFontSize(20),
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 2,
@@ -2862,7 +3028,7 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(16),
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 2,
+    marginTop: 10,
   },
   compactCtaText: {
     fontSize: iosFontSize(14),
@@ -2870,7 +3036,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   compactCountdownText: {
-    fontSize: iosFontSize(20),
+    fontSize: iosFontSize(14),
     marginTop: 2,
   },
   compactTimeLeftText: {

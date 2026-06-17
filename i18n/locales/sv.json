@@ -53,8 +53,9 @@
       "loadState": "Kunde inte ladda tillståndet"
     },
     "status": {
-      "contactCheckedIn": "{{name}} har checkat in",
+      "contactCheckedIn": "{{name}} checkade in",
       "sentWave": "{{name}} vinkade till dig",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Meddelande från {{name}}",
       "justNow": "Just nu",
       "minutesAgo_one": "{{count}} minut sedan",
@@ -81,7 +82,14 @@
         "home": "🏠 Hemma",
         "outside": "🚶 Ute",
         "busy": "💼 Upptagen",
-        "relaxing": "☕ Kopplar av"
+        "relaxing": "☕ Kopplar av",
+        "eating": "🍽️ Äter",
+        "exhausted": "😩 Utmattad",
+        "sleepy": "😪 Sömnig",
+        "daydreaming": "💭 Dagdrömmer",
+        "having_fun": "🎉 Har jättekul",
+        "goodmorning": "🌅 God morgon",
+        "goodnight": "🌙 God natt"
       },
       "summaryHome": "Vanlig incheckning",
       "summaryTrip": "Lägg till en resestatus",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 Du fick {{count}} hälsning idag:",
       "todayGreetings_other": "💛 Du fick {{count}} hälsningar idag:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Du fick {{count}} nödmeddelande idag:",
+      "todayMessages_other": "🚨 Du fick {{count}} nödmeddelanden idag:"
     },
     "supportButton": {
       "send": "💪 Skicka stöd",
@@ -322,6 +334,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Skicka ett nödmeddelande till {{name}}",
+      "modalDescription": "Detta skickar en omedelbar push-notis och visas i deras aktivitetsflöde.",
+      "placeholder": "Vad händer?",
+      "send": "Skicka",
+      "sending": "Skickar…",
+      "sendError": "Det gick inte att skicka nödmeddelandet."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

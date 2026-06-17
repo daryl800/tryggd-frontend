@@ -8,6 +8,7 @@ export type UserCapabilities = {
   canUseTripMode: boolean;
   canControlCheckinRecipients: boolean;
   canAddUnlimitedContacts: boolean;
+  canSendEmergencyMessage: boolean;
   maxContacts: number;
 };
 
@@ -22,6 +23,7 @@ export function getCapabilities(plan: UserPlan, contactLimit?: number): UserCapa
     canUseTripMode: isPlus,
     canControlCheckinRecipients: isPlus,
     canAddUnlimitedContacts: isPlus,
+    canSendEmergencyMessage: isPlus,
     maxContacts: contactLimit ?? (isPlus ? 999 : 3),
   };
 }

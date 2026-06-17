@@ -15,6 +15,7 @@
     "status": {
       "contactCheckedIn": "{{name}} เช็กอินแล้ว",
       "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "ข้อความจาก {{name}}",
       "justNow": "เมื่อสักครู่",
       "minutesAgo_one": "{{count}} นาทีที่แล้ว",
@@ -41,7 +42,14 @@
         "home": "🏠 อยู่ที่บ้าน",
         "outside": "🚶 ออกไปข้างนอก",
         "busy": "💼 ไม่ว่าง",
-        "relaxing": "☕ พักผ่อน"
+        "relaxing": "☕ พักผ่อน",
+        "eating": "🍽️ กำลังกินข้าว",
+        "exhausted": "😩 เหนื่อยมาก",
+        "sleepy": "😪 ง่วงนอน",
+        "daydreaming": "💭 ฝันกลางวัน",
+        "having_fun": "🎉 สนุกมาก",
+        "goodmorning": "🌅 อรุณสวัสดิ์",
+        "goodnight": "🌙 ราตรีสวัสดิ์"
       },
       "summaryHome": "เช็กอินตามปกติ",
       "summaryTrip": "เพิ่มสถานะการเดินทาง",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:",
       "todayGreetings_other": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:",
+      "todayMessages_other": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:"
     },
     "supportButton": {
       "send": "💪 ส่งกำลังใจ",
@@ -326,6 +338,14 @@
     },
     "messages": {
       "contactDefault": "ผู้ติดต่อนี้"
+    },
+    "emergencyMessage": {
+      "modalTitle": "ส่งข้อความฉุกเฉินถึง {{name}}",
+      "modalDescription": "การทำเช่นนี้จะส่งการแจ้งเตือนแบบพุชทันทีและแสดงในฟีดกิจกรรมของพวกเขา",
+      "placeholder": "เกิดอะไรขึ้น?",
+      "send": "ส่ง",
+      "sending": "กำลังส่ง…",
+      "sendError": "ไม่สามารถส่งข้อความฉุกเฉินได้"
     },
     "status": {
       "checkinsEnabled": "{{name}} จะได้รับการเช็กอินของคุณ",

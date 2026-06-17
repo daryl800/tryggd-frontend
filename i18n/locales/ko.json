@@ -55,6 +55,7 @@
     "status": {
       "contactCheckedIn": "{{name}}님이 체크인했어요",
       "sentWave": "{{name}}님이 손을 흔들었어요",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "{{name}}님의 메시지",
       "justNow": "방금",
       "minutesAgo_one": "{{count}}분 전",
@@ -81,7 +82,14 @@
         "home": "🏠 집에 있음",
         "outside": "🚶 외출 중",
         "busy": "💼 바쁨",
-        "relaxing": "☕ 휴식 중"
+        "relaxing": "☕ 휴식 중",
+        "eating": "🍽️ 밥 먹는 중",
+        "exhausted": "😩 너무 피곤해",
+        "sleepy": "😪 졸려",
+        "daydreaming": "💭 몽상 중",
+        "having_fun": "🎉 신나게 놀고 있어",
+        "goodmorning": "🌅 좋은 아침",
+        "goodnight": "🌙 잘 자요"
       },
       "summaryHome": "일반 체크인",
       "summaryTrip": "여행 상태 추가",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 오늘 {{count}}개의 안부를 받았습니다:",
       "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:",
+      "todayMessages_other": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:"
     },
     "supportButton": {
       "send": "💪 응원 보내기",
@@ -321,6 +333,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "{{name}}님에게 긴급 메시지 보내기",
+      "modalDescription": "즉시 푸시 알림이 전송되며 상대방의 활동 피드에 표시됩니다.",
+      "placeholder": "무슨 일이에요?",
+      "send": "보내기",
+      "sending": "보내는 중…",
+      "sendError": "긴급 메시지를 보내지 못했습니다."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

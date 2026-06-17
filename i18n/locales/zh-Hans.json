@@ -13,7 +13,7 @@
     "dontForget": "别忘了今天签到！",
     "youCheckedInTodayAt": "您今天已于 {{time}} 完成签到",
     "checkIn": "签到",
-    "pressMeToCheckIn": "点击此处签到",
+    "pressMeToCheckIn": "按此签到",
     "simple": {
       "cta": "我很好",
       "tapHint": "点击签到",
@@ -23,8 +23,9 @@
       "statusQuiet": "一切正常"
     },
     "status": {
-      "contactCheckedIn": "{{name}} 已签到",
+      "contactCheckedIn": "{{name}} 签到了",
       "sentWave": "{{name}} 向你挥手",
+      "emergencyMessage": "🚨 {{name}}：{{message}}",
       "messageFrom": "来自 {{name}} 的消息",
       "justNow": "刚刚",
       "minutesAgo_one": "{{count}} 分钟 前",
@@ -51,7 +52,14 @@
         "home": "🏠 在家",
         "outside": "🚶 外出中",
         "busy": "💼 忙碌中",
-        "relaxing": "☕ 放松中"
+        "relaxing": "☕ 放松中",
+        "eating": "🍽️ 吃饭中",
+        "exhausted": "😩 好累",
+        "sleepy": "😪 困了",
+        "daydreaming": "💭 在发白日梦",
+        "having_fun": "🎉 玩得很开心",
+        "goodmorning": "🌅 早上好",
+        "goodnight": "🌙 晚安"
       },
       "summaryHome": "普通签到",
       "summaryTrip": "添加旅行状态",
@@ -63,7 +71,7 @@
     },
     "reset": "重置",
     "timer": "计时器",
-    "timeLeftToday": "今日剩余时间",
+    "timeLeftToday": "今天还剩时间",
     "activity": "活动",
     "contacts_one": "{{count}} 个联系人",
     "contacts_other": "{{count}} 个联系人",
@@ -223,6 +231,10 @@
       "todayGreetings_one": "💛 你今天收到 {{count}} 个问候：",
       "todayGreetings_other": "💛 你今天收到 {{count}} 个问候："
     },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 你今天收到 {{count}} 条紧急消息：",
+      "todayMessages_other": "🚨 你今天收到 {{count}} 条紧急消息："
+    },
     "supportButton": {
       "send": "💪 发送支持",
       "sent": "已发送支持 ✓"
@@ -370,6 +382,14 @@
     },
     "messages": {
       "contactDefault": "此联系人"
+    },
+    "emergencyMessage": {
+      "modalTitle": "向{{name}}发送紧急消息",
+      "modalDescription": "这将立即发送推送通知，并显示在对方的动态中。",
+      "placeholder": "发生了什么？",
+      "send": "发送",
+      "sending": "发送中…",
+      "sendError": "紧急消息发送失败。"
     },
     "status": {
       "checkinsEnabled": "{{name}} 会收到您的签到",

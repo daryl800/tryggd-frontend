@@ -48,7 +48,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 Feeling very happy today`,
   },
   da: {
-    title: (name: string) => `${name} har tjekket ind.`,
+    title: (name: string) => `${name} tjekket ind.`,
     fallback: (time: string) => `Alt er godt! - ${time}`,
     very_low: () => `😔 Har det ikke så godt i dag`,
     low: () => `😕 Er lidt nede i dag`,
@@ -75,7 +75,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 Se siente muy feliz hoy`,
   },
   fi: {
-    title: (name: string) => `${name} on kirjautunut.`,
+    title: (name: string) => `${name} kirjautui.`,
     fallback: (time: string) => `Kaikki on hyvin! - ${time}`,
     very_low: () => `😔 Olo ei ole tänään hyvä`,
     low: () => `😕 Olo on tänään hieman alakuloinen`,
@@ -120,7 +120,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 오늘은 정말 행복해요`,
   },
   no: {
-    title: (name: string) => `${name} har sjekket inn.`,
+    title: (name: string) => `${name} sjekket inn.`,
     fallback: (time: string) => `Alt er bra! - ${time}`,
     very_low: () => `😔 Føler seg ikke bra i dag`,
     low: () => `😕 Er litt nedfor i dag`,
@@ -129,7 +129,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 Er veldig glad i dag`,
   },
   sv: {
-    title: (name: string) => `${name} har checkat in.`,
+    title: (name: string) => `${name} checkade in.`,
     fallback: (time: string) => `Allt är väl! - ${time}`,
     very_low: () => `😔 Mår inte bra idag`,
     low: () => `😕 Känner sig lite låg idag`,
@@ -180,20 +180,20 @@ function getTripStatusLabel(status: string, lang: string): string {
 }
 
 const HOME_PRESENCE_LABELS: Record<string, Record<string, string>> = {
-  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing' },
-  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af' },
-  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich' },
-  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome' },
-  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa' },
-  fr:       { home: '🏠 À la maison', outside: "🚶 Sorti(e)", busy: '💼 Occupé(e)', relaxing: '☕ Je me détends' },
-  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso' },
-  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中' },
-  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중' },
-  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av' },
-  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av' },
-  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน' },
-  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中' },
-  'zh-Hant': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放鬆中' },
+  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing', chilling: '🛋️ Chilling', eating: '🍽️ Having a meal', exhausted: '😩 Exhausted', sleepy: '😪 Sleepy', daydreaming: '💭 Daydreaming', having_fun: '🎉 Having a blast', goodmorning: '🌅 Good morning', goodnight: '🌙 Good night' },
+  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Udmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Har det sjovt', goodmorning: '🌅 God morgen', goodnight: '🌙 God nat' },
+  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich', chilling: '🛋️ Chillen', eating: '🍽️ Beim Essen', exhausted: '😩 Erschöpft', sleepy: '😪 Schläfrig', daydreaming: '💭 Tagträume', having_fun: '🎉 Habe viel Spaß', goodmorning: '🌅 Guten Morgen', goodnight: '🌙 Gute Nacht' },
+  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome', chilling: '🛋️ En modo chill', eating: '🍽️ Comiendo', exhausted: '😩 Agotado', sleepy: '😪 Somnoliento', daydreaming: '💭 Soñando despierto', having_fun: '🎉 Pasándola genial', goodmorning: '🌅 Buenos días', goodnight: '🌙 Buenas noches' },
+  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa', chilling: '🛋️ Chillailen', eating: '🍽️ Syömässä', exhausted: '😩 Uupunut', sleepy: '😪 Uninen', daydreaming: '💭 Haaveilemassa', having_fun: '🎉 Hauskaa pitäen', goodmorning: '🌅 Hyvää huomenta', goodnight: '🌙 Hyvää yötä' },
+  fr:       { home: '🏠 À la maison', outside: '🚶 Sorti(e)', busy: '💼 Occupé(e)', relaxing: '☕ Je me détends', chilling: '🛋️ Cocooning', eating: '🍽️ En train de manger', exhausted: '😩 Épuisé', sleepy: '😪 Somnolent', daydreaming: '💭 Dans la lune', having_fun: "🎉 Je m'amuse bien", goodmorning: '🌅 Bonjour', goodnight: '🌙 Bonne nuit' },
+  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso', chilling: '🛋️ Senza pensieri', eating: '🍽️ Sto mangiando', exhausted: '😩 Esausto', sleepy: '😪 Assonnato', daydreaming: '💭 Sognando ad occhi aperti', having_fun: '🎉 Mi sto divertendo', goodmorning: '🌅 Buongiorno', goodnight: '🌙 Buona notte' },
+  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中', chilling: '🛋️ のんびり中', eating: '🍽️ 食事中', exhausted: '😩 くたくた', sleepy: '😪 眠い', daydreaming: '💭 ぼーっとしてる', having_fun: '🎉 めちゃ楽しんでる', goodmorning: '🌅 おはよう', goodnight: '🌙 おやすみ' },
+  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중', chilling: '🛋️ 멍 때리는 중', eating: '🍽️ 밥 먹는 중', exhausted: '😩 너무 피곤해', sleepy: '😪 졸려', daydreaming: '💭 몽상 중', having_fun: '🎉 신나게 놀고 있어', goodmorning: '🌅 좋은 아침', goodnight: '🌙 잘 자요' },
+  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Utmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Morer meg masse', goodmorning: '🌅 God morgen', goodnight: '🌙 God natt' },
+  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av', chilling: '🛋️ Chillar', eating: '🍽️ Äter', exhausted: '😩 Utmattad', sleepy: '😪 Sömnig', daydreaming: '💭 Dagdrömmer', having_fun: '🎉 Har jättekul', goodmorning: '🌅 God morgon', goodnight: '🌙 God natt' },
+  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน', chilling: '🛋️ พักสมอง', eating: '🍽️ กำลังกินข้าว', exhausted: '😩 เหนื่อยมาก', sleepy: '😪 ง่วงนอน', daydreaming: '💭 ฝันกลางวัน', having_fun: '🎉 สนุกมาก', goodmorning: '🌅 อรุณสวัสดิ์', goodnight: '🌙 ราตรีสวัสดิ์' },
+  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中', chilling: '🛋️ 悠闲中', eating: '🍽️ 吃饭中', exhausted: '😩 好累', sleepy: '😪 困了', daydreaming: '💭 在发白日梦', having_fun: '🎉 玩得很开心', goodmorning: '🌅 早上好', goodnight: '🌙 晚安' },
+  'zh-Hant': { home: '🏠 在家', outside: '🚶 在外', busy: '💼 忙碌中', relaxing: '☕ 放鬆中', chilling: '🛋️ 悠閒中', eating: '🍽️ 食緊飯', exhausted: '😩 好攰', sleepy: '😪 眼瞓', daydreaming: '💭 在發白日夢', having_fun: '🎉 玩得好開心', goodmorning: '🌅 早晨', goodnight: '🌙 晚安' },
 }
 
 function getHomePresenceLabel(status: string, lang: string): string {

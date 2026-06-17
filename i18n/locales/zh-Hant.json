@@ -13,7 +13,7 @@
     "dontForget": "別忘了今天簽到！",
     "youCheckedInTodayAt": "您今天已於 {{time}} 完成簽到",
     "checkIn": "簽到",
-    "pressMeToCheckIn": "點擊此處簽到",
+    "pressMeToCheckIn": "按此簽到",
     "simple": {
       "cta": "我很好",
       "tapHint": "點擊簽到",
@@ -23,8 +23,9 @@
       "statusQuiet": "一切正常"
     },
     "status": {
-      "contactCheckedIn": "{{name}} 已簽到",
+      "contactCheckedIn": "{{name}} 簽到了",
       "sentWave": "{{name}} 向你揮手",
+      "emergencyMessage": "🚨 {{name}}：{{message}}",
       "messageFrom": "來自 {{name}} 的訊息",
       "justNow": "剛剛",
       "minutesAgo_one": "{{count}} 分鐘 前",
@@ -49,9 +50,16 @@
       "homeStatuses": {
         "chilling": "🛋️ 悠閒中",
         "home": "🏠 在家",
-        "outside": "🚶 外出中",
+        "outside": "🚶 在外",
         "busy": "💼 忙碌中",
-        "relaxing": "☕ 放鬆中"
+        "relaxing": "☕ 放鬆中",
+        "eating": "🍽️ 食緊飯",
+        "exhausted": "😩 好攰",
+        "sleepy": "😪 眼瞓",
+        "daydreaming": "💭 在發白日夢",
+        "having_fun": "🎉 玩得好開心",
+        "goodmorning": "🌅 早晨",
+        "goodnight": "🌙 晚安"
       },
       "summaryHome": "普通簽到",
       "summaryTrip": "新增旅行狀態",
@@ -63,7 +71,7 @@
     },
     "reset": "重置",
     "timer": "計時器",
-    "timeLeftToday": "今日剩餘時間",
+    "timeLeftToday": "今天還剩時間",
     "activity": "活動",
     "contacts_one": "{{count}} 個聯絡人",
     "contacts_other": "{{count}} 個聯絡人",
@@ -223,6 +231,10 @@
       "todayGreetings_one": "💛 你今天收到 {{count}} 個問候：",
       "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
     },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 你今天收到 {{count}} 條緊急訊息：",
+      "todayMessages_other": "🚨 你今天收到 {{count}} 條緊急訊息："
+    },
     "supportButton": {
       "send": "💪 發送支持",
       "sent": "已發送支持 ✓"
@@ -370,6 +382,14 @@
     },
     "messages": {
       "contactDefault": "此聯絡人"
+    },
+    "emergencyMessage": {
+      "modalTitle": "向{{name}}發送緊急訊息",
+      "modalDescription": "這將立即發送推播通知，並顯示在對方的動態中。",
+      "placeholder": "發生了什麼事？",
+      "send": "發送",
+      "sending": "發送中…",
+      "sendError": "緊急訊息發送失敗。"
     },
     "status": {
       "checkinsEnabled": "{{name}} 會收到您的簽到",

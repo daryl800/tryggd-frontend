@@ -53,8 +53,9 @@
       "loadState": "Tilaa ei voitu ladata"
     },
     "status": {
-      "contactCheckedIn": "{{name}} on kirjautunut sisään",
+      "contactCheckedIn": "{{name}} kirjautui sisään",
       "sentWave": "{{name}} lähetti sinulle vilkutuksen",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Viesti käyttäjältä {{name}}",
       "justNow": "Juuri nyt",
       "minutesAgo_one": "{{count}} minuutti sitten",
@@ -81,7 +82,14 @@
         "home": "🏠 Kotona",
         "outside": "🚶 Ulkona",
         "busy": "💼 Kiireinen",
-        "relaxing": "☕ Rentoutumassa"
+        "relaxing": "☕ Rentoutumassa",
+        "eating": "🍽️ Syömässä",
+        "exhausted": "😩 Uupunut",
+        "sleepy": "😪 Uninen",
+        "daydreaming": "💭 Haaveilemassa",
+        "having_fun": "🎉 Hauskaa pitäen",
+        "goodmorning": "🌅 Hyvää huomenta",
+        "goodnight": "🌙 Hyvää yötä"
       },
       "summaryHome": "Normaali kirjautuminen",
       "summaryTrip": "Lisää matkan tila",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 Sait tänään {{count}} tervehdyksen:",
       "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Sait tänään {{count}} hätäviestin:",
+      "todayMessages_other": "🚨 Sait tänään {{count}} hätäviestiä:"
     },
     "supportButton": {
       "send": "💪 Lähetä tukea",
@@ -322,6 +334,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Lähetä hätäviesti käyttäjälle {{name}}",
+      "modalDescription": "Tämä lähettää välittömän push-ilmoituksen ja näkyy heidän Aktiviteetti-syötteessään.",
+      "placeholder": "Mitä on tekeillä?",
+      "send": "Lähetä",
+      "sending": "Lähetetään…",
+      "sendError": "Hätäviestin lähettäminen epäonnistui."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",

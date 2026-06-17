@@ -55,6 +55,7 @@
     "status": {
       "contactCheckedIn": "{{name}} hat sich eingecheckt",
       "sentWave": "{{name}} hat dir gewunken",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Nachricht von {{name}}",
       "justNow": "Gerade jetzt",
       "minutesAgo_one": "vor {{count}} Minute",
@@ -81,7 +82,14 @@
         "home": "🏠 Zuhause",
         "outside": "🚶 Unterwegs",
         "busy": "💼 Beschäftigt",
-        "relaxing": "☕ Entspanne mich"
+        "relaxing": "☕ Entspanne mich",
+        "eating": "🍽️ Beim Essen",
+        "exhausted": "😩 Erschöpft",
+        "sleepy": "😪 Schläfrig",
+        "daydreaming": "💭 Tagträume",
+        "having_fun": "🎉 Habe viel Spaß",
+        "goodmorning": "🌅 Guten Morgen",
+        "goodnight": "🌙 Gute Nacht"
       },
       "summaryHome": "Normaler Check-in",
       "summaryTrip": "Reisestatus hinzufügen",
@@ -178,6 +186,10 @@
     "welfareCheck": {
       "todayGreetings_one": "💛 Du hast heute {{count}} Gruß erhalten:",
       "todayGreetings_other": "💛 Du hast heute {{count}} Grüße erhalten:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Du hast heute {{count}} Notfallnachricht erhalten:",
+      "todayMessages_other": "🚨 Du hast heute {{count}} Notfallnachrichten erhalten:"
     },
     "supportButton": {
       "send": "💪 Unterstützung senden",
@@ -321,6 +333,14 @@
     },
     "messages": {
       "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Notfallnachricht an {{name}} senden",
+      "modalDescription": "Dies sendet sofort eine Push-Benachrichtigung und erscheint in der Aktivität der Person.",
+      "placeholder": "Was ist los?",
+      "send": "Senden",
+      "sending": "Senden…",
+      "sendError": "Notfallnachricht konnte nicht gesendet werden."
     },
     "status": {
       "checkinsEnabled": "{{name}} will receive your check-ins",
