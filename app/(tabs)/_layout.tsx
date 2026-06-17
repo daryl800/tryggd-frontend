@@ -1,5 +1,6 @@
 // app/(tabs)/_layout.tsx
 import { useContactStore } from "@/stores/contactStore";
+import { ContactCheckinsProvider } from "@/contexts/ContactCheckinsContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
@@ -114,6 +115,7 @@ export default function TabsLayout() {
   if (needsUsername) return <Redirect href="/complete-profile" />;
 
   return (
+    <ContactCheckinsProvider>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -200,6 +202,7 @@ export default function TabsLayout() {
         options={{ href: null }}
       />
     </Tabs>
+    </ContactCheckinsProvider>
   );
 }
 

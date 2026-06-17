@@ -23,7 +23,7 @@ import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
 import * as Notifications from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -47,6 +47,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
+import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
@@ -383,7 +384,7 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'relaxing', 'busy', 'exhausted', 'sleepy', 'daydreaming', 'having_fun', 'goodnight'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'daydreaming', 'busy', 'exhausted', 'sleepy', 'having_fun', 'goodnight'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
@@ -691,15 +692,45 @@ export default function HomeScreen() {
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
-  const [latestCheckinStatus, setLatestCheckinStatus] =
-    useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
   const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
   const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
 
+  // Shared contact check-in data (one fetch/subscription shared with Activity)
+  const {
+    checkins: contactCheckins,
+    profiles: contactProfiles,
+    locationMap: contactLocationMap,
+    refresh: refreshCheckins,
+  } = useContactCheckins();
+
+  // Derived from shared context — most recent contact check-in for the status bar
+  const latestCheckinStatus = useMemo<HomeStatusNotification | null>(() => {
+    const latest = contactCheckins.find((c) => c.last_checked_in_utc != null);
+    if (!latest || !latest.last_checked_in_utc) return null;
+    const profile = contactProfiles.get(latest.user_id);
+    const loc = contactLocationMap.get(`${latest.user_id}:${latest.last_checked_in_utc}`) ?? null;
+    return {
+      id: `checkin-${latest.user_id}`,
+      sender_user_id: latest.user_id,
+      type: 'contact_checkin',
+      body: null,
+      title: null,
+      data: {
+        tripStatus: latest.trip_status || null,
+        homePresence: latest.home_presence || null,
+        wellnessScore: latest.wellness_score ?? null,
+        location: loc
+          ? { latitude: loc.latitude, longitude: loc.longitude, accuracyMeters: loc.accuracyMeters }
+          : null,
+      },
+      created_at: latest.last_checked_in_utc,
+      senderName: profile?.display_name || latest.display_name || 'Someone',
+      senderAvatarUrl: profile?.avatar_url || null,
+    };
+  }, [contactCheckins, contactProfiles, contactLocationMap]);
+
   const latestStatusChannelRef = useRef<any>(null);
-  const checkinStatusChannelRef = useRef<any>(null);
-  const contactIdsRef = useRef<string[]>([]);
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -909,7 +940,6 @@ export default function HomeScreen() {
 
     if (!error) {
       setContactsCount(count || 0);
-      contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
     }
   }, []);
 
@@ -1027,6 +1057,7 @@ export default function HomeScreen() {
         refetchStreak();
         fetchContactsCount();
         void fetchLatestStatusNotificationRef.current();
+        void refreshCheckins();
       }
     };
 
@@ -1157,54 +1188,6 @@ export default function HomeScreen() {
     ]).start();
   };
 
-  const fetchLatestContactCheckin = useCallback(async (): Promise<HomeStatusNotification | null> => {
-    if (!user) return null;
-
-    if (!contactIdsRef.current.length) {
-      const { data: contactRows } = await supabase
-        .from('contacts')
-        .select('contact_user_id')
-        .eq('owner_user_id', user.id);
-      contactIdsRef.current = (contactRows || []).map((r) => r.contact_user_id).filter(Boolean);
-    }
-
-    const contactIds = contactIdsRef.current;
-    if (!contactIds.length) return null;
-
-    const { data } = await supabase
-      .from('users_latest_checkin')
-      .select('*')
-      .in('user_id', contactIds)
-      .not('last_checked_in_utc', 'is', null)
-      .order('last_checked_in_utc', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (!data?.last_checked_in_utc) return null;
-
-    const { data: profileRows } = await supabase.rpc('get_contact_usernames', {
-      contact_ids: [data.user_id],
-    });
-    const profile = profileRows?.[0];
-    const displayName = profile?.display_name || data.display_name || 'Someone';
-
-    return {
-      id: `checkin-${data.user_id}`,
-      sender_user_id: data.user_id,
-      type: 'contact_checkin',
-      body: null,
-      title: null,
-      data: {
-        tripStatus: data.trip_status || null,
-        homePresence: data.home_presence || null,
-        wellnessScore: data.wellness_score ?? null,
-      },
-      created_at: data.last_checked_in_utc,
-      senderName: displayName,
-      senderAvatarUrl: profile?.avatar_url || null,
-    };
-  }, [user]);
-
   const enrichHomeStatusNotification = useCallback(async (notification: any): Promise<HomeStatusNotification> => {
     const parsedData = parseNotificationData(notification.data);
     let senderName =
@@ -1242,30 +1225,24 @@ export default function HomeScreen() {
   const fetchLatestStatusNotification = useCallback(async () => {
     if (!user) {
       setLatestStatusNotification(null);
-      setLatestCheckinStatus(null);
       return;
     }
 
-    const [{ data, error }, checkin] = await Promise.all([
-      supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      fetchLatestContactCheckin(),
-    ]);
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching latest home status notification:', error);
     } else {
       setLatestStatusNotification(data ? await enrichHomeStatusNotification(data) : null);
     }
-
-    setLatestCheckinStatus(checkin);
-  }, [enrichHomeStatusNotification, fetchLatestContactCheckin, user]);
+  }, [enrichHomeStatusNotification, user]);
 
   // Keep ref in sync so the AppState handler (declared earlier) always calls the latest version
   useEffect(() => {
@@ -1284,7 +1261,8 @@ export default function HomeScreen() {
       fetchContactsCount();
       loadHomeStyle();
       void fetchLatestStatusNotification();
-    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification])
+      void refreshCheckins();
+    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification, refreshCheckins])
   );
 
   useEffect(() => {
@@ -1329,92 +1307,8 @@ export default function HomeScreen() {
     };
   }, [enrichHomeStatusNotification, user]);
 
-  useEffect(() => {
-    if (checkinStatusChannelRef.current) {
-      supabase.removeChannel(checkinStatusChannelRef.current);
-      checkinStatusChannelRef.current = null;
-    }
-
-    if (!user) return;
-
-    const setup = async () => {
-      if (!contactIdsRef.current.length) {
-        const { data } = await supabase
-          .from('contacts')
-          .select('contact_user_id')
-          .eq('owner_user_id', user.id);
-        contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
-      }
-
-      const contactIds = contactIdsRef.current;
-      if (!contactIds.length) return;
-
-      const channel = supabase
-        .channel(`home-checkin-status:${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'users_latest_checkin',
-            filter: `user_id=in.(${contactIds.join(',')})`,
-          },
-          () => {
-            fetchLatestContactCheckin()
-              .then(setLatestCheckinStatus)
-              .catch((err) => console.error('Error updating checkin status:', err));
-          }
-        )
-        .subscribe();
-
-      checkinStatusChannelRef.current = channel;
-    };
-
-    void setup();
-
-    return () => {
-      if (checkinStatusChannelRef.current) {
-        supabase.removeChannel(checkinStatusChannelRef.current);
-        checkinStatusChannelRef.current = null;
-      }
-    };
-  }, [fetchLatestContactCheckin, user]);
-
-  // Foreground push listener — update home status bar immediately when a contact checks in.
-  // contact_checkin pushes don't include `type` in data; identified by `contactUserId` presence.
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener((notification) => {
-      const data = notification.request.content.data as any;
-      if (!data?.contactUserId || !data?.checkinTimeIso) return;
-
-      const immediate: HomeStatusNotification = {
-        id: `checkin-${data.contactUserId}-${Date.now()}`,
-        sender_user_id: data.contactUserId,
-        type: 'contact_checkin',
-        body: null,
-        title: null,
-        data: {
-          tripStatus: data.tripStatus ?? null,
-          homePresence: data.homePresence ?? null,
-          wellnessScore: data.wellnessScore ?? null,
-        },
-        created_at: data.checkinTimeIso,
-        senderName: data.contactDisplayName || 'Someone',
-        senderAvatarUrl: null,
-      };
-
-      setLatestCheckinStatus((prev) =>
-        !prev || new Date(immediate.created_at) >= new Date(prev.created_at) ? immediate : prev
-      );
-
-      // Confirm with DB to get avatar_url and correct ordering across multiple contacts
-      fetchLatestContactCheckin()
-        .then((confirmed) => { if (confirmed) setLatestCheckinStatus(confirmed); })
-        .catch(console.error);
-    });
-
-    return () => subscription.remove();
-  }, [fetchLatestContactCheckin]);
+  // contact_checkin realtime and foreground-push are handled by ContactCheckinsContext.
+  // latestCheckinStatus is now a useMemo derived from the shared context state.
 
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
