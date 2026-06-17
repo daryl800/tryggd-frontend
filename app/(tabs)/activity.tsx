@@ -1444,14 +1444,14 @@ export default function ActivityScreen() {
             )}
           </View>
 
-          {!!(username || trip_status || (home_presence && capabilities.isPlus) || (wellnessMeta && capabilities.canUseWellnessSlider)) && (
+          {!!(username || trip_status || (home_presence && capabilities.isPlus) || (wellnessMeta && capabilities.isPlus)) && (
             <View style={styles.rightColumn}>
               {username && (
                 <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
                   @{username}
                 </Text>
               )}
-              {wellnessMeta && capabilities.canUseWellnessSlider && (
+              {wellnessMeta && capabilities.isPlus && (
                 <View style={styles.wellnessBadgeWrapper}>
                   {wellnessTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: wellnessMeta.borderColor, backgroundColor: wellnessMeta.backgroundColor }]}>
