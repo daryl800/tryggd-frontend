@@ -1675,6 +1675,7 @@ export default function HomeScreen() {
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const simpleDateTimeText = `${formatDateWithTranslation(now, t, i18n.language)} · ${formatTime24h(now, i18n.language)}`;
   const isPlusSimpleHome = homeLayout === 'plus-simple';
+  // Debug-only: hidden in production because __DEV__ is false in release builds
   const showDebugResetCheckin = __DEV__;
   const currentFontScale = windowDimensions.fontScale || fontScale;
   const currentScreenWidth = windowDimensions.width || SCREEN_WIDTH;
