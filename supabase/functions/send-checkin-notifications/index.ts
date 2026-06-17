@@ -634,6 +634,15 @@ serve(async (req) => {
       (recipientSettings || []).map((row) => [row.user_id, row.language])
     )
 
+    const { data: recipientEntitlements } = await supabase
+      .from('user_entitlements')
+      .select('user_id, plan')
+      .in('user_id', recipientIds)
+
+    const recipientPlanMap = new Map(
+      (recipientEntitlements || []).map((row: any) => [row.user_id, row.plan === 'plus' ? 'plus' : 'free'])
+    )
+
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
 
     for (const recipient of recipients) {
@@ -644,6 +653,7 @@ serve(async (req) => {
 
       const recipientLang = recipientLanguageMap.get(recipient.user_id) ?? 'en'
       const locale = getCheckinLocale(recipientLang)
+      const isRecipientPlus = recipientPlanMap.get(recipient.user_id) === 'plus'
 
       const payload = buildContactCheckinNotification(
         locale,
@@ -653,12 +663,12 @@ serve(async (req) => {
         recipient.user_id,
         checkin_time,
         timezone,
-        sharedLocation && locationRecipientIds.has(recipient.user_id)
+        isRecipientPlus && sharedLocation && locationRecipientIds.has(recipient.user_id)
           ? sharedLocation
           : null,
-        wellnessScore,
+        isRecipientPlus ? wellnessScore : null,
         tripStatus,
-        homePresence,
+        isRecipientPlus ? homePresence : null,
         recipientLang
       )
 
