@@ -25,6 +25,7 @@
     "status": {
       "contactCheckedIn": "{{name}} 簽到了",
       "sentWave": "{{name}} 向你揮手",
+      "respondedToYou": "{{name}} 回應了你的簽到",
       "emergencyMessage": "🚨 {{name}}：{{message}}",
       "messageFrom": "來自 {{name}} 的訊息",
       "justNow": "剛剛",

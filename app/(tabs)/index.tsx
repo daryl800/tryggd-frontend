@@ -64,7 +64,7 @@ const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
-const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message'] as const;
+const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
 type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodnight';
 type ReachOutStatus = 'call_now' | 'call_available';
 
@@ -1671,7 +1671,9 @@ export default function HomeScreen() {
             name: latestDisplayStatus.senderName,
             message: latestDisplayStatus.data?.message || latestDisplayStatus.body || '',
           })
-        : t('home.status.sentWave', { name: latestDisplayStatus.senderName })
+        : latestDisplayStatus.type === 'checkin_response'
+          ? t('home.status.respondedToYou', { name: latestDisplayStatus.senderName })
+          : t('home.status.sentWave', { name: latestDisplayStatus.senderName })
     : null;
   const latestStatusTripStatus = latestDisplayStatus?.data?.tripStatus;
   const latestStatusTripEmoji = latestStatusTripStatus

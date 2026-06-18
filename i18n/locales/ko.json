@@ -59,6 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}}님이 체크인했어요",
       "sentWave": "{{name}}님이 손을 흔들었어요",
+      "respondedToYou": "{{name}}님이 회원님의 체크인에 응답했어요",
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "{{name}}님의 메시지",
       "justNow": "방금",

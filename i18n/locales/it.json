@@ -59,6 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}} ha fatto il check-in",
       "sentWave": "{{name}} ti ha salutato",
+      "respondedToYou": "{{name}} ha risposto al tuo check-in",
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Messaggio da {{name}}",
       "justNow": "Proprio ora",

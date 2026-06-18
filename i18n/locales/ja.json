@@ -59,6 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}}さんがチェックインしました",
       "sentWave": "{{name}}さんが手を振りました",
+      "respondedToYou": "{{name}}さんがあなたのチェックインに返信しました",
       "emergencyMessage": "🚨 {{name}}：{{message}}",
       "messageFrom": "{{name}}さんからのメッセージ",
       "justNow": "たった今",
