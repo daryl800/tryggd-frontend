@@ -59,6 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}} kirjautui sisään",
       "sentWave": "{{name}} lähetti sinulle vilkutuksen",
+      "respondedToYou": "{{name}} vastasi kirjautumiseesi"
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Viesti käyttäjältä {{name}}",
       "justNow": "Juuri nyt",

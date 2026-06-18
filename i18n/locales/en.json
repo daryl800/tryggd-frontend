@@ -23,6 +23,7 @@
     "status": {
       "contactCheckedIn": "{{name}} checked in",
       "sentWave": "{{name}} sent you a wave",
+      "respondedToYou": "{{name}} responded to your check-in",
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Message from {{name}}",
       "justNow": "Just now",
