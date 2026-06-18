@@ -83,6 +83,19 @@ type HomeStatusNotification = {
 const clampWellnessValue = (value: number) =>
   Math.max(WELLNESS_MIN, Math.min(WELLNESS_MAX, value));
 
+const clampNumber = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value));
+
+const EMOJI_CHAR_PATTERN = /[\p{Extended_Pictographic}\uFE0F]/gu;
+
+const stripEmojiFromLabel = (value: string) =>
+  value
+    .replace(EMOJI_CHAR_PATTERN, '')
+    .split('\n')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join('\n');
+
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
@@ -1587,12 +1600,12 @@ export default function HomeScreen() {
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
   const REACH_OUT_EMOJI = '😟';
-  const [checkedInMsgTextRaw, checkedInMsgEmoji] = isReachOutMode
-    ? [checkedInMessage, REACH_OUT_EMOJI]
-    : checkedInMessage.includes('\n')
-    ? checkedInMessage.split('\n') as [string, string]
-    : [checkedInMessage, wellnessEmoji] as [string, string];
-  const checkedInMsgText = checkedInMsgTextRaw.replace(/\s*[/／]\s*/g, '\n');
+  const checkedInMessageWithBreaks = checkedInMessage.replace(/\s*[/／]\s*/g, '\n');
+  const statusLabelEmoji = checkedInMessage.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? '';
+  const checkedInMsgText = stripEmojiFromLabel(checkedInMessageWithBreaks);
+  const checkedInMsgEmoji = isReachOutMode
+    ? REACH_OUT_EMOJI
+    : statusLabelEmoji || (checkedInMessage.includes('\n') ? checkedInMessage.split('\n')[1] : wellnessEmoji);
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const checkedMessageColor =
     checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
@@ -1625,6 +1638,43 @@ export default function HomeScreen() {
   const circleRadius = (circleSize - maxStroke) / 2;
   const innerButtonSize = circleSize - strokeWidth;
   const innerButtonOffset = strokeWidth / 2;
+  const checkedInLineCountHint = checkedInMsgText.split('\n').length;
+  const checkedInTextLength = checkedInMsgText.replace(/\n/g, '').trim().length;
+  const checkedInWordCount = checkedInMsgText
+    .split(/\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean).length;
+  const isSingleWordCheckedInText = checkedInLineCountHint === 1 && checkedInWordCount === 1;
+  const isLongCheckedInText =
+    checkedInLineCountHint >= 2 || checkedInWordCount >= 3 || checkedInTextLength > 12;
+  const checkedInTextScale =
+    isSingleWordCheckedInText
+      ? 0.172
+      : checkedInLineCountHint >= 3 || checkedInTextLength > 16
+      ? 0.122
+      : checkedInLineCountHint === 2 || checkedInTextLength > 11
+        ? 0.146
+        : 0.176;
+  const checkedInFontSize = clampNumber(Math.round(innerButtonSize * checkedInTextScale), 15, 30);
+  const checkedInLineHeight = Math.round(checkedInFontSize * 1.12);
+  const checkedInEmojiSize = clampNumber(
+    Math.round(checkedInFontSize + (checkedInLineCountHint > 1 ? 3 : 7)),
+    18,
+    36,
+  );
+  const checkedInEmojiLineHeight = Math.round(checkedInEmojiSize * 1.15);
+  const checkedHeartSize = clampNumber(
+    ICON_SIZES.SUPER_HUGE - (isLongCheckedInText ? 16 : 0),
+    34,
+    ICON_SIZES.SUPER_HUGE,
+  );
+  const checkedHeartOutlineSize = checkedHeartSize + (capabilities.canUseWellnessSlider ? 8 : 0);
+  const uncheckedCtaFontSize = clampNumber(Math.round(innerButtonSize * 0.108), 13, 18);
+  const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * 1.16);
+  const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.122), 15, 22);
+  const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
+  const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.086), 11, 16);
+  const uncheckedMetaLineHeight = Math.round(uncheckedMetaFontSize * 1.16);
   const formatHomeStatusAgo = (createdAt?: string | null) => {
     if (!createdAt) return '';
 
@@ -1956,20 +2006,23 @@ export default function HomeScreen() {
                     ]}
                   >
                     {/* Icon */}
-                    <View style={styles.iconContainer}>
+                    <View style={[
+                      styles.iconContainer,
+                      checkedInToday && isLongCheckedInText && styles.iconContainerCompactCheckedIn,
+                    ]}>
                       {checkedInToday ? (
                         <View style={styles.checkedHeartStack}>
                           {capabilities.canUseWellnessSlider && (
                             <Ionicons
                               name="heart-sharp"
-                              size={ICON_SIZES.SUPER_HUGE + 10}
+                              size={checkedHeartOutlineSize}
                               color="#fff"
                               style={styles.checkedHeartOutline}
                             />
                           )}
                           <Ionicons
                             name="heart-sharp"
-                            size={ICON_SIZES.SUPER_HUGE}
+                            size={checkedHeartSize}
                             color={capabilities.canUseWellnessSlider ? heartColor : '#fff'}
                           />
                         </View>
@@ -1979,12 +2032,22 @@ export default function HomeScreen() {
                     </View>
 
                     {/* Text Content */}
-                    <View style={[styles.textContainer, capabilities.isPlus ? { flex: 1 } : { marginTop: 14 }]}>
+                    <View style={[
+                      styles.textContainer,
+                      checkedInToday && isLongCheckedInText && styles.textContainerCompactCheckedIn,
+                      capabilities.isPlus ? { flex: 1 } : { marginTop: 14 },
+                    ]}>
                       {checkedInToday ? (
                         <Text
-                          numberOfLines={2}
+                          numberOfLines={isSingleWordCheckedInText ? 1 : 4}
+                          adjustsFontSizeToFit={isSingleWordCheckedInText}
+                          minimumFontScale={isSingleWordCheckedInText ? 0.58 : undefined}
                           style={[
                             styles.checkedInText,
+                            {
+                              fontSize: checkedInFontSize,
+                              lineHeight: checkedInLineHeight,
+                            },
                             { color: checkedMessageColor },
                             chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
                           ]}
@@ -1994,7 +2057,14 @@ export default function HomeScreen() {
                       ) : (
                         <>
                           <Text
-                            style={[styles.ctaText, fontScale > 1.2 && styles.compactCtaText]}
+                            style={[
+                              styles.ctaText,
+                              {
+                                fontSize: uncheckedCtaFontSize,
+                                lineHeight: uncheckedCtaLineHeight,
+                              },
+                              fontScale > 1.2 && styles.compactCtaText,
+                            ]}
                             numberOfLines={2}
                           >
                             {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
@@ -2002,18 +2072,28 @@ export default function HomeScreen() {
                           {!isReachOutMode && (
                             <>
                               <Text
-                                style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
+                                style={[
+                                  styles.timeLeftText,
+                                  {
+                                    fontSize: uncheckedMetaFontSize,
+                                    lineHeight: uncheckedMetaLineHeight,
+                                  },
+                                  fontScale > 1.2 && styles.compactTimeLeftText,
+                                ]}
                                 numberOfLines={1}
-                                adjustsFontSizeToFit
-                                minimumFontScale={0.7}
                               >
                                 {t('home.timeLeftToday')}
                               </Text>
                               <Text
-                                style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
+                                style={[
+                                  styles.countdownText,
+                                  {
+                                    fontSize: uncheckedCountdownFontSize,
+                                    lineHeight: uncheckedCountdownLineHeight,
+                                  },
+                                  fontScale > 1.2 && styles.compactCountdownText,
+                                ]}
                                 numberOfLines={1}
-                                adjustsFontSizeToFit
-                                minimumFontScale={0.7}
                               >
                                 {formatTimeLeft(remainingMs)}
                               </Text>
@@ -2023,7 +2103,13 @@ export default function HomeScreen() {
                       )}
                     </View>
                     {checkedInToday && !!checkedInMsgEmoji && (
-                      <Text style={styles.checkedInEmoji}>{checkedInMsgEmoji}</Text>
+                      <Text style={[
+                        styles.checkedInEmoji,
+                        {
+                          fontSize: checkedInEmojiSize,
+                          lineHeight: checkedInEmojiLineHeight,
+                        },
+                      ]}>{checkedInMsgEmoji}</Text>
                     )}
                   </View>
                 </TouchableOpacity>
@@ -3037,6 +3123,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 12,
   },
+  iconContainerCompactCheckedIn: {
+    minHeight: 44,
+    marginTop: 4,
+    marginBottom: 2,
+  },
   checkedHeartStack: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -3050,6 +3141,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     maxWidth: '100%',
     width: '100%',
+  },
+  textContainerCompactCheckedIn: {
+    paddingHorizontal: 18,
   },
   ctaText: {
     color: BaseColors.text.dark,
