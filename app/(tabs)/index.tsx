@@ -1604,10 +1604,14 @@ export default function HomeScreen() {
   const currentFontScale = windowDimensions.fontScale || fontScale;
   const currentScreenWidth = windowDimensions.width || SCREEN_WIDTH;
   const currentScreenHeight = windowDimensions.height || SCREEN_HEIGHT;
+  // viewportHeight = actual usable scroll area (excludes status bar, tab bar, nav bar)
+  // screenHeight = full window height. viewportHeight is ~120-150px smaller on most devices.
+  // Use viewportHeight when available for accurate compactness; thresholds adjusted accordingly.
+  const effectiveHeight = viewportHeight > 0 ? viewportHeight : currentScreenHeight - 150;
   const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> =
-    currentScreenHeight < 700 || currentFontScale >= 1.2
+    effectiveHeight < 560 || currentFontScale >= 1.2
       ? 'tight'
-      : currentScreenHeight < 780 || currentFontScale >= 1.1
+      : effectiveHeight < 640 || currentFontScale >= 1.1
         ? 'compact'
         : 'regular';
   const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
