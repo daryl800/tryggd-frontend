@@ -15,7 +15,7 @@
     "status": {
       "contactCheckedIn": "{{name}} เช็กอินแล้ว",
       "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
-      "respondedToYou": "{{name}} ตอบกลับการเช็คอินของคุณ"
+      "respondedToYou": "{{name}} ตอบกลับการเช็คอินของคุณ",
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "ข้อความจาก {{name}}",
       "justNow": "เมื่อสักครู่",

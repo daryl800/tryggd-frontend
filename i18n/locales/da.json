@@ -59,7 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}} tjekket ind",
       "sentWave": "{{name}} har sendt dig et vink",
-      "respondedToYou": "{{name}} svarede på din check-in"
+      "respondedToYou": "{{name}} svarede på din check-in",
       "emergencyMessage": "🚨 {{name}}: {{message}}",
       "messageFrom": "Besked fra {{name}}",
       "justNow": "Lige nu",

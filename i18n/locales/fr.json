@@ -59,7 +59,7 @@
     "status": {
       "contactCheckedIn": "{{name}} a pointé",
       "sentWave": "{{name}} vous a fait signe",
-      "respondedToYou": "{{name}} a répondu à votre check-in"
+      "respondedToYou": "{{name}} a répondu à votre check-in",
       "emergencyMessage": "🚨 {{name}} : {{message}}",
       "messageFrom": "Message de {{name}}",
       "justNow": "À l'instant",
