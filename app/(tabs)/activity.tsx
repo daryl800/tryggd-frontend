@@ -1373,6 +1373,39 @@ export default function ActivityScreen() {
             )}
 
             {!isOwner && (isValidTimestamp || isNewContact) && (
+              <>
+              {(() => {
+                if (reach_out_status) {
+                  return (
+                    <Text style={{ fontSize: 14, color: '#EF4444', marginBottom: 4 }}>
+                      {t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (home_presence) {
+                  return (
+                    <Text style={{ fontSize: 14, color: BaseColors.primary, marginBottom: 4 }}>
+                      {t(`home.context.homeStatuses.${home_presence}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (trip_status) {
+                  return (
+                    <Text style={{ fontSize: 14, color: BaseColors.primary, marginBottom: 4 }}>
+                      {t(`home.tripMode.statuses.${trip_status}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (wellnessMeta) {
+                  const parts = (t(wellnessMeta.labelKey as any) as string).split('\n');
+                  return (
+                    <Text style={{ fontSize: 14, color: wellnessMeta.color, marginBottom: 4 }}>
+                      {parts[1] ? `${parts[1]} ` : ''}{parts[0]}
+                    </Text>
+                  );
+                }
+                return null;
+              })()}
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
@@ -1450,6 +1483,7 @@ export default function ActivityScreen() {
                   )}
                 </TouchableOpacity>
               </View>
+              </>
             )}
           </View>
 
