@@ -15,6 +15,10 @@
     "reset": "Reimposta",
     "timer": "Timer",
     "timeLeftToday": "Tempo rimanente",
+    "reachOut": {
+      "pressToSendHelp": "Invia segnale di aiuto",
+      "lastSentLabel": "Ultimo aiuto inviato:"
+    },
     "activity": "Attività",
     "contacts_one": "{{count}} contatto",
     "contacts_other": "{{count}} contatti",
@@ -75,10 +79,10 @@
       "trip": "In viaggio",
       "homeTab": "🌿 Quotidiano",
       "tripTab": "✈️ Viaggio",
-      "reachOutTab": "🤙 Contattami",
+      "reachOutTab": "🤙 Aiuto",
       "reachOutStatuses": {
-        "call_now": "📞 Chiamami presto",
-        "call_available": "📱 Disponibile per una chiamata"
+        "call_now": "🙏 Ho bisogno di aiuto",
+        "call_available": "📞 Chiamami"
       },
       "statusTitle": "Stato",
       "tripStatusPrompt": "Scegli uno stato di viaggio",
@@ -201,6 +205,10 @@
     "supportButton": {
       "send": "💪 Invia supporto",
       "sent": "Supporto inviato ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Capito",
+      "sent": "Risposto ✓"
     }
   },
   "contacts": {

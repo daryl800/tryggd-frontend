@@ -194,7 +194,7 @@ class ResponseNotificationService {
         recipientUserId: string;
         senderUserId: string;
         checkinTime: string;
-        responseKind?: 'like' | 'support';
+        responseKind?: 'like' | 'support' | 'reach_out';
     }) {
         try {
             await this.initialize();
@@ -267,7 +267,9 @@ class ResponseNotificationService {
                     user_id: recipientUserId,
                     sender_user_id: senderUserId,
                     type: 'checkin_response',
-                    body: responseKind === 'support'
+                    body: responseKind === 'reach_out'
+                        ? `${profile?.display_name || 'Someone'} responded to your help request`
+                        : responseKind === 'support'
                         ? `💪 ${profile?.display_name || 'Someone'} sent you support`
                         : `👍 ${profile?.display_name || 'Someone'} sent you a like`,
                     created_at: new Date().toISOString(),

@@ -45,10 +45,10 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 出行",
-      "reachOutTab": "🤙 有事",
+      "reachOutTab": "🤙 求助",
       "reachOutStatuses": {
-        "call_now": "📞 盡快call我",
-        "call_available": "📱 方便call我"
+        "call_now": "🙏 我需要幫忙",
+        "call_available": "📞 請call我"
       },
       "statusTitle": "狀態",
       "tripStatusPrompt": "選擇出行狀態",
@@ -79,6 +79,10 @@
     "reset": "重置",
     "timer": "計時器",
     "timeLeftToday": "今天還剩時間",
+    "reachOut": {
+      "pressToSendHelp": "發出求助",
+      "lastSentLabel": "你上次發出求助："
+    },
     "activity": "活動",
     "contacts_one": "{{count}} 個聯絡人",
     "contacts_other": "{{count}} 個聯絡人",
@@ -245,6 +249,10 @@
     "supportButton": {
       "send": "💪 發送支持",
       "sent": "已發送支持 ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "知道了",
+      "sent": "已回應 ✓"
     }
   },
   "contacts": {

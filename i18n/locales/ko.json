@@ -15,6 +15,10 @@
     "reset": "초기화",
     "timer": "타이머",
     "timeLeftToday": "남은 시간",
+    "reachOut": {
+      "pressToSendHelp": "도움 요청 보내기",
+      "lastSentLabel": "마지막 도움 요청:"
+    },
     "activity": "활동",
     "contacts_one": "연락처 {{count}}명",
     "contacts_other": "연락처 {{count}}명",
@@ -75,10 +79,10 @@
       "trip": "여행 중",
       "homeTab": "🌿 일상",
       "tripTab": "✈️ 여행",
-      "reachOutTab": "🤙 연락해줘",
+      "reachOutTab": "🤙 도움",
       "reachOutStatuses": {
-        "call_now": "📞 빨리 전화해줘",
-        "call_available": "📱 통화 가능해"
+        "call_now": "🙏 도움이 필요해",
+        "call_available": "📞 전화해줘"
       },
       "statusTitle": "상태",
       "tripStatusPrompt": "여행 상태 선택",
@@ -201,6 +205,10 @@
     "supportButton": {
       "send": "💪 응원 보내기",
       "sent": "응원 보냄 ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "알겠어요",
+      "sent": "응답함 ✓"
     }
   },
   "contacts": {

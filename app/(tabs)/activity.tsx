@@ -40,6 +40,7 @@ type Activity = {
   wellness_score?: number | null;
   trip_status?: string | null;
   home_presence?: string | null;
+  reach_out_status?: string | null;
   username?: string | null;
   avatar_url?: string | null;
   is_owner?: boolean;
@@ -289,7 +290,7 @@ export default function ActivityScreen() {
           recency_status: actionStateMap.get(c.user_id)?.recency_status || null,
           hasNewUpdate: isNew,
           shared_location: c.last_checked_in_utc
-            ? contactLocationMap.get(`${c.user_id}:${c.last_checked_in_utc}`) || null
+            ? contactLocationMap.get(`${c.user_id}:${new Date(c.last_checked_in_utc).toISOString()}`) || null
             : null,
           isNewContact: false,
         };
@@ -606,6 +607,7 @@ export default function ActivityScreen() {
               wellness_score: payload.new.wellness_score ?? null,
               trip_status: payload.new.trip_status ?? null,
               home_presence: payload.new.home_presence ?? null,
+              reach_out_status: payload.new.reach_out_status ?? null,
               shared_location: null,
             }));
 
@@ -900,6 +902,7 @@ export default function ActivityScreen() {
     wellness_score,
     trip_status,
     home_presence,
+    reach_out_status,
     shared_location,
     isNewContact = false,
   }: {
@@ -919,6 +922,7 @@ export default function ActivityScreen() {
     wellness_score?: number | null;
     trip_status?: string | null;
     home_presence?: string | null;
+    reach_out_status?: string | null;
     shared_location?: SharedLocationInfo | null;
     isNewContact?: boolean;
   }) => {
@@ -944,6 +948,8 @@ export default function ActivityScreen() {
     const tripTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [homePresenceTooltipVisible, setHomePresenceTooltipVisible] = useState(false);
     const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [reachOutTooltipVisible, setReachOutTooltipVisible] = useState(false);
+    const reachOutTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1050,6 +1056,7 @@ export default function ActivityScreen() {
     const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
     const isSupportMode = isLikeMode && typeof wellness_score === 'number' && wellness_score <= -1;
+    const isReachOutResponseMode = isLikeMode && !!reach_out_status;
     const isWelfareResolved = true;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
@@ -1071,7 +1078,7 @@ export default function ActivityScreen() {
           recipientUserId: userId,
           senderUserId: user.id,
           checkinTime: timestamp || '',
-          responseKind: isSupportMode ? 'support' : 'like',
+          responseKind: isReachOutResponseMode ? 'reach_out' : isSupportMode ? 'support' : 'like',
         });
 
         if (result.success) {
@@ -1281,7 +1288,7 @@ export default function ActivityScreen() {
       checkin_timezone,
       checkin_timezone_label
     );
-    const wellnessMeta = getWellnessMeta(wellness_score);
+    const wellnessMeta = reach_out_status ? null : getWellnessMeta(wellness_score);
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -1371,7 +1378,7 @@ export default function ActivityScreen() {
                   style={[
                     isWelfareMode
                       ? styles.welfareButton
-                      : (isTodayCheckMode || isSupportMode) ? styles.todayCheckButton : styles.responseButton,
+                      : (isTodayCheckMode || isSupportMode || isReachOutResponseMode) ? styles.todayCheckButton : styles.responseButton,
                     !isSingleActionEnabled && styles.responseButtonDisabled,
                     (sendingResponse || sendingWelfareCheck) && styles.responseButtonSending
                   ]}
@@ -1413,13 +1420,15 @@ export default function ActivityScreen() {
                     })()
                   ) : (
                     (() => {
-                      const label = isSupportMode
-                        ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
-                        : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
+                      const label = isReachOutResponseMode
+                        ? (responseSent ? t('activity.reachOutResponseButton.sent') : t('activity.reachOutResponseButton.send'))
+                        : isSupportMode
+                          ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
+                          : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
                       const { text, emoji, position } = splitLabelEmoji(label);
                       const textNode = (
                         <Text style={[
-                          isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
+                          (isSupportMode || isReachOutResponseMode) ? styles.todayCheckButtonText : styles.responseButtonText,
                           !isSingleActionEnabled && styles.responseButtonTextDisabled
                         ]}>
                           {text}
@@ -1444,7 +1453,7 @@ export default function ActivityScreen() {
             )}
           </View>
 
-          {!!(username || trip_status || (home_presence && capabilities.isPlus) || (wellnessMeta && capabilities.isPlus)) && (
+          {!!(username || trip_status || (home_presence && capabilities.isPlus) || (reach_out_status && capabilities.isPlus) || (wellnessMeta && capabilities.isPlus)) && (
             <View style={styles.rightColumn}>
               {username && (
                 <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
@@ -1511,7 +1520,67 @@ export default function ActivityScreen() {
                   </Pressable>
                 </View>
               )}
-              {!trip_status && home_presence && capabilities.isPlus && (
+              {!trip_status && reach_out_status && capabilities.isPlus && (
+                <>
+                  <View style={styles.wellnessBadgeWrapper}>
+                    {wellnessTooltipVisible && (
+                      <View style={[styles.wellnessTooltip, { borderColor: '#EF4444', backgroundColor: '#FEE2E2' }]}>
+                        <Text style={[styles.wellnessTooltipText, { color: '#EF4444' }]}>
+                          {(() => {
+                            const label = t('home.context.reachOutTab') as string;
+                            const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                            return m ? label.slice(m[0].length).trim() : label;
+                          })()}
+                        </Text>
+                      </View>
+                    )}
+                    <Pressable
+                      onPress={() => {
+                        if (wellnessTooltipTimerRef.current) clearTimeout(wellnessTooltipTimerRef.current);
+                        setWellnessTooltipVisible(v => {
+                          if (!v) wellnessTooltipTimerRef.current = setTimeout(() => setWellnessTooltipVisible(false), 3000);
+                          return !v;
+                        });
+                      }}
+                      style={[styles.wellnessBadge, { backgroundColor: '#FEE2E2', borderColor: '#EF4444' }]}
+                    >
+                      <Ionicons name="heart" size={30} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                  <View style={styles.wellnessBadgeWrapper}>
+                    {reachOutTooltipVisible && (
+                      <View style={[styles.wellnessTooltip, { borderColor: '#EF4444', backgroundColor: '#FEE2E2' }]}>
+                        <Text style={[styles.wellnessTooltipText, { color: '#EF4444' }]}>
+                          {(() => {
+                            const label = t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string;
+                            const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                            return m ? label.slice(m[0].length).trim() : label;
+                          })()}
+                        </Text>
+                      </View>
+                    )}
+                    <Pressable
+                      onPress={() => {
+                        if (reachOutTooltipTimerRef.current) clearTimeout(reachOutTooltipTimerRef.current);
+                        setReachOutTooltipVisible(v => {
+                          if (!v) reachOutTooltipTimerRef.current = setTimeout(() => setReachOutTooltipVisible(false), 3000);
+                          return !v;
+                        });
+                      }}
+                      style={[styles.wellnessBadge, styles.tripEmojiBadge]}
+                    >
+                      <Text style={styles.tripEmojiText}>
+                        {(() => {
+                          const label = t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m?.[0] ?? '🙏';
+                        })()}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+              {!trip_status && !reach_out_status && home_presence && capabilities.isPlus && (
                 <View style={styles.wellnessBadgeWrapper}>
                   {homePresenceTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight }]}>
@@ -1640,6 +1709,7 @@ export default function ActivityScreen() {
                     wellness_score={ownerActivity.wellness_score}
                     trip_status={ownerActivity.trip_status}
                     home_presence={ownerActivity.home_presence}
+                    reach_out_status={ownerActivity.reach_out_status}
                     isOwner
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
@@ -1729,7 +1799,7 @@ export default function ActivityScreen() {
                         return (
                         <View key={response.id} style={styles.todayResponseItem}>
                           <Ionicons
-                            name={response.data?.responseKind === 'support' ? 'heart' : 'happy-outline'}
+                            name={response.data?.responseKind === 'reach_out' ? 'hand-left' : response.data?.responseKind === 'support' ? 'heart' : 'happy-outline'}
                             size={16}
                             color={BaseColors.primary}
                           />
@@ -1782,6 +1852,7 @@ export default function ActivityScreen() {
                       wellness_score={item.wellness_score}
                       trip_status={item.trip_status}
                       home_presence={item.home_presence}
+                      reach_out_status={item.reach_out_status}
                       isOwner={false}
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}

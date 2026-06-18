@@ -73,12 +73,27 @@ export async function getOptionalCheckinLocation(
   }
 
   try {
-    const location = await Promise.race([
-      Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy?.Balanced ?? 3,
-      }),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
-    ]);
+    // Try last-known position first (instant, no GPS warm-up needed)
+    let location: any = null;
+    if (typeof Location.getLastKnownPositionAsync === 'function') {
+      try {
+        const last = await Location.getLastKnownPositionAsync({ maxAge: 5 * 60 * 1000 });
+        if (last?.coords?.latitude != null) {
+          location = last;
+          console.log('📍 Using last-known position for check-in');
+        }
+      } catch {}
+    }
+
+    // Fall back to fresh fix with 8s timeout
+    if (!location) {
+      location = await Promise.race([
+        Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy?.Balanced ?? 3,
+        }),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
+      ]);
+    }
 
     if (!location) {
       console.log('Location lookup timed out; continuing without shared location');

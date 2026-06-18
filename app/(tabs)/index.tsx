@@ -714,7 +714,8 @@ export default function HomeScreen() {
     const latest = contactCheckins.find((c) => c.last_checked_in_utc != null);
     if (!latest || !latest.last_checked_in_utc) return null;
     const profile = contactProfiles.get(latest.user_id);
-    const loc = contactLocationMap.get(`${latest.user_id}:${latest.last_checked_in_utc}`) ?? null;
+    const normalizedTs = new Date(latest.last_checked_in_utc).toISOString();
+    const loc = contactLocationMap.get(`${latest.user_id}:${normalizedTs}`) ?? null;
     return {
       id: `checkin-${latest.user_id}`,
       sender_user_id: latest.user_id,
@@ -724,6 +725,7 @@ export default function HomeScreen() {
       data: {
         tripStatus: latest.trip_status || null,
         homePresence: latest.home_presence || null,
+        reachOutStatus: latest.reach_out_status || null,
         wellnessScore: latest.wellness_score ?? null,
         location: loc
           ? { latitude: loc.latitude, longitude: loc.longitude, accuracyMeters: loc.accuracyMeters }
@@ -1562,7 +1564,13 @@ export default function HomeScreen() {
   const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus && homeLayout !== 'free';
   const showWellnessModule = canUseWellnessHome || showLockedPlusWellness;
   const displayWellnessScore = canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT;
-  const heartColor = canUseWellnessHome ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
+  const isReachOutMode = checkinMode === 'reach_out';
+  const REACH_OUT_RED = '#EF4444';
+  const heartColor = isReachOutMode
+    ? REACH_OUT_RED
+    : canUseWellnessHome
+    ? getWellnessHeartColor(displayWellnessScore)
+    : BaseColors.primary;
   const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
     ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
     : null;
@@ -1578,7 +1586,10 @@ export default function HomeScreen() {
     ?? activeReachOutStatusLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
-  const [checkedInMsgTextRaw, checkedInMsgEmoji] = checkedInMessage.includes('\n')
+  const REACH_OUT_EMOJI = '😟';
+  const [checkedInMsgTextRaw, checkedInMsgEmoji] = isReachOutMode
+    ? [checkedInMessage, REACH_OUT_EMOJI]
+    : checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
     : [checkedInMessage, wellnessEmoji] as [string, string];
   const checkedInMsgText = checkedInMsgTextRaw.replace(/\s*[/／]\s*/g, '\n');
@@ -1634,9 +1645,11 @@ export default function HomeScreen() {
   };
   const simpleCheckinSummary = checkedInToday && lastCheckinUtc
     ? null
-    : t('home.dontForget');
+    : isReachOutMode ? null : t('home.dontForget');
   const simpleCheckinLabel = checkedInToday && lastCheckinUtc
-    ? t('home.status.lastCheckinLabel' as any) as string
+    ? isReachOutMode
+      ? t('home.reachOut.lastSentLabel' as any) as string
+      : t('home.status.lastCheckinLabel' as any) as string
     : null;
   const simpleCheckinTimeAgo = checkedInToday && lastCheckinUtc
     ? formatHomeStatusAgo(lastCheckinUtc)
@@ -1668,12 +1681,29 @@ export default function HomeScreen() {
   const latestStatusHomePresenceEmoji = latestStatusHomePresence
     ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusLocation = capabilities.isPlus && !!latestDisplayStatus?.data?.location;
+  const latestStatusReachOutStatus = !latestStatusTripStatus && capabilities.isPlus
+    ? latestDisplayStatus?.data?.reachOutStatus || null
+    : null;
+  const latestStatusReachOutLabel = latestStatusReachOutStatus
+    ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
+    : null;
+  const latestStatusReachOutEmoji = latestStatusReachOutLabel
+    ? latestStatusReachOutLabel.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  // Fall back to notification location when latestCheckinStatus wins but its contactLocationMap key didn't match
+  const latestStatusLocationData =
+    latestDisplayStatus?.data?.location ??
+    (latestStatusNotification?.sender_user_id === latestDisplayStatus?.sender_user_id
+      ? latestStatusNotification?.data?.location ?? null
+      : null);
+  const latestStatusLocation = capabilities.isPlus && !!latestStatusLocationData;
   const latestStatusBadgeLabel = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
     : latestStatusHomePresence
       ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string)
-      : null;
+      : latestStatusReachOutStatus
+        ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
+        : null;
   const latestStatusBadgeText = latestStatusBadgeLabel
     ? latestStatusBadgeLabel.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim()
     : null;
@@ -1696,7 +1726,7 @@ export default function HomeScreen() {
     });
   };
   const openLatestStatusLocation = async () => {
-    const location = latestDisplayStatus?.data?.location;
+    const location = latestStatusLocationData;
     if (!location) return;
     const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
     try {
@@ -1706,7 +1736,9 @@ export default function HomeScreen() {
       Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
     }
   };
-  const latestStatusWellnessScore = capabilities.isPlus ? latestDisplayStatus?.data?.wellnessScore : undefined;
+  const latestStatusWellnessScore = capabilities.isPlus && !latestStatusReachOutStatus
+    ? latestDisplayStatus?.data?.wellnessScore
+    : undefined;
   const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
     latestDisplayStatus?.senderAvatarUrl?.trim() &&
@@ -1796,11 +1828,11 @@ export default function HomeScreen() {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modeTab, checkinMode === 'reach_out' && styles.modeTabActive]}
+                  style={[styles.modeTab, checkinMode === 'reach_out' && styles.modeTabActiveReachOut]}
                   onPress={() => handleCheckinModeChange('reach_out')}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.modeTabText, checkinMode === 'reach_out' && styles.modeTabTextActive]}>
+                  <Text style={[styles.modeTabText, checkinMode === 'reach_out' && styles.modeTabTextActiveReachOut]}>
                     {t('home.context.reachOutTab')}
                   </Text>
                 </TouchableOpacity>
@@ -1816,6 +1848,7 @@ export default function HomeScreen() {
             canUseEnhancedHome && styles.enhancedCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
+            isReachOutMode && styles.reachOutCheckInGroup,
           ]}>
             <View style={styles.checkInContainer}>
               <Animated.View
@@ -1960,24 +1993,28 @@ export default function HomeScreen() {
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
                           >
-                            {t('home.pressMeToCheckIn')}
+                            {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
                           </Text>
-                          <Text
-                            style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                          >
-                            {t('home.timeLeftToday')}
-                          </Text>
-                          <Text
-                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                          >
-                            {formatTimeLeft(remainingMs)}
-                          </Text>
+                          {!isReachOutMode && (
+                            <>
+                              <Text
+                                style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.7}
+                              >
+                                {t('home.timeLeftToday')}
+                              </Text>
+                              <Text
+                                style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.7}
+                              >
+                                {formatTimeLeft(remainingMs)}
+                              </Text>
+                            </>
+                          )}
                         </>
                       )}
                     </View>
@@ -1988,27 +2025,29 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
-            <View style={[
-              styles.simpleCheckinInfoRow,
-              isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
-            ]}>
-              <Ionicons
-                name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
-                size={isCompactSimpleHome ? 16 : 18}
-                color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
-                style={styles.simpleCheckinInfoIcon}
-              />
-              <Text style={[
-                styles.simpleCheckinInfoText,
-                isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
-                { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+            {(simpleCheckinLabel || simpleCheckinSummary) ? (
+              <View style={[
+                styles.simpleCheckinInfoRow,
+                isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
               ]}>
-                {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
-              </Text>
-            </View>
+                <Ionicons
+                  name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
+                  size={isCompactSimpleHome ? 16 : 18}
+                  color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
+                  style={styles.simpleCheckinInfoIcon}
+                />
+                <Text style={[
+                  styles.simpleCheckinInfoText,
+                  isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
+                  { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+                ]}>
+                  {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
-          {isPlusSimpleHome ? (
+          {isPlusSimpleHome && !isReachOutMode ? (
             <WellnessButtonPicker
               value={wellnessScore}
               onChange={setWellnessScore}
@@ -2023,7 +2062,7 @@ export default function HomeScreen() {
             />
           ) : null}
 
-          {canUseEnhancedHome && showWellnessModule ? (
+          {canUseEnhancedHome && showWellnessModule && !isReachOutMode ? (
             <View style={[styles.enhancedWellnessGroup, styles.groupContainer]}>
               <WellnessSlider
                 value={wellnessScore}
@@ -2186,7 +2225,24 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <View style={styles.simpleStatusEmojiGroup}>
-                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji) ? (
+                        {latestStatusLocation ? (
+                          <TouchableOpacity
+                            onPress={openLatestStatusLocation}
+                            activeOpacity={0.7}
+                            style={[
+                              styles.simpleStatusEmojiCircle,
+                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                              styles.simpleStatusTripEmojiCircle,
+                            ]}
+                          >
+                            <Ionicons
+                              name="location"
+                              size={isCompactSimpleHome ? 19 : 23}
+                              color={BaseColors.primaryDark}
+                            />
+                          </TouchableOpacity>
+                        ) : null}
+                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji || latestStatusReachOutEmoji) ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
                             {latestStatusBadgeTooltipVisible && (
                               <View style={[
@@ -2210,28 +2266,43 @@ export default function HomeScreen() {
                               <Text style={[
                                 styles.simpleStatusEmoji,
                                 isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji}</Text>
+                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji ?? latestStatusReachOutEmoji}</Text>
                             </TouchableOpacity>
                           </View>
                         ) : null}
-                        {latestStatusLocation ? (
-                          <TouchableOpacity
-                            onPress={openLatestStatusLocation}
-                            activeOpacity={0.7}
-                            style={[
-                              styles.simpleStatusEmojiCircle,
-                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
-                              styles.simpleStatusTripEmojiCircle,
-                            ]}
-                          >
-                            <Ionicons
-                              name="location"
-                              size={isCompactSimpleHome ? 19 : 23}
-                              color={BaseColors.primaryDark}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
-                        {latestStatusWellnessMeta ? (
+                        {latestStatusReachOutStatus ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusWellnessTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: '#EF4444', backgroundColor: '#FEE2E2' },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: '#EF4444' }]}>
+                                  {(() => {
+                                    const label = t('home.context.reachOutTab') as string;
+                                    const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                                    return m ? label.slice(m[0].length).trim() : label;
+                                  })()}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusWellnessTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                { backgroundColor: '#FEE2E2', borderColor: '#EF4444', borderWidth: 1 },
+                              ]}
+                            >
+                              <Ionicons
+                                name="heart"
+                                size={isCompactSimpleHome ? 19 : 23}
+                                color="#EF4444"
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        ) : latestStatusWellnessMeta ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
                             {latestStatusWellnessTooltipVisible && (
                               <View style={[
@@ -2422,6 +2493,10 @@ const styles = StyleSheet.create({
     minHeight: 225,
     paddingTop: 0,
     paddingBottom: 2,
+  },
+  reachOutCheckInGroup: {
+    flex: 0,
+    paddingTop: 32,
   },
   simpleWellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -2656,6 +2731,23 @@ const styles = StyleSheet.create({
   },
   modeTabTextActive: {
     color: BaseColors.primary,
+  },
+  modeTabActiveReachOut: {
+    backgroundColor: '#FEE2E2',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#EF4444',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  modeTabTextActiveReachOut: {
+    color: '#EF4444',
   },
   enhancedStatusCard: {
     marginHorizontal: SCREEN_PADDING.horizontal,

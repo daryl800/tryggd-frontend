@@ -15,6 +15,10 @@
     "reset": "Tilbakestill",
     "timer": "Tidtakere",
     "timeLeftToday": "Tid igjen i dag",
+    "reachOut": {
+      "pressToSendHelp": "Send hjelp",
+      "lastSentLabel": "Sist sendt hjelp:"
+    },
     "activity": "Aktivitet",
     "contacts_one": "{{count}} kontakt",
     "contacts_other": "{{count}} kontakter",
@@ -75,10 +79,10 @@
       "trip": "På reise",
       "homeTab": "🌿 Daglig",
       "tripTab": "✈️ Reise",
-      "reachOutTab": "🤙 Ta kontakt",
+      "reachOutTab": "🤙 Hjelp",
       "reachOutStatuses": {
-        "call_now": "📞 Ring snart",
-        "call_available": "📱 Tilgjengelig for samtale"
+        "call_now": "🙏 Jeg trenger hjelp",
+        "call_available": "📞 Ring meg"
       },
       "statusTitle": "Status",
       "tripStatusPrompt": "Velg en reisestatus",
@@ -201,6 +205,10 @@
     "supportButton": {
       "send": "💪 Send støtte",
       "sent": "Støtte sendt ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Forstått",
+      "sent": "Besvart ✓"
     }
   },
   "contacts": {

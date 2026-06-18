@@ -35,10 +35,10 @@
       "trip": "กำลังเดินทาง",
       "homeTab": "🌿 ประจำวัน",
       "tripTab": "✈️ เดินทาง",
-      "reachOutTab": "🤙 ติดต่อฉัน",
+      "reachOutTab": "🤙 ช่วยด้วย",
       "reachOutStatuses": {
-        "call_now": "📞 โทรหาฉันด่วน",
-        "call_available": "📱 โทรได้สะดวก"
+        "call_now": "🙏 ฉันต้องการความช่วยเหลือ",
+        "call_available": "📞 โทรหาฉัน"
       },
       "statusTitle": "สถานะ",
       "tripStatusPrompt": "เลือกสถานะการเดินทาง",
@@ -69,6 +69,10 @@
     "reset": "รีเซ็ต",
     "timer": "ตัวจับเวลา",
     "timeLeftToday": "เวลาที่เหลือวันนี้",
+    "reachOut": {
+      "pressToSendHelp": "ส่งสัญญาณขอความช่วยเหลือ",
+      "lastSentLabel": "ส่งครั้งล่าสุด:"
+    },
     "activity": "กิจกรรม",
     "contacts_one": "{{count}} ผู้ติดต่อ",
     "contacts_other": "{{count}} ผู้ติดต่อ",
@@ -201,6 +205,10 @@
     "supportButton": {
       "send": "💪 ส่งกำลังใจ",
       "sent": "ส่งแล้ว ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "รับทราบ",
+      "sent": "ตอบแล้ว ✓"
     }
   },
   "contacts": {

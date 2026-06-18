@@ -202,20 +202,20 @@ function getHomePresenceLabel(status: string, lang: string): string {
 }
 
 const REACH_OUT_STATUS_LABELS: Record<string, Record<string, string>> = {
-  en:       { call_now: '📞 Call me ASAP', call_available: '📱 Free to call' },
-  da:       { call_now: '📞 Ring hurtigst muligt', call_available: '📱 Tilgængelig for opkald' },
-  de:       { call_now: '📞 Ruf mich bald an', call_available: '📱 Kann telefonieren' },
-  es:       { call_now: '📞 Llámame pronto', call_available: '📱 Disponible para llamar' },
-  fi:       { call_now: '📞 Soita pian', call_available: '📱 Vapaa puheluille' },
-  fr:       { call_now: '📞 Appelle-moi vite', call_available: '📱 Disponible pour un appel' },
-  it:       { call_now: '📞 Chiamami presto', call_available: '📱 Disponibile per una chiamata' },
-  ja:       { call_now: '📞 早めに電話して', call_available: '📱 電話OK' },
-  ko:       { call_now: '📞 빨리 전화해줘', call_available: '📱 통화 가능해' },
-  no:       { call_now: '📞 Ring snart', call_available: '📱 Tilgjengelig for samtale' },
-  sv:       { call_now: '📞 Ring snart', call_available: '📱 Tillgänglig för samtal' },
-  th:       { call_now: '📞 โทรหาฉันด่วน', call_available: '📱 โทรได้สะดวก' },
-  'zh-Hans': { call_now: '📞 尽快联系我', call_available: '📱 方便打电话' },
-  'zh-Hant': { call_now: '📞 盡快call我', call_available: '📱 方便call我' },
+  en:       { call_now: '🙏 I need help', call_available: '📞 Call me' },
+  da:       { call_now: '🙏 Jeg har brug for hjælp', call_available: '📞 Ring til mig' },
+  de:       { call_now: '🙏 Ich brauche Hilfe', call_available: '📞 Ruf mich an' },
+  es:       { call_now: '🙏 Necesito ayuda', call_available: '📞 Llámame' },
+  fi:       { call_now: '🙏 Tarvitsen apua', call_available: '📞 Soita minulle' },
+  fr:       { call_now: "🙏 J'ai besoin d'aide", call_available: '📞 Appelle-moi' },
+  it:       { call_now: '🙏 Ho bisogno di aiuto', call_available: '📞 Chiamami' },
+  ja:       { call_now: '🙏 助けが必要', call_available: '📞 電話して' },
+  ko:       { call_now: '🙏 도움이 필요해', call_available: '📞 전화해줘' },
+  no:       { call_now: '🙏 Jeg trenger hjelp', call_available: '📞 Ring meg' },
+  sv:       { call_now: '🙏 Jag behöver hjälp', call_available: '📞 Ring mig' },
+  th:       { call_now: '🙏 ฉันต้องการความช่วยเหลือ', call_available: '📞 โทรหาฉัน' },
+  'zh-Hans': { call_now: '🙏 我需要帮忙', call_available: '📞 打电话给我' },
+  'zh-Hant': { call_now: '🙏 我需要幫忙', call_available: '📞 請call我' },
 }
 
 function getReachOutStatusLabel(status: string, lang: string): string {
@@ -573,10 +573,12 @@ serve(async (req) => {
         .map((relationship) => relationship.contact_user_id)
     )
 
-    const wellnessScore =
+    const rawWellnessScore =
       canSendWellness && typeof latestCheckinRow?.wellness_score === 'number'
         ? latestCheckinRow.wellness_score
         : null
+    // Suppress wellness when user is in reach-out mode — the two messages contradict each other
+    const wellnessScore = reachOutStatus ? null : rawWellnessScore
 
     // ============================================
     // 6. Get checking-in user profile
@@ -701,8 +703,8 @@ serve(async (req) => {
           : null,
         isRecipientPlus ? wellnessScore : null,
         tripStatus,
-        isRecipientPlus ? homePresence : null,
-        isRecipientPlus ? reachOutStatus : null,
+        homePresence,
+        reachOutStatus,
         recipientLang
       )
 

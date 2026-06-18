@@ -43,10 +43,10 @@
       "trip": "Travelling",
       "homeTab": "🌿 Daily",
       "tripTab": "✈️ Trip",
-      "reachOutTab": "🤙 Reach out",
+      "reachOutTab": "🤙 Help",
       "reachOutStatuses": {
-        "call_now": "📞 Call me ASAP",
-        "call_available": "📱 Free to call"
+        "call_now": "🙏 I need help",
+        "call_available": "📞 Call me"
       },
       "statusTitle": "Status",
       "tripStatusPrompt": "Choose a trip status",
@@ -77,6 +77,10 @@
     "reset": "Reset",
     "timer": "Timer",
     "timeLeftToday": "Time left",
+    "reachOut": {
+      "pressToSendHelp": "Send help signal",
+      "lastSentLabel": "Last help sent:"
+    },
     "activity": "Activity",
     "contacts_one": "{{count}} contact",
     "contacts_other": "{{count}} contacts",
@@ -205,6 +209,10 @@
     "supportButton": {
       "send": "💪 Send support",
       "sent": "Support sent ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Got it",
+      "sent": "Responded ✓"
     },
     "emergencyMessage": {
       "todayMessages_one": "🚨 You got {{count}} emergency message today:",

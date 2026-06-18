@@ -15,6 +15,10 @@
     "reset": "Nollaa",
     "timer": "Ajastin",
     "timeLeftToday": "Aikaa jäljellä",
+    "reachOut": {
+      "pressToSendHelp": "Lähetä apupyyntö",
+      "lastSentLabel": "Viimeksi lähetetty:"
+    },
     "activity": "Toiminta",
     "contacts_one": "{{count}} yhteystieto",
     "contacts_other": "{{count}} yhteystietoa",
@@ -75,10 +79,10 @@
       "trip": "Matkalla",
       "homeTab": "🌿 Arki",
       "tripTab": "✈️ Matka",
-      "reachOutTab": "🤙 Ota yhteyttä",
+      "reachOutTab": "🤙 Apua",
       "reachOutStatuses": {
-        "call_now": "📞 Soita pian",
-        "call_available": "📱 Vapaa puheluille"
+        "call_now": "🙏 Tarvitsen apua",
+        "call_available": "📞 Soita minulle"
       },
       "statusTitle": "Tila",
       "tripStatusPrompt": "Valitse matkan tila",
@@ -201,6 +205,10 @@
     "supportButton": {
       "send": "💪 Lähetä tukea",
       "sent": "Tuki lähetetty ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Ymmärsin",
+      "sent": "Vastattu ✓"
     }
   },
   "contacts": {
