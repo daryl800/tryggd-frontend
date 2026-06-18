@@ -3,6 +3,7 @@ import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
+import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
@@ -39,6 +40,7 @@ type Activity = {
   wellness_score?: number | null;
   trip_status?: string | null;
   home_presence?: string | null;
+  reach_out_status?: string | null;
   username?: string | null;
   avatar_url?: string | null;
   is_owner?: boolean;
@@ -54,19 +56,6 @@ type SharedLocationInfo = {
   longitude: number;
   accuracyMeters?: number | null;
   checkinTimeIso?: string | null;
-};
-
-type ContactIdentity = {
-  username: string;
-  display_name: string;
-  avatar_url?: string | null;
-};
-
-type ContactProfileRow = {
-  id: string;
-  username?: string | null;
-  display_name?: string | null;
-  avatar_url?: string | null;
 };
 
 type ResponseNotification = {
@@ -129,10 +118,19 @@ export default function ActivityScreen() {
   const { streak } = useStreak();
 
   // State
+  // Shared contact check-in data (one fetch/subscription shared with Home)
+  const {
+    contactIds,
+    checkins: contactCheckins,
+    profiles: contactProfiles,
+    locationMap: contactLocationMap,
+    isLoading: checkinsLoading,
+    refresh: refreshCheckins,
+  } = useContactCheckins();
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [ownerActivity, setOwnerActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [, setContactMap] = useState<Map<string, ContactIdentity>>(new Map());
   const [, setResponses] = useState<ResponseNotification[]>([]);
   const [, setUnreadResponses] = useState<ResponseNotification[]>([]);
   const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
@@ -140,19 +138,13 @@ export default function ActivityScreen() {
   // Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const lastCheckinTimes = useRef<Map<string, string>>(new Map());
-  const locationShareMapRef = useRef<Map<string, SharedLocationInfo>>(new Map());
-  const myContactIds = useRef<string[]>([]);
-  const contactMapRef = useRef<Map<string, ContactIdentity>>(new Map());
   const ownerTimezoneRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
   const isInitialized = useRef(false);
 
   // Channel refs
-  const checkinsChannelRef = useRef<any>(null);
-  const contactsChannelRef = useRef<any>(null);
   const ownerCheckinsChannelRef = useRef<any>(null);
   const responsesChannelRef = useRef<any>(null);
   const todayResponsesChannelRef = useRef<any>(null);
-  const checkinNotificationsChannelRef = useRef<any>(null);
 
   // ============================================
   // Helper Functions
@@ -173,67 +165,6 @@ export default function ActivityScreen() {
   // ============================================
   // Data Fetching Functions
   // ============================================
-  const fetchContacts = async (): Promise<{
-    ids: string[];
-    map: Map<string, ContactIdentity>;
-  }> => {
-    try {
-      if (!user) return { ids: [], map: new Map() };
-
-      const { data: contactsData } = await supabase
-        .from('contacts')
-        .select('contact_user_id, contact_email, contact_display_name')
-        .eq('owner_user_id', user.id);
-
-      if (contactsData) {
-        const ids: string[] = contactsData
-          .map((c) => c.contact_user_id)
-          .filter(Boolean);
-
-        const { data: profileRows, error: profileError } = await supabase.rpc(
-          'get_contact_usernames',
-          { contact_ids: ids }
-        ) as { data: ContactProfileRow[] | null; error: any };
-
-        if (profileError) {
-          throw profileError;
-        }
-
-        const profileMap = new Map(
-          (profileRows || []).map((row) => [
-            row.id,
-            {
-              username: row.username || '',
-              display_name: row.display_name || '',
-              avatar_url: row.avatar_url || '',
-            },
-          ])
-        );
-
-        const map = new Map<string, ContactIdentity>();
-        const resolvedIds: string[] = [];
-
-        contactsData.forEach((c) => {
-          const liveProfile = profileMap.get(c.contact_user_id);
-          map.set(c.contact_user_id, {
-            username: liveProfile?.username || '',
-            display_name: liveProfile?.display_name || c.contact_display_name || '',
-            avatar_url: liveProfile?.avatar_url || '',
-          });
-          resolvedIds.push(c.contact_user_id);
-        });
-
-        setContactMap(map);
-        contactMapRef.current = map;
-        myContactIds.current = resolvedIds;
-        return { ids: resolvedIds, map };
-      }
-    } catch (err) {
-      console.error('Error fetching contacts:', err);
-    }
-    return { ids: [], map: new Map() };
-  };
-
   const fetchOwnerActivity = async () => {
     try {
       if (!user) return;
@@ -301,79 +232,18 @@ export default function ActivityScreen() {
     }
   };
 
-  const fetchLocationShares = async (contactIds: string[]): Promise<Map<string, SharedLocationInfo>> => {
-    try {
-      if (!user || contactIds.length === 0) {
-        locationShareMapRef.current = new Map();
-        return new Map();
-      }
+  // Builds the Activity[] list from shared context data + action states RPC.
+  // Called whenever context checkins/profiles/locationMap change.
+  const buildActivities = useCallback(async () => {
+    if (checkinsLoading) return;
 
-      const { data: notifications, error } = await supabase
-        .from('notifications')
-        .select('sender_user_id, data, created_at')
-        .eq('user_id', user.id)
-        .eq('type', 'contact_checkin')
-        .in('sender_user_id', contactIds)
-        .order('created_at', { ascending: false })
-        .limit(200);
-
-      if (error) throw error;
-
-      const locationMap = new Map<string, SharedLocationInfo>();
-
-      for (const notification of notifications || []) {
-        let payload: any = {};
-        try {
-          payload = typeof notification.data === 'string'
-            ? JSON.parse(notification.data)
-            : (notification.data || {});
-        } catch (error) {
-          console.error('Error parsing location share notification:', error);
-          continue;
-        }
-
-        const location = payload.location;
-        const checkinTimeIso = payload.checkinTimeIso;
-
-        if (
-          !notification.sender_user_id ||
-          !checkinTimeIso ||
-          location?.latitude == null ||
-          location?.longitude == null
-        ) {
-          continue;
-        }
-
-        const key = `${notification.sender_user_id}:${checkinTimeIso}`;
-        if (!locationMap.has(key)) {
-          locationMap.set(key, {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            accuracyMeters: location.accuracyMeters ?? null,
-            checkinTimeIso,
-          });
-        }
-      }
-
-      locationShareMapRef.current = locationMap;
-      return locationMap;
-    } catch (error) {
-      console.error('Error fetching location shares:', error);
-      return new Map();
+    if (contactIds.length === 0) {
+      setActivities([]);
+      setLoading(false);
+      return;
     }
-  };
 
-  const fetchActivities = async () => {
     try {
-      const { ids: contactIds, map: freshContactMap } = await fetchContacts();
-
-      if (contactIds.length === 0) {
-        setActivities([]);
-        setLoading(false);
-        return;
-      }
-
-      const locationMap = await fetchLocationShares(contactIds);
       const { data: actionStates, error: actionStateError } = await supabase.rpc(
         'get_activity_action_states',
         { p_contact_ids: contactIds }
@@ -399,55 +269,45 @@ export default function ActivityScreen() {
         ])
       );
 
-      const { data, error } = await supabase
-        .from('users_latest_checkin')
-        .select('*')
-        .in('user_id', contactIds)
-        .order('last_checked_in_utc', { ascending: false });
+      const checkedInIds = new Set(contactCheckins.map((c) => c.user_id));
 
-      if (error) throw error;
+      const enriched = contactCheckins.map((c) => {
+        const profile = contactProfiles.get(c.user_id);
+        const isNew =
+          !lastCheckinTimes.current.has(c.user_id) ||
+          lastCheckinTimes.current.get(c.user_id) !== c.last_checked_in_utc;
 
-      const checkedInIds = new Set((data || []).map(a => a.user_id));
-
-      const enriched = (data || []).map((activity) => {
-        const contactInfo = freshContactMap.get(activity.user_id);
-        const isNew = !lastCheckinTimes.current.has(activity.user_id) ||
-          lastCheckinTimes.current.get(activity.user_id) !== activity.last_checked_in_utc;
-
-        if (activity.last_checked_in_utc) {
-          lastCheckinTimes.current.set(activity.user_id, activity.last_checked_in_utc);
+        if (c.last_checked_in_utc) {
+          lastCheckinTimes.current.set(c.user_id, c.last_checked_in_utc);
         }
 
         return {
-          ...activity,
-          display_name: contactInfo?.display_name || activity.display_name,
-          username: contactInfo?.username || null,
-          avatar_url: contactInfo?.avatar_url || null,
-          action_state: actionStateMap.get(activity.user_id)?.action_state || null,
-          recency_status: actionStateMap.get(activity.user_id)?.recency_status || null,
+          ...c,
+          display_name: profile?.display_name || c.display_name || '',
+          username: profile?.username || null,
+          avatar_url: profile?.avatar_url || null,
+          action_state: actionStateMap.get(c.user_id)?.action_state || null,
+          recency_status: actionStateMap.get(c.user_id)?.recency_status || null,
           hasNewUpdate: isNew,
-          checkin_timezone: activity.checkin_timezone,
-          checkin_timezone_label: activity.checkin_timezone_label || null,
-          shared_location:
-            activity.last_checked_in_utc
-              ? locationMap.get(`${activity.user_id}:${activity.last_checked_in_utc}`) || null
-              : null,
+          shared_location: c.last_checked_in_utc
+            ? contactLocationMap.get(`${c.user_id}:${new Date(c.last_checked_in_utc).toISOString()}`) || null
+            : null,
           isNewContact: false,
         };
       });
 
       const placeholders: Activity[] = contactIds
-        .filter(id => !checkedInIds.has(id))
-        .map(id => {
-          const contactInfo = freshContactMap.get(id);
+        .filter((id) => !checkedInIds.has(id))
+        .map((id) => {
+          const profile = contactProfiles.get(id);
           return {
             user_id: id,
-            display_name: contactInfo?.display_name || '',
-            username: contactInfo?.username || null,
-            avatar_url: contactInfo?.avatar_url || null,
+            display_name: profile?.display_name || '',
+            username: profile?.username || null,
+            avatar_url: profile?.avatar_url || null,
             last_checked_in_utc: PLACEHOLDER_TIMESTAMP,
             priority: -1,
-            action_state: 'overdue_check',
+            action_state: 'overdue_check' as const,
             recency_status: null,
             wellness_score: null,
             hasNewUpdate: false,
@@ -465,11 +325,11 @@ export default function ActivityScreen() {
 
       setActivities(sorted);
     } catch (err) {
-      console.error('Error loading activities:', err);
+      console.error('Error building activities:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [contactIds, contactCheckins, contactProfiles, contactLocationMap, checkinsLoading]);
 
   const fetchResponseNotifications = async () => {
     try {
@@ -687,79 +547,8 @@ export default function ActivityScreen() {
   // ============================================
   // Subscription Setup Functions
   // ============================================
-  const setupCheckinsSubscription = () => {
-    if (checkinsChannelRef.current) {
-      supabase.removeChannel(checkinsChannelRef.current);
-    }
-
-    const contactIds = myContactIds.current;
-    if (contactIds.length === 0) return;
-
-    const channel = supabase
-      .channel('latest-checkins-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'users_latest_checkin',
-          filter: `user_id=in.(${contactIds.join(',')})`,
-        },
-        (payload) => {
-          if (!payload.new) return;
-
-          if (payload.eventType === 'DELETE') {
-            lastCheckinTimes.current.delete(payload.old.user_id);
-            setActivities((prev) => prev.filter((a) => a.user_id !== payload.old.user_id));
-            return;
-          }
-
-          const updated = payload.new;
-          const contactInfo = contactMapRef.current.get(updated.user_id);
-          const isNew = !lastCheckinTimes.current.has(updated.user_id) ||
-            lastCheckinTimes.current.get(updated.user_id) !== updated.last_checked_in_utc;
-
-          if (updated.last_checked_in_utc) {
-            lastCheckinTimes.current.set(updated.user_id, updated.last_checked_in_utc);
-          }
-
-          const enriched: Activity = {
-            user_id: updated.user_id,
-            last_checked_in_utc: updated.last_checked_in_utc,
-            priority: updated.priority,
-            wellness_score: updated.wellness_score ?? null,
-            trip_status: updated.trip_status ?? null,
-            home_presence: updated.home_presence ?? null,
-            display_name: contactInfo?.display_name || updated.display_name,
-            username: contactInfo?.username || null,
-            avatar_url: contactInfo?.avatar_url || null,
-            hasNewUpdate: isNew,
-            checkin_timezone: updated.checkin_timezone,
-            checkin_timezone_label: updated.checkin_timezone_label || null,
-            shared_location: updated.last_checked_in_utc
-              ? locationShareMapRef.current.get(`${updated.user_id}:${updated.last_checked_in_utc}`) || null
-              : null,
-          };
-
-          setActivities((prev) => {
-            const index = prev.findIndex((a) => a.user_id === enriched.user_id);
-            const newArray = [...prev];
-            if (index !== -1) {
-              newArray[index] = enriched;
-            } else {
-              newArray.push(enriched);
-            }
-            return newArray.sort((a, b) => {
-              if (b.priority !== a.priority) return b.priority - a.priority;
-              return (b.last_checked_in_utc ?? '').localeCompare(a.last_checked_in_utc ?? '');
-            });
-          });
-        }
-      )
-      .subscribe();
-
-    checkinsChannelRef.current = channel;
-  };
+  // Note: users_latest_checkin, contacts, and contact_checkin notifications are
+  // subscribed in ContactCheckinsContext — no duplicate subscriptions here.
 
   const setupOwnerCheckinsSubscription = () => {
     if (ownerCheckinsChannelRef.current) {
@@ -818,6 +607,7 @@ export default function ActivityScreen() {
               wellness_score: payload.new.wellness_score ?? null,
               trip_status: payload.new.trip_status ?? null,
               home_presence: payload.new.home_presence ?? null,
+              reach_out_status: payload.new.reach_out_status ?? null,
               shared_location: null,
             }));
 
@@ -830,34 +620,6 @@ export default function ActivityScreen() {
       .subscribe();
 
     ownerCheckinsChannelRef.current = channel;
-  };
-
-  const setupContactsSubscription = () => {
-    if (contactsChannelRef.current) {
-      supabase.removeChannel(contactsChannelRef.current);
-    }
-
-    if (!user) return;
-
-    const channel = supabase
-      .channel('contacts-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'contacts',
-          filter: `owner_user_id=eq.${user.id}`,
-        },
-        async () => {
-          await fetchContacts();
-          setupCheckinsSubscription();
-          fetchActivities();
-        }
-      )
-      .subscribe();
-
-    contactsChannelRef.current = channel;
   };
 
   const setupResponsesSubscription = () => {
@@ -1024,75 +786,6 @@ export default function ActivityScreen() {
     todayResponsesChannelRef.current = channel;
   };
 
-  const setupCheckinNotificationsSubscription = () => {
-    if (checkinNotificationsChannelRef.current) {
-      supabase.removeChannel(checkinNotificationsChannelRef.current);
-    }
-
-    if (!user) return;
-
-    const channel = supabase
-      .channel('contact-checkin-notifications')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          if (payload.new.type !== 'contact_checkin') {
-            return;
-          }
-
-          let data: any = {};
-          try {
-            data = typeof payload.new.data === 'string'
-              ? JSON.parse(payload.new.data)
-              : (payload.new.data || {});
-          } catch (error) {
-            console.error('Error parsing realtime check-in notification:', error);
-            return;
-          }
-
-          const location = data.location;
-          const checkinTimeIso = data.checkinTimeIso;
-          const senderUserId = payload.new.sender_user_id;
-
-          if (
-            !senderUserId ||
-            !checkinTimeIso ||
-            location?.latitude == null ||
-            location?.longitude == null
-          ) {
-            return;
-          }
-
-          const locationInfo: SharedLocationInfo = {
-            latitude: location.latitude,
-            longitude: location.longitude,
-            accuracyMeters: location.accuracyMeters ?? null,
-            checkinTimeIso,
-          };
-
-          locationShareMapRef.current.set(`${senderUserId}:${checkinTimeIso}`, locationInfo);
-
-          setActivities((prev) =>
-            prev.map((activity) =>
-              activity.user_id === senderUserId &&
-              activity.last_checked_in_utc === checkinTimeIso
-                ? { ...activity, shared_location: locationInfo }
-                : activity
-            )
-          );
-        }
-      )
-      .subscribe();
-
-    checkinNotificationsChannelRef.current = channel;
-  };
-
   // ============================================
   // Action Functions
   // ============================================
@@ -1106,21 +799,15 @@ export default function ActivityScreen() {
     isInitialized.current = true;
 
     try {
-      // Load all data
       await Promise.all([
         fetchOwnerActivity(),
-        fetchActivities(),
         fetchResponseNotifications(),
-        loadInitialTodayResponses()
+        loadInitialTodayResponses(),
       ]);
 
-      // Set up all subscriptions
       setupOwnerCheckinsSubscription();
-      setupCheckinsSubscription();
-      setupContactsSubscription();
       setupResponsesSubscription();
       setupTodayResponsesSubscription();
-      setupCheckinNotificationsSubscription();
 
     } catch (error) {
       console.error('Error during initialization:', error);
@@ -1149,7 +836,7 @@ export default function ActivityScreen() {
       if (state === 'active') {
         console.log('📱 App became active - refreshing data');
         fetchOwnerActivity();
-        fetchActivities();
+        void refreshCheckins(); // triggers buildActivities via context useEffect
         fetchResponseNotifications();
         loadInitialTodayResponses();
         setupResponsesSubscription();
@@ -1161,34 +848,35 @@ export default function ActivityScreen() {
     return () => {
       subscription.remove();
 
-      // Remove all channels
       const channels = [
-        checkinsChannelRef.current,
-        contactsChannelRef.current,
         ownerCheckinsChannelRef.current,
         responsesChannelRef.current,
         todayResponsesChannelRef.current,
-        checkinNotificationsChannelRef.current
       ];
 
-      channels.forEach(channel => {
+      channels.forEach((channel) => {
         if (channel) supabase.removeChannel(channel);
       });
 
       isInitialized.current = false;
       lastCheckinTimes.current.clear();
     };
-  }, [initialize]);
+  }, [initialize, refreshCheckins]);
+
+  // Rebuild activities whenever context check-in data changes
+  useEffect(() => {
+    void buildActivities();
+  }, [buildActivities]);
 
   // Focus effect for when tab is revisited
   useFocusEffect(
     useCallback(() => {
       console.log('🎯 Screen focused - refreshing data');
       fetchOwnerActivity();
-      fetchActivities();
+      void refreshCheckins(); // triggers buildActivities via context useEffect
       fetchResponseNotifications();
       loadInitialTodayResponses();
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   // ============================================
@@ -1214,6 +902,7 @@ export default function ActivityScreen() {
     wellness_score,
     trip_status,
     home_presence,
+    reach_out_status,
     shared_location,
     isNewContact = false,
   }: {
@@ -1233,6 +922,7 @@ export default function ActivityScreen() {
     wellness_score?: number | null;
     trip_status?: string | null;
     home_presence?: string | null;
+    reach_out_status?: string | null;
     shared_location?: SharedLocationInfo | null;
     isNewContact?: boolean;
   }) => {
@@ -1258,6 +948,8 @@ export default function ActivityScreen() {
     const tripTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [homePresenceTooltipVisible, setHomePresenceTooltipVisible] = useState(false);
     const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [reachOutTooltipVisible, setReachOutTooltipVisible] = useState(false);
+    const reachOutTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
@@ -1364,6 +1056,7 @@ export default function ActivityScreen() {
     const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
     const isSupportMode = isLikeMode && typeof wellness_score === 'number' && wellness_score <= -1;
+    const isReachOutResponseMode = isLikeMode && !!reach_out_status;
     const isWelfareResolved = true;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
@@ -1385,7 +1078,7 @@ export default function ActivityScreen() {
           recipientUserId: userId,
           senderUserId: user.id,
           checkinTime: timestamp || '',
-          responseKind: isSupportMode ? 'support' : 'like',
+          responseKind: isReachOutResponseMode ? 'reach_out' : isSupportMode ? 'support' : 'like',
         });
 
         if (result.success) {
@@ -1595,7 +1288,7 @@ export default function ActivityScreen() {
       checkin_timezone,
       checkin_timezone_label
     );
-    const wellnessMeta = getWellnessMeta(wellness_score);
+    const wellnessMeta = reach_out_status ? null : getWellnessMeta(wellness_score);
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -1680,12 +1373,45 @@ export default function ActivityScreen() {
             )}
 
             {!isOwner && (isValidTimestamp || isNewContact) && (
+              <>
+              {(() => {
+                if (reach_out_status) {
+                  return (
+                    <Text style={{ fontSize: 14, color: '#EF4444', marginBottom: 4 }}>
+                      {t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (home_presence) {
+                  return (
+                    <Text style={{ fontSize: 14, color: BaseColors.primary, marginBottom: 4 }}>
+                      {t(`home.context.homeStatuses.${home_presence}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (trip_status) {
+                  return (
+                    <Text style={{ fontSize: 14, color: BaseColors.primary, marginBottom: 4 }}>
+                      {t(`home.tripMode.statuses.${trip_status}` as any) as string}
+                    </Text>
+                  );
+                }
+                if (wellnessMeta) {
+                  const parts = (t(wellnessMeta.labelKey as any) as string).split('\n');
+                  return (
+                    <Text style={{ fontSize: 14, color: wellnessMeta.color, marginBottom: 4 }}>
+                      {parts[1] ? `${parts[1]} ` : ''}{parts[0]}
+                    </Text>
+                  );
+                }
+                return null;
+              })()}
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
                     isWelfareMode
                       ? styles.welfareButton
-                      : (isTodayCheckMode || isSupportMode) ? styles.todayCheckButton : styles.responseButton,
+                      : (isTodayCheckMode || isSupportMode || isReachOutResponseMode) ? styles.todayCheckButton : styles.responseButton,
                     !isSingleActionEnabled && styles.responseButtonDisabled,
                     (sendingResponse || sendingWelfareCheck) && styles.responseButtonSending
                   ]}
@@ -1727,13 +1453,15 @@ export default function ActivityScreen() {
                     })()
                   ) : (
                     (() => {
-                      const label = isSupportMode
-                        ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
-                        : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
+                      const label = isReachOutResponseMode
+                        ? (responseSent ? t('activity.reachOutResponseButton.sent') : t('activity.reachOutResponseButton.send'))
+                        : isSupportMode
+                          ? (responseSent ? t('activity.supportButton.sent') : t('activity.supportButton.send'))
+                          : (responseSent ? t('activity.responseButton.sent') : t('activity.responseButton.sendResponse'));
                       const { text, emoji, position } = splitLabelEmoji(label);
                       const textNode = (
                         <Text style={[
-                          isSupportMode ? styles.todayCheckButtonText : styles.responseButtonText,
+                          (isSupportMode || isReachOutResponseMode) ? styles.todayCheckButtonText : styles.responseButtonText,
                           !isSingleActionEnabled && styles.responseButtonTextDisabled
                         ]}>
                           {text}
@@ -1755,17 +1483,18 @@ export default function ActivityScreen() {
                   )}
                 </TouchableOpacity>
               </View>
+              </>
             )}
           </View>
 
-          {!!(username || trip_status || home_presence || wellnessMeta) && (
+          {!!(username || trip_status || (home_presence && capabilities.isPlus) || (reach_out_status && capabilities.isPlus) || (wellnessMeta && capabilities.isPlus)) && (
             <View style={styles.rightColumn}>
               {username && (
                 <Text style={styles.usernameText} numberOfLines={1} ellipsizeMode="tail">
                   @{username}
                 </Text>
               )}
-              {wellnessMeta && (
+              {wellnessMeta && capabilities.isPlus && (
                 <View style={styles.wellnessBadgeWrapper}>
                   {wellnessTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: wellnessMeta.borderColor, backgroundColor: wellnessMeta.backgroundColor }]}>
@@ -1825,7 +1554,67 @@ export default function ActivityScreen() {
                   </Pressable>
                 </View>
               )}
-              {!trip_status && home_presence && (
+              {!trip_status && reach_out_status && capabilities.isPlus && (
+                <>
+                  <View style={styles.wellnessBadgeWrapper}>
+                    {wellnessTooltipVisible && (
+                      <View style={[styles.wellnessTooltip, { borderColor: '#EF4444', backgroundColor: '#FEE2E2' }]}>
+                        <Text style={[styles.wellnessTooltipText, { color: '#EF4444' }]}>
+                          {(() => {
+                            const label = t('home.context.reachOutTab') as string;
+                            const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                            return m ? label.slice(m[0].length).trim() : label;
+                          })()}
+                        </Text>
+                      </View>
+                    )}
+                    <Pressable
+                      onPress={() => {
+                        if (wellnessTooltipTimerRef.current) clearTimeout(wellnessTooltipTimerRef.current);
+                        setWellnessTooltipVisible(v => {
+                          if (!v) wellnessTooltipTimerRef.current = setTimeout(() => setWellnessTooltipVisible(false), 3000);
+                          return !v;
+                        });
+                      }}
+                      style={[styles.wellnessBadge, { backgroundColor: '#FEE2E2', borderColor: '#EF4444' }]}
+                    >
+                      <Ionicons name="heart" size={30} color="#EF4444" />
+                    </Pressable>
+                  </View>
+                  <View style={styles.wellnessBadgeWrapper}>
+                    {reachOutTooltipVisible && (
+                      <View style={[styles.wellnessTooltip, { borderColor: '#EF4444', backgroundColor: '#FEE2E2' }]}>
+                        <Text style={[styles.wellnessTooltipText, { color: '#EF4444' }]}>
+                          {(() => {
+                            const label = t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string;
+                            const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                            return m ? label.slice(m[0].length).trim() : label;
+                          })()}
+                        </Text>
+                      </View>
+                    )}
+                    <Pressable
+                      onPress={() => {
+                        if (reachOutTooltipTimerRef.current) clearTimeout(reachOutTooltipTimerRef.current);
+                        setReachOutTooltipVisible(v => {
+                          if (!v) reachOutTooltipTimerRef.current = setTimeout(() => setReachOutTooltipVisible(false), 3000);
+                          return !v;
+                        });
+                      }}
+                      style={[styles.wellnessBadge, styles.tripEmojiBadge]}
+                    >
+                      <Text style={styles.tripEmojiText}>
+                        {(() => {
+                          const label = t(`home.context.reachOutStatuses.${reach_out_status}` as any) as string;
+                          const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                          return m?.[0] ?? '🙏';
+                        })()}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+              {!trip_status && !reach_out_status && home_presence && capabilities.isPlus && (
                 <View style={styles.wellnessBadgeWrapper}>
                   {homePresenceTooltipVisible && (
                     <View style={[styles.wellnessTooltip, { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight }]}>
@@ -1954,6 +1743,7 @@ export default function ActivityScreen() {
                     wellness_score={ownerActivity.wellness_score}
                     trip_status={ownerActivity.trip_status}
                     home_presence={ownerActivity.home_presence}
+                    reach_out_status={ownerActivity.reach_out_status}
                     isOwner
                     hasNewUpdate={ownerActivity.hasNewUpdate}
                     userId={ownerActivity.user_id}
@@ -2043,7 +1833,7 @@ export default function ActivityScreen() {
                         return (
                         <View key={response.id} style={styles.todayResponseItem}>
                           <Ionicons
-                            name={response.data?.responseKind === 'support' ? 'heart' : 'happy-outline'}
+                            name={response.data?.responseKind === 'reach_out' ? 'hand-left' : response.data?.responseKind === 'support' ? 'heart' : 'happy-outline'}
                             size={16}
                             color={BaseColors.primary}
                           />
@@ -2096,6 +1886,7 @@ export default function ActivityScreen() {
                       wellness_score={item.wellness_score}
                       trip_status={item.trip_status}
                       home_presence={item.home_presence}
+                      reach_out_status={item.reach_out_status}
                       isOwner={false}
                       hasNewUpdate={item.hasNewUpdate}
                       userId={item.user_id}

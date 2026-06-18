@@ -45,6 +45,11 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 出行",
+      "reachOutTab": "🤙 求助",
+      "reachOutStatuses": {
+        "call_now": "🙏 我需要幫忙",
+        "call_available": "📞 請call我"
+      },
       "statusTitle": "狀態",
       "tripStatusPrompt": "選擇出行狀態",
       "homeStatuses": {
@@ -58,6 +63,8 @@
         "sleepy": "😪 眼瞓",
         "daydreaming": "💭 在發白日夢",
         "having_fun": "🎉 玩得好開心",
+        "playing_sport": "⚽ 運動中",
+        "watching_movie": "🎬 看電影",
         "goodmorning": "🌅 早晨",
         "goodnight": "🌙 晚安"
       },
@@ -72,6 +79,10 @@
     "reset": "重置",
     "timer": "計時器",
     "timeLeftToday": "今天還剩時間",
+    "reachOut": {
+      "pressToSendHelp": "發出求助",
+      "lastSentLabel": "你上次發出求助："
+    },
     "activity": "活動",
     "contacts_one": "{{count}} 個聯絡人",
     "contacts_other": "{{count}} 個聯絡人",
@@ -140,7 +151,7 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出發了",
-        "boarding": "🛫 登機／🚅啟程",
+        "boarding": "🛫 登機／🚅 啟程",
         "layover": "🛑 中途停留／轉機",
         "landed": "🛬 已安全抵達",
         "on_the_move": "🚕 在移動中",
@@ -238,6 +249,10 @@
     "supportButton": {
       "send": "💪 發送支持",
       "sent": "已發送支持 ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "知道了",
+      "sent": "已回應 ✓"
     }
   },
   "contacts": {

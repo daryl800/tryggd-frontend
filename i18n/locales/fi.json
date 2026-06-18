@@ -15,6 +15,10 @@
     "reset": "Nollaa",
     "timer": "Ajastin",
     "timeLeftToday": "Aikaa jäljellä",
+    "reachOut": {
+      "pressToSendHelp": "Lähetä apupyyntö",
+      "lastSentLabel": "Viimeksi lähetetty:"
+    },
     "activity": "Toiminta",
     "contacts_one": "{{count}} yhteystieto",
     "contacts_other": "{{count}} yhteystietoa",
@@ -75,6 +79,11 @@
       "trip": "Matkalla",
       "homeTab": "🌿 Arki",
       "tripTab": "✈️ Matka",
+      "reachOutTab": "🤙 Apua",
+      "reachOutStatuses": {
+        "call_now": "🙏 Tarvitsen apua",
+        "call_available": "📞 Soita minulle"
+      },
       "statusTitle": "Tila",
       "tripStatusPrompt": "Valitse matkan tila",
       "homeStatuses": {
@@ -88,6 +97,8 @@
         "sleepy": "😪 Uninen",
         "daydreaming": "💭 Haaveilemassa",
         "having_fun": "🎉 Hauskaa pitäen",
+        "playing_sport": "⚽ Urheilemassa",
+        "watching_movie": "🎬 Katsomassa elokuvaa",
         "goodmorning": "🌅 Hyvää huomenta",
         "goodnight": "🌙 Hyvää yötä"
       },
@@ -194,6 +205,10 @@
     "supportButton": {
       "send": "💪 Lähetä tukea",
       "sent": "Tuki lähetetty ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Ymmärsin",
+      "sent": "Vastattu ✓"
     }
   },
   "contacts": {

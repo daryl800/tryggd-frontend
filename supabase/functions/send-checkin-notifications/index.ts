@@ -180,25 +180,47 @@ function getTripStatusLabel(status: string, lang: string): string {
 }
 
 const HOME_PRESENCE_LABELS: Record<string, Record<string, string>> = {
-  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing', chilling: '🛋️ Chilling', eating: '🍽️ Having a meal', exhausted: '😩 Exhausted', sleepy: '😪 Sleepy', daydreaming: '💭 Daydreaming', having_fun: '🎉 Having a blast', goodmorning: '🌅 Good morning', goodnight: '🌙 Good night' },
-  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Udmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Har det sjovt', goodmorning: '🌅 God morgen', goodnight: '🌙 God nat' },
-  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich', chilling: '🛋️ Chillen', eating: '🍽️ Beim Essen', exhausted: '😩 Erschöpft', sleepy: '😪 Schläfrig', daydreaming: '💭 Tagträume', having_fun: '🎉 Habe viel Spaß', goodmorning: '🌅 Guten Morgen', goodnight: '🌙 Gute Nacht' },
-  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome', chilling: '🛋️ En modo chill', eating: '🍽️ Comiendo', exhausted: '😩 Agotado', sleepy: '😪 Somnoliento', daydreaming: '💭 Soñando despierto', having_fun: '🎉 Pasándola genial', goodmorning: '🌅 Buenos días', goodnight: '🌙 Buenas noches' },
-  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa', chilling: '🛋️ Chillailen', eating: '🍽️ Syömässä', exhausted: '😩 Uupunut', sleepy: '😪 Uninen', daydreaming: '💭 Haaveilemassa', having_fun: '🎉 Hauskaa pitäen', goodmorning: '🌅 Hyvää huomenta', goodnight: '🌙 Hyvää yötä' },
-  fr:       { home: '🏠 À la maison', outside: '🚶 Sorti(e)', busy: '💼 Occupé(e)', relaxing: '☕ Je me détends', chilling: '🛋️ Cocooning', eating: '🍽️ En train de manger', exhausted: '😩 Épuisé', sleepy: '😪 Somnolent', daydreaming: '💭 Dans la lune', having_fun: "🎉 Je m'amuse bien", goodmorning: '🌅 Bonjour', goodnight: '🌙 Bonne nuit' },
-  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso', chilling: '🛋️ Senza pensieri', eating: '🍽️ Sto mangiando', exhausted: '😩 Esausto', sleepy: '😪 Assonnato', daydreaming: '💭 Sognando ad occhi aperti', having_fun: '🎉 Mi sto divertendo', goodmorning: '🌅 Buongiorno', goodnight: '🌙 Buona notte' },
-  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中', chilling: '🛋️ のんびり中', eating: '🍽️ 食事中', exhausted: '😩 くたくた', sleepy: '😪 眠い', daydreaming: '💭 ぼーっとしてる', having_fun: '🎉 めちゃ楽しんでる', goodmorning: '🌅 おはよう', goodnight: '🌙 おやすみ' },
-  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중', chilling: '🛋️ 멍 때리는 중', eating: '🍽️ 밥 먹는 중', exhausted: '😩 너무 피곤해', sleepy: '😪 졸려', daydreaming: '💭 몽상 중', having_fun: '🎉 신나게 놀고 있어', goodmorning: '🌅 좋은 아침', goodnight: '🌙 잘 자요' },
-  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Utmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Morer meg masse', goodmorning: '🌅 God morgen', goodnight: '🌙 God natt' },
-  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av', chilling: '🛋️ Chillar', eating: '🍽️ Äter', exhausted: '😩 Utmattad', sleepy: '😪 Sömnig', daydreaming: '💭 Dagdrömmer', having_fun: '🎉 Har jättekul', goodmorning: '🌅 God morgon', goodnight: '🌙 God natt' },
-  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน', chilling: '🛋️ พักสมอง', eating: '🍽️ กำลังกินข้าว', exhausted: '😩 เหนื่อยมาก', sleepy: '😪 ง่วงนอน', daydreaming: '💭 ฝันกลางวัน', having_fun: '🎉 สนุกมาก', goodmorning: '🌅 อรุณสวัสดิ์', goodnight: '🌙 ราตรีสวัสดิ์' },
-  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中', chilling: '🛋️ 悠闲中', eating: '🍽️ 吃饭中', exhausted: '😩 好累', sleepy: '😪 困了', daydreaming: '💭 在发白日梦', having_fun: '🎉 玩得很开心', goodmorning: '🌅 早上好', goodnight: '🌙 晚安' },
-  'zh-Hant': { home: '🏠 在家', outside: '🚶 在外', busy: '💼 忙碌中', relaxing: '☕ 放鬆中', chilling: '🛋️ 悠閒中', eating: '🍽️ 食緊飯', exhausted: '😩 好攰', sleepy: '😪 眼瞓', daydreaming: '💭 在發白日夢', having_fun: '🎉 玩得好開心', goodmorning: '🌅 早晨', goodnight: '🌙 晚安' },
+  en:       { home: '🏠 At home', outside: '🚶 Outside', busy: '💼 Busy', relaxing: '☕ Relaxing', chilling: '🛋️ Chilling', eating: '🍽️ Having a meal', exhausted: '😩 Exhausted', sleepy: '😪 Sleepy', daydreaming: '💭 Daydreaming', having_fun: '🎉 Having a blast', playing_sport: '⚽ Playing sport', watching_movie: '🎬 Watching a movie', goodmorning: '🌅 Good morning', goodnight: '🌙 Good night' },
+  da:       { home: '🏠 Hjemme', outside: '🚶 Ude', busy: '💼 Optaget', relaxing: '☕ Slapper af', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Udmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Har det sjovt', playing_sport: '⚽ Spiller sport', watching_movie: '🎬 Ser film', goodmorning: '🌅 God morgen', goodnight: '🌙 God nat' },
+  de:       { home: '🏠 Zuhause', outside: '🚶 Unterwegs', busy: '💼 Beschäftigt', relaxing: '☕ Entspanne mich', chilling: '🛋️ Chillen', eating: '🍽️ Beim Essen', exhausted: '😩 Erschöpft', sleepy: '😪 Schläfrig', daydreaming: '💭 Tagträume', having_fun: '🎉 Habe viel Spaß', playing_sport: '⚽ Beim Sport', watching_movie: '🎬 Schaue einen Film', goodmorning: '🌅 Guten Morgen', goodnight: '🌙 Gute Nacht' },
+  es:       { home: '🏠 En casa', outside: '🚶 Fuera', busy: '💼 Ocupado', relaxing: '☕ Relajándome', chilling: '🛋️ En modo chill', eating: '🍽️ Comiendo', exhausted: '😩 Agotado', sleepy: '😪 Somnoliento', daydreaming: '💭 Soñando despierto', having_fun: '🎉 Pasándola genial', playing_sport: '⚽ Haciendo deporte', watching_movie: '🎬 Viendo una película', goodmorning: '🌅 Buenos días', goodnight: '🌙 Buenas noches' },
+  fi:       { home: '🏠 Kotona', outside: '🚶 Ulkona', busy: '💼 Kiireinen', relaxing: '☕ Rentoutumassa', chilling: '🛋️ Chillailen', eating: '🍽️ Syömässä', exhausted: '😩 Uupunut', sleepy: '😪 Uninen', daydreaming: '💭 Haaveilemassa', having_fun: '🎉 Hauskaa pitäen', playing_sport: '⚽ Urheilemassa', watching_movie: '🎬 Katsomassa elokuvaa', goodmorning: '🌅 Hyvää huomenta', goodnight: '🌙 Hyvää yötä' },
+  fr:       { home: '🏠 À la maison', outside: '🚶 Sorti(e)', busy: '💼 Occupé(e)', relaxing: '☕ Je me détends', chilling: '🛋️ Cocooning', eating: '🍽️ En train de manger', exhausted: '😩 Épuisé', sleepy: '😪 Somnolent', daydreaming: '💭 Dans la lune', having_fun: "🎉 Je m'amuse bien", playing_sport: '⚽ Je fais du sport', watching_movie: '🎬 Je regarde un film', goodmorning: '🌅 Bonjour', goodnight: '🌙 Bonne nuit' },
+  it:       { home: '🏠 A casa', outside: '🚶 Fuori', busy: '💼 Occupato', relaxing: '☕ Mi rilasso', chilling: '🛋️ Senza pensieri', eating: '🍽️ Sto mangiando', exhausted: '😩 Esausto', sleepy: '😪 Assonnato', daydreaming: '💭 Sognando ad occhi aperti', having_fun: '🎉 Mi sto divertendo', playing_sport: '⚽ Faccio sport', watching_movie: '🎬 Guardo un film', goodmorning: '🌅 Buongiorno', goodnight: '🌙 Buona notte' },
+  ja:       { home: '🏠 在宅', outside: '🚶 外出中', busy: '💼 忙しい', relaxing: '☕ くつろぎ中', chilling: '🛋️ のんびり中', eating: '🍽️ 食事中', exhausted: '😩 くたくた', sleepy: '😪 眠い', daydreaming: '💭 ぼーっとしてる', having_fun: '🎉 めちゃ楽しんでる', playing_sport: '⚽ スポーツ中', watching_movie: '🎬 映画を観てる', goodmorning: '🌅 おはよう', goodnight: '🌙 おやすみ' },
+  ko:       { home: '🏠 집에 있음', outside: '🚶 외출 중', busy: '💼 바쁨', relaxing: '☕ 휴식 중', chilling: '🛋️ 멍 때리는 중', eating: '🍽️ 밥 먹는 중', exhausted: '😩 너무 피곤해', sleepy: '😪 졸려', daydreaming: '💭 몽상 중', having_fun: '🎉 신나게 놀고 있어', playing_sport: '⚽ 운동 중', watching_movie: '🎬 영화 보는 중', goodmorning: '🌅 좋은 아침', goodnight: '🌙 잘 자요' },
+  no:       { home: '🏠 Hjemme', outside: '🚶 Ute', busy: '💼 Opptatt', relaxing: '☕ Slapper av', chilling: '🛋️ Chiller', eating: '🍽️ Spiser', exhausted: '😩 Utmattet', sleepy: '😪 Søvnig', daydreaming: '💭 Dagdrømmer', having_fun: '🎉 Morer meg masse', playing_sport: '⚽ Spiller sport', watching_movie: '🎬 Ser på film', goodmorning: '🌅 God morgen', goodnight: '🌙 God natt' },
+  sv:       { home: '🏠 Hemma', outside: '🚶 Ute', busy: '💼 Upptagen', relaxing: '☕ Kopplar av', chilling: '🛋️ Chillar', eating: '🍽️ Äter', exhausted: '😩 Utmattad', sleepy: '😪 Sömnig', daydreaming: '💭 Dagdrömmer', having_fun: '🎉 Har jättekul', playing_sport: '⚽ Spelar sport', watching_movie: '🎬 Ser på film', goodmorning: '🌅 God morgon', goodnight: '🌙 God natt' },
+  th:       { home: '🏠 อยู่ที่บ้าน', outside: '🚶 ออกไปข้างนอก', busy: '💼 ไม่ว่าง', relaxing: '☕ พักผ่อน', chilling: '🛋️ พักสมอง', eating: '🍽️ กำลังกินข้าว', exhausted: '😩 เหนื่อยมาก', sleepy: '😪 ง่วงนอน', daydreaming: '💭 ฝันกลางวัน', having_fun: '🎉 สนุกมาก', playing_sport: '⚽ กำลังเล่นกีฬา', watching_movie: '🎬 กำลังดูหนัง', goodmorning: '🌅 อรุณสวัสดิ์', goodnight: '🌙 ราตรีสวัสดิ์' },
+  'zh-Hans': { home: '🏠 在家', outside: '🚶 外出中', busy: '💼 忙碌中', relaxing: '☕ 放松中', chilling: '🛋️ 悠闲中', eating: '🍽️ 吃饭中', exhausted: '😩 好累', sleepy: '😪 困了', daydreaming: '💭 在发白日梦', having_fun: '🎉 玩得很开心', playing_sport: '⚽ 运动中', watching_movie: '🎬 看电影', goodmorning: '🌅 早上好', goodnight: '🌙 晚安' },
+  'zh-Hant': { home: '🏠 在家', outside: '🚶 在外', busy: '💼 忙碌中', relaxing: '☕ 放鬆中', chilling: '🛋️ 悠閒中', eating: '🍽️ 食緊飯', exhausted: '😩 好攰', sleepy: '😪 眼瞓', daydreaming: '💭 在發白日夢', having_fun: '🎉 玩得好開心', playing_sport: '⚽ 運動中', watching_movie: '🎬 看電影', goodmorning: '🌅 早晨', goodnight: '🌙 晚安' },
 }
 
 function getHomePresenceLabel(status: string, lang: string): string {
   const langMap = HOME_PRESENCE_LABELS[lang] ?? HOME_PRESENCE_LABELS.en
   return langMap[status] ?? HOME_PRESENCE_LABELS.en[status] ?? status
+}
+
+const REACH_OUT_STATUS_LABELS: Record<string, Record<string, string>> = {
+  en:       { call_now: '🙏 I need help', call_available: '📞 Call me' },
+  da:       { call_now: '🙏 Jeg har brug for hjælp', call_available: '📞 Ring til mig' },
+  de:       { call_now: '🙏 Ich brauche Hilfe', call_available: '📞 Ruf mich an' },
+  es:       { call_now: '🙏 Necesito ayuda', call_available: '📞 Llámame' },
+  fi:       { call_now: '🙏 Tarvitsen apua', call_available: '📞 Soita minulle' },
+  fr:       { call_now: "🙏 J'ai besoin d'aide", call_available: '📞 Appelle-moi' },
+  it:       { call_now: '🙏 Ho bisogno di aiuto', call_available: '📞 Chiamami' },
+  ja:       { call_now: '🙏 助けが必要', call_available: '📞 電話して' },
+  ko:       { call_now: '🙏 도움이 필요해', call_available: '📞 전화해줘' },
+  no:       { call_now: '🙏 Jeg trenger hjelp', call_available: '📞 Ring meg' },
+  sv:       { call_now: '🙏 Jag behöver hjälp', call_available: '📞 Ring mig' },
+  th:       { call_now: '🙏 ฉันต้องการความช่วยเหลือ', call_available: '📞 โทรหาฉัน' },
+  'zh-Hans': { call_now: '🙏 我需要帮忙', call_available: '📞 打电话给我' },
+  'zh-Hant': { call_now: '🙏 我需要幫忙', call_available: '📞 請call我' },
+}
+
+function getReachOutStatusLabel(status: string, lang: string): string {
+  const langMap = REACH_OUT_STATUS_LABELS[lang] ?? REACH_OUT_STATUS_LABELS.en
+  return langMap[status] ?? REACH_OUT_STATUS_LABELS.en[status] ?? status
 }
 
 const LOCATION_SHARED_LABELS: Record<string, string> = {
@@ -348,6 +370,7 @@ function buildContactCheckinNotification(
   wellnessScore: number | null,
   tripStatus: string | null,
   homePresence: string | null,
+  reachOutStatus: string | null,
   recipientLang: string
 ): NotificationPayload {
   const data: Record<string, any> = {
@@ -375,8 +398,14 @@ function buildContactCheckinNotification(
     data.homePresence = homePresence
   }
 
+  if (reachOutStatus) {
+    data.reachOutStatus = reachOutStatus
+  }
+
   const statusLabel = tripStatus
     ? getTripStatusLabel(tripStatus, recipientLang)
+    : reachOutStatus
+    ? getReachOutStatusLabel(reachOutStatus, recipientLang)
     : homePresence
     ? getHomePresenceLabel(homePresence, recipientLang)
     : null
@@ -508,10 +537,10 @@ serve(async (req) => {
       throw latestCheckinError
     }
 
-    // Fetch trip_status / home_presence from users_latest_checkin (nullable — null means not set)
+    // Fetch trip_status / home_presence / reach_out_status from users_latest_checkin
     const { data: latestCheckinMeta } = await supabase
       .from('users_latest_checkin')
-      .select('trip_status, home_presence')
+      .select('trip_status, home_presence, reach_out_status')
       .eq('user_id', user_id)
       .maybeSingle()
 
@@ -521,6 +550,10 @@ serve(async (req) => {
 
     const homePresence: string | null = canSendEnhancedStatus && !tripStatus
       ? latestCheckinMeta?.home_presence ?? null
+      : null
+
+    const reachOutStatus: string | null = canSendEnhancedStatus && !tripStatus
+      ? latestCheckinMeta?.reach_out_status ?? null
       : null
 
     const sharedLocation: SharedLocation | null =
@@ -540,10 +573,12 @@ serve(async (req) => {
         .map((relationship) => relationship.contact_user_id)
     )
 
-    const wellnessScore =
+    const rawWellnessScore =
       canSendWellness && typeof latestCheckinRow?.wellness_score === 'number'
         ? latestCheckinRow.wellness_score
         : null
+    // Suppress wellness when user is in reach-out mode — the two messages contradict each other
+    const wellnessScore = reachOutStatus ? null : rawWellnessScore
 
     // ============================================
     // 6. Get checking-in user profile
@@ -634,6 +669,15 @@ serve(async (req) => {
       (recipientSettings || []).map((row) => [row.user_id, row.language])
     )
 
+    const { data: recipientEntitlements } = await supabase
+      .from('user_entitlements')
+      .select('user_id, plan')
+      .in('user_id', recipientIds)
+
+    const recipientPlanMap = new Map(
+      (recipientEntitlements || []).map((row: any) => [row.user_id, row.plan === 'plus' ? 'plus' : 'free'])
+    )
+
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
 
     for (const recipient of recipients) {
@@ -644,6 +688,7 @@ serve(async (req) => {
 
       const recipientLang = recipientLanguageMap.get(recipient.user_id) ?? 'en'
       const locale = getCheckinLocale(recipientLang)
+      const isRecipientPlus = recipientPlanMap.get(recipient.user_id) === 'plus'
 
       const payload = buildContactCheckinNotification(
         locale,
@@ -653,12 +698,13 @@ serve(async (req) => {
         recipient.user_id,
         checkin_time,
         timezone,
-        sharedLocation && locationRecipientIds.has(recipient.user_id)
+        isRecipientPlus && sharedLocation && locationRecipientIds.has(recipient.user_id)
           ? sharedLocation
           : null,
-        wellnessScore,
+        isRecipientPlus ? wellnessScore : null,
         tripStatus,
         homePresence,
+        reachOutStatus,
         recipientLang
       )
 

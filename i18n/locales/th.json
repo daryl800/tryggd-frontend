@@ -35,6 +35,11 @@
       "trip": "กำลังเดินทาง",
       "homeTab": "🌿 ประจำวัน",
       "tripTab": "✈️ เดินทาง",
+      "reachOutTab": "🤙 ช่วยด้วย",
+      "reachOutStatuses": {
+        "call_now": "🙏 ฉันต้องการความช่วยเหลือ",
+        "call_available": "📞 โทรหาฉัน"
+      },
       "statusTitle": "สถานะ",
       "tripStatusPrompt": "เลือกสถานะการเดินทาง",
       "homeStatuses": {
@@ -48,6 +53,8 @@
         "sleepy": "😪 ง่วงนอน",
         "daydreaming": "💭 ฝันกลางวัน",
         "having_fun": "🎉 สนุกมาก",
+        "playing_sport": "⚽ กำลังเล่นกีฬา",
+        "watching_movie": "🎬 กำลังดูหนัง",
         "goodmorning": "🌅 อรุณสวัสดิ์",
         "goodnight": "🌙 ราตรีสวัสดิ์"
       },
@@ -62,6 +69,10 @@
     "reset": "รีเซ็ต",
     "timer": "ตัวจับเวลา",
     "timeLeftToday": "เวลาที่เหลือวันนี้",
+    "reachOut": {
+      "pressToSendHelp": "ส่งสัญญาณขอความช่วยเหลือ",
+      "lastSentLabel": "ส่งครั้งล่าสุด:"
+    },
     "activity": "กิจกรรม",
     "contacts_one": "{{count}} ผู้ติดต่อ",
     "contacts_other": "{{count}} ผู้ติดต่อ",
@@ -194,6 +205,10 @@
     "supportButton": {
       "send": "💪 ส่งกำลังใจ",
       "sent": "ส่งแล้ว ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "รับทราบ",
+      "sent": "ตอบแล้ว ✓"
     }
   },
   "contacts": {

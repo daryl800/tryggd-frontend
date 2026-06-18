@@ -15,6 +15,10 @@
     "reset": "Restablecer",
     "timer": "Temporizador",
     "timeLeftToday": "Tiempo restante",
+    "reachOut": {
+      "pressToSendHelp": "Enviar ayuda",
+      "lastSentLabel": "Última ayuda enviada:"
+    },
     "activity": "Actividad",
     "contacts_one": "{{count}} contacto",
     "contacts_other": "{{count}} contactos",
@@ -75,6 +79,11 @@
       "trip": "De viaje",
       "homeTab": "🌿 Diario",
       "tripTab": "✈️ Viaje",
+      "reachOutTab": "🤙 Ayuda",
+      "reachOutStatuses": {
+        "call_now": "🙏 Necesito ayuda",
+        "call_available": "📞 Llámame"
+      },
       "statusTitle": "Estado",
       "tripStatusPrompt": "Elige un estado de viaje",
       "homeStatuses": {
@@ -88,6 +97,8 @@
         "sleepy": "😪 Somnoliento",
         "daydreaming": "💭 Soñando despierto",
         "having_fun": "🎉 Pasándola genial",
+        "playing_sport": "⚽ Haciendo deporte",
+        "watching_movie": "🎬 Viendo una película",
         "goodmorning": "🌅 Buenos días",
         "goodnight": "🌙 Buenas noches"
       },
@@ -194,6 +205,10 @@
     "supportButton": {
       "send": "💪 Enviar apoyo",
       "sent": "Apoyo enviado ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Entendido",
+      "sent": "Respondido ✓"
     }
   },
   "contacts": {

@@ -7,7 +7,7 @@ interface RequestBody {
   recipientUserId: string;
   senderUserId: string;
   checkinTime: string;
-  responseKind?: 'like' | 'support';
+  responseKind?: 'like' | 'support' | 'reach_out';
 }
 
 interface LangMessages {
@@ -50,6 +50,23 @@ const SUPPORT_MESSAGES: Record<string, LangMessages> = {
   th:       { title: '💪 คุณได้รับกำลังใจ',              body: (n) => `💪 ${n}: คุณไม่ได้อยู่คนเดียว`,        someone: 'ใครบางคน' },
 }
 
+const REACH_OUT_MESSAGES: Record<string, LangMessages> = {
+  en:       { title: 'You got a response',                   body: (n) => `${n} responded to your help request`,       someone: 'Someone' },
+  da:       { title: 'Du har fået et svar',                  body: (n) => `${n} svarede på din hjælpanmodning`,        someone: 'Nogen' },
+  fi:       { title: 'Sait vastauksen',                      body: (n) => `${n} vastasi avunpyyntöösi`,                someone: 'Joku' },
+  no:       { title: 'Du har fått et svar',                  body: (n) => `${n} svarte på din hjelpforespørsel`,       someone: 'Noen' },
+  sv:       { title: 'Du har fått ett svar',                 body: (n) => `${n} svarade på din hjälpförfrågan`,        someone: 'Någon' },
+  ja:       { title: '返信が届きました',                      body: (n) => `${n}があなたの助けに応じました`,               someone: '誰か' },
+  ko:       { title: '응답을 받았습니다',                     body: (n) => `${n}님이 도움 요청에 응답했습니다`,            someone: '누군가' },
+  fr:       { title: 'Vous avez reçu une réponse',           body: (n) => `${n} a répondu à votre demande d'aide`,     someone: 'Quelqu\'un' },
+  de:       { title: 'Du hast eine Antwort erhalten',        body: (n) => `${n} hat auf deine Hilfe geantwortet`,      someone: 'Jemand' },
+  it:       { title: 'Hai ricevuto una risposta',            body: (n) => `${n} ha risposto alla tua richiesta`,       someone: 'Qualcuno' },
+  es:       { title: 'Recibiste una respuesta',              body: (n) => `${n} respondió a tu solicitud de ayuda`,   someone: 'Alguien' },
+  'zh-Hans':{ title: '你收到一个回应',                        body: (n) => `${n} 回应了你的求助`,                        someone: '有人' },
+  'zh-Hant':{ title: '你收到一個回應',                        body: (n) => `${n} 回應了你的求助`,                        someone: '有人' },
+  th:       { title: 'คุณได้รับการตอบกลับ',                  body: (n) => `${n} ตอบกลับคำขอความช่วยเหลือของคุณ`,       someone: 'ใครบางคน' },
+}
+
 const DEFAULT_LANG = 'en'
 
 async function validateAndGetUser(req: Request) {
@@ -70,8 +87,8 @@ async function validateAndGetUser(req: Request) {
   return { user, error: null, status: 200 }
 }
 
-function getMessages(responseKind: 'like' | 'support', lang: string): LangMessages {
-  const table = responseKind === 'support' ? SUPPORT_MESSAGES : LIKE_MESSAGES
+function getMessages(responseKind: 'like' | 'support' | 'reach_out', lang: string): LangMessages {
+  const table = responseKind === 'reach_out' ? REACH_OUT_MESSAGES : responseKind === 'support' ? SUPPORT_MESSAGES : LIKE_MESSAGES
   return table[lang] ?? table[DEFAULT_LANG]
 }
 
@@ -98,6 +115,7 @@ serve(async (req) => {
     )
 
     const { recipientUserId, senderUserId, checkinTime, responseKind = 'like' } = await req.json() as RequestBody
+    const safeResponseKind: 'like' | 'support' | 'reach_out' = responseKind
 
     if (senderUserId !== user.id) {
       return new Response(JSON.stringify({ error: 'Sender ID mismatch' }), { status: 403, headers: { 'Content-Type': 'application/json' } })
@@ -122,7 +140,7 @@ serve(async (req) => {
       }
     }
 
-    const messages = getMessages(responseKind, recipientLanguage)
+    const messages = getMessages(safeResponseKind, recipientLanguage)
     const title = messages.title
     const body = messages.body(senderName)
 

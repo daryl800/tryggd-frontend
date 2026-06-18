@@ -43,6 +43,11 @@
       "trip": "Travelling",
       "homeTab": "🌿 Daily",
       "tripTab": "✈️ Trip",
+      "reachOutTab": "🤙 Help",
+      "reachOutStatuses": {
+        "call_now": "🙏 I need help",
+        "call_available": "📞 Call me"
+      },
       "statusTitle": "Status",
       "tripStatusPrompt": "Choose a trip status",
       "homeStatuses": {
@@ -56,6 +61,8 @@
         "sleepy": "😪 Sleepy",
         "daydreaming": "💭 Daydreaming",
         "having_fun": "🎉 Having a blast",
+        "playing_sport": "⚽ Playing sport",
+        "watching_movie": "🎬 Watching a movie",
         "goodmorning": "🌅 Good morning",
         "goodnight": "🌙 Good night"
       },
@@ -70,6 +77,10 @@
     "reset": "Reset",
     "timer": "Timer",
     "timeLeftToday": "Time left",
+    "reachOut": {
+      "pressToSendHelp": "Send help signal",
+      "lastSentLabel": "Last help sent:"
+    },
     "activity": "Activity",
     "contacts_one": "{{count}} contact",
     "contacts_other": "{{count}} contacts",
@@ -198,6 +209,10 @@
     "supportButton": {
       "send": "💪 Send support",
       "sent": "Support sent ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Got it",
+      "sent": "Responded ✓"
     },
     "emergencyMessage": {
       "todayMessages_one": "🚨 You got {{count}} emergency message today:",

@@ -23,7 +23,7 @@ import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
 import * as Notifications from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -47,6 +47,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
+import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 
@@ -64,7 +65,8 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message'] as const;
-type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'goodmorning' | 'goodnight';
+type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodnight';
+type ReachOutStatus = 'call_now' | 'call_available';
 
 type HomeStatusNotification = {
   id: string;
@@ -383,10 +385,13 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'relaxing', 'busy', 'exhausted', 'sleepy', 'daydreaming', 'having_fun', 'goodnight'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'daydreaming', 'busy', 'exhausted', 'sleepy', 'having_fun', 'playing_sport', 'watching_movie', 'goodnight'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
+const REACH_OUT_STATUS_OPTIONS: readonly ReachOutStatus[] = ['call_now', 'call_available'] as const;
+const isReachOutStatus = (value: unknown): value is ReachOutStatus =>
+  value === 'call_now' || value === 'call_available';
 
 const WellnessSlider = ({ value, onChange, tooltipText, disabled = false, onLockedPress }: WellnessSliderProps) => {
   const [trackWidth, setTrackWidth] = useState(0);
@@ -685,21 +690,54 @@ export default function HomeScreen() {
   const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
-  const [checkinMode, setCheckinMode] = useState<'home' | 'trip'>('home');
+  const [checkinMode, setCheckinMode] = useState<'home' | 'trip' | 'reach_out'>('home');
   const [tripStatus, setTripStatus] = useState<string | null>(null);
   const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
+  const [reachOutStatus, setReachOutStatus] = useState<ReachOutStatus>('call_now');
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
-    useState<HomeStatusNotification | null>(null);
-  const [latestCheckinStatus, setLatestCheckinStatus] =
     useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
   const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
   const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
 
+  // Shared contact check-in data (one fetch/subscription shared with Activity)
+  const {
+    checkins: contactCheckins,
+    profiles: contactProfiles,
+    locationMap: contactLocationMap,
+    refresh: refreshCheckins,
+  } = useContactCheckins();
+
+  // Derived from shared context — most recent contact check-in for the status bar
+  const latestCheckinStatus = useMemo<HomeStatusNotification | null>(() => {
+    const latest = contactCheckins.find((c) => c.last_checked_in_utc != null);
+    if (!latest || !latest.last_checked_in_utc) return null;
+    const profile = contactProfiles.get(latest.user_id);
+    const normalizedTs = new Date(latest.last_checked_in_utc).toISOString();
+    const loc = contactLocationMap.get(`${latest.user_id}:${normalizedTs}`) ?? null;
+    return {
+      id: `checkin-${latest.user_id}`,
+      sender_user_id: latest.user_id,
+      type: 'contact_checkin',
+      body: null,
+      title: null,
+      data: {
+        tripStatus: latest.trip_status || null,
+        homePresence: latest.home_presence || null,
+        reachOutStatus: latest.reach_out_status || null,
+        wellnessScore: latest.wellness_score ?? null,
+        location: loc
+          ? { latitude: loc.latitude, longitude: loc.longitude, accuracyMeters: loc.accuracyMeters }
+          : null,
+      },
+      created_at: latest.last_checked_in_utc,
+      senderName: profile?.display_name || latest.display_name || 'Someone',
+      senderAvatarUrl: profile?.avatar_url || null,
+    };
+  }, [contactCheckins, contactProfiles, contactLocationMap]);
+
   const latestStatusChannelRef = useRef<any>(null);
-  const checkinStatusChannelRef = useRef<any>(null);
-  const contactIdsRef = useRef<string[]>([]);
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -825,21 +863,21 @@ export default function HomeScreen() {
           return;
         }
         const saved = await AsyncStorage.getItem('@settings_checkin_mode');
-        if (saved === 'home' || saved === 'trip') setCheckinMode(saved);
+        if (saved === 'home' || saved === 'trip' || saved === 'reach_out') setCheckinMode(saved);
         if (!user) return;
         const { data } = await supabase
           .from('user_settings')
           .select('checkin_mode')
           .eq('user_id', user.id)
           .maybeSingle();
-        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip') {
-          setCheckinMode(data.checkin_mode as 'home' | 'trip');
+        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip' || data?.checkin_mode === 'reach_out') {
+          setCheckinMode(data.checkin_mode as 'home' | 'trip' | 'reach_out');
           await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
         }
-        // Also load last trip_status / home_presence from users_latest_checkin
+        // Also load last trip_status / home_presence / reach_out_status from users_latest_checkin
         const { data: checkinData } = await supabase
           .from('users_latest_checkin')
-          .select('trip_status, home_presence')
+          .select('trip_status, home_presence, reach_out_status')
           .eq('user_id', user.id)
           .maybeSingle();
         if (checkinData?.trip_status) {
@@ -848,6 +886,9 @@ export default function HomeScreen() {
         if (isHomePresence(checkinData?.home_presence)) {
           setHomePresence(checkinData.home_presence);
           await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, checkinData.home_presence);
+        }
+        if (isReachOutStatus(checkinData?.reach_out_status)) {
+          setReachOutStatus(checkinData.reach_out_status);
         }
       } catch (_) {}
     };
@@ -872,11 +913,11 @@ export default function HomeScreen() {
     loadHomePresence();
   }, [canUseEnhancedHome]);
 
-  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip') => {
+  const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip' | 'reach_out') => {
     if (mode === checkinMode) return;
     void Haptics.selectionAsync();
     setCheckinMode(mode);
-    if (mode === 'home') setTripStatus(null);
+    if (mode !== 'trip') setTripStatus(null);
     await AsyncStorage.setItem('@settings_checkin_mode', mode);
     if (user) {
       await supabase
@@ -888,6 +929,12 @@ export default function HomeScreen() {
         }, { onConflict: 'user_id' });
     }
   }, [checkinMode, user]);
+
+  const handleReachOutStatusChange = useCallback((value: ReachOutStatus) => {
+    if (value === reachOutStatus) return;
+    void Haptics.selectionAsync();
+    setReachOutStatus(value);
+  }, [reachOutStatus]);
 
   const handleHomePresenceChange = useCallback(async (value: HomePresence) => {
     if (value === homePresence) return;
@@ -909,7 +956,6 @@ export default function HomeScreen() {
 
     if (!error) {
       setContactsCount(count || 0);
-      contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
     }
   }, []);
 
@@ -1027,6 +1073,7 @@ export default function HomeScreen() {
         refetchStreak();
         fetchContactsCount();
         void fetchLatestStatusNotificationRef.current();
+        void refreshCheckins();
       }
     };
 
@@ -1157,54 +1204,6 @@ export default function HomeScreen() {
     ]).start();
   };
 
-  const fetchLatestContactCheckin = useCallback(async (): Promise<HomeStatusNotification | null> => {
-    if (!user) return null;
-
-    if (!contactIdsRef.current.length) {
-      const { data: contactRows } = await supabase
-        .from('contacts')
-        .select('contact_user_id')
-        .eq('owner_user_id', user.id);
-      contactIdsRef.current = (contactRows || []).map((r) => r.contact_user_id).filter(Boolean);
-    }
-
-    const contactIds = contactIdsRef.current;
-    if (!contactIds.length) return null;
-
-    const { data } = await supabase
-      .from('users_latest_checkin')
-      .select('*')
-      .in('user_id', contactIds)
-      .not('last_checked_in_utc', 'is', null)
-      .order('last_checked_in_utc', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (!data?.last_checked_in_utc) return null;
-
-    const { data: profileRows } = await supabase.rpc('get_contact_usernames', {
-      contact_ids: [data.user_id],
-    });
-    const profile = profileRows?.[0];
-    const displayName = profile?.display_name || data.display_name || 'Someone';
-
-    return {
-      id: `checkin-${data.user_id}`,
-      sender_user_id: data.user_id,
-      type: 'contact_checkin',
-      body: null,
-      title: null,
-      data: {
-        tripStatus: data.trip_status || null,
-        homePresence: data.home_presence || null,
-        wellnessScore: data.wellness_score ?? null,
-      },
-      created_at: data.last_checked_in_utc,
-      senderName: displayName,
-      senderAvatarUrl: profile?.avatar_url || null,
-    };
-  }, [user]);
-
   const enrichHomeStatusNotification = useCallback(async (notification: any): Promise<HomeStatusNotification> => {
     const parsedData = parseNotificationData(notification.data);
     let senderName =
@@ -1242,30 +1241,24 @@ export default function HomeScreen() {
   const fetchLatestStatusNotification = useCallback(async () => {
     if (!user) {
       setLatestStatusNotification(null);
-      setLatestCheckinStatus(null);
       return;
     }
 
-    const [{ data, error }, checkin] = await Promise.all([
-      supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      fetchLatestContactCheckin(),
-    ]);
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .in('type', [...HOME_STATUS_NOTIFICATION_TYPES])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching latest home status notification:', error);
     } else {
       setLatestStatusNotification(data ? await enrichHomeStatusNotification(data) : null);
     }
-
-    setLatestCheckinStatus(checkin);
-  }, [enrichHomeStatusNotification, fetchLatestContactCheckin, user]);
+  }, [enrichHomeStatusNotification, user]);
 
   // Keep ref in sync so the AppState handler (declared earlier) always calls the latest version
   useEffect(() => {
@@ -1284,7 +1277,8 @@ export default function HomeScreen() {
       fetchContactsCount();
       loadHomeStyle();
       void fetchLatestStatusNotification();
-    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification])
+      void refreshCheckins();
+    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification, refreshCheckins])
   );
 
   useEffect(() => {
@@ -1329,92 +1323,8 @@ export default function HomeScreen() {
     };
   }, [enrichHomeStatusNotification, user]);
 
-  useEffect(() => {
-    if (checkinStatusChannelRef.current) {
-      supabase.removeChannel(checkinStatusChannelRef.current);
-      checkinStatusChannelRef.current = null;
-    }
-
-    if (!user) return;
-
-    const setup = async () => {
-      if (!contactIdsRef.current.length) {
-        const { data } = await supabase
-          .from('contacts')
-          .select('contact_user_id')
-          .eq('owner_user_id', user.id);
-        contactIdsRef.current = (data || []).map((r) => r.contact_user_id).filter(Boolean);
-      }
-
-      const contactIds = contactIdsRef.current;
-      if (!contactIds.length) return;
-
-      const channel = supabase
-        .channel(`home-checkin-status:${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'users_latest_checkin',
-            filter: `user_id=in.(${contactIds.join(',')})`,
-          },
-          () => {
-            fetchLatestContactCheckin()
-              .then(setLatestCheckinStatus)
-              .catch((err) => console.error('Error updating checkin status:', err));
-          }
-        )
-        .subscribe();
-
-      checkinStatusChannelRef.current = channel;
-    };
-
-    void setup();
-
-    return () => {
-      if (checkinStatusChannelRef.current) {
-        supabase.removeChannel(checkinStatusChannelRef.current);
-        checkinStatusChannelRef.current = null;
-      }
-    };
-  }, [fetchLatestContactCheckin, user]);
-
-  // Foreground push listener — update home status bar immediately when a contact checks in.
-  // contact_checkin pushes don't include `type` in data; identified by `contactUserId` presence.
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener((notification) => {
-      const data = notification.request.content.data as any;
-      if (!data?.contactUserId || !data?.checkinTimeIso) return;
-
-      const immediate: HomeStatusNotification = {
-        id: `checkin-${data.contactUserId}-${Date.now()}`,
-        sender_user_id: data.contactUserId,
-        type: 'contact_checkin',
-        body: null,
-        title: null,
-        data: {
-          tripStatus: data.tripStatus ?? null,
-          homePresence: data.homePresence ?? null,
-          wellnessScore: data.wellnessScore ?? null,
-        },
-        created_at: data.checkinTimeIso,
-        senderName: data.contactDisplayName || 'Someone',
-        senderAvatarUrl: null,
-      };
-
-      setLatestCheckinStatus((prev) =>
-        !prev || new Date(immediate.created_at) >= new Date(prev.created_at) ? immediate : prev
-      );
-
-      // Confirm with DB to get avatar_url and correct ordering across multiple contacts
-      fetchLatestContactCheckin()
-        .then((confirmed) => { if (confirmed) setLatestCheckinStatus(confirmed); })
-        .catch(console.error);
-    });
-
-    return () => subscription.remove();
-  }, [fetchLatestContactCheckin]);
+  // contact_checkin realtime and foreground-push are handled by ContactCheckinsContext.
+  // latestCheckinStatus is now a useMemo derived from the shared context state.
 
   // const handleCheckIn = useCallback(async () => {
   //   if (isCheckingIn) return;
@@ -1603,9 +1513,10 @@ export default function HomeScreen() {
             // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
             const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripStatus : null;
             const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
+            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutStatus : null;
             supabase
               .from('users_latest_checkin')
-              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence })
+              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence, reach_out_status: nextReachOutStatus })
               .eq('user_id', user.id)
               .then(() => {});
           })
@@ -1653,9 +1564,18 @@ export default function HomeScreen() {
   const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus && homeLayout !== 'free';
   const showWellnessModule = canUseWellnessHome || showLockedPlusWellness;
   const displayWellnessScore = canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT;
-  const heartColor = canUseWellnessHome ? getWellnessHeartColor(displayWellnessScore) : BaseColors.primary;
+  const isReachOutMode = checkinMode === 'reach_out';
+  const REACH_OUT_RED = '#EF4444';
+  const heartColor = isReachOutMode
+    ? REACH_OUT_RED
+    : canUseWellnessHome
+    ? getWellnessHeartColor(displayWellnessScore)
+    : BaseColors.primary;
   const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
     ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
+    : null;
+  const activeReachOutStatusLabel = checkinMode === 'reach_out'
+    ? t(`home.context.reachOutStatuses.${reachOutStatus}` as any) as string
     : null;
   const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
   const wellnessMessage = canUseWellnessHome
@@ -1663,9 +1583,13 @@ export default function HomeScreen() {
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
   const checkedInMessage = activeTripStatusLabel
+    ?? activeReachOutStatusLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
-  const [checkedInMsgTextRaw, checkedInMsgEmoji] = checkedInMessage.includes('\n')
+  const REACH_OUT_EMOJI = '😟';
+  const [checkedInMsgTextRaw, checkedInMsgEmoji] = isReachOutMode
+    ? [checkedInMessage, REACH_OUT_EMOJI]
+    : checkedInMessage.includes('\n')
     ? checkedInMessage.split('\n') as [string, string]
     : [checkedInMessage, wellnessEmoji] as [string, string];
   const checkedInMsgText = checkedInMsgTextRaw.replace(/\s*[/／]\s*/g, '\n');
@@ -1721,9 +1645,11 @@ export default function HomeScreen() {
   };
   const simpleCheckinSummary = checkedInToday && lastCheckinUtc
     ? null
-    : t('home.dontForget');
+    : isReachOutMode ? null : t('home.dontForget');
   const simpleCheckinLabel = checkedInToday && lastCheckinUtc
-    ? t('home.status.lastCheckinLabel' as any) as string
+    ? isReachOutMode
+      ? t('home.reachOut.lastSentLabel' as any) as string
+      : t('home.status.lastCheckinLabel' as any) as string
     : null;
   const simpleCheckinTimeAgo = checkedInToday && lastCheckinUtc
     ? formatHomeStatusAgo(lastCheckinUtc)
@@ -1751,16 +1677,33 @@ export default function HomeScreen() {
   const latestStatusTripEmoji = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusHomePresence = !latestStatusTripStatus ? latestDisplayStatus?.data?.homePresence : null;
+  const latestStatusHomePresence = !latestStatusTripStatus && capabilities.isPlus ? latestDisplayStatus?.data?.homePresence : null;
   const latestStatusHomePresenceEmoji = latestStatusHomePresence
     ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
     : null;
-  const latestStatusLocation = !!latestDisplayStatus?.data?.location;
+  const latestStatusReachOutStatus = !latestStatusTripStatus && capabilities.isPlus
+    ? latestDisplayStatus?.data?.reachOutStatus || null
+    : null;
+  const latestStatusReachOutLabel = latestStatusReachOutStatus
+    ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
+    : null;
+  const latestStatusReachOutEmoji = latestStatusReachOutLabel
+    ? latestStatusReachOutLabel.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
+    : null;
+  // Fall back to notification location when latestCheckinStatus wins but its contactLocationMap key didn't match
+  const latestStatusLocationData =
+    latestDisplayStatus?.data?.location ??
+    (latestStatusNotification?.sender_user_id === latestDisplayStatus?.sender_user_id
+      ? latestStatusNotification?.data?.location ?? null
+      : null);
+  const latestStatusLocation = capabilities.isPlus && !!latestStatusLocationData;
   const latestStatusBadgeLabel = latestStatusTripStatus
     ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
     : latestStatusHomePresence
       ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string)
-      : null;
+      : latestStatusReachOutStatus
+        ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
+        : null;
   const latestStatusBadgeText = latestStatusBadgeLabel
     ? latestStatusBadgeLabel.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim()
     : null;
@@ -1783,7 +1726,7 @@ export default function HomeScreen() {
     });
   };
   const openLatestStatusLocation = async () => {
-    const location = latestDisplayStatus?.data?.location;
+    const location = latestStatusLocationData;
     if (!location) return;
     const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
     try {
@@ -1793,7 +1736,9 @@ export default function HomeScreen() {
       Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
     }
   };
-  const latestStatusWellnessScore = latestDisplayStatus?.data?.wellnessScore;
+  const latestStatusWellnessScore = capabilities.isPlus && !latestStatusReachOutStatus
+    ? latestDisplayStatus?.data?.wellnessScore
+    : undefined;
   const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
   const latestStatusAvatarUrl =
     latestDisplayStatus?.senderAvatarUrl?.trim() &&
@@ -1882,6 +1827,15 @@ export default function HomeScreen() {
                     {t('home.context.tripTab')}
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modeTab, checkinMode === 'reach_out' && styles.modeTabActiveReachOut]}
+                  onPress={() => handleCheckinModeChange('reach_out')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.modeTabText, checkinMode === 'reach_out' && styles.modeTabTextActiveReachOut]}>
+                    {t('home.context.reachOutTab')}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           ) : null}
@@ -1894,6 +1848,7 @@ export default function HomeScreen() {
             canUseEnhancedHome && styles.enhancedCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
+            isReachOutMode && styles.reachOutCheckInGroup,
           ]}>
             <View style={styles.checkInContainer}>
               <Animated.View
@@ -2038,24 +1993,28 @@ export default function HomeScreen() {
                             adjustsFontSizeToFit
                             minimumFontScale={0.7}
                           >
-                            {t('home.pressMeToCheckIn')}
+                            {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
                           </Text>
-                          <Text
-                            style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                          >
-                            {t('home.timeLeftToday')}
-                          </Text>
-                          <Text
-                            style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
-                            numberOfLines={1}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.7}
-                          >
-                            {formatTimeLeft(remainingMs)}
-                          </Text>
+                          {!isReachOutMode && (
+                            <>
+                              <Text
+                                style={[styles.timeLeftText, fontScale > 1.2 && styles.compactTimeLeftText]}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.7}
+                              >
+                                {t('home.timeLeftToday')}
+                              </Text>
+                              <Text
+                                style={[styles.countdownText, fontScale > 1.2 && styles.compactCountdownText]}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.7}
+                              >
+                                {formatTimeLeft(remainingMs)}
+                              </Text>
+                            </>
+                          )}
                         </>
                       )}
                     </View>
@@ -2066,27 +2025,29 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </Animated.View>
             </View>
-            <View style={[
-              styles.simpleCheckinInfoRow,
-              isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
-            ]}>
-              <Ionicons
-                name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
-                size={isCompactSimpleHome ? 16 : 18}
-                color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
-                style={styles.simpleCheckinInfoIcon}
-              />
-              <Text style={[
-                styles.simpleCheckinInfoText,
-                isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
-                { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+            {(simpleCheckinLabel || simpleCheckinSummary) ? (
+              <View style={[
+                styles.simpleCheckinInfoRow,
+                isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
               ]}>
-                {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
-              </Text>
-            </View>
+                <Ionicons
+                  name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
+                  size={isCompactSimpleHome ? 16 : 18}
+                  color={checkedInToday ? BaseColors.primaryDark : BaseColors.warning}
+                  style={styles.simpleCheckinInfoIcon}
+                />
+                <Text style={[
+                  styles.simpleCheckinInfoText,
+                  isCompactSimpleHome && styles.simpleCheckinInfoTextCompact,
+                  { color: checkedInToday ? BaseColors.primaryDark : BaseColors.warning },
+                ]}>
+                  {simpleCheckinLabel ? `${simpleCheckinLabel} ${simpleCheckinTimeAgo}` : simpleCheckinSummary}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
-          {isPlusSimpleHome ? (
+          {isPlusSimpleHome && !isReachOutMode ? (
             <WellnessButtonPicker
               value={wellnessScore}
               onChange={setWellnessScore}
@@ -2101,7 +2062,7 @@ export default function HomeScreen() {
             />
           ) : null}
 
-          {canUseEnhancedHome && showWellnessModule ? (
+          {canUseEnhancedHome && showWellnessModule && !isReachOutMode ? (
             <View style={[styles.enhancedWellnessGroup, styles.groupContainer]}>
               <WellnessSlider
                 value={wellnessScore}
@@ -2146,7 +2107,7 @@ export default function HomeScreen() {
                     />
                   </View>
                 </View>
-              ) : (
+              ) : checkinMode === 'trip' ? (
                 <View style={styles.tripStatusGroupEnhanced}>
                   <RNScrollView
                     horizontal
@@ -2178,6 +2139,31 @@ export default function HomeScreen() {
                       color={BaseColors.primary}
                     />
                   </View>
+                </View>
+              ) : (
+                <View style={styles.tripStatusGroupEnhanced}>
+                  <RNScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.tripPillsRowEnhanced}
+                    scrollEnabled
+                  >
+                    {REACH_OUT_STATUS_OPTIONS.map((option) => {
+                      const isActive = reachOutStatus === option;
+                      return (
+                        <TouchableOpacity
+                          key={option}
+                          style={[styles.tripPill, isActive && styles.tripPillActive]}
+                          onPress={() => handleReachOutStatusChange(option)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
+                            {t(`home.context.reachOutStatuses.${option}` as any) as string}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </RNScrollView>
                 </View>
               )}
             </View>
@@ -2239,7 +2225,24 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <View style={styles.simpleStatusEmojiGroup}>
-                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji) ? (
+                        {latestStatusLocation ? (
+                          <TouchableOpacity
+                            onPress={openLatestStatusLocation}
+                            activeOpacity={0.7}
+                            style={[
+                              styles.simpleStatusEmojiCircle,
+                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                              styles.simpleStatusTripEmojiCircle,
+                            ]}
+                          >
+                            <Ionicons
+                              name="location"
+                              size={isCompactSimpleHome ? 19 : 23}
+                              color={BaseColors.primaryDark}
+                            />
+                          </TouchableOpacity>
+                        ) : null}
+                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji || latestStatusReachOutEmoji) ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
                             {latestStatusBadgeTooltipVisible && (
                               <View style={[
@@ -2263,28 +2266,43 @@ export default function HomeScreen() {
                               <Text style={[
                                 styles.simpleStatusEmoji,
                                 isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji}</Text>
+                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji ?? latestStatusReachOutEmoji}</Text>
                             </TouchableOpacity>
                           </View>
                         ) : null}
-                        {latestStatusLocation ? (
-                          <TouchableOpacity
-                            onPress={openLatestStatusLocation}
-                            activeOpacity={0.7}
-                            style={[
-                              styles.simpleStatusEmojiCircle,
-                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
-                              styles.simpleStatusTripEmojiCircle,
-                            ]}
-                          >
-                            <Ionicons
-                              name="location"
-                              size={isCompactSimpleHome ? 19 : 23}
-                              color={BaseColors.primaryDark}
-                            />
-                          </TouchableOpacity>
-                        ) : null}
-                        {latestStatusWellnessMeta ? (
+                        {latestStatusReachOutStatus ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            {latestStatusWellnessTooltipVisible && (
+                              <View style={[
+                                styles.simpleStatusTooltip,
+                                { borderColor: '#EF4444', backgroundColor: '#FEE2E2' },
+                              ]}>
+                                <Text style={[styles.simpleStatusTooltipText, { color: '#EF4444' }]}>
+                                  {(() => {
+                                    const label = t('home.context.reachOutTab') as string;
+                                    const m = label.match(/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u);
+                                    return m ? label.slice(m[0].length).trim() : label;
+                                  })()}
+                                </Text>
+                              </View>
+                            )}
+                            <TouchableOpacity
+                              onPress={toggleLatestStatusWellnessTooltip}
+                              activeOpacity={0.7}
+                              style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                { backgroundColor: '#FEE2E2', borderColor: '#EF4444', borderWidth: 1 },
+                              ]}
+                            >
+                              <Ionicons
+                                name="heart"
+                                size={isCompactSimpleHome ? 19 : 23}
+                                color="#EF4444"
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        ) : latestStatusWellnessMeta ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
                             {latestStatusWellnessTooltipVisible && (
                               <View style={[
@@ -2475,6 +2493,10 @@ const styles = StyleSheet.create({
     minHeight: 225,
     paddingTop: 0,
     paddingBottom: 2,
+  },
+  reachOutCheckInGroup: {
+    flex: 0,
+    paddingTop: 32,
   },
   simpleWellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
@@ -2709,6 +2731,23 @@ const styles = StyleSheet.create({
   },
   modeTabTextActive: {
     color: BaseColors.primary,
+  },
+  modeTabActiveReachOut: {
+    backgroundColor: '#FEE2E2',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#EF4444',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
+  modeTabTextActiveReachOut: {
+    color: '#EF4444',
   },
   enhancedStatusCard: {
     marginHorizontal: SCREEN_PADDING.horizontal,

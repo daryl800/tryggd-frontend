@@ -15,6 +15,10 @@
     "reset": "Tilbakestill",
     "timer": "Tidtakere",
     "timeLeftToday": "Tid igjen i dag",
+    "reachOut": {
+      "pressToSendHelp": "Send hjelp",
+      "lastSentLabel": "Sist sendt hjelp:"
+    },
     "activity": "Aktivitet",
     "contacts_one": "{{count}} kontakt",
     "contacts_other": "{{count}} kontakter",
@@ -75,6 +79,11 @@
       "trip": "På reise",
       "homeTab": "🌿 Daglig",
       "tripTab": "✈️ Reise",
+      "reachOutTab": "🤙 Hjelp",
+      "reachOutStatuses": {
+        "call_now": "🙏 Jeg trenger hjelp",
+        "call_available": "📞 Ring meg"
+      },
       "statusTitle": "Status",
       "tripStatusPrompt": "Velg en reisestatus",
       "homeStatuses": {
@@ -88,6 +97,8 @@
         "sleepy": "😪 Søvnig",
         "daydreaming": "💭 Dagdrømmer",
         "having_fun": "🎉 Morer meg masse",
+        "playing_sport": "⚽ Spiller sport",
+        "watching_movie": "🎬 Ser på film",
         "goodmorning": "🌅 God morgen",
         "goodnight": "🌙 God natt"
       },
@@ -194,6 +205,10 @@
     "supportButton": {
       "send": "💪 Send støtte",
       "sent": "Støtte sendt ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Forstått",
+      "sent": "Besvart ✓"
     }
   },
   "contacts": {
