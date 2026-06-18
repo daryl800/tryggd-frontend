@@ -1983,8 +1983,6 @@ export default function HomeScreen() {
                       {checkedInToday ? (
                         <Text
                           numberOfLines={2}
-                          adjustsFontSizeToFit
-                          minimumFontScale={0.6}
                           style={[
                             styles.checkedInText,
                             { color: checkedMessageColor },
@@ -1998,8 +1996,6 @@ export default function HomeScreen() {
                           <Text
                             style={[styles.ctaText, fontScale > 1.2 && styles.compactCtaText]}
                             numberOfLines={2}
-                            adjustsFontSizeToFit
-                            minimumFontScale={0.6}
                           >
                             {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
                           </Text>
@@ -3057,7 +3053,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: BaseColors.text.dark,
-    fontSize: iosFontSize(21),
+    fontSize: iosFontSize(17),
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
