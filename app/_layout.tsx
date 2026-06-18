@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
 import { Slot, useNavigationContainerRef, useRouter } from "expo-router";
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { ActivityIndicator, AppState, View } from "react-native";
@@ -287,6 +288,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
+        <StatusBar style="dark" translucent backgroundColor="transparent" />
         <I18nextProvider i18n={i18n}>
           <AuthProvider>
             <RootLayoutNav />
