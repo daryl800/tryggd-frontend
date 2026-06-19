@@ -96,6 +96,20 @@ const stripEmojiFromLabel = (value: string) =>
     .filter(Boolean)
     .join('\n');
 
+const formatStatusLabelWithBreaks = (value: string) =>
+  value.replace(/\s*[/／]\s*/g, ' /\n');
+
+const getVisualTextUnits = (value: string) =>
+  Array.from(value).reduce((total, char) => {
+    if (/\s/.test(char)) return total + 0.28;
+    if (/[\/／]/.test(char)) return total + 0.45;
+    if (/[\u3400-\u9FFF\uF900-\uFAFF]/.test(char)) return total + 1.85;
+    if (/[A-ZÅÄÖ]/.test(char)) return total + 1.02;
+    if (/[a-zåäö]/.test(char)) return total + 0.9;
+    if (/[0-9]/.test(char)) return total + 0.84;
+    return total + 0.62;
+  }, 0);
+
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
@@ -1600,16 +1614,16 @@ export default function HomeScreen() {
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
   const REACH_OUT_EMOJI = '😟';
-  const checkedInMessageWithBreaks = checkedInMessage.replace(/\s*[/／]\s*/g, '\n');
+  const checkedInMessageWithBreaks = formatStatusLabelWithBreaks(checkedInMessage);
   const statusLabelEmoji = checkedInMessage.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? '';
   const checkedInMsgText = stripEmojiFromLabel(checkedInMessageWithBreaks);
   const checkedInMsgEmoji = isReachOutMode
     ? REACH_OUT_EMOJI
     : statusLabelEmoji || (checkedInMessage.includes('\n') ? checkedInMessage.split('\n')[1] : wellnessEmoji);
   const chineseFontFamily = getChineseFontFamily(i18n.language);
+  const isChineseCheckedInTypography = !!chineseFontFamily;
   const checkedMessageColor =
     checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
-  const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const simpleDateTimeText = `${formatDateWithTranslation(now, t, i18n.language)} · ${formatTime24h(now, i18n.language)}`;
   const isPlusSimpleHome = homeLayout === 'plus-simple';
   // Debug-only: hidden in production because __DEV__ is false in release builds
@@ -1617,48 +1631,64 @@ export default function HomeScreen() {
   const currentFontScale = windowDimensions.fontScale || fontScale;
   const currentScreenWidth = windowDimensions.width || SCREEN_WIDTH;
   const currentScreenHeight = windowDimensions.height || SCREEN_HEIGHT;
+  const overflowAmount = viewportHeight > 0
+    ? Math.max(0, contentHeight - viewportHeight - SCROLL_OVERFLOW_TOLERANCE)
+    : 0;
   // viewportHeight = actual usable scroll area (excludes status bar, tab bar, nav bar)
   // screenHeight = full window height. viewportHeight is ~120-150px smaller on most devices.
   // Use viewportHeight when available for accurate compactness; thresholds adjusted accordingly.
   const effectiveHeight = viewportHeight > 0 ? viewportHeight : currentScreenHeight - 150;
   const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> =
-    effectiveHeight < 560 || currentFontScale >= 1.2
+    effectiveHeight < 560 || currentFontScale >= 1.2 || overflowAmount > 72
       ? 'tight'
-      : effectiveHeight < 640 || currentFontScale >= 1.1
+      : effectiveHeight < 640 || currentFontScale >= 1.1 || overflowAmount > 0
         ? 'compact'
         : 'regular';
   const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
   const isTightSimpleHome = simpleHomeCompactness === 'tight';
+  const fitTightenOffset = overflowAmount > 72 ? 22 : overflowAmount > 0 ? 10 : 0;
   const circleSize = Math.min(
     currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
     isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250,
-  );
-  const strokeWidth = isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH;
+  ) - fitTightenOffset;
+  const strokeWidth = Math.max(28, (isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH) - (overflowAmount > 72 ? 4 : overflowAmount > 0 ? 2 : 0));
   const maxStroke = strokeWidth + 3;
   const circleRadius = (circleSize - maxStroke) / 2;
   const innerButtonSize = circleSize - strokeWidth;
   const innerButtonOffset = strokeWidth / 2;
-  const checkedInLineCountHint = checkedInMsgText.split('\n').length;
   const checkedInTextLength = checkedInMsgText.replace(/\n/g, '').trim().length;
-  const checkedInWordCount = checkedInMsgText
-    .split(/\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean).length;
-  const isSingleWordCheckedInText = checkedInLineCountHint === 1 && checkedInWordCount === 1;
-  const isLongCheckedInText =
-    checkedInLineCountHint >= 2 || checkedInWordCount >= 3 || checkedInTextLength > 12;
-  const checkedInTextScale =
-    isSingleWordCheckedInText
-      ? 0.172
-      : checkedInLineCountHint >= 3 || checkedInTextLength > 16
-      ? 0.122
-      : checkedInLineCountHint === 2 || checkedInTextLength > 11
-        ? 0.146
-        : 0.176;
-  const checkedInFontSize = clampNumber(Math.round(innerButtonSize * checkedInTextScale), 15, 30);
-  const checkedInLineHeight = Math.round(checkedInFontSize * 1.12);
+  const hasCheckedInForcedBreak = checkedInMsgText.includes('\n');
+  const [checkedInLineOneRaw = '', checkedInLineTwoRaw = ''] = hasCheckedInForcedBreak
+    ? checkedInMsgText.split('\n')
+    : [checkedInMsgText, ''];
+  const checkedInLineOne = checkedInLineOneRaw.trim();
+  const checkedInLineTwo = checkedInLineTwoRaw.trim();
+  const checkedInLongestLineUnits = Math.max(
+    getVisualTextUnits(checkedInLineOne),
+    getVisualTextUnits(checkedInLineTwo),
+    getVisualTextUnits(checkedInMsgText),
+  );
+  const isLongCheckedInText = hasCheckedInForcedBreak || checkedInTextLength > 12;
+  const checkedInForcedBreakScale =
+    checkedInLongestLineUnits > 16
+      ? 0.094
+      : checkedInLongestLineUnits > 14
+        ? 0.1
+        : checkedInLongestLineUnits > 12
+          ? 0.108
+          : checkedInLongestLineUnits > 10
+            ? 0.116
+            : 0.124;
+  const checkedInMaxFontSize = isChineseCheckedInTypography ? 26 : 26;
+  const checkedInFontSize = clampNumber(
+    Math.round(innerButtonSize * (hasCheckedInForcedBreak ? checkedInForcedBreakScale : isLongCheckedInText ? 0.138 : 0.164)),
+    14,
+    checkedInMaxFontSize,
+  );
+  const checkedInLineHeight = Math.round(checkedInFontSize * (isChineseCheckedInTypography ? 1.22 : 1.1));
+  const checkedInTextBoxHeight = checkedInLineHeight * 2 + (isChineseCheckedInTypography ? 6 : 0);
   const checkedInEmojiSize = clampNumber(
-    Math.round(checkedInFontSize + (checkedInLineCountHint > 1 ? 3 : 7)),
+    Math.round(checkedInFontSize + (isLongCheckedInText ? 2 : 6)),
     18,
     36,
   );
@@ -1675,6 +1705,7 @@ export default function HomeScreen() {
   const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
   const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.086), 11, 16);
   const uncheckedMetaLineHeight = Math.round(uncheckedMetaFontSize * 1.16);
+  const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const formatHomeStatusAgo = (createdAt?: string | null) => {
     if (!createdAt) return '';
 
@@ -1840,6 +1871,7 @@ export default function HomeScreen() {
       <Text style={[
         styles.simpleHeaderDate,
         isCompactSimpleHome && styles.simpleHeaderDateCompact,
+        overflowAmount > 72 && styles.simpleHeaderDateUltra,
       ]}>
         {simpleDateTimeText}
       </Text>
@@ -1863,7 +1895,11 @@ export default function HomeScreen() {
       >
         <Animated.View style={[{ opacity: fadeAnim }, styles.simpleAnimatedContent]}>
           {canUseEnhancedHome ? (
-            <View style={[styles.modeTabsContainer, styles.groupContainer]}>
+            <View style={[
+              styles.modeTabsContainer,
+              styles.groupContainer,
+              overflowAmount > 72 && styles.modeTabsContainerUltra,
+            ]}>
               <View style={styles.modeTabsRow}>
                 <TouchableOpacity
                   style={[styles.modeTab, checkinMode === 'home' && styles.modeTabActive]}
@@ -1904,6 +1940,7 @@ export default function HomeScreen() {
             canUseEnhancedHome && styles.enhancedCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
+            overflowAmount > 72 && styles.simpleCheckInGroupUltra,
             isReachOutMode && styles.reachOutCheckInGroup,
           ]}>
             <View style={styles.checkInContainer}>
@@ -2038,22 +2075,65 @@ export default function HomeScreen() {
                       capabilities.isPlus ? { flex: 1 } : { marginTop: 14 },
                     ]}>
                       {checkedInToday ? (
-                        <Text
-                          numberOfLines={isSingleWordCheckedInText ? 1 : 4}
-                          adjustsFontSizeToFit={isSingleWordCheckedInText}
-                          minimumFontScale={isSingleWordCheckedInText ? 0.58 : undefined}
-                          style={[
-                            styles.checkedInText,
-                            {
-                              fontSize: checkedInFontSize,
-                              lineHeight: checkedInLineHeight,
-                            },
-                            { color: checkedMessageColor },
-                            chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
-                          ]}
-                        >
-                          {checkedInMsgText}
-                        </Text>
+                        hasCheckedInForcedBreak ? (
+                          <View style={[
+                            styles.checkedInTextBox,
+                            isChineseCheckedInTypography && styles.checkedInTextBoxChinese,
+                            { minHeight: checkedInTextBoxHeight },
+                          ]}>
+                            <Text
+                              numberOfLines={1}
+                              style={[
+                                styles.checkedInText,
+                                styles.checkedInTextLine,
+                                isChineseCheckedInTypography && styles.checkedInTextChinese,
+                                {
+                                  fontSize: checkedInFontSize,
+                                  lineHeight: checkedInLineHeight,
+                                },
+                                { color: checkedMessageColor },
+                                chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                              ]}
+                            >
+                              {checkedInLineOne}
+                            </Text>
+                            <Text
+                              numberOfLines={1}
+                              style={[
+                                styles.checkedInText,
+                                styles.checkedInTextLine,
+                                isChineseCheckedInTypography && styles.checkedInTextChinese,
+                                {
+                                  fontSize: checkedInFontSize,
+                                  lineHeight: checkedInLineHeight,
+                                },
+                                { color: checkedMessageColor },
+                                chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                              ]}
+                            >
+                              {checkedInLineTwo}
+                            </Text>
+                          </View>
+                        ) : (
+                          <Text
+                            numberOfLines={2}
+                            adjustsFontSizeToFit
+                            minimumFontScale={0.52}
+                            style={[
+                              styles.checkedInText,
+                              isChineseCheckedInTypography && styles.checkedInTextChinese,
+                              {
+                                fontSize: checkedInFontSize,
+                                lineHeight: checkedInLineHeight,
+                                minHeight: checkedInTextBoxHeight,
+                              },
+                              { color: checkedMessageColor },
+                              chineseFontFamily ? { fontFamily: chineseFontFamily } : null,
+                            ]}
+                          >
+                            {checkedInMsgText}
+                          </Text>
+                        )
                       ) : (
                         <>
                           <Text
@@ -2119,6 +2199,7 @@ export default function HomeScreen() {
               <View style={[
                 styles.simpleCheckinInfoRow,
                 isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
+                overflowAmount > 72 && styles.simpleCheckinInfoRowUltra,
               ]}>
                 <Ionicons
                   name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
@@ -2263,10 +2344,12 @@ export default function HomeScreen() {
             styles.simpleStatusDock,
             canUseEnhancedHome && styles.simpleStatusDockEnhanced,
             isCompactSimpleHome && styles.simpleStatusDockCompact,
+            overflowAmount > 72 && styles.simpleStatusDockUltra,
           ]}>
             <View style={[
               styles.simpleStatusGroup,
               isCompactSimpleHome && styles.simpleStatusGroupCompact,
+              overflowAmount > 72 && styles.simpleStatusGroupUltra,
             ]}>
               <TouchableOpacity
                 activeOpacity={0.85}
@@ -2275,6 +2358,7 @@ export default function HomeScreen() {
                   styles.simpleStatusCard,
                   isCompactSimpleHome && styles.simpleStatusCardCompact,
                   isTightSimpleHome && styles.simpleStatusCardTight,
+                  overflowAmount > 72 && styles.simpleStatusCardUltra,
                 ]}
               >
                   {latestDisplayStatus ? (
@@ -2555,6 +2639,12 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(17),
     lineHeight: iosFontSize(21),
   },
+  simpleHeaderDateUltra: {
+    marginTop: 2,
+    marginBottom: 2,
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(19),
+  },
   simpleAnimatedContent: {
     flexGrow: 1,
   },
@@ -2583,6 +2673,11 @@ const styles = StyleSheet.create({
     minHeight: 225,
     paddingTop: 0,
     paddingBottom: 2,
+  },
+  simpleCheckInGroupUltra: {
+    minHeight: 208,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   reachOutCheckInGroup: {
     flex: 0,
@@ -2764,6 +2859,10 @@ const styles = StyleSheet.create({
   modeTabsContainer: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginTop: 2,
+  },
+  modeTabsContainerUltra: {
+    marginTop: 0,
+    marginBottom: -2,
   },
   modeTabsRow: {
     flexDirection: 'row',
@@ -3083,6 +3182,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
+  checkedInTextBox: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  checkedInTextBoxChinese: {
+    paddingTop: 2,
+    paddingBottom: 2,
+  },
+  checkedInTextLine: {
+    minHeight: 0,
+  },
+  checkedInTextChinese: {
+    paddingTop: 1,
+    paddingBottom: 1,
+  },
   checkedInEmoji: {
     fontSize: 36,
     textAlign: 'center',
@@ -3193,6 +3307,10 @@ const styles = StyleSheet.create({
   simpleStatusDockCompact: {
     paddingTop: 9,
   },
+  simpleStatusDockUltra: {
+    paddingTop: 4,
+    paddingBottom: 0,
+  },
   simpleStatusDockHandle: {
     alignSelf: 'center',
     width: 42,
@@ -3208,6 +3326,9 @@ const styles = StyleSheet.create({
   simpleStatusGroupCompact: {
     marginBottom: 8,
   },
+  simpleStatusGroupUltra: {
+    marginBottom: 4,
+  },
   simpleCheckinInfoRow: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginTop: 10,
@@ -3218,6 +3339,9 @@ const styles = StyleSheet.create({
   },
   simpleCheckinInfoRowCompact: {
     marginTop: 6,
+  },
+  simpleCheckinInfoRowUltra: {
+    marginTop: 2,
   },
   simpleCheckinInfoIcon: {
     flexShrink: 0,
@@ -3261,6 +3385,10 @@ const styles = StyleSheet.create({
   simpleStatusCardTight: {
     minHeight: 62,
     borderRadius: 18,
+  },
+  simpleStatusCardUltra: {
+    minHeight: 58,
+    paddingVertical: 6,
   },
   simpleStatusIcon: {
     width: 48,
