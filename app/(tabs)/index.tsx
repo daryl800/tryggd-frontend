@@ -1679,7 +1679,7 @@ export default function HomeScreen() {
           : checkedInLongestLineUnits > 10
             ? 0.116
             : 0.124;
-  const checkedInMaxFontSize = isChineseCheckedInTypography ? 22 : 26;
+  const checkedInMaxFontSize = isChineseCheckedInTypography ? 26 : 26;
   const checkedInFontSize = clampNumber(
     Math.round(innerButtonSize * (hasCheckedInForcedBreak ? checkedInForcedBreakScale : isLongCheckedInText ? 0.138 : 0.164)),
     14,
