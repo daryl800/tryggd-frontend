@@ -99,6 +99,17 @@ const stripEmojiFromLabel = (value: string) =>
 const formatStatusLabelWithBreaks = (value: string) =>
   value.replace(/\s*[/／]\s*/g, ' /\n');
 
+const getVisualTextUnits = (value: string) =>
+  Array.from(value).reduce((total, char) => {
+    if (/\s/.test(char)) return total + 0.28;
+    if (/[\/／]/.test(char)) return total + 0.45;
+    if (/[\u3400-\u9FFF\uF900-\uFAFF]/.test(char)) return total + 1.85;
+    if (/[A-ZÅÄÖ]/.test(char)) return total + 1.02;
+    if (/[a-zåäö]/.test(char)) return total + 0.9;
+    if (/[0-9]/.test(char)) return total + 0.84;
+    return total + 0.62;
+  }, 0);
+
 // Helper functions (keep all your existing helper functions here)
 const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: string } => {
   const hour = date.getHours();
@@ -1610,6 +1621,7 @@ export default function HomeScreen() {
     ? REACH_OUT_EMOJI
     : statusLabelEmoji || (checkedInMessage.includes('\n') ? checkedInMessage.split('\n')[1] : wellnessEmoji);
   const chineseFontFamily = getChineseFontFamily(i18n.language);
+  const isChineseCheckedInTypography = !!chineseFontFamily;
   const checkedMessageColor =
     checkedInToday && canUseWellnessHome ? BaseColors.surface : BaseColors.surface;
   const simpleDateTimeText = `${formatDateWithTranslation(now, t, i18n.language)} · ${formatTime24h(now, i18n.language)}`;
@@ -1651,26 +1663,30 @@ export default function HomeScreen() {
     : [checkedInMsgText, ''];
   const checkedInLineOne = checkedInLineOneRaw.trim();
   const checkedInLineTwo = checkedInLineTwoRaw.trim();
-  const checkedInForcedBreakMaxLineLength = Math.max(
-    checkedInLineOne.replace(/\s+/g, '').length,
-    checkedInLineTwo.replace(/\s+/g, '').length,
+  const checkedInLongestLineUnits = Math.max(
+    getVisualTextUnits(checkedInLineOne),
+    getVisualTextUnits(checkedInLineTwo),
+    getVisualTextUnits(checkedInMsgText),
   );
   const isLongCheckedInText = hasCheckedInForcedBreak || checkedInTextLength > 12;
   const checkedInForcedBreakScale =
-    checkedInForcedBreakMaxLineLength > 16
-      ? 0.104
-      : checkedInForcedBreakMaxLineLength > 13
-        ? 0.112
-        : checkedInForcedBreakMaxLineLength > 10
-          ? 0.12
-          : 0.126;
+    checkedInLongestLineUnits > 16
+      ? 0.094
+      : checkedInLongestLineUnits > 14
+        ? 0.1
+        : checkedInLongestLineUnits > 12
+          ? 0.108
+          : checkedInLongestLineUnits > 10
+            ? 0.116
+            : 0.124;
+  const checkedInMaxFontSize = isChineseCheckedInTypography ? 22 : 26;
   const checkedInFontSize = clampNumber(
     Math.round(innerButtonSize * (hasCheckedInForcedBreak ? checkedInForcedBreakScale : isLongCheckedInText ? 0.138 : 0.164)),
     14,
-    30,
+    checkedInMaxFontSize,
   );
-  const checkedInLineHeight = Math.round(checkedInFontSize * 1.1);
-  const checkedInTextBoxHeight = checkedInLineHeight * 2;
+  const checkedInLineHeight = Math.round(checkedInFontSize * (isChineseCheckedInTypography ? 1.22 : 1.1));
+  const checkedInTextBoxHeight = checkedInLineHeight * 2 + (isChineseCheckedInTypography ? 6 : 0);
   const checkedInEmojiSize = clampNumber(
     Math.round(checkedInFontSize + (isLongCheckedInText ? 2 : 6)),
     18,
@@ -2060,12 +2076,17 @@ export default function HomeScreen() {
                     ]}>
                       {checkedInToday ? (
                         hasCheckedInForcedBreak ? (
-                          <View style={[styles.checkedInTextBox, { minHeight: checkedInTextBoxHeight }]}>
+                          <View style={[
+                            styles.checkedInTextBox,
+                            isChineseCheckedInTypography && styles.checkedInTextBoxChinese,
+                            { minHeight: checkedInTextBoxHeight },
+                          ]}>
                             <Text
                               numberOfLines={1}
                               style={[
                                 styles.checkedInText,
                                 styles.checkedInTextLine,
+                                isChineseCheckedInTypography && styles.checkedInTextChinese,
                                 {
                                   fontSize: checkedInFontSize,
                                   lineHeight: checkedInLineHeight,
@@ -2081,6 +2102,7 @@ export default function HomeScreen() {
                               style={[
                                 styles.checkedInText,
                                 styles.checkedInTextLine,
+                                isChineseCheckedInTypography && styles.checkedInTextChinese,
                                 {
                                   fontSize: checkedInFontSize,
                                   lineHeight: checkedInLineHeight,
@@ -2099,6 +2121,7 @@ export default function HomeScreen() {
                             minimumFontScale={0.52}
                             style={[
                               styles.checkedInText,
+                              isChineseCheckedInTypography && styles.checkedInTextChinese,
                               {
                                 fontSize: checkedInFontSize,
                                 lineHeight: checkedInLineHeight,
@@ -3163,8 +3186,16 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
   },
+  checkedInTextBoxChinese: {
+    paddingTop: 2,
+    paddingBottom: 2,
+  },
   checkedInTextLine: {
     minHeight: 0,
+  },
+  checkedInTextChinese: {
+    paddingTop: 1,
+    paddingBottom: 1,
   },
   checkedInEmoji: {
     fontSize: 36,
