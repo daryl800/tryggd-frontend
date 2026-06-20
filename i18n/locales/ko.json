@@ -714,5 +714,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Plus 미리보기 체험",
+    "dialogBody": "미리보기 기간 동안 현재의 Plus 기능을 무료로 체험할 수 있습니다.\n마음에 드신다면 미리보기가 끝난 후 유료 플랜으로 계속 이용하실 수 있습니다.",
+    "activate": "Plus 미리보기 활성화",
+    "notNow": "나중에",
+    "dialogFooter": "Tryggd 개선에 도움을 주셔서 감사합니다.",
+    "settingsRowTitle": "Plus 미리보기",
+    "settingsRowSubtitle": "미리보기 기간 동안 현재의 Plus 기능을 무료로 체험하세요.",
+    "settingsRowAction": "활성화",
+    "activeRowTitle": "Plus 미리보기 활성화됨",
+    "activeRowSubtitle": "미리보기 기간 동안 이용 가능합니다."
   }
 }

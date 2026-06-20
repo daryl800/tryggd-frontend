@@ -722,5 +722,17 @@
       "max": "Tryggd ID must be 24 characters or fewer.",
       "chars": "Use only lowercase letters, numbers, dots, or underscores."
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Try Plus Preview",
+    "dialogBody": "You can try the current Plus features for free during our preview period.\nIf you love them, you'll have the option to continue with a paid plan when the preview ends.",
+    "activate": "Activate Plus Preview",
+    "notNow": "Not now",
+    "dialogFooter": "Thank you for helping us improve Tryggd.",
+    "settingsRowTitle": "Plus Preview",
+    "settingsRowSubtitle": "Try current Plus features free during the preview period.",
+    "settingsRowAction": "Activate",
+    "activeRowTitle": "Plus Preview active",
+    "activeRowSubtitle": "Available during the preview period."
   }
 }

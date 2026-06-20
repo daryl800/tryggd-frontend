@@ -714,5 +714,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Plus-Vorschau ausprobieren",
+    "dialogBody": "Du kannst die aktuellen Plus-Funktionen während unseres Vorschauzeitraums kostenlos testen.\nWenn du sie liebst, kannst du nach dem Vorschauzeitraum mit einem kostenpflichtigen Abo weitermachen.",
+    "activate": "Plus-Vorschau aktivieren",
+    "notNow": "Nicht jetzt",
+    "dialogFooter": "Danke, dass du uns hilfst, Tryggd zu verbessern.",
+    "settingsRowTitle": "Plus-Vorschau",
+    "settingsRowSubtitle": "Teste aktuelle Plus-Funktionen während des Vorschauzeitraums kostenlos.",
+    "settingsRowAction": "Aktivieren",
+    "activeRowTitle": "Plus-Vorschau aktiv",
+    "activeRowSubtitle": "Während des Vorschauzeitraums verfügbar."
   }
 }

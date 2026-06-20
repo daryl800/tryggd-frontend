@@ -714,5 +714,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Essayer l'aperçu Plus",
+    "dialogBody": "Vous pouvez essayer les fonctionnalités Plus actuelles gratuitement pendant notre période d'aperçu.\nSi vous les adorez, vous aurez la possibilité de continuer avec un abonnement payant à la fin de l'aperçu.",
+    "activate": "Activer l'aperçu Plus",
+    "notNow": "Pas maintenant",
+    "dialogFooter": "Merci de nous aider à améliorer Tryggd.",
+    "settingsRowTitle": "Aperçu Plus",
+    "settingsRowSubtitle": "Essayez les fonctionnalités Plus actuelles gratuitement pendant la période d'aperçu.",
+    "settingsRowAction": "Activer",
+    "activeRowTitle": "Aperçu Plus actif",
+    "activeRowSubtitle": "Disponible pendant la période d'aperçu."
   }
 }
