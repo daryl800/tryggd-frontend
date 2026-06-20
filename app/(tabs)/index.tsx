@@ -1647,10 +1647,13 @@ export default function HomeScreen() {
   const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
   const isTightSimpleHome = simpleHomeCompactness === 'tight';
   const fitTightenOffset = overflowAmount > 72 ? 22 : overflowAmount > 0 ? 10 : 0;
+  const uncheckedCircleBoost = !checkedInToday && overflowAmount === 0
+    ? (isTightSimpleHome ? 12 : isCompactSimpleHome ? 14 : 16)
+    : 0;
   const circleSize = Math.min(
     currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
-    isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250,
-  ) - fitTightenOffset;
+    (isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250) + uncheckedCircleBoost,
+  ) - fitTightenOffset + uncheckedCircleBoost;
   const strokeWidth = Math.max(28, (isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH) - (overflowAmount > 72 ? 4 : overflowAmount > 0 ? 2 : 0));
   const maxStroke = strokeWidth + 3;
   const circleRadius = (circleSize - maxStroke) / 2;
@@ -2045,6 +2048,7 @@ export default function HomeScreen() {
                     {/* Icon */}
                     <View style={[
                       styles.iconContainer,
+                      !checkedInToday && styles.iconContainerUnchecked,
                       checkedInToday && isLongCheckedInText && styles.iconContainerCompactCheckedIn,
                     ]}>
                       {checkedInToday ? (
@@ -2071,8 +2075,10 @@ export default function HomeScreen() {
                     {/* Text Content */}
                     <View style={[
                       styles.textContainer,
+                      !checkedInToday && styles.textContainerUnchecked,
+                      !checkedInToday && capabilities.isPlus && styles.textContainerUncheckedPlus,
                       checkedInToday && isLongCheckedInText && styles.textContainerCompactCheckedIn,
-                      capabilities.isPlus ? { flex: 1 } : { marginTop: 14 },
+                      checkedInToday && capabilities.isPlus && { flex: 1 },
                     ]}>
                       {checkedInToday ? (
                         hasCheckedInForcedBreak ? (
@@ -2136,21 +2142,23 @@ export default function HomeScreen() {
                         )
                       ) : (
                         <>
-                          <Text
-                            style={[
-                              styles.ctaText,
-                              {
-                                fontSize: uncheckedCtaFontSize,
-                                lineHeight: uncheckedCtaLineHeight,
-                              },
-                              fontScale > 1.2 && styles.compactCtaText,
-                            ]}
-                            numberOfLines={2}
-                          >
-                            {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
-                          </Text>
+                          <View style={styles.uncheckedCtaGroup}>
+                            <Text
+                              style={[
+                                styles.ctaText,
+                                {
+                                  fontSize: uncheckedCtaFontSize,
+                                  lineHeight: uncheckedCtaLineHeight,
+                                },
+                                fontScale > 1.2 && styles.compactCtaText,
+                              ]}
+                              numberOfLines={2}
+                            >
+                              {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
+                            </Text>
+                          </View>
                           {!isReachOutMode && (
-                            <>
+                            <View style={styles.uncheckedMetaGroup}>
                               <Text
                                 style={[
                                   styles.timeLeftText,
@@ -2177,7 +2185,7 @@ export default function HomeScreen() {
                               >
                                 {formatTimeLeft(remainingMs)}
                               </Text>
-                            </>
+                            </View>
                           )}
                         </>
                       )}
@@ -3237,6 +3245,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 12,
   },
+  iconContainerUnchecked: {
+    marginTop: 18,
+    marginBottom: 8,
+  },
   iconContainerCompactCheckedIn: {
     minHeight: 44,
     marginTop: 4,
@@ -3256,6 +3268,29 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
     width: '100%',
   },
+  textContainerUnchecked: {
+    marginTop: 6,
+    paddingHorizontal: 18,
+  },
+  textContainerUncheckedPlus: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    paddingTop: 0,
+    paddingBottom: 14,
+    marginTop: 0,
+  },
+  uncheckedCtaGroup: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 0,
+  },
+  uncheckedMetaGroup: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
   textContainerCompactCheckedIn: {
     paddingHorizontal: 18,
   },
@@ -3265,7 +3300,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0.5,
-    marginTop: -18,
     marginBottom: 0,
   },
   countdownText: {
@@ -3280,7 +3314,7 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(16),
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 0,
   },
   compactCtaText: {
     fontSize: iosFontSize(14),

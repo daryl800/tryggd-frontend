@@ -14,7 +14,7 @@
     "pressMeToCheckIn": "HAZ CHECK-IN AQUÍ",
     "reset": "Restablecer",
     "timer": "Temporizador",
-    "timeLeftToday": "Tiempo restante",
+    "timeLeftToday": "Tiempo restante hoy",
     "reachOut": {
       "pressToSendHelp": "Enviar ayuda",
       "lastSentLabel": "Última ayuda enviada:"

@@ -80,7 +80,7 @@
     },
     "reset": "Reset",
     "timer": "Timer",
-    "timeLeftToday": "Time left",
+    "timeLeftToday": "Time left today",
     "reachOut": {
       "pressToSendHelp": "Send help signal",
       "lastSentLabel": "Last help sent:"
