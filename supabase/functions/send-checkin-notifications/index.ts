@@ -138,7 +138,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 Känner sig väldigt glad idag`,
   },
   'zh-Hans': {
-    title: (name: string) => `${name} 签到`,
+    title: (name: string) => `${name} 打卡`,
     fallback: (time: string) => `一切安好！- ${time}`,
     very_low: () => `😔 太不舒服`,
     low: () => `😕 有点低落`,
@@ -147,7 +147,7 @@ const CHECKIN_MESSAGES = {
     great: () => `😊 今天很开心`,
   },
   'zh-Hant': {
-    title: (name: string) => `${name} 簽到`,
+    title: (name: string) => `${name} 打卡`,
     fallback: (time: string) => `一切安好！- ${time}`,
     very_low: () => `😔 太不舒服`,
     low: () => `😕 有點低落`,
