@@ -716,20 +716,20 @@ export default function HomeScreen() {
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [contactsCount, setContactsCount] = useState(0);
-  const [wellnessScore, setWellnessScore] = useState(WELLNESS_DEFAULT);
-  const [, setSubmittedWellnessScore] = useState(WELLNESS_DEFAULT);
+  const [moodScore, setMoodScore] = useState(WELLNESS_DEFAULT);
+  const [, setSubmittedMoodScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip' | 'reach_out'>('home');
-  const [tripStatus, setTripStatus] = useState<string | null>(null);
+  const [tripPresence, setTripPresence] = useState<string | null>(null);
   const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
-  const [reachOutStatus, setReachOutStatus] = useState<ReachOutStatus>('call_now');
+  const [reachOutPresence, setReachOutPresence] = useState<ReachOutStatus>('call_now');
   const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
   const [latestStatusNotification, setLatestStatusNotification] =
     useState<HomeStatusNotification | null>(null);
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
-  const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
-  const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
+  const [presenceBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
+  const [moodTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
   const [pilotDialogDismissed, setPilotDialogDismissed] = useState(false);
 
   // Shared contact check-in data (one fetch/subscription shared with Activity)
@@ -770,8 +770,8 @@ export default function HomeScreen() {
 
   const latestStatusChannelRef = useRef<any>(null);
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
-  const latestStatusBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const latestStatusWellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const presenceBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const moodTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -824,15 +824,15 @@ export default function HomeScreen() {
           setShowResetButton(isFromToday);
           setLastCheckinUtc(savedLastCheckinUtc);
           if (!isFromToday) {
-            setWellnessScore(WELLNESS_DEFAULT);
-            setSubmittedWellnessScore(WELLNESS_DEFAULT);
+            setMoodScore(WELLNESS_DEFAULT);
+            setSubmittedMoodScore(WELLNESS_DEFAULT);
           }
         } else {
           setCheckedInToday(false);
           setShowResetButton(false);
           setLastCheckinUtc(null);
-          setWellnessScore(WELLNESS_DEFAULT);
-          setSubmittedWellnessScore(WELLNESS_DEFAULT);
+          setMoodScore(WELLNESS_DEFAULT);
+          setSubmittedMoodScore(WELLNESS_DEFAULT);
         }
       } catch (err) {
         console.error(t('home.errors.loadState'), err);
@@ -908,7 +908,7 @@ export default function HomeScreen() {
       try {
         if (!canUseEnhancedHome) {
           setCheckinMode('home');
-          setTripStatus(null);
+          setTripPresence(null);
           return;
         }
         const saved = await AsyncStorage.getItem('@settings_checkin_mode');
@@ -930,14 +930,14 @@ export default function HomeScreen() {
           .eq('user_id', user.id)
           .maybeSingle();
         if (checkinData?.trip_status) {
-          setTripStatus(checkinData.trip_status);
+          setTripPresence(checkinData.trip_status);
         }
         if (isHomePresence(checkinData?.home_presence)) {
           setHomePresence(checkinData.home_presence);
           await AsyncStorage.setItem(HOME_PRESENCE_STORAGE_KEY, checkinData.home_presence);
         }
         if (isReachOutStatus(checkinData?.reach_out_status)) {
-          setReachOutStatus(checkinData.reach_out_status);
+          setReachOutPresence(checkinData.reach_out_status);
         }
       } catch (_) {}
     };
@@ -966,7 +966,7 @@ export default function HomeScreen() {
     if (mode === checkinMode) return;
     void Haptics.selectionAsync();
     setCheckinMode(mode);
-    if (mode !== 'trip') setTripStatus(null);
+    if (mode !== 'trip') setTripPresence(null);
     await AsyncStorage.setItem('@settings_checkin_mode', mode);
     if (user) {
       await supabase
@@ -979,11 +979,11 @@ export default function HomeScreen() {
     }
   }, [checkinMode, user]);
 
-  const handleReachOutStatusChange = useCallback((value: ReachOutStatus) => {
-    if (value === reachOutStatus) return;
+  const handleReachOutPresenceChange = useCallback((value: ReachOutStatus) => {
+    if (value === reachOutPresence) return;
     void Haptics.selectionAsync();
-    setReachOutStatus(value);
-  }, [reachOutStatus]);
+    setReachOutPresence(value);
+  }, [reachOutPresence]);
 
   const handleHomePresenceChange = useCallback(async (value: HomePresence) => {
     if (value === homePresence) return;
@@ -1015,8 +1015,8 @@ export default function HomeScreen() {
     setLastCheckinUtc(null);
     setLastCheckinId(null);
     setShowResetButton(false);
-    setWellnessScore(WELLNESS_DEFAULT);
-    setSubmittedWellnessScore(WELLNESS_DEFAULT);
+    setMoodScore(WELLNESS_DEFAULT);
+    setSubmittedMoodScore(WELLNESS_DEFAULT);
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -1055,8 +1055,8 @@ export default function HomeScreen() {
 
       setLastCheckinUtc(data.last_checked_in_utc);
       setCheckedInToday(isFromToday);
-      setWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
-      setSubmittedWellnessScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
+      setMoodScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
+      setSubmittedMoodScore(isFromToday ? data.wellness_score ?? WELLNESS_DEFAULT : WELLNESS_DEFAULT);
 
       if (isFromToday) {
         const { startIso, endIso } = getLocalDayBounds(today);
@@ -1072,8 +1072,8 @@ export default function HomeScreen() {
 
         setLastCheckinId(todayCheckin?.id ?? null);
         if (todayCheckin?.wellness_score != null) {
-          setWellnessScore(todayCheckin.wellness_score);
-          setSubmittedWellnessScore(todayCheckin.wellness_score);
+          setMoodScore(todayCheckin.wellness_score);
+          setSubmittedMoodScore(todayCheckin.wellness_score);
         }
       } else {
         setLastCheckinId(null);
@@ -1097,8 +1097,8 @@ export default function HomeScreen() {
         setShowResetButton(false);
         setLastCheckinUtc(null);
         setLastCheckinId(null);
-        setWellnessScore(WELLNESS_DEFAULT);
-        setSubmittedWellnessScore(WELLNESS_DEFAULT);
+        setMoodScore(WELLNESS_DEFAULT);
+        setSubmittedMoodScore(WELLNESS_DEFAULT);
         await AsyncStorage.removeItem(STORAGE_KEY);
       }
   }, [user, t]);
@@ -1510,7 +1510,7 @@ export default function HomeScreen() {
               p_checkin_timezone: timeZone,
               p_local_day_start_utc: startIso,
               p_local_day_end_utc: endIso,
-              p_wellness_score: canUseWellnessHome ? wellnessScore : null,
+              p_wellness_score: canUseWellnessHome ? moodScore : null,
               p_location_latitude: locationPayload?.location_latitude ?? null,
               p_location_longitude: locationPayload?.location_longitude ?? null,
               p_location_accuracy_meters: locationPayload?.location_accuracy_meters ?? null,
@@ -1544,7 +1544,7 @@ export default function HomeScreen() {
             // Update with real data
             setLastCheckinUtc(checkinRow.checked_in_at_utc);
             setLastCheckinId(checkinRow.id);
-            setSubmittedWellnessScore(canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT);
+            setSubmittedMoodScore(canUseWellnessHome ? moodScore : WELLNESS_DEFAULT);
 
             await AsyncStorage.setItem(
               STORAGE_KEY,
@@ -1560,9 +1560,9 @@ export default function HomeScreen() {
 
             // Keep trip status and home presence aligned with the active home layout/mode so
             // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
-            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripStatus : null;
+            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripPresence : null;
             const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
-            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutStatus : null;
+            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutPresence : null;
             supabase
               .from('users_latest_checkin')
               .update({ trip_status: nextTripStatus, home_presence: nextHomePresence, reach_out_status: nextReachOutStatus })
@@ -1579,7 +1579,7 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, wellnessScore, homePresence]);
+  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, moodScore, homePresence]);
 
 
   const startOfDay = new Date();
@@ -1612,27 +1612,27 @@ export default function HomeScreen() {
   const greetingInfo = getGreetingInfo(now, t);
   const showLockedPlusWellness = UI_FEATURE_FLAGS.showPlusUpsellUI && !capabilities.isPlus && homeLayout !== 'free';
   const showWellnessModule = canUseWellnessHome || showLockedPlusWellness;
-  const displayWellnessScore = canUseWellnessHome ? wellnessScore : WELLNESS_DEFAULT;
+  const displayMoodScore = canUseWellnessHome ? moodScore : WELLNESS_DEFAULT;
   const isReachOutMode = checkinMode === 'reach_out';
   const REACH_OUT_RED = '#EF4444';
   const heartColor = isReachOutMode
     ? REACH_OUT_RED
     : canUseWellnessHome
-    ? getWellnessHeartColor(displayWellnessScore)
+    ? getWellnessHeartColor(displayMoodScore)
     : BaseColors.primary;
-  const activeTripStatusLabel = checkinMode === 'trip' && tripStatus
-    ? t(`home.tripMode.statuses.${tripStatus}` as any) as string
+  const activeTripPresenceLabel = checkinMode === 'trip' && tripPresence
+    ? t(`home.tripMode.statuses.${tripPresence}` as any) as string
     : null;
-  const activeReachOutStatusLabel = checkinMode === 'reach_out'
-    ? t(`home.context.reachOutStatuses.${reachOutStatus}` as any) as string
+  const activeReachOutPresenceLabel = checkinMode === 'reach_out'
+    ? t(`home.context.reachOutStatuses.${reachOutPresence}` as any) as string
     : null;
   const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
   const wellnessMessage = canUseWellnessHome
-    ? t(getWellnessMessageKey(displayWellnessScore))
+    ? t(getWellnessMessageKey(displayMoodScore))
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
-  const checkedInMessage = activeTripStatusLabel
-    ?? activeReachOutStatusLabel
+  const checkedInMessage = activeTripPresenceLabel
+    ?? activeReachOutPresenceLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
   const REACH_OUT_EMOJI = '✋';
@@ -1785,60 +1785,46 @@ export default function HomeScreen() {
           ? t('home.status.respondedToYou', { name: latestDisplayStatus.senderName })
           : t('home.status.sentWave', { name: latestDisplayStatus.senderName })
     : null;
-  const latestStatusTripStatus = latestDisplayStatus?.data?.tripStatus;
-  const latestStatusTripEmoji = latestStatusTripStatus
-    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
-    : null;
-  const latestStatusHomePresence = !latestStatusTripStatus && capabilities.isPlus ? latestDisplayStatus?.data?.homePresence : null;
-  const latestStatusHomePresenceEmoji = latestStatusHomePresence
-    ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string).match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
-    : null;
-  const latestStatusReachOutStatus = !latestStatusTripStatus && capabilities.isPlus
-    ? latestDisplayStatus?.data?.reachOutStatus || null
-    : null;
-  const latestStatusReachOutLabel = latestStatusReachOutStatus
-    ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
-    : null;
-  const latestStatusReachOutEmoji = latestStatusReachOutLabel
-    ? latestStatusReachOutLabel.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null
-    : null;
+  const _latestTripStatus = latestDisplayStatus?.data?.tripStatus ?? null;
+  const _latestHomePresence = !_latestTripStatus && capabilities.isPlus ? latestDisplayStatus?.data?.homePresence ?? null : null;
+  const _latestReachOut = !_latestTripStatus && capabilities.isPlus ? latestDisplayStatus?.data?.reachOutStatus ?? null : null;
+
+  const latestPresenceLabel: string | null = _latestTripStatus
+    ? (t(`home.tripMode.statuses.${_latestTripStatus}` as any) as string)
+    : _latestHomePresence
+      ? (t(`home.context.homeStatuses.${_latestHomePresence}` as any) as string)
+      : _latestReachOut
+        ? (t(`home.context.reachOutStatuses.${_latestReachOut}` as any) as string)
+        : null;
+  const latestPresenceEmoji = latestPresenceLabel?.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? null;
+  const latestPresenceBadgeText = latestPresenceLabel?.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim() ?? null;
   // Fall back to notification location when latestCheckinStatus wins but its contactLocationMap key didn't match
-  const latestStatusLocationData =
+  const latestLocationData =
     latestDisplayStatus?.data?.location ??
     (latestStatusNotification?.sender_user_id === latestDisplayStatus?.sender_user_id
       ? latestStatusNotification?.data?.location ?? null
       : null);
-  const latestStatusLocation = capabilities.isPlus && !!latestStatusLocationData;
-  const latestStatusBadgeLabel = latestStatusTripStatus
-    ? (t(`home.tripMode.statuses.${latestStatusTripStatus}` as any) as string)
-    : latestStatusHomePresence
-      ? (t(`home.context.homeStatuses.${latestStatusHomePresence}` as any) as string)
-      : latestStatusReachOutStatus
-        ? (t(`home.context.reachOutStatuses.${latestStatusReachOutStatus}` as any) as string)
-        : null;
-  const latestStatusBadgeText = latestStatusBadgeLabel
-    ? latestStatusBadgeLabel.replace(TRIP_STATUS_EMOJI_PATTERN, '').trim()
-    : null;
+  const latestHasLocation = capabilities.isPlus && !!latestLocationData;
   const toggleLatestStatusBadgeTooltip = () => {
-    if (latestStatusBadgeTooltipTimerRef.current) clearTimeout(latestStatusBadgeTooltipTimerRef.current);
+    if (presenceBadgeTooltipTimerRef.current) clearTimeout(presenceBadgeTooltipTimerRef.current);
     setLatestStatusBadgeTooltipVisible((visible) => {
       if (!visible) {
-        latestStatusBadgeTooltipTimerRef.current = setTimeout(() => setLatestStatusBadgeTooltipVisible(false), 3000);
+        presenceBadgeTooltipTimerRef.current = setTimeout(() => setLatestStatusBadgeTooltipVisible(false), 3000);
       }
       return !visible;
     });
   };
   const toggleLatestStatusWellnessTooltip = () => {
-    if (latestStatusWellnessTooltipTimerRef.current) clearTimeout(latestStatusWellnessTooltipTimerRef.current);
+    if (moodTooltipTimerRef.current) clearTimeout(moodTooltipTimerRef.current);
     setLatestStatusWellnessTooltipVisible((visible) => {
       if (!visible) {
-        latestStatusWellnessTooltipTimerRef.current = setTimeout(() => setLatestStatusWellnessTooltipVisible(false), 3000);
+        moodTooltipTimerRef.current = setTimeout(() => setLatestStatusWellnessTooltipVisible(false), 3000);
       }
       return !visible;
     });
   };
   const openLatestStatusLocation = async () => {
-    const location = latestStatusLocationData;
+    const location = latestLocationData;
     if (!location) return;
     const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`;
     try {
@@ -1848,10 +1834,10 @@ export default function HomeScreen() {
       Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
     }
   };
-  const latestStatusWellnessScore = capabilities.isPlus && !latestStatusReachOutStatus
+  const latestMoodScore = capabilities.isPlus && !_latestReachOut
     ? latestDisplayStatus?.data?.wellnessScore
     : undefined;
-  const latestStatusWellnessMeta = getWellnessStatusMeta(latestStatusWellnessScore);
+  const latestMoodMeta = getWellnessStatusMeta(latestMoodScore);
   const latestStatusAvatarUrl =
     latestDisplayStatus?.senderAvatarUrl?.trim() &&
     !isLocalAvatarUri(latestDisplayStatus.senderAvatarUrl) &&
@@ -2268,8 +2254,8 @@ export default function HomeScreen() {
 
           {isPlusSimpleHome && !isReachOutMode ? (
             <WellnessButtonPicker
-              value={wellnessScore}
-              onChange={setWellnessScore}
+              value={moodScore}
+              onChange={setMoodScore}
               title={t('home.wellnessPrompt')}
               options={SIMPLE_WELLNESS_OPTIONS}
               tooltipLabels={{
@@ -2284,9 +2270,9 @@ export default function HomeScreen() {
           {canUseEnhancedHome && showWellnessModule && !isReachOutMode ? (
             <View style={[styles.enhancedWellnessGroup, styles.groupContainer]}>
               <WellnessSlider
-                value={wellnessScore}
-                onChange={setWellnessScore}
-                tooltipText={getWellnessTooltipLabel(wellnessScore)}
+                value={moodScore}
+                onChange={setMoodScore}
+                tooltipText={getWellnessTooltipLabel(moodScore)}
               />
             </View>
           ) : null}
@@ -2335,13 +2321,13 @@ export default function HomeScreen() {
                     scrollEnabled
                   >
                     {TRIP_STATUS_KEYS.map((key) => {
-                      const isActive = tripStatus === key;
+                      const isActive = tripPresence === key;
 
                       return (
                         <TouchableOpacity
                           key={key}
                           style={[styles.tripPill, isActive && styles.tripPillActive]}
-                          onPress={() => setTripStatus(isActive ? null : key)}
+                          onPress={() => setTripPresence(isActive ? null : key)}
                           activeOpacity={0.75}
                         >
                           <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
@@ -2368,12 +2354,12 @@ export default function HomeScreen() {
                     scrollEnabled
                   >
                     {REACH_OUT_STATUS_OPTIONS.map((option) => {
-                      const isActive = reachOutStatus === option;
+                      const isActive = reachOutPresence === option;
                       return (
                         <TouchableOpacity
                           key={option}
                           style={[styles.tripPill, isActive && styles.tripPillActive]}
-                          onPress={() => handleReachOutStatusChange(option)}
+                          onPress={() => handleReachOutPresenceChange(option)}
                           activeOpacity={0.75}
                         >
                           <Text style={[styles.tripPillText, isActive && styles.tripPillTextActive]}>
@@ -2447,7 +2433,7 @@ export default function HomeScreen() {
                         </Text>
                       </View>
                       <View style={styles.simpleStatusEmojiGroup}>
-                        {latestStatusLocation ? (
+                        {latestHasLocation ? (
                           <TouchableOpacity
                             onPress={openLatestStatusLocation}
                             activeOpacity={0.7}
@@ -2464,15 +2450,15 @@ export default function HomeScreen() {
                             />
                           </TouchableOpacity>
                         ) : null}
-                        {(latestStatusTripEmoji || latestStatusHomePresenceEmoji || latestStatusReachOutEmoji) ? (
+                        {latestPresenceEmoji ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
-                            {latestStatusBadgeTooltipVisible && (
+                            {presenceBadgeTooltipVisible && (
                               <View style={[
                                 styles.simpleStatusTooltip,
                                 { borderColor: BaseColors.primaryBorder, backgroundColor: BaseColors.primaryLight },
                               ]}>
                                 <Text style={[styles.simpleStatusTooltipText, { color: BaseColors.primary }]}>
-                                  {latestStatusBadgeText}
+                                  {latestPresenceBadgeText}
                                 </Text>
                               </View>
                             )}
@@ -2488,13 +2474,13 @@ export default function HomeScreen() {
                               <Text style={[
                                 styles.simpleStatusEmoji,
                                 isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                              ]}>{latestStatusTripEmoji ?? latestStatusHomePresenceEmoji ?? latestStatusReachOutEmoji}</Text>
+                              ]}>{latestPresenceEmoji}</Text>
                             </TouchableOpacity>
                           </View>
                         ) : null}
-                        {latestStatusReachOutStatus ? (
+                        {_latestReachOut ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
-                            {latestStatusWellnessTooltipVisible && (
+                            {moodTooltipVisible && (
                               <View style={[
                                 styles.simpleStatusTooltip,
                                 { borderColor: '#EF4444', backgroundColor: '#FEE2E2' },
@@ -2524,15 +2510,15 @@ export default function HomeScreen() {
                               />
                             </TouchableOpacity>
                           </View>
-                        ) : latestStatusWellnessMeta ? (
+                        ) : latestMoodMeta ? (
                           <View style={styles.simpleStatusBadgeWrapper}>
-                            {latestStatusWellnessTooltipVisible && (
+                            {moodTooltipVisible && (
                               <View style={[
                                 styles.simpleStatusTooltip,
-                                { borderColor: latestStatusWellnessMeta.borderColor, backgroundColor: latestStatusWellnessMeta.backgroundColor },
+                                { borderColor: latestMoodMeta.borderColor, backgroundColor: latestMoodMeta.backgroundColor },
                               ]}>
-                                <Text style={[styles.simpleStatusTooltipText, { color: latestStatusWellnessMeta.color }]}>
-                                  {typeof latestStatusWellnessScore === 'number' ? getWellnessTooltipLabel(latestStatusWellnessScore) : ''}
+                                <Text style={[styles.simpleStatusTooltipText, { color: latestMoodMeta.color }]}>
+                                  {typeof latestMoodScore === 'number' ? getWellnessTooltipLabel(latestMoodScore) : ''}
                                 </Text>
                               </View>
                             )}
@@ -2543,8 +2529,8 @@ export default function HomeScreen() {
                                 styles.simpleStatusEmojiCircle,
                                 isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
                                 {
-                                  backgroundColor: latestStatusWellnessMeta.backgroundColor,
-                                  borderColor: latestStatusWellnessMeta.borderColor,
+                                  backgroundColor: latestMoodMeta.backgroundColor,
+                                  borderColor: latestMoodMeta.borderColor,
                                   borderWidth: 1,
                                 },
                               ]}
@@ -2552,7 +2538,7 @@ export default function HomeScreen() {
                               <Ionicons
                                 name="heart"
                                 size={isCompactSimpleHome ? 19 : 23}
-                                color={latestStatusWellnessMeta.color}
+                                color={latestMoodMeta.color}
                               />
                             </TouchableOpacity>
                           </View>
