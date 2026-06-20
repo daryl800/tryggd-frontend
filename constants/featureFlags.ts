@@ -1,4 +1,4 @@
 export const UI_FEATURE_FLAGS = {
-  showPlusUpsellUI: false,
+  showPlusUpsellUI: true,
 } as const;
 

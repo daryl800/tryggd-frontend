@@ -14,6 +14,13 @@ type Profile = {
     display_name: string;
     username?: string | null;
     avatar_url?: string;
+    pilot_preview_activated_at?: string | null;
+};
+
+type PilotPreviewConfig = {
+    pilot_preview_enabled: boolean;
+    pilot_preview_campaign_id: string | null;
+    pilot_preview_ends_at: string | null;
 };
 
 type AuthContextType = {
@@ -22,6 +29,7 @@ type AuthContextType = {
     profile: Profile | null;
     plan: UserPlan;
     capabilities: UserCapabilities;
+    pilotPreviewConfig: PilotPreviewConfig | null;
     loading: boolean;
     initialized: boolean;
     needsUsername: boolean;
@@ -37,6 +45,7 @@ const AuthContext = createContext<AuthContextType>({
     profile: null,
     plan: DEFAULT_PLAN,
     capabilities: DEFAULT_CAPABILITIES,
+    pilotPreviewConfig: null,
     loading: true,
     initialized: false,
     needsUsername: false,
@@ -49,6 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [plan, setPlan] = useState<UserPlan>(DEFAULT_PLAN);
     const [contactLimit, setContactLimit] = useState<number>(3);
+    const [pilotPreviewConfig, setPilotPreviewConfig] = useState<PilotPreviewConfig | null>(null);
     const [initialized, setInitialized] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
 
@@ -61,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setProfileLoading(true);
 
-            const [profileResult, entitlementResult, limitResult] = await Promise.all([
+            const [profileResult, entitlementResult, limitResult, appSettingsResult] = await Promise.all([
                 supabase
                     .from("profiles")
                     .select("*")
@@ -74,6 +84,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     .maybeSingle(),
                 supabase
                     .rpc("get_contact_limit", { p_user_id: user.id }),
+                supabase
+                    .from("app_settings")
+                    .select("pilot_preview_enabled, pilot_preview_campaign_id, pilot_preview_ends_at")
+                    .eq("id", 1)
+                    .maybeSingle(),
             ]);
 
             const { data, error } = profileResult;
@@ -81,12 +96,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 data: entitlementData,
                 error: entitlementError,
             } = entitlementResult;
+            const { data: appSettingsData } = appSettingsResult;
+
+            const cfg = appSettingsData ?? null;
+            setPilotPreviewConfig(cfg);
 
             if (entitlementError) {
                 console.warn("[AuthContext] Entitlement error, defaulting to free:", entitlementError.message);
                 setPlan(DEFAULT_PLAN);
             } else {
-                setPlan(entitlementData?.plan === "plus" ? "plus" : DEFAULT_PLAN);
+                const rawPlan: UserPlan = entitlementData?.plan === "plus" ? "plus" : DEFAULT_PLAN;
+                const previewOpen =
+                    cfg?.pilot_preview_enabled &&
+                    cfg.pilot_preview_ends_at &&
+                    new Date(cfg.pilot_preview_ends_at) > new Date();
+                const previewActivated = !!(data as any)?.pilot_preview_activated_at;
+                const isPilotPlus = !!(previewOpen && previewActivated);
+                const effectivePlan: UserPlan = rawPlan === "plus" || isPilotPlus ? "plus" : DEFAULT_PLAN;
+                setPlan(effectivePlan);
             }
 
             setContactLimit(limitResult.data ?? 3);
@@ -195,6 +222,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             profile,
             plan,
             capabilities,
+            pilotPreviewConfig,
             loading,
             initialized,
             needsUsername,

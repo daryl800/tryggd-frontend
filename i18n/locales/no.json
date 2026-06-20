@@ -714,5 +714,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Prøv Plus-forhåndsvisning",
+    "dialogBody": "Du kan prøve de gjeldende Plus-funksjonene gratis i løpet av vår forhåndsvisningsperiode.\nHvis du elsker dem, kan du fortsette med et betalt abonnement etter at forhåndsvisningen avsluttes.",
+    "activate": "Aktiver Plus-forhåndsvisning",
+    "notNow": "Ikke nå",
+    "dialogFooter": "Takk for at du hjelper oss med å forbedre Tryggd.",
+    "settingsRowTitle": "Plus-forhåndsvisning",
+    "settingsRowSubtitle": "Prøv gjeldende Plus-funksjoner gratis i forhåndsvisningsperioden.",
+    "settingsRowAction": "Aktiver",
+    "activeRowTitle": "Plus-forhåndsvisning aktiv",
+    "activeRowSubtitle": "Tilgjengelig i forhåndsvisningsperioden."
   }
 }

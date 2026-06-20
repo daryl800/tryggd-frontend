@@ -714,5 +714,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Kokeile Plus-esikatselua",
+    "dialogBody": "Voit kokeilla nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.\nJos pidät niistä, voit jatkaa maksullisella tilauksella esikatselujakson jälkeen.",
+    "activate": "Aktivoi Plus-esikatselu",
+    "notNow": "Ei nyt",
+    "dialogFooter": "Kiitos, että autat meitä kehittämään Tryggdiä.",
+    "settingsRowTitle": "Plus-esikatselu",
+    "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
+    "settingsRowAction": "Aktivoi",
+    "activeRowTitle": "Plus-esikatselu aktiivinen",
+    "activeRowSubtitle": "Käytettävissä esikatselujakson aikana."
   }
 }

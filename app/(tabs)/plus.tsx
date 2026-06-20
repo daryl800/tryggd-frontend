@@ -1,9 +1,8 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
-import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { Ionicons } from '@expo/vector-icons';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -26,10 +25,6 @@ const FEATURE_ICONS = [
 export default function PlusScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-
-  if (!UI_FEATURE_FLAGS.showPlusUpsellUI) {
-    return <Redirect href="/(tabs)/settings" />;
-  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

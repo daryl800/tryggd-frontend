@@ -711,5 +711,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Prova l'anteprima Plus",
+    "dialogBody": "Puoi provare gratuitamente le funzionalità Plus attuali durante il nostro periodo di anteprima.\nSe ti piacciono, avrai la possibilità di continuare con un piano a pagamento al termine dell'anteprima.",
+    "activate": "Attiva l'anteprima Plus",
+    "notNow": "Non ora",
+    "dialogFooter": "Grazie per aiutarci a migliorare Tryggd.",
+    "settingsRowTitle": "Anteprima Plus",
+    "settingsRowSubtitle": "Prova le funzionalità Plus attuali gratuitamente durante il periodo di anteprima.",
+    "settingsRowAction": "Attiva",
+    "activeRowTitle": "Anteprima Plus attiva",
+    "activeRowSubtitle": "Disponibile durante il periodo di anteprima."
   }
 }

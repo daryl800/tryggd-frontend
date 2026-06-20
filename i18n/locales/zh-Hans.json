@@ -755,5 +755,17 @@
       "max": "Tryggd ID 不能超过 24 个字符。",
       "chars": "只能使用小写字母、数字、点或下划线。"
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ 试用 Plus 预览版",
+    "dialogBody": "在预览期间，你可以免费体验现有的 Plus 功能。\n如果你喜欢这些功能，预览结束后可以选择付费方案继续享用。",
+    "activate": "启用 Plus 预览版",
+    "notNow": "暂时不用",
+    "dialogFooter": "感谢你帮助我们改善 Tryggd。",
+    "settingsRowTitle": "Plus 预览版",
+    "settingsRowSubtitle": "在预览期间免费体验现有 Plus 功能。",
+    "settingsRowAction": "启用",
+    "activeRowTitle": "Plus 预览版已启用",
+    "activeRowSubtitle": "在预览期间内有效。"
   }
 }

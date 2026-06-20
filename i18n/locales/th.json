@@ -711,5 +711,17 @@
       "max": "Tryggd ID ต้องไม่เกิน 24 ตัวอักษร",
       "chars": "ใช้ได้เฉพาะตัวพิมพ์เล็ก ตัวเลข จุด หรือขีดล่าง"
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ ลอง Plus Preview",
+    "dialogBody": "คุณสามารถทดลองใช้ฟีเจอร์ Plus ปัจจุบันได้ฟรีในช่วงเวลาพรีวิว\nหากคุณชอบ สามารถเลือกแผนชำระเงินเพื่อใช้ต่อหลังจากพรีวิวสิ้นสุด",
+    "activate": "เปิดใช้งาน Plus Preview",
+    "notNow": "ไม่ใช่ตอนนี้",
+    "dialogFooter": "ขอบคุณที่ช่วยเราพัฒนา Tryggd",
+    "settingsRowTitle": "Plus Preview",
+    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงพรีวิว",
+    "settingsRowAction": "เปิดใช้งาน",
+    "activeRowTitle": "Plus Preview ใช้งานอยู่",
+    "activeRowSubtitle": "พร้อมใช้งานในช่วงพรีวิว"
   }
 }

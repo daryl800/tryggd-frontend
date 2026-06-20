@@ -34,6 +34,7 @@ import {
   Image,
   LayoutChangeEvent,
   Linking,
+  Modal,
   PixelRatio,
   Platform,
   ScrollView as RNScrollView,
@@ -47,6 +48,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
+import { useEntitlement } from '@/lib/entitlements/useEntitlement';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
@@ -672,7 +674,8 @@ const WellnessButtonPicker = ({
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const { user, profile, loading, capabilities } = useAuth();
+  const { user, profile, loading, capabilities, refreshProfile } = useAuth();
+  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPaidPlusAccess, campaignId } = useEntitlement();
   const windowDimensions = useWindowDimensions();
 
   // State
@@ -700,6 +703,7 @@ export default function HomeScreen() {
   const [latestStatusAvatarLoadFailed, setLatestStatusAvatarLoadFailed] = useState(false);
   const [latestStatusBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
   const [latestStatusWellnessTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
+  const [pilotDialogDismissed, setPilotDialogDismissed] = useState(false);
 
   // Shared contact check-in data (one fetch/subscription shared with Activity)
   const {
@@ -848,6 +852,24 @@ export default function HomeScreen() {
   useEffect(() => {
     loadHomeStyle();
   }, [loadHomeStyle]);
+
+  useEffect(() => {
+    if (!campaignId) return;
+    const key = `@tryggd_pilot_plus_preview_dismissed_${campaignId}`;
+    AsyncStorage.getItem(key).then((val) => setPilotDialogDismissed(val === 'true'));
+  }, [campaignId]);
+
+  const handleActivatePilotPreview = useCallback(async () => {
+    await supabase.rpc('activate_pilot_preview');
+    await refreshProfile();
+  }, [refreshProfile]);
+
+  const handleDismissPilotDialog = useCallback(async () => {
+    if (!campaignId) return;
+    const key = `@tryggd_pilot_plus_preview_dismissed_${campaignId}`;
+    await AsyncStorage.setItem(key, 'true');
+    setPilotDialogDismissed(true);
+  }, [campaignId]);
 
   const homeLayout = getHomeLayout(capabilities.isPlus, homeStyle);
   const canUseEnhancedHome = homeLayout === 'plus-enhanced';
@@ -1752,6 +1774,12 @@ export default function HomeScreen() {
     const message = t(getWellnessMessageKey(score));
     return message.includes('\n') ? message.split('\n')[0] : message;
   };
+  const showPilotDialog =
+    isPlusPreviewOpen &&
+    !hasActivatedPilotPreview &&
+    !hasPaidPlusAccess &&
+    !pilotDialogDismissed &&
+    !loading;
 
   return (
     <SafeAreaView style={[styles.mainContainer, styles.simpleMainContainer]} edges={['top']}>
@@ -1789,6 +1817,18 @@ export default function HomeScreen() {
       ]}>
         {simpleDateTimeText}
       </Text>
+
+      {/* Plus Preview banner — shown after dialog is dismissed */}
+      {isPlusPreviewOpen && !hasActivatedPilotPreview && !hasPaidPlusAccess && pilotDialogDismissed && !loading ? (
+        <TouchableOpacity
+          style={styles.pilotBanner}
+          onPress={() => setPilotDialogDismissed(false)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.pilotBannerText}>{t('pilotPreview.dialogTitle' as any) as string}</Text>
+          <Ionicons name="chevron-forward" size={14} color={BaseColors.primaryDark} />
+        </TouchableOpacity>
+      ) : null}
 
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
       <ScrollView
@@ -2377,6 +2417,35 @@ export default function HomeScreen() {
           <View style={styles.bottomPadding} />
         </Animated.View>
       </ScrollView>
+
+      <Modal
+        visible={showPilotDialog}
+        transparent
+        animationType="slide"
+        onRequestClose={handleDismissPilotDialog}
+      >
+        <View style={styles.pilotDialogOverlay}>
+          <View style={styles.pilotDialogCard}>
+            <Text style={styles.pilotDialogTitle}>{t('pilotPreview.dialogTitle' as any) as string}</Text>
+            <Text style={styles.pilotDialogBody}>{t('pilotPreview.dialogBody' as any) as string}</Text>
+            <TouchableOpacity
+              style={styles.pilotDialogActivateButton}
+              onPress={handleActivatePilotPreview}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.pilotDialogActivateText}>{t('pilotPreview.activate' as any) as string}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.pilotDialogDismissButton}
+              onPress={handleDismissPilotDialog}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.pilotDialogDismissText}>{t('pilotPreview.notNow' as any) as string}</Text>
+            </TouchableOpacity>
+            <Text style={styles.pilotDialogFooter}>{t('pilotPreview.dialogFooter' as any) as string}</Text>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -3404,5 +3473,89 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(14),
     color: BaseColors.error,
     lineHeight: 18,
-  }
+  },
+  pilotBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#B8DDD2',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: BaseColors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    gap: 6,
+  },
+  pilotBannerText: {
+    fontSize: iosFontSize(13),
+    fontWeight: '600',
+    color: BaseColors.primaryDark,
+  },
+  pilotDialogOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  pilotDialogCard: {
+    backgroundColor: BaseColors.surface,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 36,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
+      },
+      android: { elevation: 8 },
+    }),
+  },
+  pilotDialogTitle: {
+    fontSize: iosFontSize(22),
+    fontWeight: '800',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  pilotDialogBody: {
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(22),
+    color: BaseColors.text.muted,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  pilotDialogActivateButton: {
+    backgroundColor: BaseColors.primary,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  pilotDialogActivateText: {
+    fontSize: iosFontSize(16),
+    fontWeight: '700',
+    color: BaseColors.surface,
+  },
+  pilotDialogDismissButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginBottom: 8,
+  },
+  pilotDialogDismissText: {
+    fontSize: iosFontSize(15),
+    fontWeight: '500',
+    color: BaseColors.text.muted,
+  },
+  pilotDialogFooter: {
+    fontSize: iosFontSize(12),
+    color: BaseColors.text.light,
+    textAlign: 'center',
+    marginTop: 4,
+  },
 });

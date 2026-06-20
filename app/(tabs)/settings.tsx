@@ -16,7 +16,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
     LayoutAnimation,
@@ -33,6 +33,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { iosFontSize } from '@/constants/typography';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEntitlement } from '@/lib/entitlements/useEntitlement';
 
 // Enable animation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -67,7 +68,8 @@ const STORAGE_KEYS = {
 
 export default function SettingsScreen() {
     const { t, i18n } = useTranslation();
-    const { capabilities } = useAuth();
+    const { capabilities, refreshProfile } = useAuth();
+    const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess, hasPaidPlusAccess } = useEntitlement();
     const [isLanguageExpanded, setIsLanguageExpanded] = useState(false);
     const [isNotificationsExpanded, setIsNotificationsExpanded] = useState(false);
     const [isHomeStyleExpanded, setIsHomeStyleExpanded] = useState(false);
@@ -255,6 +257,11 @@ export default function SettingsScreen() {
     };
 
 
+    const handleActivatePilotPreview = useCallback(async () => {
+        await supabase.rpc('activate_pilot_preview');
+        await refreshProfile();
+    }, [refreshProfile]);
+
     return (
         <SafeAreaView style={styles.mainContainer} edges={['top']}>
             {/* Screen Header - Handles its own top padding */}
@@ -266,6 +273,41 @@ export default function SettingsScreen() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
+                {/* Plus Preview Section */}
+                {(isPlusPreviewOpen && !hasActivatedPilotPreview && !hasPaidPlusAccess) || hasPilotPreviewAccess ? (
+                    <View style={styles.section}>
+                        <Text style={[styles.sectionLabel, styles.pilotSectionLabel]}>{t('pilotPreview.settingsRowTitle' as any) as string}</Text>
+                        <View style={[styles.card, styles.pilotCard]}>
+                            <TouchableOpacity
+                                style={styles.settingItem}
+                                onPress={isPlusPreviewOpen && !hasActivatedPilotPreview ? handleActivatePilotPreview : undefined}
+                                activeOpacity={isPlusPreviewOpen && !hasActivatedPilotPreview ? 0.7 : 1}
+                            >
+                                <View style={styles.settingContent}>
+                                    <View style={[styles.settingIcon, styles.pilotSettingIcon]}>
+                                        <Ionicons name="star" size={20} color={BaseColors.surface} />
+                                    </View>
+                                    <View style={styles.settingText}>
+                                        <Text style={[styles.settingTitle, styles.pilotSettingTitle]}>
+                                            {hasPilotPreviewAccess
+                                                ? t('pilotPreview.activeRowTitle' as any) as string
+                                                : t('pilotPreview.settingsRowSubtitle' as any) as string}
+                                        </Text>
+                                        {hasPilotPreviewAccess ? (
+                                            <Text style={styles.settingSubtitle}>
+                                                {t('pilotPreview.activeRowSubtitle' as any) as string}
+                                            </Text>
+                                        ) : null}
+                                    </View>
+                                </View>
+                                {isPlusPreviewOpen && !hasActivatedPilotPreview ? (
+                                    <Text style={styles.pilotActivateLabel}>{t('pilotPreview.settingsRowAction' as any) as string}</Text>
+                                ) : null}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                ) : null}
+
                 {/* Language Settings Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionLabel}>{t("settings.language")}</Text>
@@ -760,5 +802,27 @@ const styles = StyleSheet.create({
         color: BaseColors.neutral[500],
         fontSize: iosFontSize(12),
         fontWeight: '500',
+    },
+    pilotCard: {
+        backgroundColor: '#B8DDD2',
+        borderColor: BaseColors.primary,
+        borderWidth: 1.5,
+    },
+    pilotSectionLabel: {
+        color: BaseColors.primaryDark,
+        fontWeight: '700',
+    },
+    pilotSettingIcon: {
+        backgroundColor: BaseColors.primaryDark,
+    },
+    pilotSettingTitle: {
+        color: BaseColors.primaryDark,
+        fontWeight: '600',
+    },
+    pilotActivateLabel: {
+        fontSize: iosFontSize(14),
+        fontWeight: '600',
+        color: BaseColors.primary,
+        marginLeft: 8,
     },
 });

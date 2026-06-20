@@ -711,5 +711,17 @@
         "description": "Use additional welfare follow-up features for your contacts."
       }
     }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Plusプレビューを試す",
+    "dialogBody": "プレビュー期間中は、現在のPlus機能を無料でお試しいただけます。\n気に入っていただけたら、プレビュー終了後に有料プランで続けることができます。",
+    "activate": "Plusプレビューを有効にする",
+    "notNow": "後で",
+    "dialogFooter": "Tryggdの改善にご協力いただきありがとうございます。",
+    "settingsRowTitle": "Plusプレビュー",
+    "settingsRowSubtitle": "プレビュー期間中は現在のPlus機能を無料でお試しください。",
+    "settingsRowAction": "有効にする",
+    "activeRowTitle": "Plusプレビュー有効中",
+    "activeRowSubtitle": "プレビュー期間中ご利用いただけます。"
   }
 }
