@@ -44,9 +44,9 @@
       "trip": "Travelling",
       "homeTab": "🌿 Daily",
       "tripTab": "✈️ Trip",
-      "reachOutTab": "🤙 Help",
+      "reachOutTab": "✋ Help",
       "reachOutStatuses": {
-        "call_now": "🙏 I need help",
+        "call_now": "✋ I need help",
         "call_available": "📞 Call me"
       },
       "statusTitle": "Status",

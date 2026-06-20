@@ -202,20 +202,20 @@ function getHomePresenceLabel(status: string, lang: string): string {
 }
 
 const REACH_OUT_STATUS_LABELS: Record<string, Record<string, string>> = {
-  en:       { call_now: '🙏 I need help', call_available: '📞 Call me' },
-  da:       { call_now: '🙏 Jeg har brug for hjælp', call_available: '📞 Ring til mig' },
-  de:       { call_now: '🙏 Ich brauche Hilfe', call_available: '📞 Ruf mich an' },
-  es:       { call_now: '🙏 Necesito ayuda', call_available: '📞 Llámame' },
-  fi:       { call_now: '🙏 Tarvitsen apua', call_available: '📞 Soita minulle' },
-  fr:       { call_now: "🙏 J'ai besoin d'aide", call_available: '📞 Appelle-moi' },
-  it:       { call_now: '🙏 Ho bisogno di aiuto', call_available: '📞 Chiamami' },
-  ja:       { call_now: '🙏 助けが必要', call_available: '📞 電話して' },
-  ko:       { call_now: '🙏 도움이 필요해', call_available: '📞 전화해줘' },
-  no:       { call_now: '🙏 Jeg trenger hjelp', call_available: '📞 Ring meg' },
-  sv:       { call_now: '🙏 Jag behöver hjälp', call_available: '📞 Ring mig' },
-  th:       { call_now: '🙏 ฉันต้องการความช่วยเหลือ', call_available: '📞 โทรหาฉัน' },
-  'zh-Hans': { call_now: '🙏 我需要帮忙', call_available: '📞 打电话给我' },
-  'zh-Hant': { call_now: '🙏 我需要幫忙', call_available: '📞 請call我' },
+  en:       { call_now: '✋ I need help', call_available: '📞 Call me' },
+  da:       { call_now: '✋ Jeg har brug for hjælp', call_available: '📞 Ring til mig' },
+  de:       { call_now: '✋ Ich brauche Hilfe', call_available: '📞 Ruf mich an' },
+  es:       { call_now: '✋ Necesito ayuda', call_available: '📞 Llámame' },
+  fi:       { call_now: '✋ Tarvitsen apua', call_available: '📞 Soita minulle' },
+  fr:       { call_now: "✋ J'ai besoin d'aide", call_available: '📞 Appelle-moi' },
+  it:       { call_now: '✋ Ho bisogno di aiuto', call_available: '📞 Chiamami' },
+  ja:       { call_now: '✋ 助けが必要', call_available: '📞 電話して' },
+  ko:       { call_now: '✋ 도움이 필요해', call_available: '📞 전화해줘' },
+  no:       { call_now: '✋ Jeg trenger hjelp', call_available: '📞 Ring meg' },
+  sv:       { call_now: '✋ Jag behöver hjälp', call_available: '📞 Ring mig' },
+  th:       { call_now: '✋ ฉันต้องการความช่วยเหลือ', call_available: '📞 โทรหาฉัน' },
+  'zh-Hans': { call_now: '✋ 我需要帮忙', call_available: '📞 打电话给我' },
+  'zh-Hant': { call_now: '✋ 我需要幫忙', call_available: '📞 請call我' },
 }
 
 function getReachOutStatusLabel(status: string, lang: string): string {

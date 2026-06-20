@@ -80,9 +80,9 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 旅行",
-      "reachOutTab": "🤙 助けて",
+      "reachOutTab": "✋ 助けて",
       "reachOutStatuses": {
-        "call_now": "🙏 助けが必要",
+        "call_now": "✋ 助けが必要",
         "call_available": "📞 電話して"
       },
       "statusTitle": "ステータス",

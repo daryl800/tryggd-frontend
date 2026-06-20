@@ -80,9 +80,9 @@
       "trip": "Matkalla",
       "homeTab": "🌿 Arki",
       "tripTab": "✈️ Matka",
-      "reachOutTab": "🤙 Apua",
+      "reachOutTab": "✋ Apua",
       "reachOutStatuses": {
-        "call_now": "🙏 Tarvitsen apua",
+        "call_now": "✋ Tarvitsen apua",
         "call_available": "📞 Soita minulle"
       },
       "statusTitle": "Tila",

@@ -46,9 +46,9 @@
       "trip": "旅行中",
       "homeTab": "🌿 日常",
       "tripTab": "✈️ 出行",
-      "reachOutTab": "🤙 求助",
+      "reachOutTab": "✋ 求助",
       "reachOutStatuses": {
-        "call_now": "🙏 我需要帮忙",
+        "call_now": "✋ 我需要帮忙",
         "call_available": "📞 打电话给我"
       },
       "statusTitle": "状态",

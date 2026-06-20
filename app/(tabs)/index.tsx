@@ -1613,7 +1613,7 @@ export default function HomeScreen() {
     ?? activeReachOutStatusLabel
     ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
     ?? wellnessMessage;
-  const REACH_OUT_EMOJI = '😟';
+  const REACH_OUT_EMOJI = '✋';
   const checkedInMessageWithBreaks = formatStatusLabelWithBreaks(checkedInMessage);
   const statusLabelEmoji = checkedInMessage.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? '';
   const checkedInMsgText = stripEmojiFromLabel(checkedInMessageWithBreaks);

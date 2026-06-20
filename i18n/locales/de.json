@@ -80,9 +80,9 @@
       "trip": "Auf Reisen",
       "homeTab": "🌿 Alltag",
       "tripTab": "✈️ Reise",
-      "reachOutTab": "🤙 Hilfe",
+      "reachOutTab": "✋ Hilfe",
       "reachOutStatuses": {
-        "call_now": "🙏 Ich brauche Hilfe",
+        "call_now": "✋ Ich brauche Hilfe",
         "call_available": "📞 Ruf mich an"
       },
       "statusTitle": "Status",

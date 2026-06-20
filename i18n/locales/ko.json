@@ -80,9 +80,9 @@
       "trip": "여행 중",
       "homeTab": "🌿 일상",
       "tripTab": "✈️ 여행",
-      "reachOutTab": "🤙 도움",
+      "reachOutTab": "✋ 도움",
       "reachOutStatuses": {
-        "call_now": "🙏 도움이 필요해",
+        "call_now": "✋ 도움이 필요해",
         "call_available": "📞 전화해줘"
       },
       "statusTitle": "상태",

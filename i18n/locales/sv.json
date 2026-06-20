@@ -80,9 +80,9 @@
       "trip": "På resa",
       "homeTab": "🌿 Vardag",
       "tripTab": "✈️ Resa",
-      "reachOutTab": "🤙 Hjälp",
+      "reachOutTab": "✋ Hjälp",
       "reachOutStatuses": {
-        "call_now": "🙏 Jag behöver hjälp",
+        "call_now": "✋ Jag behöver hjälp",
         "call_available": "📞 Ring mig"
       },
       "statusTitle": "Status",
