@@ -93,6 +93,8 @@
         "outside": "🚶 外出中",
         "busy": "💼 忙しい",
         "relaxing": "☕ くつろぎ中",
+        "gathering": "🥳 集まっておしゃべり中",
+        "on_call": "📞 通話中",
         "eating": "🍽️ 食事中",
         "exhausted": "😩 くたくた",
         "sleepy": "😪 眠い",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ スポーツ中",
         "watching_movie": "🎬 映画を観てる",
         "goodmorning": "🌅 おはよう",
+        "goodafternoon": "🌞 こんにちは",
         "goodnight": "🌙 おやすみ"
       },
       "summaryHome": "通常のチェックイン",

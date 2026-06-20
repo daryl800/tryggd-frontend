@@ -49,6 +49,8 @@
         "outside": "🚶 ออกไปข้างนอก",
         "busy": "💼 ไม่ว่าง",
         "relaxing": "☕ พักผ่อน",
+        "gathering": "🥳 กำลังสังสรรค์",
+        "on_call": "📞 กำลังโทรศัพท์",
         "eating": "🍽️ กำลังกินข้าว",
         "exhausted": "😩 เหนื่อยมาก",
         "sleepy": "😪 ง่วงนอน",
@@ -57,6 +59,7 @@
         "playing_sport": "⚽ กำลังเล่นกีฬา",
         "watching_movie": "🎬 กำลังดูหนัง",
         "goodmorning": "🌅 อรุณสวัสดิ์",
+        "goodafternoon": "🌞 สวัสดีตอนบ่าย",
         "goodnight": "🌙 ราตรีสวัสดิ์"
       },
       "summaryHome": "เช็กอินตามปกติ",

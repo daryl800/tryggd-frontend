@@ -93,6 +93,8 @@
         "outside": "🚶 외출 중",
         "busy": "💼 바쁨",
         "relaxing": "☕ 휴식 중",
+        "gathering": "🥳 모여서 수다 중",
+        "on_call": "📞 통화 중",
         "eating": "🍽️ 밥 먹는 중",
         "exhausted": "😩 너무 피곤해",
         "sleepy": "😪 졸려",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ 운동 중",
         "watching_movie": "🎬 영화 보는 중",
         "goodmorning": "🌅 좋은 아침",
+        "goodafternoon": "🌞 좋은 오후",
         "goodnight": "🌙 잘 자요"
       },
       "summaryHome": "일반 체크인",

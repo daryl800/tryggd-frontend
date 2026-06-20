@@ -93,6 +93,8 @@
         "outside": "🚶 Fuori",
         "busy": "💼 Occupato",
         "relaxing": "☕ Mi rilasso",
+        "gathering": "🥳 A socializzare",
+        "on_call": "📞 Al telefono",
         "eating": "🍽️ Sto mangiando",
         "exhausted": "😩 Esausto",
         "sleepy": "😪 Assonnato",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ Faccio sport",
         "watching_movie": "🎬 Guardo un film",
         "goodmorning": "🌅 Buongiorno",
+        "goodafternoon": "🌞 Buon pomeriggio",
         "goodnight": "🌙 Buona notte"
       },
       "summaryHome": "Check-in normale",

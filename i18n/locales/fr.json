@@ -93,6 +93,8 @@
         "outside": "🚶 Sorti(e)",
         "busy": "💼 Occupé(e)",
         "relaxing": "☕ Je me détends",
+        "gathering": "🥳 En train de socialiser",
+        "on_call": "📞 En appel",
         "eating": "🍽️ En train de manger",
         "exhausted": "😩 Épuisé",
         "sleepy": "😪 Somnolent",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ Je fais du sport",
         "watching_movie": "🎬 Je regarde un film",
         "goodmorning": "🌅 Bonjour",
+        "goodafternoon": "🌞 Bon après-midi",
         "goodnight": "🌙 Bonne nuit"
       },
       "summaryHome": "Pointage normal",

@@ -59,7 +59,9 @@
         "outside": "🚶 外出中",
         "busy": "💼 忙碌中",
         "relaxing": "☕ 放松中",
-        "eating": "🍽️ 吃饭中",
+        "gathering": "🥳 聚会聊天中",
+        "on_call": "📞 电话中",
+        "eating": "🍽️ 在吃饭",
         "exhausted": "😩 好累",
         "sleepy": "😪 困了",
         "daydreaming": "💭 在发白日梦",
@@ -67,6 +69,7 @@
         "playing_sport": "⚽ 运动中",
         "watching_movie": "🎬 看电影",
         "goodmorning": "🌅 早上好",
+        "goodafternoon": "🌞 午安",
         "goodnight": "🌙 晚安"
       },
       "summaryHome": "普通签到",

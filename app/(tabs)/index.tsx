@@ -65,7 +65,7 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
-type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodnight';
+type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodafternoon' | 'goodnight';
 type ReachOutStatus = 'call_now' | 'call_available';
 
 type HomeStatusNotification = {
@@ -412,7 +412,7 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'home', 'outside', 'eating', 'chilling', 'daydreaming', 'busy', 'exhausted', 'sleepy', 'having_fun', 'playing_sport', 'watching_movie', 'goodnight'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'goodafternoon', 'home', 'outside', 'eating', 'chilling', 'gathering', 'on_call', 'daydreaming', 'busy', 'exhausted', 'sleepy', 'having_fun', 'playing_sport', 'watching_movie', 'goodnight'] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);

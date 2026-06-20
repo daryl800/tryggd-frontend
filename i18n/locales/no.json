@@ -93,6 +93,8 @@
         "outside": "🚶 Ute",
         "busy": "💼 Opptatt",
         "relaxing": "☕ Slapper av",
+        "gathering": "🥳 Henger med venner",
+        "on_call": "📞 I samtale",
         "eating": "🍽️ Spiser",
         "exhausted": "😩 Utmattet",
         "sleepy": "😪 Søvnig",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ Spiller sport",
         "watching_movie": "🎬 Ser på film",
         "goodmorning": "🌅 God morgen",
+        "goodafternoon": "🌞 God ettermiddag",
         "goodnight": "🌙 God natt"
       },
       "summaryHome": "Normal innsjekking",

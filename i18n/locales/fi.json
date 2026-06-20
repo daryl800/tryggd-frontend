@@ -93,6 +93,8 @@
         "outside": "🚶 Ulkona",
         "busy": "💼 Kiireinen",
         "relaxing": "☕ Rentoutumassa",
+        "gathering": "🥳 Seurustelemassa",
+        "on_call": "📞 Puhelimessa",
         "eating": "🍽️ Syömässä",
         "exhausted": "😩 Uupunut",
         "sleepy": "😪 Uninen",
@@ -101,6 +103,7 @@
         "playing_sport": "⚽ Urheilemassa",
         "watching_movie": "🎬 Katsomassa elokuvaa",
         "goodmorning": "🌅 Hyvää huomenta",
+        "goodafternoon": "🌞 Hyvää iltapäivää",
         "goodnight": "🌙 Hyvää yötä"
       },
       "summaryHome": "Normaali kirjautuminen",

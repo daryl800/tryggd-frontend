@@ -57,6 +57,8 @@
         "outside": "🚶 Outside",
         "busy": "💼 Busy",
         "relaxing": "☕ Relaxing",
+        "gathering": "🥳 Hanging out",
+        "on_call": "📞 On a call",
         "eating": "🍽️ Having a meal",
         "exhausted": "😩 Exhausted",
         "sleepy": "😪 Sleepy",
@@ -65,6 +67,7 @@
         "playing_sport": "⚽ Playing sport",
         "watching_movie": "🎬 Watching a movie",
         "goodmorning": "🌅 Good morning",
+        "goodafternoon": "🌞 Good afternoon",
         "goodnight": "🌙 Good night"
       },
       "summaryHome": "Normal check-in",
