@@ -136,6 +136,8 @@
     "contacts": "Yhteystiedot",
     "loading": "Ladataan toimintoja...",
     "noCheckIn": "Ei sisäänkirjautumista vielä",
+    "staleCheckinMessage_one": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
+    "staleCheckinMessage_other": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
     "emptyState": {
       "title": "Ei yhteystietoja",
       "message": "Lisää yhteystietoja nähdäksesi niiden toiminnot"

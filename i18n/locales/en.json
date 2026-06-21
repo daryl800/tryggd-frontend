@@ -144,6 +144,8 @@
     "contacts": "Contacts",
     "loading": "Loading activities...",
     "noCheckIn": "No check-in yet",
+    "staleCheckinMessage_one": "{{name}} has not checked in for {{count}} day",
+    "staleCheckinMessage_other": "{{name}} has not checked in for {{count}} days",
     "emptyState": {
       "title": "No contacts",
       "message": "Add contacts to see their activities"
@@ -179,7 +181,14 @@
     },
     "welfareButton": {
       "send": "🍀 Are you alright?",
-      "sent": "Greeting sent ✓"
+      "sent": "Greeting sent ✓",
+      "sentRecently": "Greeting sent recently",
+      "followUpAgain": "Follow up again",
+      "followUpAvailable": "You can follow up again",
+      "followUpIn_one": "Follow up again in {{count}}h",
+      "followUpIn_other": "Follow up again in {{count}}h",
+      "sentRecentlyMeta_one": "Last greeting sent {{count}} hour ago",
+      "sentRecentlyMeta_other": "Last greeting sent {{count}} hours ago"
     },
     "sharedLocation": {
       "view": "View shared location"

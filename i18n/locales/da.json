@@ -136,6 +136,8 @@
     "contacts": "Kontakter",
     "loading": "Indlæser aktivitet...",
     "noCheckIn": "Ingen indtjekning endnu",
+    "staleCheckinMessage_one": "{{name}} har ikke tjekket ind i {{count}} dag",
+    "staleCheckinMessage_other": "{{name}} har ikke tjekket ind i {{count}} dage",
     "emptyState": {
       "title": "Ingen kontakter",
       "message": "Tilføj kontakter for at se aktivitet"

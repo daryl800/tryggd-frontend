@@ -21,6 +21,7 @@ export const IS_EXPO_GO = Constants.appOwnership === 'expo';
 // In-memory welfare sent cache — populated on send and on async lookup hit,
 // so subsequent renders can read the state synchronously without a flash.
 const welfareSentMemoryCache = new Set<string>();
+const welfareSentAtMemoryCache = new Map<string, string>();
 
 export function hasCachedWelfareCheck(
     recipientUserId: string,
@@ -363,6 +364,44 @@ export async function hasSentWelfareCheck(
     }
 }
 
+export async function getLastWelfareCheckSentAt(
+    recipientUserId: string,
+    senderUserId: string,
+    checkinTime: string,
+    welfareKind: 'today_check' | 'overdue_check'
+): Promise<string | null> {
+    try {
+        const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
+        const cached = welfareSentAtMemoryCache.get(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const { data, error } = await supabase
+            .from('notifications')
+            .select('created_at')
+            .eq('user_id', recipientUserId)
+            .eq('sender_user_id', senderUserId)
+            .eq('type', 'welfare_check')
+            .filter('data->>checkinTime', 'eq', checkinTime)
+            .filter('data->>welfareKind', 'eq', welfareKind)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        const sentAt = data?.created_at ?? null;
+        if (sentAt) {
+            welfareSentAtMemoryCache.set(cacheKey, sentAt);
+        }
+        return sentAt;
+    } catch (error) {
+        console.error('❌ Error fetching last welfare notification time:', error);
+        return null;
+    }
+}
+
 async function cacheWelfareCheckStatus(cacheKey: string): Promise<void> {
     welfareSentMemoryCache.add(cacheKey);
     const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
@@ -377,12 +416,14 @@ export async function sendWelfareCheckNotification({
     senderName,
     checkinTime,
     welfareKind,
+    cooldownHours,
 }: {
     receiverUserId: string;
     senderUserId: string;
     senderName?: string;
     checkinTime: string;
     welfareKind: 'today_check' | 'overdue_check';
+    cooldownHours?: number;
 }): Promise<{ success: boolean; alreadySent?: boolean; error?: string }> {
     try {
         console.log('📤 Sending welfare check notification...', {
@@ -390,13 +431,26 @@ export async function sendWelfareCheckNotification({
             senderUserId,
             checkinTime,
             welfareKind,
+            cooldownHours,
         });
 
         const cacheKey = `${receiverUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
-        const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime, welfareKind);
-        if (alreadySent) {
-            console.log('⏩ Welfare check already sent for this state/check-in');
-            return { success: true, alreadySent: true };
+        if (welfareKind === 'overdue_check' && typeof cooldownHours === 'number' && cooldownHours > 0) {
+            const lastSentAt = await getLastWelfareCheckSentAt(receiverUserId, senderUserId, checkinTime, welfareKind);
+            if (lastSentAt) {
+                const cooldownMs = cooldownHours * 60 * 60 * 1000;
+                const elapsedMs = Date.now() - new Date(lastSentAt).getTime();
+                if (elapsedMs < cooldownMs) {
+                    console.log('⏩ Welfare check still in cooldown window');
+                    return { success: true, alreadySent: true };
+                }
+            }
+        } else {
+            const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime, welfareKind);
+            if (alreadySent) {
+                console.log('⏩ Welfare check already sent for this state/check-in');
+                return { success: true, alreadySent: true };
+            }
         }
         const { data: sessionData } = await supabase.auth.getSession();
         const token = sessionData.session?.access_token;
@@ -434,6 +488,7 @@ export async function sendWelfareCheckNotification({
         }
 
         await cacheWelfareCheckStatus(cacheKey);
+        welfareSentAtMemoryCache.set(cacheKey, new Date().toISOString());
 
         console.log('✅ Welfare check notification sent successfully');
         return {

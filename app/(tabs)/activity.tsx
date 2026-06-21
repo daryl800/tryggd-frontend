@@ -4,7 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
-import { hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { getLastWelfareCheckSentAt, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
@@ -75,6 +75,7 @@ type ResponseNotification = {
 
 const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check', 'emergency_message'] as const;
 const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
+const OVERDUE_WELFARE_COOLDOWN_HOURS = 12;
 const isActivityNotificationType = (type?: string | null) =>
   !!type && ACTIVITY_NOTIFICATION_TYPES.includes(type as (typeof ACTIVITY_NOTIFICATION_TYPES)[number]);
 
@@ -942,6 +943,7 @@ export default function ActivityScreen() {
       return responseService.hasCachedResponse(cacheKey);
     });
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
+    const [lastWelfareCheckSentAt, setLastWelfareCheckSentAt] = useState<string | null>(null);
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
     const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [tripTooltipVisible, setTripTooltipVisible] = useState(false);
@@ -1028,8 +1030,15 @@ export default function ActivityScreen() {
       const checkIfWelfareSent = async () => {
         if (!user || !timestamp || isOwner) return;
         const currentWelfareKind = resolvedActionState === 'today_check' ? 'today_check' : 'overdue_check';
-        const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
-        setWelfareCheckSent(alreadySent);
+        if (currentWelfareKind === 'overdue_check') {
+          const sentAt = await getLastWelfareCheckSentAt(userId, user.id, timestamp, currentWelfareKind);
+          setLastWelfareCheckSentAt(sentAt);
+          setWelfareCheckSent(false);
+        } else {
+          const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+          setWelfareCheckSent(alreadySent);
+          setLastWelfareCheckSentAt(null);
+        }
       };
       checkIfWelfareSent();
     }, [userId, user?.id, timestamp, isOwner, resolvedActionState]);
@@ -1045,8 +1054,15 @@ export default function ActivityScreen() {
           const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
           setResponseSent(alreadyResponded);
           const currentWelfareKind = resolvedActionState === 'today_check' ? 'today_check' : 'overdue_check';
-          const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
-          setWelfareCheckSent(alreadySent);
+          if (currentWelfareKind === 'overdue_check') {
+            const sentAt = await getLastWelfareCheckSentAt(userId, user.id, timestamp, currentWelfareKind);
+            setLastWelfareCheckSentAt(sentAt);
+            setWelfareCheckSent(false);
+          } else {
+            const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+            setWelfareCheckSent(alreadySent);
+            setLastWelfareCheckSentAt(null);
+          }
         };
         checkOnFocus();
       }, [userId, user?.id, timestamp, isOwner, resolvedActionState])
@@ -1057,11 +1073,15 @@ export default function ActivityScreen() {
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
     const isSupportMode = isLikeMode && typeof wellness_score === 'number' && wellness_score <= -1;
     const isReachOutResponseMode = isLikeMode && !!reach_out_status;
-    const isWelfareResolved = true;
+    const overdueCooldownActive =
+      isWelfareMode &&
+      !!lastWelfareCheckSentAt &&
+      Date.now() - new Date(lastWelfareCheckSentAt).getTime() < OVERDUE_WELFARE_COOLDOWN_HOURS * 3600000;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
       (isLikeMode && !responseSent) ||
-      ((isTodayCheckMode || isWelfareMode) && !welfareCheckSent);
+      (isTodayCheckMode && !welfareCheckSent) ||
+      (isWelfareMode && !overdueCooldownActive);
 
     const handleSendResponse = async () => {
       if (sendingResponse || !isButtonEnabled || !user) return;
@@ -1092,7 +1112,14 @@ export default function ActivityScreen() {
     };
 
     const handleSendWelfareCheck = async () => {
-      if (sendingWelfareCheck || (!isTodayCheckMode && !isWelfareMode) || welfareCheckSent || !user || !timestamp) return;
+      if (
+        sendingWelfareCheck ||
+        (!isTodayCheckMode && !isWelfareMode) ||
+        (isTodayCheckMode && welfareCheckSent) ||
+        (isWelfareMode && overdueCooldownActive) ||
+        !user ||
+        !timestamp
+      ) return;
 
       setSendingWelfareCheck(true);
       try {
@@ -1102,10 +1129,15 @@ export default function ActivityScreen() {
           senderName: user.user_metadata?.display_name || user.user_metadata?.name,
           checkinTime: timestamp,
           welfareKind: isTodayCheckMode ? 'today_check' : 'overdue_check',
+          cooldownHours: isWelfareMode ? OVERDUE_WELFARE_COOLDOWN_HOURS : undefined,
         });
 
         if (result.success) {
-          setWelfareCheckSent(true);
+          if (isWelfareMode) {
+            setLastWelfareCheckSentAt(new Date().toISOString());
+          } else {
+            setWelfareCheckSent(true);
+          }
         } else if (result.error) {
           Alert.alert(t('errors.title'), result.error);
         }
@@ -1289,6 +1321,25 @@ export default function ActivityScreen() {
       checkin_timezone_label
     );
     const wellnessMeta = reach_out_status ? null : getWellnessMeta(wellness_score);
+    const staleHours = isValidTimestamp
+      ? Math.floor((Date.now() - new Date(timestamp as string).getTime()) / 3600000)
+      : 0;
+    const staleDays = staleHours >= 24 ? Math.max(1, Math.floor(staleHours / 24)) : 0;
+    const showStaleWarning = !isOwner && isValidTimestamp && staleDays >= 1;
+    const isCriticalStale = staleDays >= 2;
+    const staleMessage = showStaleWarning
+      ? t('activity.staleCheckinMessage', {
+          name,
+          count: staleDays,
+          defaultValue: '{{name}} has not checked in for {{count}} days',
+        })
+      : '';
+    const lastWelfareFollowUpHoursAgo = lastWelfareCheckSentAt
+      ? Math.max(1, Math.floor((Date.now() - new Date(lastWelfareCheckSentAt).getTime()) / 3600000))
+      : 0;
+    const overdueCooldownHoursRemaining = overdueCooldownActive && lastWelfareCheckSentAt
+      ? Math.max(1, Math.ceil(OVERDUE_WELFARE_COOLDOWN_HOURS - ((Date.now() - new Date(lastWelfareCheckSentAt).getTime()) / 3600000)))
+      : 0;
 
     return (
       <View style={[styles.activityItem, isLast && styles.lastItem]}>
@@ -1406,6 +1457,19 @@ export default function ActivityScreen() {
                 }
                 return null;
               })()}
+              {showStaleWarning ? (
+                <View style={styles.staleWarningBlock}>
+                  <Text
+                    style={[
+                      styles.time,
+                      styles.staleCheckinText,
+                      isCriticalStale ? styles.staleCheckinTextCritical : styles.staleCheckinTextWarning,
+                    ]}
+                  >
+                    {staleMessage}
+                  </Text>
+                </View>
+              ) : null}
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
@@ -1426,9 +1490,13 @@ export default function ActivityScreen() {
                     />
                   ) : (isTodayCheckMode || isWelfareMode) ? (
                     (() => {
-                      const label = welfareCheckSent
-                        ? (isTodayCheckMode ? t('activity.todayCheckButton.sent') : t('activity.welfareButton.sent'))
-                        : (isTodayCheckMode ? t('activity.todayCheckButton.send') : t('activity.welfareButton.send'));
+                      const label = isTodayCheckMode
+                        ? (welfareCheckSent ? t('activity.todayCheckButton.sent') : t('activity.todayCheckButton.send'))
+                        : overdueCooldownActive
+                          ? t('activity.welfareButton.sentRecently', { defaultValue: 'Greeting sent recently' })
+                          : lastWelfareCheckSentAt
+                            ? t('activity.welfareButton.followUpAgain', { defaultValue: 'Follow up again' })
+                            : t('activity.welfareButton.send');
                       const { text, emoji, position } = splitLabelEmoji(label);
                       const textNode = (
                         <Text style={[
@@ -1482,6 +1550,27 @@ export default function ActivityScreen() {
                     })()
                   )}
                 </TouchableOpacity>
+                {isWelfareMode && lastWelfareCheckSentAt ? (
+                  <Text style={[
+                    styles.followUpMetaText,
+                    overdueCooldownActive ? styles.followUpMetaTextMuted : styles.followUpMetaTextReady,
+                  ]}>
+                    {overdueCooldownActive ? t('activity.welfareButton.sentRecentlyMeta', {
+                      count: lastWelfareFollowUpHoursAgo,
+                      defaultValue: 'Last greeting sent {{count}} hours ago',
+                    }) : t('activity.welfareButton.followUpAvailable', {
+                      defaultValue: 'You can follow up again',
+                    })}
+                  </Text>
+                ) : null}
+                {isWelfareMode && overdueCooldownActive ? (
+                  <Text style={[styles.followUpMetaText, styles.followUpMetaTextMuted]}>
+                    {t('activity.welfareButton.followUpIn', {
+                      count: overdueCooldownHoursRemaining,
+                      defaultValue: 'Follow up again in {{count}}h',
+                    })}
+                  </Text>
+                ) : null}
               </View>
               </>
             )}
@@ -2163,6 +2252,33 @@ const styles = StyleSheet.create({
     color: BaseColors.text.light,
     fontSize: iosFontSize(14),
     fontStyle: 'italic',
+  },
+  staleCheckinText: {
+    marginBottom: 4,
+  },
+  staleCheckinTextWarning: {
+    color: '#B45309',
+    fontWeight: '700',
+  },
+  staleCheckinTextCritical: {
+    color: BaseColors.error,
+    fontWeight: '800',
+  },
+  staleWarningBlock: {
+    marginTop: 2,
+    marginBottom: 6,
+  },
+  followUpMetaText: {
+    fontSize: iosFontSize(12),
+    marginTop: 6,
+    marginBottom: 2,
+  },
+  followUpMetaTextMuted: {
+    color: BaseColors.neutral[500],
+  },
+  followUpMetaTextReady: {
+    color: BaseColors.primaryDark,
+    fontWeight: '600',
   },
   responseButtonContainer: {
     marginTop: 4,

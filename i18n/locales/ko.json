@@ -136,6 +136,8 @@
     "contacts": "연락처",
     "loading": "활동을 불러오는 중...",
     "noCheckIn": "아직 체크인이 없습니다",
+    "staleCheckinMessage_one": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
+    "staleCheckinMessage_other": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
     "emptyState": {
       "title": "연락처 없음",
       "message": "활동을 보려면 연락처를 추가하세요"

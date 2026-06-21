@@ -136,6 +136,8 @@
     "contacts": "Kontakter",
     "loading": "Laddar aktivitet...",
     "noCheckIn": "Ingen incheckning än",
+    "staleCheckinMessage_one": "{{name}} har inte checkat in på {{count}} dag",
+    "staleCheckinMessage_other": "{{name}} har inte checkat in på {{count}} dagar",
     "emptyState": {
       "title": "Inga kontakter",
       "message": "Lägg till kontakter för att se deras aktivitet"
@@ -171,7 +173,14 @@
     },
     "welfareButton": {
       "send": "🍀 Är du okej?",
-      "sent": "Hälsning skickad ✓"
+      "sent": "Hälsning skickad ✓",
+      "sentRecently": "Hälsning skickades nyligen",
+      "followUpAgain": "Följ upp igen",
+      "followUpAvailable": "Du kan följa upp igen",
+      "followUpIn_one": "Följ upp igen om {{count}} tim",
+      "followUpIn_other": "Följ upp igen om {{count}} tim",
+      "sentRecentlyMeta_one": "Senaste hälsning skickades för {{count}} timme sedan",
+      "sentRecentlyMeta_other": "Senaste hälsning skickades för {{count}} timmar sedan"
     },
     "sharedLocation": {
       "view": "View shared location"

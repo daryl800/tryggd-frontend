@@ -136,6 +136,8 @@
     "contacts": "Contacts",
     "loading": "Chargement des activités...",
     "noCheckIn": "Aucun check-in pour le moment",
+    "staleCheckinMessage_one": "{{name}} n’a pas fait de check-in depuis {{count}} jour",
+    "staleCheckinMessage_other": "{{name}} n’a pas fait de check-in depuis {{count}} jours",
     "emptyState": {
       "title": "Aucun contact",
       "message": "Ajoutez des contacts pour voir leurs activités"

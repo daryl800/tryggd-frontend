@@ -136,6 +136,8 @@
     "contacts": "連絡先",
     "loading": "アクティビティを読み込み中...",
     "noCheckIn": "まだチェックインがありません",
+    "staleCheckinMessage_one": "{{name}}は{{count}}日間チェックインしていません",
+    "staleCheckinMessage_other": "{{name}}は{{count}}日間チェックインしていません",
     "emptyState": {
       "title": "連絡先がありません",
       "message": "連絡先を追加するとアクティビティが表示されます"

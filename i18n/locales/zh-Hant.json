@@ -180,6 +180,8 @@
     "contacts": "聯絡人",
     "loading": "載入活動中...",
     "noCheckIn": "暫無打卡",
+    "staleCheckinMessage_one": "{{name}} 已有 {{count}} 天未打卡",
+    "staleCheckinMessage_other": "{{name}} 已有 {{count}} 天未打卡",
     "emptyState": {
       "title": "暫無聯絡人",
       "message": "新增聯絡人以查看他們的活動"
@@ -215,7 +217,14 @@
     },
     "welfareButton": {
       "send": "🍀 你最近還好嗎？",
-      "sent": "已發送問候 ✓"
+      "sent": "已發送問候 ✓",
+      "sentRecently": "剛剛已發送問候",
+      "followUpAgain": "再次問候",
+      "followUpAvailable": "現在可以再次問候",
+      "followUpIn_one": "{{count}} 小時後可再次問候",
+      "followUpIn_other": "{{count}} 小時後可再次問候",
+      "sentRecentlyMeta_one": "{{count}} 小時前已發送上次問候",
+      "sentRecentlyMeta_other": "{{count}} 小時前已發送上次問候"
     },
     "sharedLocation": {
       "view": "查看分享位置"

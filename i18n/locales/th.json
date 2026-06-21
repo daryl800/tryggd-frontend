@@ -136,6 +136,8 @@
     "contacts": "ผู้ติดต่อ",
     "loading": "กำลังโหลดกิจกรรม...",
     "noCheckIn": "ยังไม่มีการเช็กอิน",
+    "staleCheckinMessage_one": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
+    "staleCheckinMessage_other": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
     "emptyState": {
       "title": "ไม่มีผู้ติดต่อ",
       "message": "เพิ่มผู้ติดต่อเพื่อดูความเคลื่อนไหวของพวกเขา"

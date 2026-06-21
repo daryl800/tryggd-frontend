@@ -136,6 +136,8 @@
     "contacts": "Kontakte",
     "loading": "Aktivitäten werden geladen...",
     "noCheckIn": "Noch kein Check-in",
+    "staleCheckinMessage_one": "{{name}} hat seit {{count}} Tag nicht eingecheckt",
+    "staleCheckinMessage_other": "{{name}} hat seit {{count}} Tagen nicht eingecheckt",
     "emptyState": {
       "title": "Keine Kontakte",
       "message": "Füge Kontakte hinzu, um ihre Aktivitäten zu sehen"
