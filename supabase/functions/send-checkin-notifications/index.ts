@@ -2,6 +2,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { Expo } from 'https://esm.sh/expo-server-sdk@3.6.0'
+import { sendAliyunPush } from '../_shared/aliyunPush.ts'
 
 interface CheckinPayload {
   user_id: string
@@ -622,10 +623,10 @@ serve(async (req) => {
 
     const { data: recipients, error: tokensError } = await supabase
       .from('user_push_tokens')
-      .select('user_id, expo_push_token, contact_checkin_notifications')
+      .select('user_id, expo_push_token, aliyun_device_id, contact_checkin_notifications')
       .in('user_id', recipientIds)
       .eq('contact_checkin_notifications', true)
-      .not('expo_push_token', 'is', null)
+      .or('expo_push_token.not.is.null,aliyun_device_id.not.is.null')
 
     if (tokensError) throw tokensError
 
@@ -659,6 +660,7 @@ serve(async (req) => {
     // ============================================
     const notificationsToInsert = []
     const messages = []
+    const aliyunPushTargets: Array<{ userId: string; title: string; body: string; data: Record<string, unknown> }> = []
 
     const { data: recipientSettings } = await supabase
       .from('user_settings')
@@ -733,6 +735,13 @@ serve(async (req) => {
           priority: 'high',
           badge: 1
         })
+      } else if (recipient.aliyun_device_id) {
+        aliyunPushTargets.push({
+          userId: recipient.user_id,
+          title: payload.title,
+          body: payload.body,
+          data: payload.data,
+        })
       }
     }
 
@@ -782,6 +791,36 @@ serve(async (req) => {
       } catch (err) {
         console.error(`❌ Push exception`, err)
         failedPushes.push(err)
+      }
+    }
+
+    // ============================================
+    // 11b. Send Aliyun push notifications (China Android)
+    // ============================================
+    if (aliyunPushTargets.length > 0) {
+      console.log(`📱 Sending ${aliyunPushTargets.length} Aliyun push notifications`)
+      const aliyunAccessKeyId = Deno.env.get('ALIYUN_ACCESS_KEY_ID') ?? ''
+      const aliyunAccessKeySecret = Deno.env.get('ALIYUN_ACCESS_KEY_SECRET') ?? ''
+      const aliyunAppKey = Deno.env.get('ALIYUN_ANDROID_APP_KEY') ?? ''
+
+      for (const target of aliyunPushTargets) {
+        const result = await sendAliyunPush({
+          accessKeyId: aliyunAccessKeyId,
+          accessKeySecret: aliyunAccessKeySecret,
+          appKey: aliyunAppKey,
+          targetUserId: target.userId,
+          title: target.title,
+          body: target.body,
+          extraData: target.data,
+        })
+
+        if (result.success) {
+          console.log(`✅ Aliyun push sent to account ${target.userId.substring(0, 8)}...`)
+          successfulPushes.push(result)
+        } else {
+          console.error(`❌ Aliyun push failed for ${target.userId.substring(0, 8)}...`, result.error)
+          failedPushes.push(result)
+        }
       }
     }
 
