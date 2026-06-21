@@ -415,18 +415,16 @@ function buildContactCheckinNotification(
     : null
   const locationLabel = location ? getLocationSharedLabel(recipientLang) : null
 
-  const bodyParts = [emotionLabel, statusLabel, locationLabel].filter(
+  const bodyParts = [statusLabel, emotionLabel, locationLabel].filter(
     (part): part is string => !!part
   )
 
   const body = bodyParts.length > 0
-    ? `${bodyParts.join(' · ')} · ${formattedTime}`
+    ? bodyParts.join(' · ')
     : locale.fallback(formattedTime)
 
-  const locationPrefix = location ? '📍 ' : ''
-
   return {
-    title: `${locationPrefix}${locale.title(contactDisplayName)}`,
+    title: `${locale.title(contactDisplayName)} · ${formattedTime}`,
     body,
     type: 'contact_checkin',
     data
