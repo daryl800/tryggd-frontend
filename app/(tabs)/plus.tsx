@@ -1,11 +1,16 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEntitlement } from '@/lib/entitlements/useEntitlement';
+import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,16 +20,40 @@ import {
 import { iosFontSize } from '@/constants/typography';
 
 const FEATURE_ICONS = [
-  { key: 'wellness', icon: 'happy-outline' as const },
-  { key: 'location', icon: 'location-outline' as const },
-  { key: 'notifications', icon: 'notifications-outline' as const },
   { key: 'contacts', icon: 'people-outline' as const },
-  { key: 'welfare', icon: 'heart-outline' as const },
+  { key: 'tripMode', icon: 'airplane-outline' as const },
+  { key: 'location', icon: 'location-outline' as const },
+  { key: 'mood', icon: 'heart-outline' as const },
+  { key: 'controls', icon: 'options-outline' as const },
+  { key: 'activity', icon: 'pulse-outline' as const },
 ] as const;
 
 export default function PlusScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { refreshProfile } = useAuth();
+  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess } = useEntitlement();
+  const [activating, setActivating] = useState(false);
+
+  const canActivatePreview = isPlusPreviewOpen && !hasActivatedPilotPreview;
+
+  const handleActivatePreview = useCallback(async () => {
+    if (!canActivatePreview || activating) return;
+
+    try {
+      setActivating(true);
+      const { error } = await supabase.rpc('activate_pilot_preview');
+      if (error) throw error;
+      await refreshProfile();
+    } catch (error: any) {
+      Alert.alert(
+        t('errors.title'),
+        error?.message || t('onboarding.errors.saveBody', { defaultValue: 'Please try again.' }),
+      );
+    } finally {
+      setActivating(false);
+    }
+  }, [activating, canActivatePreview, refreshProfile, t]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -75,9 +104,24 @@ export default function PlusScreen() {
         <View style={styles.footerCard}>
           <Text style={styles.footerTitle}>{t('plus.comingSoon.title')}</Text>
           <Text style={styles.footerText}>{t('plus.comingSoon.message')}</Text>
-          <View style={styles.disabledButton}>
-            <Text style={styles.disabledButtonText}>{t('plus.comingSoon.button')}</Text>
-          </View>
+          <Text style={styles.trustNote}>{t('plus.comingSoon.note')}</Text>
+          <TouchableOpacity
+            style={[
+              styles.primaryButton,
+              !canActivatePreview && styles.primaryButtonDisabled,
+            ]}
+            activeOpacity={canActivatePreview ? 0.85 : 1}
+            onPress={handleActivatePreview}
+            disabled={!canActivatePreview || activating}
+          >
+            <Text style={[styles.primaryButtonText, !canActivatePreview && styles.primaryButtonTextDisabled]}>
+              {hasPilotPreviewAccess
+                ? t('pilotPreview.activeRowTitle')
+                : activating
+                ? t('onboarding.disclaimer.saving', { defaultValue: 'Saving...' })
+                : t('plus.comingSoon.button')}
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -194,20 +238,33 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(14),
     lineHeight: iosFontSize(20),
     color: BaseColors.neutral[500],
+    marginBottom: 10,
+  },
+  trustNote: {
+    fontSize: iosFontSize(13),
+    lineHeight: iosFontSize(18),
+    color: BaseColors.primaryDark,
+    fontWeight: '600',
     marginBottom: 16,
   },
-  disabledButton: {
+  primaryButton: {
     height: 50,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: BaseColors.primary,
+  },
+  primaryButtonDisabled: {
     backgroundColor: BaseColors.neutral[100],
     borderWidth: 1,
     borderColor: BaseColors.neutral[200],
   },
-  disabledButtonText: {
+  primaryButtonText: {
     fontSize: iosFontSize(15),
     fontWeight: '700',
+    color: BaseColors.surface,
+  },
+  primaryButtonTextDisabled: {
     color: BaseColors.neutral[500],
   },
 });

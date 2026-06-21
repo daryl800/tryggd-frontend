@@ -543,35 +543,40 @@
   },
   "plus": {
     "title": "Tryggd Plus",
-    "subtitle": "Additional features for richer daily check-ins",
+    "subtitle": "Free stays useful and ad-free. Plus gives you more ways to stay connected and helps us keep improving Tryggd.",
     "badge": "Plus",
-    "heading": "Unlock more context",
-    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "heading": "Tryggd Plus",
+    "description": "Preview extra sharing tools during the pilot without changing the simple core check-in flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "Payment is not available yet. During the pilot, Plus Preview is free to use.",
+      "note": "No ads — Free is ad-free too.",
+      "button": "Start Plus Preview"
     },
     "features": {
-      "wellness": {
-        "title": "Wellness sharing",
-        "description": "Share how you feel as part of your daily check-in."
+      "contacts": {
+        "title": "More trusted contacts",
+        "description": "Add more people to your Tryggd circle."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
       },
       "location": {
-        "title": "Location sharing",
-        "description": "Let trusted contacts see your shared location in Activity."
+        "title": "Location sharing options",
+        "description": "Choose when location is shared with selected contacts."
       },
-      "notifications": {
-        "title": "Notification controls",
-        "description": "Control which contacts receive your check-in notifications."
+      "mood": {
+        "title": "Mood and wellbeing sharing",
+        "description": "Add more emotional context to your check-ins."
       },
-      "contacts": {
-        "title": "Unlimited contacts",
-        "description": "Add more than the free-plan contact limit."
+      "controls": {
+        "title": "More control over who receives updates",
+        "description": "Decide which trusted contacts receive which updates."
       },
-      "welfare": {
-        "title": "Welfare greeting",
-        "description": "Use additional welfare follow-up features for your contacts."
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
@@ -724,15 +729,15 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Try Plus Preview",
-    "dialogBody": "You can try the current Plus features for free during our preview period.\nIf you love them, you'll have the option to continue with a paid plan when the preview ends.",
-    "activate": "Activate Plus Preview",
+    "dialogTitle": "Plus Preview",
+    "dialogBody": "This is a Plus feature. During the pilot, you can preview it now.",
+    "activate": "Start Preview",
     "notNow": "Not now",
-    "dialogFooter": "Thank you for helping us improve Tryggd.",
+    "dialogFooter": "Payment is not available yet. During the pilot, Plus Preview is free to use.",
     "settingsRowTitle": "Plus Preview",
-    "settingsRowSubtitle": "Try current Plus features free during the preview period.",
-    "settingsRowAction": "Activate",
+    "settingsRowSubtitle": "Preview current Plus features during the pilot.",
+    "settingsRowAction": "Start Preview",
     "activeRowTitle": "Plus Preview active",
-    "activeRowSubtitle": "Available during the preview period."
+    "activeRowSubtitle": "Current Plus features are available during the pilot."
   }
 }
