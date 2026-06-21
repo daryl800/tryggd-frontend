@@ -2624,18 +2624,32 @@ export default function HomeScreen() {
           <View style={styles.pilotDialogCard}>
             <RNScrollView showsVerticalScrollIndicator={false} bounces={false}>
               <Text style={styles.pilotDialogTitle}>{t('pilotPreview.dialogTitle' as any) as string}</Text>
-              <Text style={styles.pilotDialogFreeNote}>{t('pilotPreview.dialogFreeNote' as any) as string}</Text>
-              <Text style={styles.pilotDialogFeaturesIntro}>{t('pilotPreview.dialogFeaturesIntro' as any) as string}</Text>
-              <View style={styles.pilotDialogFeatureList}>
-                {(['dialogFeature1', 'dialogFeature2', 'dialogFeature3', 'dialogFeature4'] as const).map(key => (
-                  <Text key={key} style={styles.pilotDialogFeatureItem}>{t(`pilotPreview.${key}` as any) as string}</Text>
-                ))}
+              <Text style={styles.pilotDialogIntro}>{t('pilotPreview.dialogIntro' as any) as string}</Text>
+
+              <View style={styles.pilotDialogFreeSection}>
+                <Text style={styles.pilotDialogSectionLabel}>{t('pilotPreview.dialogFreeSectionTitle' as any) as string}</Text>
+                <View style={styles.pilotDialogFeatureList}>
+                  {(['dialogFreeFeature1', 'dialogFreeFeature2', 'dialogFreeFeature3', 'dialogFreeFeature4'] as const).map(key => (
+                    <Text key={key} style={styles.pilotDialogFeatureItem}>{t(`pilotPreview.${key}` as any) as string}</Text>
+                  ))}
+                </View>
               </View>
+
+              <View style={styles.pilotDialogPlusSection}>
+                <Text style={styles.pilotDialogSectionLabel}>{t('pilotPreview.dialogPlusSectionTitle' as any) as string}</Text>
+                <View style={styles.pilotDialogFeatureList}>
+                  {(['dialogFeature1', 'dialogFeature2', 'dialogFeature3', 'dialogFeature4'] as const).map(key => (
+                    <Text key={key} style={styles.pilotDialogFeatureItem}>{t(`pilotPreview.${key}` as any) as string}</Text>
+                  ))}
+                </View>
+              </View>
+
               <View style={styles.pilotDialogPricingBox}>
                 <Text style={styles.pilotDialogPricingTitle}>{t('pilotPreview.dialogPricingTitle' as any) as string}</Text>
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingMonthly' as any) as string}</Text>
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingYearly' as any) as string}</Text>
               </View>
+
               <Text style={styles.pilotDialogSupportNote}>{t('pilotPreview.dialogSupportNote' as any) as string}</Text>
               <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any) as string}</Text>
             </RNScrollView>
@@ -2653,7 +2667,6 @@ export default function HomeScreen() {
             >
               <Text style={styles.pilotDialogDismissText}>{t('pilotPreview.notNow' as any) as string}</Text>
             </TouchableOpacity>
-            <Text style={styles.pilotDialogFooter}>{t('pilotPreview.dialogFooter' as any) as string}</Text>
           </View>
         </View>
       </Modal>
@@ -3808,22 +3821,39 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: BaseColors.text.dark,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
-  pilotDialogFreeNote: {
+  pilotDialogIntro: {
     fontSize: iosFontSize(14),
     color: BaseColors.text.muted,
     textAlign: 'center',
     marginBottom: 14,
   },
-  pilotDialogFeaturesIntro: {
-    fontSize: iosFontSize(14),
+  pilotDialogFreeSection: {
+    backgroundColor: '#F4F4F4',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E2E2',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+  },
+  pilotDialogPlusSection: {
+    backgroundColor: BaseColors.primaryLight,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+  pilotDialogSectionLabel: {
+    fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.text.dark,
     marginBottom: 6,
   },
   pilotDialogFeatureList: {
-    marginBottom: 14,
     gap: 3,
   },
   pilotDialogFeatureItem: {
@@ -3837,7 +3867,7 @@ const styles = StyleSheet.create({
     borderColor: BaseColors.primaryBorder,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    marginBottom: 14,
+    marginBottom: 12,
     gap: 2,
   },
   pilotDialogPricingTitle: {
@@ -3847,15 +3877,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   pilotDialogPricingItem: {
-    fontSize: iosFontSize(13),
-    fontWeight: '500',
+    fontSize: iosFontSize(14),
+    fontWeight: '700',
     color: BaseColors.primaryDark,
   },
   pilotDialogSupportNote: {
     fontSize: iosFontSize(13),
     lineHeight: iosFontSize(19),
     color: BaseColors.text.muted,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   pilotDialogPreviewNote: {
     fontSize: iosFontSize(13),
@@ -3871,7 +3901,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     width: '100%',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   pilotDialogActivateText: {
     fontSize: iosFontSize(16),
@@ -3881,18 +3911,11 @@ const styles = StyleSheet.create({
   pilotDialogDismissButton: {
     paddingVertical: 10,
     paddingHorizontal: 24,
-    marginBottom: 8,
     alignSelf: 'center',
   },
   pilotDialogDismissText: {
     fontSize: iosFontSize(15),
     fontWeight: '500',
     color: BaseColors.text.muted,
-  },
-  pilotDialogFooter: {
-    fontSize: iosFontSize(12),
-    color: BaseColors.text.light,
-    textAlign: 'center',
-    marginTop: 4,
   },
 });
