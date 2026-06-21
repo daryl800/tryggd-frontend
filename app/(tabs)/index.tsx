@@ -1627,21 +1627,20 @@ export default function HomeScreen() {
     ? t(`home.context.reachOutStatuses.${reachOutPresence}` as any) as string
     : null;
   const activeHomePresenceLabel = t(`home.context.homeStatuses.${homePresence}` as any) as string;
+  const selectedPresenceLabel = activeTripPresenceLabel
+    ?? activeReachOutPresenceLabel
+    ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null);
   const wellnessMessage = canUseWellnessHome
     ? t(getWellnessMessageKey(displayMoodScore))
     : t('home.everythingIsFine');
   const wellnessEmoji = wellnessMessage.includes('\n') ? wellnessMessage.split('\n')[1] : '';
-  const checkedInMessage = activeTripPresenceLabel
-    ?? activeReachOutPresenceLabel
-    ?? (canUseEnhancedHome && checkinMode === 'home' ? activeHomePresenceLabel : null)
-    ?? wellnessMessage;
-  const REACH_OUT_EMOJI = '✋';
+  const checkedInMessage = selectedPresenceLabel ?? wellnessMessage;
   const checkedInMessageWithBreaks = formatStatusLabelWithBreaks(checkedInMessage);
-  const statusLabelEmoji = checkedInMessage.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? '';
+  const statusLabelEmoji = selectedPresenceLabel?.match(TRIP_STATUS_EMOJI_PATTERN)?.[0] ?? '';
   const checkedInMsgText = stripEmojiFromLabel(checkedInMessageWithBreaks);
-  const checkedInMsgEmoji = isReachOutMode
-    ? REACH_OUT_EMOJI
-    : statusLabelEmoji || (checkedInMessage.includes('\n') ? checkedInMessage.split('\n')[1] : wellnessEmoji);
+  const checkedInMsgEmoji =
+    statusLabelEmoji || (checkedInMessage.includes('\n') ? checkedInMessage.split('\n')[1] : wellnessEmoji);
+  const shouldShowStatusBadge = !!checkedInMsgEmoji && (checkedInToday || isReachOutMode);
   const chineseFontFamily = getChineseFontFamily(i18n.language);
   const isChineseCheckedInTypography = !!chineseFontFamily;
   const checkedMessageColor =
@@ -2216,7 +2215,7 @@ export default function HomeScreen() {
                         </>
                       )}
                     </View>
-                    {checkedInToday && !!checkedInMsgEmoji && (
+                    {shouldShowStatusBadge && (
                       <Text style={[
                         styles.checkedInEmoji,
                         {
