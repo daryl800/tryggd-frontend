@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Linking from "expo-linking";
-import { Slot, useNavigationContainerRef, useRouter } from "expo-router";
+import { Redirect, Slot, useNavigationContainerRef, useRouter, useSegments } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next';
@@ -18,6 +18,7 @@ import i18n, { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupporte
 // Services & utilities
 import { tokenManager } from '@/lib/auth/tokenManager';
 import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
+import { hasCompletedOnboarding } from '@/lib/onboarding/state';
 import { registerAndSavePushToken } from '@/lib/notifications/core';
 import { initAliyunPushForUser, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
@@ -212,8 +213,11 @@ function useDeepLinking(router: any) {
 function RootLayoutNav() {
   const { initialized, user, needsUsername } = useAuth();
   const router = useRouter();
+  const segments = useSegments();
   const navigationRef = useNavigationContainerRef();
   const [languageReady, setLanguageReady] = useState(false);
+  const [onboardingReady, setOnboardingReady] = useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   // Initialize services
   useEffect(() => {
@@ -226,6 +230,30 @@ function RootLayoutNav() {
   useNotifications(user);
   useAliyunPush(user);
   useDeepLinking(router);
+
+  useEffect(() => {
+    const loadOnboardingState = async () => {
+      try {
+        setHasSeenOnboarding(await hasCompletedOnboarding());
+      } finally {
+        setOnboardingReady(true);
+      }
+    };
+
+    void loadOnboardingState();
+  }, []);
+
+  useEffect(() => {
+    if (!onboardingReady || hasSeenOnboarding) return;
+
+    const refreshOnboardingState = async () => {
+      if (await hasCompletedOnboarding()) {
+        setHasSeenOnboarding(true);
+      }
+    };
+
+    void refreshOnboardingState();
+  }, [hasSeenOnboarding, onboardingReady, segments]);
 
   useEffect(() => {
     const syncLanguage = async () => {
@@ -287,12 +315,22 @@ function RootLayoutNav() {
     void syncLanguage();
   }, [initialized, needsUsername, user?.id]);
 
-  if (!initialized || !isNavReady || !languageReady) {
+  if (!initialized || !isNavReady || !languageReady || !onboardingReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
       </View>
     );
+  }
+
+  const isOnboardingRoute = segments[0] === 'onboarding';
+
+  if (!hasSeenOnboarding && !isOnboardingRoute) {
+    return <Redirect href="/onboarding" />;
+  }
+
+  if (hasSeenOnboarding && isOnboardingRoute) {
+    return <Redirect href={user ? (needsUsername ? "/complete-profile" : "/(tabs)") : "/(auth)/login"} />;
   }
 
   return <Slot />;

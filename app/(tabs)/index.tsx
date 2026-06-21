@@ -13,6 +13,7 @@ import { SCREEN_PADDING } from '@/constants/spacing';
 import { ICON_SIZES } from '@/constants/ui';
 import { useStreak } from '@/hooks/useStreak';
 import { getOptionalCheckinLocation } from '@/lib/location/checkinLocation';
+import { resetOnboarding } from '@/lib/onboarding/state';
 import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
@@ -1020,6 +1021,11 @@ export default function HomeScreen() {
     await AsyncStorage.removeItem(STORAGE_KEY);
   }, []);
 
+  const resetOnboardingFlow = useCallback(async () => {
+    await resetOnboarding();
+    router.replace('/onboarding');
+  }, [router]);
+
   // Check if date has changed and reset if needed
   const checkDateAndReset = useCallback(() => {
     if (!lastCheckinUtc) return;
@@ -1866,13 +1872,22 @@ export default function HomeScreen() {
         rightElement={
           <View style={styles.headerActions}>
             {showDebugResetCheckin ? (
-              <TouchableOpacity
-                onPress={resetAllState}
-                style={styles.headerDebugButton}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity
+                  onPress={resetOnboardingFlow}
+                  style={styles.headerDebugButton}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="sparkles" size={ICON_SIZES.SM} color="#E85D75" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={resetAllState}
+                  style={styles.headerDebugButton}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
+                </TouchableOpacity>
+              </>
             ) : null}
             <TouchableOpacity
               onPress={() => router.push('/(tabs)/profile')}
