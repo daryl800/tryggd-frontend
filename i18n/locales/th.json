@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ ลอง Plus Preview",
-    "dialogBody": "คุณสามารถทดลองใช้ฟีเจอร์ Plus ปัจจุบันได้ฟรีในช่วงเวลาพรีวิว\nหากคุณชอบ สามารถเลือกแผนชำระเงินเพื่อใช้ต่อหลังจากพรีวิวสิ้นสุด",
-    "activate": "เปิดใช้งาน Plus Preview",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd ฟรีนั้นเรียบง่าย มีประโยชน์ และไม่มีโฆษณา",
+    "dialogFeaturesIntro": "Plus มีวิธีเพิ่มเติมในการติดต่อกัน:",
+    "dialogFeature1": "✈️ โหมดการเดินทาง",
+    "dialogFeature2": "📍 ตัวเลือกแชร์ตำแหน่ง",
+    "dialogFeature3": "🙂 อัปเดตอารมณ์",
+    "dialogFeature4": "⚙️ ควบคุมการแชร์มากขึ้น",
+    "dialogPricingTitle": "ราคา Plus ที่วางแผนไว้:",
+    "dialogPricingMonthly": "US$2.99 / เดือน",
+    "dialogPricingYearly": "US$19.99 / ปี",
+    "dialogSupportNote": "การสนับสนุนของคุณช่วยให้เราคงความเสถียรของ Tryggd พัฒนาฟีเจอร์อย่างต่อเนื่อง และทำให้ฟีเจอร์ที่มีประโยชน์เข้าถึงได้ในราคาที่เหมาะสม",
+    "dialogPreviewNote": "ในช่วงทดลองใช้งาน คุณสามารถใช้ Plus ฟรี 30 วัน และช่วยเราพัฒนา Tryggd ให้ดีขึ้น",
+    "activate": "เริ่มทดลองใช้ Plus 30 วัน",
     "notNow": "ไม่ใช่ตอนนี้",
-    "dialogFooter": "ขอบคุณที่ช่วยเราพัฒนา Tryggd",
-    "settingsRowTitle": "Plus Preview",
-    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงพรีวิว",
-    "settingsRowAction": "เปิดใช้งาน",
-    "activeRowTitle": "Plus Preview ใช้งานอยู่",
-    "activeRowSubtitle": "พร้อมใช้งานในช่วงพรีวิว"
+    "dialogFooter": "ไม่ต้องชำระเงินในช่วงทดลองใช้งาน",
+    "settingsRowTitle": "ดูตัวอย่าง Plus",
+    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงนำร่อง",
+    "settingsRowAction": "เริ่มดูตัวอย่าง",
+    "activeRowTitle": "กำลังดูตัวอย่าง Plus",
+    "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง"
   }
 }

@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Essayer l'aperçu Plus",
-    "dialogBody": "Vous pouvez essayer les fonctionnalités Plus actuelles gratuitement pendant notre période d'aperçu.\nSi vous les adorez, vous aurez la possibilité de continuer avec un abonnement payant à la fin de l'aperçu.",
-    "activate": "Activer l'aperçu Plus",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Gratuit est simple, utile et sans publicité.",
+    "dialogFeaturesIntro": "Plus offre plus de façons de rester en contact :",
+    "dialogFeature1": "✈️ Mode voyage",
+    "dialogFeature2": "📍 Options de partage de localisation",
+    "dialogFeature3": "🙂 Mises à jour d'humeur",
+    "dialogFeature4": "⚙️ Plus de contrôle sur le partage",
+    "dialogPricingTitle": "Prix prévu pour Plus :",
+    "dialogPricingMonthly": "2,99 $ US / mois",
+    "dialogPricingYearly": "19,99 $ US / an",
+    "dialogSupportNote": "Votre soutien nous aide à maintenir Tryggd stable, à améliorer continuellement les fonctionnalités et à rendre les fonctions utiles accessibles à tous.",
+    "dialogPreviewNote": "Pendant la période d'aperçu, vous pouvez utiliser Plus gratuitement pendant 30 jours et nous aider à améliorer Tryggd.",
+    "activate": "Commencer l'aperçu Plus de 30 jours",
     "notNow": "Pas maintenant",
-    "dialogFooter": "Merci de nous aider à améliorer Tryggd.",
+    "dialogFooter": "Aucun paiement requis pendant l'aperçu.",
     "settingsRowTitle": "Aperçu Plus",
-    "settingsRowSubtitle": "Essayez les fonctionnalités Plus actuelles gratuitement pendant la période d'aperçu.",
-    "settingsRowAction": "Activer",
+    "settingsRowSubtitle": "Essayez les fonctionnalités Plus actuelles gratuitement pendant le pilote.",
+    "settingsRowAction": "Commencer l'aperçu",
     "activeRowTitle": "Aperçu Plus actif",
-    "activeRowSubtitle": "Disponible pendant la période d'aperçu."
+    "activeRowSubtitle": "Les fonctionnalités Plus actuelles sont disponibles pendant le pilote."
   }
 }

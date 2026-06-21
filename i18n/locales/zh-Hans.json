@@ -769,15 +769,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ 试用 Plus 预览版",
-    "dialogBody": "在预览期间，你可以免费体验现有的 Plus 功能。\n如果你喜欢这些功能，预览结束后可以选择付费方案继续享用。",
-    "activate": "启用 Plus 预览版",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd 免费版简单、实用，而且没有广告。",
+    "dialogFeaturesIntro": "Plus 提供更多保持联系的方式：",
+    "dialogFeature1": "✈️ 出行模式",
+    "dialogFeature2": "📍 位置分享选项",
+    "dialogFeature3": "🙂 心情更新",
+    "dialogFeature4": "⚙️ 更多分享控制",
+    "dialogPricingTitle": "Plus 预计价格：",
+    "dialogPricingMonthly": "US$2.99 / 月",
+    "dialogPricingYearly": "US$19.99 / 年",
+    "dialogSupportNote": "你的支持能帮助我们维持 Tryggd 稳定运作、持续改善功能，并让更多人都能以小额费用使用有用的安全与分享功能。",
+    "dialogPreviewNote": "在试用期间，你可以免费使用 Plus 30 天，并帮助我们把 Tryggd 做得更好。",
+    "activate": "开始 30 天 Plus 预览",
     "notNow": "暂时不用",
-    "dialogFooter": "感谢你帮助我们改善 Tryggd。",
-    "settingsRowTitle": "Plus 预览版",
-    "settingsRowSubtitle": "在预览期间免费体验现有 Plus 功能。",
-    "settingsRowAction": "启用",
-    "activeRowTitle": "Plus 预览版已启用",
-    "activeRowSubtitle": "在预览期间内有效。"
+    "dialogFooter": "试用期间不需要付款。",
+    "settingsRowTitle": "Plus 预览",
+    "settingsRowSubtitle": "试用期间可免费体验目前的 Plus 功能。",
+    "settingsRowAction": "开始预览",
+    "activeRowTitle": "Plus 预览进行中",
+    "activeRowSubtitle": "试用期间可使用目前的 Plus 功能。"
   }
 }

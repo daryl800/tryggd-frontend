@@ -146,6 +146,26 @@ export default function OnboardingScreen() {
     setPage((current) => Math.min(current + 1, slides.length - 1));
   };
 
+  const renderPlusPreviewBody = () => (
+    <View style={styles.plusPreviewBodyWrap}>
+      <Text style={styles.subtitle}>
+        <Text style={styles.plusPreviewStrong}>Free</Text>
+        {t('onboarding.slides.free.bodyFreeSuffix', {
+          defaultValue: ' is simple, useful, and ad-free.',
+        })}
+      </Text>
+      <Text style={[styles.subtitle, styles.plusPreviewBodySecondary]}>
+        {t('onboarding.slides.free.bodyPilotPrefix', {
+          defaultValue: 'During the pilot, you can preview ',
+        })}
+        <Text style={styles.plusPreviewStrong}>Plus</Text>
+        {t('onboarding.slides.free.bodyPilotSuffix', {
+          defaultValue: ' features:',
+        })}
+      </Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.topBar}>
@@ -222,7 +242,11 @@ export default function OnboardingScreen() {
             </>
           ) : (
             <>
-              {activeSlide.body ? <Text style={styles.subtitle}>{activeSlide.body}</Text> : null}
+              {activeSlide.variant === 'plus-preview'
+                ? renderPlusPreviewBody()
+                : activeSlide.body
+                ? <Text style={styles.subtitle}>{activeSlide.body}</Text>
+                : null}
 
               {activeSlide.highlights?.length ? (
                 <View style={styles.highlightsWrap}>
@@ -361,6 +385,16 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     marginBottom: 20,
     paddingHorizontal: 8,
+  },
+  plusPreviewBodyWrap: {
+    marginBottom: 20,
+  },
+  plusPreviewBodySecondary: {
+    marginBottom: 0,
+  },
+  plusPreviewStrong: {
+    color: BaseColors.text.dark,
+    fontWeight: '800',
   },
   highlightsWrap: {
     gap: 10,

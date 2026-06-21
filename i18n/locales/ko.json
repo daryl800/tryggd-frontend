@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Plus 미리보기 체험",
-    "dialogBody": "미리보기 기간 동안 현재의 Plus 기능을 무료로 체험할 수 있습니다.\n마음에 드신다면 미리보기가 끝난 후 유료 플랜으로 계속 이용하실 수 있습니다.",
-    "activate": "Plus 미리보기 활성화",
-    "notNow": "나중에",
-    "dialogFooter": "Tryggd 개선에 도움을 주셔서 감사합니다.",
-    "settingsRowTitle": "Plus 미리보기",
-    "settingsRowSubtitle": "미리보기 기간 동안 현재의 Plus 기능을 무료로 체험하세요.",
-    "settingsRowAction": "활성화",
-    "activeRowTitle": "Plus 미리보기 활성화됨",
-    "activeRowSubtitle": "미리보기 기간 동안 이용 가능합니다."
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd 무료 버전은 간단하고 실용적이며 광고가 없습니다.",
+    "dialogFeaturesIntro": "Plus는 더 많은 연결 방법을 제공합니다:",
+    "dialogFeature1": "✈️ 여행 모드",
+    "dialogFeature2": "📍 위치 공유 옵션",
+    "dialogFeature3": "🙂 기분 업데이트",
+    "dialogFeature4": "⚙️ 더 많은 공유 설정",
+    "dialogPricingTitle": "Plus 예정 가격:",
+    "dialogPricingMonthly": "US$2.99 / 월",
+    "dialogPricingYearly": "US$19.99 / 년",
+    "dialogSupportNote": "여러분의 지원은 Tryggd를 안정적으로 유지하고, 기능을 지속적으로 개선하며, 유용한 기능을 모두에게 저렴하게 제공하는 데 도움이 됩니다.",
+    "dialogPreviewNote": "프리뷰 기간 동안 Plus를 30일 무료로 사용하고 Tryggd를 더 좋게 만드는 데 도움을 주세요.",
+    "activate": "30일 Plus 프리뷰 시작",
+    "notNow": "지금은 아니요",
+    "dialogFooter": "프리뷰 기간 중에는 결제가 필요하지 않습니다.",
+    "settingsRowTitle": "Plus 프리뷰",
+    "settingsRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 무료로 체험하세요.",
+    "settingsRowAction": "프리뷰 시작",
+    "activeRowTitle": "Plus 프리뷰 진행 중",
+    "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다."
   }
 }

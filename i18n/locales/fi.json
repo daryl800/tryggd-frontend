@@ -721,15 +721,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Kokeile Plus-esikatselua",
-    "dialogBody": "Voit kokeilla nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.\nJos pidät niistä, voit jatkaa maksullisella tilauksella esikatselujakson jälkeen.",
-    "activate": "Aktivoi Plus-esikatselu",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Ilmainen on yksinkertainen, hyödyllinen ja mainosvapaa.",
+    "dialogFeaturesIntro": "Plus tarjoaa lisää tapoja pysyä yhteydessä:",
+    "dialogFeature1": "✈️ Matkatila",
+    "dialogFeature2": "📍 Sijainnin jakamisvaihtoehdot",
+    "dialogFeature3": "🙂 Mielialan päivitykset",
+    "dialogFeature4": "⚙️ Lisää jakamisasetuksia",
+    "dialogPricingTitle": "Plus suunniteltu hinta:",
+    "dialogPricingMonthly": "US$2.99 / kuukausi",
+    "dialogPricingYearly": "US$19.99 / vuosi",
+    "dialogSupportNote": "Tukesi auttaa meitä pitämään Tryggd vakaana, parantamaan ominaisuuksia jatkuvasti ja tekemään hyödyllisistä ominaisuuksista edullisia kaikille.",
+    "dialogPreviewNote": "Esikatselujakson aikana voit käyttää Plussia ilmaiseksi 30 päivää ja auttaa meitä tekemään Tryggdistä paremman.",
+    "activate": "Aloita 30 päivän Plus-esikatselu",
     "notNow": "Ei nyt",
-    "dialogFooter": "Kiitos, että autat meitä kehittämään Tryggdiä.",
+    "dialogFooter": "Maksua ei tarvita esikatselujakson aikana.",
     "settingsRowTitle": "Plus-esikatselu",
     "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
-    "settingsRowAction": "Aktivoi",
+    "settingsRowAction": "Aloita esikatselu",
     "activeRowTitle": "Plus-esikatselu aktiivinen",
-    "activeRowSubtitle": "Käytettävissä esikatselujakson aikana."
+    "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana."
   }
 }

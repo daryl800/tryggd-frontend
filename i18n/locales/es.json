@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Probar Plus Preview",
-    "dialogBody": "Puedes probar las funciones Plus actuales de forma gratuita durante nuestro período de vista previa.\nSi te encantan, tendrás la opción de continuar con un plan de pago cuando finalice la vista previa.",
-    "activate": "Activar Plus Preview",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Gratuito es simple, útil y sin publicidad.",
+    "dialogFeaturesIntro": "Plus ofrece más formas de mantenerse conectado:",
+    "dialogFeature1": "✈️ Modo viaje",
+    "dialogFeature2": "📍 Opciones de compartir ubicación",
+    "dialogFeature3": "🙂 Actualizaciones de ánimo",
+    "dialogFeature4": "⚙️ Más control sobre el uso compartido",
+    "dialogPricingTitle": "Precio previsto de Plus:",
+    "dialogPricingMonthly": "US$2.99 / mes",
+    "dialogPricingYearly": "US$19.99 / año",
+    "dialogSupportNote": "Tu apoyo nos ayuda a mantener Tryggd estable, seguir mejorando y hacer que las funciones útiles sean asequibles para todos.",
+    "dialogPreviewNote": "Durante la vista previa, puedes usar Plus gratis durante 30 días y ayudarnos a mejorar Tryggd.",
+    "activate": "Iniciar vista previa de Plus de 30 días",
     "notNow": "Ahora no",
-    "dialogFooter": "Gracias por ayudarnos a mejorar Tryggd.",
-    "settingsRowTitle": "Plus Preview",
-    "settingsRowSubtitle": "Prueba las funciones Plus actuales gratis durante el período de vista previa.",
-    "settingsRowAction": "Activar",
-    "activeRowTitle": "Plus Preview activo",
-    "activeRowSubtitle": "Disponible durante el período de vista previa."
+    "dialogFooter": "No se requiere pago durante la vista previa.",
+    "settingsRowTitle": "Vista previa de Plus",
+    "settingsRowSubtitle": "Prueba las funciones Plus actuales gratis durante el piloto.",
+    "settingsRowAction": "Iniciar vista previa",
+    "activeRowTitle": "Vista previa de Plus activa",
+    "activeRowSubtitle": "Las funciones Plus actuales están disponibles durante el piloto."
   }
 }

@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Plusプレビューを試す",
-    "dialogBody": "プレビュー期間中は、現在のPlus機能を無料でお試しいただけます。\n気に入っていただけたら、プレビュー終了後に有料プランで続けることができます。",
-    "activate": "Plusプレビューを有効にする",
-    "notNow": "後で",
-    "dialogFooter": "Tryggdの改善にご協力いただきありがとうございます。",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd 無料版はシンプルで実用的、広告もありません。",
+    "dialogFeaturesIntro": "Plusでは、つながりを保つためのより多くの方法が使えます：",
+    "dialogFeature1": "✈️ 旅行モード",
+    "dialogFeature2": "📍 位置情報の共有オプション",
+    "dialogFeature3": "🙂 気分のアップデート",
+    "dialogFeature4": "⚙️ 共有設定の詳細管理",
+    "dialogPricingTitle": "Plusの予定価格：",
+    "dialogPricingMonthly": "US$2.99 / 月",
+    "dialogPricingYearly": "US$19.99 / 年",
+    "dialogSupportNote": "あなたのサポートが、Tryggdの安定稼働、機能の継続的改善、そして誰もが手頃な価格で便利な機能を使えるようにすることに貢献します。",
+    "dialogPreviewNote": "プレビュー期間中は、Plusを30日間無料でご利用いただき、Tryggdをより良くするためにご協力ください。",
+    "activate": "30日間のPlusプレビューを始める",
+    "notNow": "今はしない",
+    "dialogFooter": "プレビュー期間中の支払いは不要です。",
     "settingsRowTitle": "Plusプレビュー",
-    "settingsRowSubtitle": "プレビュー期間中は現在のPlus機能を無料でお試しください。",
-    "settingsRowAction": "有効にする",
-    "activeRowTitle": "Plusプレビュー有効中",
-    "activeRowSubtitle": "プレビュー期間中ご利用いただけます。"
+    "settingsRowSubtitle": "パイロット期間中、現在のPlus機能を無料でお試しください。",
+    "settingsRowAction": "プレビューを始める",
+    "activeRowTitle": "Plusプレビュー進行中",
+    "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。"
   }
 }

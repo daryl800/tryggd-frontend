@@ -721,15 +721,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Prøv Plus-forhåndsvisning",
-    "dialogBody": "Du kan prøve de nuværende Plus-funktioner gratis i vores forhåndsvisningsperiode.\nHvis du elsker dem, kan du fortsætte med et betalt abonnement, når forhåndsvisningen slutter.",
-    "activate": "Aktiver Plus-forhåndsvisning",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Gratis er enkel, nyttig og reklamefri.",
+    "dialogFeaturesIntro": "Plus giver dig flere måder at holde kontakten på:",
+    "dialogFeature1": "✈️ Rejsetilstand",
+    "dialogFeature2": "📍 Deling af placering",
+    "dialogFeature3": "🙂 Stemningsopdateringer",
+    "dialogFeature4": "⚙️ Mere kontrol over deling",
+    "dialogPricingTitle": "Plus planlagt pris:",
+    "dialogPricingMonthly": "US$2.99 / måned",
+    "dialogPricingYearly": "US$19.99 / år",
+    "dialogSupportNote": "Din støtte hjælper os med at holde Tryggd stabilt, forbedre funktioner løbende og gøre nyttige funktioner overkommelige for alle.",
+    "dialogPreviewNote": "I prøveperioden kan du bruge Plus gratis i 30 dage og hjælpe os med at gøre Tryggd bedre.",
+    "activate": "Start 30-dages Plus-forhåndsvisning",
     "notNow": "Ikke nu",
-    "dialogFooter": "Tak fordi du hjælper os med at forbedre Tryggd.",
+    "dialogFooter": "Ingen betaling kræves i prøveperioden.",
     "settingsRowTitle": "Plus-forhåndsvisning",
     "settingsRowSubtitle": "Prøv nuværende Plus-funktioner gratis i forhåndsvisningsperioden.",
-    "settingsRowAction": "Aktiver",
+    "settingsRowAction": "Start forhåndsvisning",
     "activeRowTitle": "Plus-forhåndsvisning aktiv",
-    "activeRowSubtitle": "Tilgængelig i forhåndsvisningsperioden."
+    "activeRowSubtitle": "Nuværende Plus-funktioner er tilgængelige i forhåndsvisningsperioden."
   }
 }

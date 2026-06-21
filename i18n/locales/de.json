@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Plus-Vorschau ausprobieren",
-    "dialogBody": "Du kannst die aktuellen Plus-Funktionen während unseres Vorschauzeitraums kostenlos testen.\nWenn du sie liebst, kannst du nach dem Vorschauzeitraum mit einem kostenpflichtigen Abo weitermachen.",
-    "activate": "Plus-Vorschau aktivieren",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Kostenlos ist einfach, nützlich und werbefrei.",
+    "dialogFeaturesIntro": "Plus bietet mehr Möglichkeiten, in Kontakt zu bleiben:",
+    "dialogFeature1": "✈️ Reisemodus",
+    "dialogFeature2": "📍 Standortfreigabe-Optionen",
+    "dialogFeature3": "🙂 Stimmungs-Updates",
+    "dialogFeature4": "⚙️ Mehr Freigabekontrolle",
+    "dialogPricingTitle": "Geplanter Plus-Preis:",
+    "dialogPricingMonthly": "2,99 US$ / Monat",
+    "dialogPricingYearly": "19,99 US$ / Jahr",
+    "dialogSupportNote": "Deine Unterstützung hilft uns, Tryggd stabil zu halten, Funktionen kontinuierlich zu verbessern und nützliche Funktionen für alle erschwinglich zu machen.",
+    "dialogPreviewNote": "Während des Vorschauzeitraums kannst du Plus 30 Tage lang kostenlos nutzen und uns helfen, Tryggd besser zu machen.",
+    "activate": "30-tägige Plus-Vorschau starten",
     "notNow": "Nicht jetzt",
-    "dialogFooter": "Danke, dass du uns hilfst, Tryggd zu verbessern.",
+    "dialogFooter": "Während der Vorschau ist keine Zahlung erforderlich.",
     "settingsRowTitle": "Plus-Vorschau",
-    "settingsRowSubtitle": "Teste aktuelle Plus-Funktionen während des Vorschauzeitraums kostenlos.",
-    "settingsRowAction": "Aktivieren",
+    "settingsRowSubtitle": "Teste aktuelle Plus-Funktionen kostenlos während des Piloten.",
+    "settingsRowAction": "Vorschau starten",
     "activeRowTitle": "Plus-Vorschau aktiv",
-    "activeRowSubtitle": "Während des Vorschauzeitraums verfügbar."
+    "activeRowSubtitle": "Aktuelle Plus-Funktionen sind während des Piloten verfügbar."
   }
 }

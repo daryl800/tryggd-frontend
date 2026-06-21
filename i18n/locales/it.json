@@ -718,15 +718,25 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Prova l'anteprima Plus",
-    "dialogBody": "Puoi provare gratuitamente le funzionalità Plus attuali durante il nostro periodo di anteprima.\nSe ti piacciono, avrai la possibilità di continuare con un piano a pagamento al termine dell'anteprima.",
-    "activate": "Attiva l'anteprima Plus",
+    "dialogTitle": "✨ Tryggd Plus",
+    "dialogFreeNote": "Tryggd Gratuito è semplice, utile e senza pubblicità.",
+    "dialogFeaturesIntro": "Plus offre più modi per restare in contatto:",
+    "dialogFeature1": "✈️ Modalità viaggio",
+    "dialogFeature2": "📍 Opzioni di condivisione posizione",
+    "dialogFeature3": "🙂 Aggiornamenti sull'umore",
+    "dialogFeature4": "⚙️ Maggior controllo sulla condivisione",
+    "dialogPricingTitle": "Prezzo previsto per Plus:",
+    "dialogPricingMonthly": "US$2.99 / mese",
+    "dialogPricingYearly": "US$19.99 / anno",
+    "dialogSupportNote": "Il tuo supporto ci aiuta a mantenere Tryggd stabile, a migliorare continuamente le funzionalità e a rendere le funzioni utili accessibili a tutti.",
+    "dialogPreviewNote": "Durante il periodo di anteprima, puoi usare Plus gratuitamente per 30 giorni e aiutarci a migliorare Tryggd.",
+    "activate": "Inizia anteprima Plus di 30 giorni",
     "notNow": "Non ora",
-    "dialogFooter": "Grazie per aiutarci a migliorare Tryggd.",
+    "dialogFooter": "Nessun pagamento richiesto durante l'anteprima.",
     "settingsRowTitle": "Anteprima Plus",
-    "settingsRowSubtitle": "Prova le funzionalità Plus attuali gratuitamente durante il periodo di anteprima.",
-    "settingsRowAction": "Attiva",
+    "settingsRowSubtitle": "Prova le funzionalità Plus attuali gratuitamente durante il pilota.",
+    "settingsRowAction": "Inizia anteprima",
     "activeRowTitle": "Anteprima Plus attiva",
-    "activeRowSubtitle": "Disponibile durante il periodo di anteprima."
+    "activeRowSubtitle": "Le funzionalità Plus attuali sono disponibili durante il pilota."
   }
 }
