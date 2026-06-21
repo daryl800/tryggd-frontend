@@ -1026,6 +1026,15 @@ export default function HomeScreen() {
     router.replace('/onboarding');
   }, [router]);
 
+  const resetPilotPreview = useCallback(async () => {
+    if (!campaignId || !user) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await AsyncStorage.removeItem(`@tryggd_pilot_plus_preview_dismissed_${campaignId}`);
+    await supabase.from('profiles').update({ pilot_preview_activated_at: null }).eq('id', user.id);
+    setPilotDialogDismissed(false);
+    await refreshProfile();
+  }, [campaignId, user, refreshProfile]);
+
   // Check if date has changed and reset if needed
   const checkDateAndReset = useCallback(() => {
     if (!lastCheckinUtc) return;
@@ -1886,6 +1895,13 @@ export default function HomeScreen() {
                   activeOpacity={0.7}
                 >
                   <Ionicons name="refresh" size={ICON_SIZES.SM} color={BaseColors.error} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={resetPilotPreview}
+                  style={styles.headerDebugButton}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="diamond-outline" size={ICON_SIZES.SM} color={BaseColors.primary} />
                 </TouchableOpacity>
               </>
             ) : null}
