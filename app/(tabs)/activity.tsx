@@ -4,7 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
-import { getLastWelfareCheckSentAt, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
@@ -1149,6 +1149,15 @@ export default function ActivityScreen() {
       }
     };
 
+    const handleDebugResetWelfareCheck = async () => {
+      if (!__DEV__ || !user || !timestamp || (!isTodayCheckMode && !isWelfareMode)) return;
+
+      const currentWelfareKind = isTodayCheckMode ? 'today_check' : 'overdue_check';
+      await clearCachedWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+      setWelfareCheckSent(false);
+      setLastWelfareCheckSentAt(null);
+    };
+
     const openSharedLocation = async () => {
       if (!shared_location) return;
 
@@ -1334,8 +1343,14 @@ export default function ActivityScreen() {
           defaultValue: '{{name}} has not checked in for {{count}} days',
         })
       : '';
+    const lastWelfareFollowUpElapsedMs = lastWelfareCheckSentAt
+      ? Math.max(0, Date.now() - new Date(lastWelfareCheckSentAt).getTime())
+      : 0;
+    const lastWelfareFollowUpMinutesAgo = lastWelfareCheckSentAt
+      ? Math.max(1, Math.floor(lastWelfareFollowUpElapsedMs / 60000))
+      : 0;
     const lastWelfareFollowUpHoursAgo = lastWelfareCheckSentAt
-      ? Math.max(1, Math.floor((Date.now() - new Date(lastWelfareCheckSentAt).getTime()) / 3600000))
+      ? Math.floor(lastWelfareFollowUpElapsedMs / 3600000)
       : 0;
     const overdueCooldownHoursRemaining = overdueCooldownActive && lastWelfareCheckSentAt
       ? Math.max(1, Math.ceil(OVERDUE_WELFARE_COOLDOWN_HOURS - ((Date.now() - new Date(lastWelfareCheckSentAt).getTime()) / 3600000)))
@@ -1555,10 +1570,17 @@ export default function ActivityScreen() {
                     styles.followUpMetaText,
                     overdueCooldownActive ? styles.followUpMetaTextMuted : styles.followUpMetaTextReady,
                   ]}>
-                    {overdueCooldownActive ? t('activity.welfareButton.sentRecentlyMeta', {
-                      count: lastWelfareFollowUpHoursAgo,
-                      defaultValue: 'Last greeting sent {{count}} hours ago',
-                    }) : t('activity.welfareButton.followUpAvailable', {
+                    {overdueCooldownActive ? (
+                      lastWelfareFollowUpHoursAgo < 1
+                        ? t('activity.welfareButton.sentRecentlyMetaMinutes', {
+                            count: lastWelfareFollowUpMinutesAgo,
+                            defaultValue: 'Last greeting sent {{count}} minutes ago',
+                          })
+                        : t('activity.welfareButton.sentRecentlyMeta', {
+                            count: lastWelfareFollowUpHoursAgo,
+                            defaultValue: 'Last greeting sent {{count}} hours ago',
+                          })
+                    ) : t('activity.welfareButton.followUpAvailable', {
                       defaultValue: 'You can follow up again',
                     })}
                   </Text>
@@ -1570,6 +1592,15 @@ export default function ActivityScreen() {
                       defaultValue: 'Follow up again in {{count}}h',
                     })}
                   </Text>
+                ) : null}
+                {__DEV__ && (isTodayCheckMode || isWelfareMode) ? (
+                  <TouchableOpacity
+                    onPress={handleDebugResetWelfareCheck}
+                    activeOpacity={0.7}
+                    style={styles.debugResetWelfareButton}
+                  >
+                    <Text style={styles.debugResetWelfareButtonText}>Reset welfare state</Text>
+                  </TouchableOpacity>
                 ) : null}
               </View>
               </>
@@ -2278,6 +2309,21 @@ const styles = StyleSheet.create({
   },
   followUpMetaTextReady: {
     color: BaseColors.primaryDark,
+    fontWeight: '600',
+  },
+  debugResetWelfareButton: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    backgroundColor: BaseColors.neutral[100],
+    borderWidth: 1,
+    borderColor: BaseColors.neutral[300],
+  },
+  debugResetWelfareButtonText: {
+    fontSize: iosFontSize(11),
+    color: BaseColors.neutral[600],
     fontWeight: '600',
   },
   responseButtonContainer: {

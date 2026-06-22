@@ -32,6 +32,26 @@ export function hasCachedWelfareCheck(
     return welfareSentMemoryCache.has(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`);
 }
 
+export async function clearCachedWelfareCheck(
+    recipientUserId: string,
+    senderUserId: string,
+    checkinTime: string,
+    welfareKind: 'today_check' | 'overdue_check'
+): Promise<void> {
+    const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
+    welfareSentMemoryCache.delete(cacheKey);
+    welfareSentAtMemoryCache.delete(cacheKey);
+
+    const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
+    if (!cached) return;
+
+    const parsed = JSON.parse(cached) as Record<string, boolean>;
+    if (!(cacheKey in parsed)) return;
+
+    delete parsed[cacheKey];
+    await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_CACHE, JSON.stringify(parsed));
+}
+
 /**
  * Register for push notifications and save token + preferences to Supabase
  */

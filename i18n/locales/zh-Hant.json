@@ -225,6 +225,8 @@
       "followUpAvailable": "現在可以再次問候",
       "followUpIn_one": "{{count}} 小時後可再次問候",
       "followUpIn_other": "{{count}} 小時後可再次問候",
+      "sentRecentlyMetaMinutes_one": "{{count}} 分鐘前已發送上次問候",
+      "sentRecentlyMetaMinutes_other": "{{count}} 分鐘前已發送上次問候",
       "sentRecentlyMeta_one": "{{count}} 小時前已發送上次問候",
       "sentRecentlyMeta_other": "{{count}} 小時前已發送上次問候"
     },
