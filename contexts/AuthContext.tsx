@@ -1,6 +1,7 @@
 // contexts/AuthContext.tsx
 import { Session } from "@supabase/supabase-js";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { AppState } from "react-native";
 import {
     getCapabilities,
     type UserCapabilities,
@@ -206,6 +207,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         void refreshProfile();
     }, [refreshProfile, user]);
+
+    // Refresh when app returns to foreground (catches deadline expiry, session changes, etc.)
+    useEffect(() => {
+        const sub = AppState.addEventListener('change', (nextState) => {
+            if (nextState === 'active' && user) void refreshProfile();
+        });
+        return () => sub.remove();
+    }, [user, refreshProfile]);
+
+    // Schedule a one-shot refresh exactly when the preview deadline passes while the app is open
+    useEffect(() => {
+        if (!pilotPreviewConfig?.pilot_preview_ends_at) return;
+        const ms = new Date(pilotPreviewConfig.pilot_preview_ends_at).getTime() - Date.now();
+        if (ms <= 0) return;
+        const id = setTimeout(() => void refreshProfile(), ms);
+        return () => clearTimeout(id);
+    }, [pilotPreviewConfig?.pilot_preview_ends_at, refreshProfile]);
 
     const loading = !initialized || profileLoading;
     const capabilities = getCapabilities(plan, contactLimit);

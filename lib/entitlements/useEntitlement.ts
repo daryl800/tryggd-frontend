@@ -9,6 +9,7 @@ export type EntitlementState = {
   hasPilotPreviewAccess: boolean;
   hasPaidPlusAccess: boolean;
   hasPlusAccess: boolean;
+  isPilotPreviewExpired: boolean;
   planSource: PlanSource;
   campaignId: string | null;
   pilotPreviewEndsAt: Date | null;
@@ -28,6 +29,13 @@ export function useEntitlement(): EntitlementState {
   const hasPaidPlusAccess = plan === 'plus' && !hasPilotPreviewAccess;
   const hasPlusAccess = hasPaidPlusAccess || hasPilotPreviewAccess;
 
+  // True when the user activated the preview but the campaign deadline has now passed
+  const isPilotPreviewExpired =
+    hasActivatedPilotPreview &&
+    isPlusPreviewEnabled &&
+    !!pilotPreviewConfig?.pilot_preview_ends_at &&
+    !isPlusPreviewOpen;
+
   const planSource: PlanSource = hasPaidPlusAccess
     ? 'paid_plus'
     : hasPilotPreviewAccess
@@ -46,6 +54,7 @@ export function useEntitlement(): EntitlementState {
     hasPilotPreviewAccess,
     hasPaidPlusAccess,
     hasPlusAccess,
+    isPilotPreviewExpired,
     planSource,
     campaignId,
     pilotPreviewEndsAt,

@@ -32,7 +32,7 @@ export default function PlusScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { refreshProfile } = useAuth();
-  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess } = useEntitlement();
+  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess, isPilotPreviewExpired } = useEntitlement();
   const [activating, setActivating] = useState(false);
 
   const canActivatePreview = isPlusPreviewOpen && !hasActivatedPilotPreview;
@@ -101,28 +101,35 @@ export default function PlusScreen() {
           ))}
         </View>
 
-        <View style={styles.footerCard}>
-          <Text style={styles.footerTitle}>{t('plus.comingSoon.title')}</Text>
-          <Text style={styles.footerText}>{t('plus.comingSoon.message')}</Text>
-          <Text style={styles.trustNote}>{t('plus.comingSoon.note')}</Text>
-          <TouchableOpacity
-            style={[
-              styles.primaryButton,
-              !canActivatePreview && styles.primaryButtonDisabled,
-            ]}
-            activeOpacity={canActivatePreview ? 0.85 : 1}
-            onPress={handleActivatePreview}
-            disabled={!canActivatePreview || activating}
-          >
-            <Text style={[styles.primaryButtonText, !canActivatePreview && styles.primaryButtonTextDisabled]}>
-              {hasPilotPreviewAccess
-                ? t('pilotPreview.activeRowTitle')
-                : activating
-                ? t('onboarding.disclaimer.saving', { defaultValue: 'Saving...' })
-                : t('plus.comingSoon.button')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {isPilotPreviewExpired ? (
+          <View style={styles.expiredCard}>
+            <Text style={styles.expiredTitle}>{t('pilotPreview.expiredTitle' as any) as string}</Text>
+            <Text style={styles.expiredBody}>{t('pilotPreview.expiredBody' as any) as string}</Text>
+          </View>
+        ) : (
+          <View style={styles.footerCard}>
+            <Text style={styles.footerTitle}>{t('plus.comingSoon.title')}</Text>
+            <Text style={styles.footerText}>{t('plus.comingSoon.message')}</Text>
+            <Text style={styles.trustNote}>{t('plus.comingSoon.note')}</Text>
+            <TouchableOpacity
+              style={[
+                styles.primaryButton,
+                !canActivatePreview && styles.primaryButtonDisabled,
+              ]}
+              activeOpacity={canActivatePreview ? 0.85 : 1}
+              onPress={handleActivatePreview}
+              disabled={!canActivatePreview || activating}
+            >
+              <Text style={[styles.primaryButtonText, !canActivatePreview && styles.primaryButtonTextDisabled]}>
+                {hasPilotPreviewAccess
+                  ? t('pilotPreview.activeRowTitle')
+                  : activating
+                  ? t('onboarding.disclaimer.saving', { defaultValue: 'Saving...' })
+                  : t('plus.comingSoon.button')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -265,6 +272,24 @@ const styles = StyleSheet.create({
     color: BaseColors.surface,
   },
   primaryButtonTextDisabled: {
+    color: BaseColors.neutral[500],
+  },
+  expiredCard: {
+    backgroundColor: BaseColors.surface,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: BaseColors.neutral[100],
+    padding: 20,
+  },
+  expiredTitle: {
+    fontSize: iosFontSize(16),
+    fontWeight: '700',
+    color: BaseColors.text.dark,
+    marginBottom: 10,
+  },
+  expiredBody: {
+    fontSize: iosFontSize(14),
+    lineHeight: iosFontSize(21),
     color: BaseColors.neutral[500],
   },
 });

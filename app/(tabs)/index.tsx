@@ -703,7 +703,10 @@ export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { user, profile, loading, capabilities, refreshProfile } = useAuth();
-  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPaidPlusAccess, campaignId } = useEntitlement();
+  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPaidPlusAccess, campaignId, pilotPreviewEndsAt } = useEntitlement();
+  const pilotPreviewDeadline = pilotPreviewEndsAt
+    ? pilotPreviewEndsAt.toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })
+    : '';
   const windowDimensions = useWindowDimensions();
 
   // State
@@ -2651,7 +2654,7 @@ export default function HomeScreen() {
               </View>
 
               <Text style={styles.pilotDialogSupportNote}>{t('pilotPreview.dialogSupportNote' as any) as string}</Text>
-              <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any) as string}</Text>
+              <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
             </RNScrollView>
             <TouchableOpacity
               style={styles.pilotDialogActivateButton}
