@@ -151,10 +151,6 @@ export default ({ config }) => ({
         [
             "expo-aliyun-push",
             {
-                androidAliyunAppKey: process.env.ALIYUN_ANDROID_APP_KEY,
-                androidAliyunAppSecret: process.env.ALIYUN_ANDROID_APP_SECRET,
-                iosAliyunAppKey: process.env.ALIYUN_IOS_APP_KEY,
-                iosAliyunAppSecret: process.env.ALIYUN_IOS_APP_SECRET,
                 extraAndroidThirdPartyPushConfigFiles: {
                     "assets/aliyun-emas-services.json": "/app",
                 },
