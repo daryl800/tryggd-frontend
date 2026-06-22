@@ -68,7 +68,7 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
-type HomePresence = 'chilling' | 'home' | 'outside' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodafternoon' | 'goodnight';
+type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'goodmorning' | 'goodafternoon' | 'goodnight';
 type ReachOutStatus = 'call_now' | 'call_available';
 
 type HomeStatusNotification = {
@@ -415,7 +415,27 @@ const SIMPLE_WELLNESS_OPTIONS: readonly WellnessOption[] = [
   { value: 1, iconName: 'heart-sharp' },
 ] as const;
 
-const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = ['goodmorning', 'goodafternoon', 'home', 'outside', 'eating', 'chilling', 'gathering', 'on_call', 'daydreaming', 'busy', 'exhausted', 'sleepy', 'having_fun', 'playing_sport', 'watching_movie', 'goodnight'] as const;
+const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = [
+  'goodmorning',
+  'home',
+  'chilling',
+  'outside',
+  'at_school',
+  'working',
+  'goodafternoon',
+  'eating',
+  'on_call',
+  'busy',
+  'relaxing',
+  'daydreaming',
+  'gathering',
+  'having_fun',
+  'watching_movie',
+  'playing_sport',
+  'exhausted',
+  'sleepy',
+  'goodnight',
+] as const;
 
 const isHomePresence = (value: unknown): value is HomePresence =>
   typeof value === 'string' && (HOME_PRESENCE_OPTIONS as readonly string[]).includes(value);
@@ -1741,8 +1761,13 @@ export default function HomeScreen() {
     ICON_SIZES.SUPER_HUGE,
   );
   const checkedHeartOutlineSize = checkedHeartSize + (capabilities.canUseWellnessSlider ? 8 : 0);
-  const uncheckedCtaFontSize = clampNumber(Math.round(innerButtonSize * 0.108), 13, 18);
-  const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * 1.16);
+  const isChineseUncheckedTypography = !!chineseFontFamily;
+  const uncheckedCtaFontSize = clampNumber(
+    Math.round(innerButtonSize * (isChineseUncheckedTypography ? 0.118 : 0.108)),
+    isChineseUncheckedTypography ? 15 : 13,
+    isChineseUncheckedTypography ? 20 : 18,
+  );
+  const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * (isChineseUncheckedTypography ? 1.1 : 1.16));
   const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.122), 15, 22);
   const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
   const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.086), 11, 16);
@@ -2205,6 +2230,7 @@ export default function HomeScreen() {
                             <Text
                               style={[
                                 styles.ctaText,
+                                isChineseUncheckedTypography && styles.ctaTextChinese,
                                 {
                                   fontSize: uncheckedCtaFontSize,
                                   lineHeight: uncheckedCtaLineHeight,
@@ -3386,7 +3412,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   textContainerUnchecked: {
-    marginTop: 6,
+    marginTop: -2,
     paddingHorizontal: 18,
   },
   textContainerUncheckedPlus: {
@@ -3406,7 +3432,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 10,
+    marginTop: 6,
   },
   textContainerCompactCheckedIn: {
     paddingHorizontal: 18,
@@ -3419,19 +3445,23 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginBottom: 0,
   },
+  ctaTextChinese: {
+    letterSpacing: 0,
+    marginTop: -2,
+  },
   countdownText: {
     color: BaseColors.primary,
     fontSize: iosFontSize(20),
     fontWeight: '700',
     textAlign: 'center',
-    marginTop: 2,
+    marginTop: 0,
   },
   timeLeftText: {
     color: BaseColors.text.light,
     fontSize: iosFontSize(16),
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 0,
+    marginTop: -1,
   },
   compactCtaText: {
     fontSize: iosFontSize(14),
