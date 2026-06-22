@@ -755,6 +755,8 @@ export default function HomeScreen() {
   const [presenceBadgeTooltipVisible, setLatestStatusBadgeTooltipVisible] = useState(false);
   const [moodTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
   const [pilotDialogDismissed, setPilotDialogDismissed] = useState(false);
+  const [homeStyleUserSelected, setHomeStyleUserSelected] = useState(false);
+  const [showPlusActivatedBanner, setShowPlusActivatedBanner] = useState(false);
 
   // Shared contact check-in data (one fetch/subscription shared with Activity)
   const {
@@ -880,9 +882,13 @@ export default function HomeScreen() {
 
       const { data } = await supabase
         .from('user_settings')
-        .select('home_style')
+        .select('home_style, home_style_user_selected')
         .eq('user_id', user.id)
         .maybeSingle();
+
+      if (data?.home_style_user_selected) {
+        setHomeStyleUserSelected(true);
+      }
 
       if (isHomeStyle(data?.home_style)) {
         setHomeStyle(data.home_style);
@@ -913,7 +919,21 @@ export default function HomeScreen() {
   const handleActivatePilotPreview = useCallback(async () => {
     await supabase.rpc('activate_pilot_preview');
     await refreshProfile();
-  }, [refreshProfile]);
+    if (!homeStyleUserSelected) {
+      const enhanced: HomeStyle = 'enhanced';
+      setHomeStyle(enhanced);
+      setHomeStyleUserSelected(false);
+      await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, enhanced);
+      await supabase
+        .from('user_settings')
+        .upsert(
+          { user_id: user?.id, home_style: enhanced, home_style_user_selected: false, updated_at: new Date().toISOString() },
+          { onConflict: 'user_id' }
+        );
+      setShowPlusActivatedBanner(true);
+      setTimeout(() => setShowPlusActivatedBanner(false), 6000);
+    }
+  }, [refreshProfile, homeStyleUserSelected, user]);
 
   const handleDismissPilotDialog = useCallback(async () => {
     if (!campaignId) return;
@@ -1054,6 +1074,15 @@ export default function HomeScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await AsyncStorage.removeItem(`@tryggd_pilot_plus_preview_dismissed_${campaignId}`);
     await supabase.from('profiles').update({ pilot_preview_activated_at: null }).eq('id', user.id);
+    await supabase
+      .from('user_settings')
+      .upsert(
+        { user_id: user.id, home_style: 'simple', home_style_user_selected: false, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      );
+    await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, 'simple');
+    setHomeStyle('simple');
+    setHomeStyleUserSelected(false);
     setPilotDialogDismissed(false);
     await refreshProfile();
   }, [campaignId, user, refreshProfile]);
@@ -1961,6 +1990,13 @@ export default function HomeScreen() {
           <Text style={styles.pilotBannerText}>{t('pilotPreview.dialogTitle' as any) as string}</Text>
           <Ionicons name="chevron-forward" size={14} color={BaseColors.primaryDark} />
         </TouchableOpacity>
+      ) : null}
+
+      {/* Plus activated banner — shown briefly after activation auto-switches to Enhanced */}
+      {showPlusActivatedBanner ? (
+        <View style={styles.plusActivatedBanner}>
+          <Text style={styles.pilotBannerText}>{t('pilotPreview.activatedMessage' as any) as string}</Text>
+        </View>
       ) : null}
 
       {/* SCROLLVIEW - EVERYTHING ELSE SCROLLS */}
@@ -3821,6 +3857,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: SCREEN_PADDING.horizontal,
     gap: 6,
+  },
+  plusActivatedBanner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#B8DDD2',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: BaseColors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: SCREEN_PADDING.horizontal,
   },
   pilotBannerText: {
     fontSize: iosFontSize(13),

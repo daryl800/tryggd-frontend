@@ -109,7 +109,7 @@ export default function SettingsScreen() {
             if (user) {
                 const { data: settings, error } = await supabase
                     .from('user_settings')
-                    .select('language, home_style')
+                    .select('language, home_style, home_style_user_selected')
                     .eq('user_id', user.id)
                     .single();
 
@@ -244,6 +244,7 @@ export default function SettingsScreen() {
                     .upsert({
                         user_id: user.id,
                         home_style: style,
+                        home_style_user_selected: true,
                         updated_at: new Date().toISOString()
                     }, { onConflict: 'user_id' });
 

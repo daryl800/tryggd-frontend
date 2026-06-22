@@ -791,6 +791,7 @@
     "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n期間不需要付款資料，也不會自動收費。",
     "activate": "開始試用 Plus",
     "notNow": "先用免費版",
+    "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
     "expiredTitle": "Plus 預覽已結束",
     "expiredBody": "你可以繼續使用 Tryggd 免費版，包括一鍵報到、信任聯絡人和基本動態。\n\n之前的報到和動態記錄不會被移除。",
     "expiredButton": "知道了",

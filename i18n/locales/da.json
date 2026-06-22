@@ -743,6 +743,7 @@
     "dialogPreviewNote": "Plus-forhåndsvisningen er åben indtil {{deadline}}.\nIngen betalingsoplysninger kræves, ingen automatisk opkrævning.",
     "activate": "Start Plus-forhåndsvisning",
     "notNow": "Brug Gratis foreløbig",
+    "activatedMessage": "Plus er nu aktivt. Startskærmen er skiftet til Udvidet, så du kan prøve flere delingsmuligheder. Du kan skifte tilbage til Simpel når som helst i Indstillinger.",
     "expiredTitle": "Plus-forhåndsvisning er slut",
     "expiredBody": "Du kan fortsætte med Tryggd Gratis, inkl. et-tryk check-in, betroede kontakter og grundlæggende opdateringer.\n\nDine tidligere check-ins og aktivitet er ikke slettet.",
     "expiredButton": "Forstået",

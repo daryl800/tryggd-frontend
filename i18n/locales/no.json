@@ -743,6 +743,7 @@
     "dialogPreviewNote": "Plus-forhåndsvisningen er åpen til {{deadline}}.\nIngen betalingsopplysninger kreves, ingen automatisk belastning.",
     "activate": "Start Plus-forhåndsvisning",
     "notNow": "Bruk Gratis foreløpig",
+    "activatedMessage": "Plus er nå aktivt. Hjem er satt til Utvidet. Du kan når som helst bytte tilbake til Enkel i Innstillinger.",
     "expiredTitle": "Plus-forhåndsvisning er avsluttet",
     "expiredBody": "Du kan fortsette å bruke Tryggd Gratis, inkludert éntrykks-innsjekk, betrodde kontakter og grunnleggende oppdateringer.\n\nTidligere innsjekker og aktiviteter slettes ikke.",
     "expiredButton": "Forstått",

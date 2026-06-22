@@ -740,6 +740,7 @@
     "dialogPreviewNote": "Die Plus-Vorschau ist bis {{deadline}} geöffnet.\nKeine Zahlungsdaten erforderlich, keine automatische Abbuchung.",
     "activate": "Plus-Vorschau starten",
     "notNow": "Erst Kostenlos nutzen",
+    "activatedMessage": "Plus ist jetzt aktiv. Der Startbereich wurde auf Erweitert gesetzt. Du kannst jederzeit in den Einstellungen zu Einfach wechseln.",
     "expiredTitle": "Plus-Vorschau beendet",
     "expiredBody": "Du kannst weiterhin Tryggd Kostenlos nutzen, inkl. Ein-Tipp-Check-in, Vertrauenskontakte und grundlegende Updates.\n\nDeine vergangenen Check-ins und Aktivitäten werden nicht gelöscht.",
     "expiredButton": "Verstanden",

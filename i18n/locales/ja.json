@@ -740,6 +740,7 @@
     "dialogPreviewNote": "Plusプレビューは{{deadline}}まで公開されています。\n支払い情報は不要で、自動請求もありません。",
     "activate": "Plusプレビューを開始",
     "notNow": "まずは無料版を使う",
+    "activatedMessage": "Plusが有効になりました。ホームが拡張に切り替わりました。いつでも設定からシンプルに戻せます。",
     "expiredTitle": "Plusプレビューが終了しました",
     "expiredBody": "Tryggd 無料版を引き続きご利用いただけます。ワンタップ チェックイン、信頼できる連絡先、基本的なアップデートを含みます。\n\n過去のチェックインとアクティビティは削除されません。",
     "expiredButton": "わかりました",

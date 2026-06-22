@@ -740,6 +740,7 @@
     "dialogPreviewNote": "L'anteprima Plus è aperta fino al {{deadline}}.\nNessun dato di pagamento richiesto e nessun addebito automatico.",
     "activate": "Inizia anteprima Plus",
     "notNow": "Usa Gratuito per ora",
+    "activatedMessage": "Plus è ora attivo. La schermata Home è stata impostata su Avanzata. Puoi tornare a Semplice in qualsiasi momento nelle Impostazioni.",
     "expiredTitle": "L'anteprima Plus è terminata",
     "expiredBody": "Puoi continuare a usare Tryggd Gratuito, inclusi check-in con un tocco, contatti fidati e aggiornamenti di base.\n\nI tuoi check-in e attività passati non vengono rimossi.",
     "expiredButton": "Capito",

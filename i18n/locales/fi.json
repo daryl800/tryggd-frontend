@@ -743,6 +743,7 @@
     "dialogPreviewNote": "Plus-esikatselu on auki {{deadline}} asti.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
     "activate": "Aloita Plus-esikatselu",
     "notNow": "Käytä Ilmaista ensin",
+    "activatedMessage": "Plus on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
     "expiredTitle": "Plus-esikatselu on päättynyt",
     "expiredBody": "Voit jatkaa Tryggd Ilmaisen käyttöä, mukaan lukien yhden napaukseen kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAikaisempia kirjautumisia ja aktiviteetteja ei poisteta.",
     "expiredButton": "Selvä",

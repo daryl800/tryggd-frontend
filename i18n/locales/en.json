@@ -760,6 +760,7 @@
     "dialogPreviewNote": "Plus Preview is open until {{deadline}}.\nNo payment details needed, no automatic charge.",
     "activate": "Start Plus Preview",
     "notNow": "Use Free for now",
+    "activatedMessage": "Plus is now active. Home has been set to Enhanced so you can try more sharing options. You can switch back to Simple anytime in Settings.",
     "expiredTitle": "Plus Preview has ended",
     "expiredBody": "You can continue using Tryggd Free, including one-tap check-in, trusted contacts, and basic updates.\n\nYour past check-ins and activity are not removed.",
     "expiredButton": "Got it",

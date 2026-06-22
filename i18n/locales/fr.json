@@ -740,6 +740,7 @@
     "dialogPreviewNote": "L'aperçu Plus est ouvert jusqu'au {{deadline}}.\nAucun détail de paiement requis, aucun prélèvement automatique.",
     "activate": "Commencer l'aperçu Plus",
     "notNow": "Utiliser Gratuit pour l'instant",
+    "activatedMessage": "Plus est maintenant actif. L'accueil a été réglé sur Amélioré. Vous pouvez revenir à Simple à tout moment dans les Paramètres.",
     "expiredTitle": "L'aperçu Plus est terminé",
     "expiredBody": "Vous pouvez continuer à utiliser Tryggd Gratuit, y compris le check-in en un geste, les contacts de confiance et les mises à jour de base.\n\nVos check-ins et activités passés ne sont pas supprimés.",
     "expiredButton": "Compris",
