@@ -2627,7 +2627,7 @@ export default function HomeScreen() {
           <View style={styles.pilotDialogCard}>
             <RNScrollView showsVerticalScrollIndicator={false} bounces={false}>
               <Text style={styles.pilotDialogTitle}>{t('pilotPreview.dialogTitle' as any) as string}</Text>
-              <Text style={styles.pilotDialogIntro}>{t('pilotPreview.dialogIntro' as any) as string}</Text>
+              <Text style={styles.pilotDialogIntro}>{t('pilotPreview.dialogIntro' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
 
               <View style={styles.pilotDialogFreeSection}>
                 <Text style={styles.pilotDialogSectionLabel}>{t('pilotPreview.dialogFreeSectionTitle' as any) as string}</Text>
@@ -2649,6 +2649,7 @@ export default function HomeScreen() {
 
               <View style={styles.pilotDialogPricingBox}>
                 <Text style={styles.pilotDialogPricingTitle}>{t('pilotPreview.dialogPricingTitle' as any) as string}</Text>
+                <Text style={styles.pilotDialogPricingNote}>{t('pilotPreview.dialogPricingNote' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingMonthly' as any) as string}</Text>
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingYearly' as any) as string}</Text>
               </View>
@@ -3877,7 +3878,13 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.primaryDark,
-    marginBottom: 2,
+    marginBottom: 1,
+  },
+  pilotDialogPricingNote: {
+    fontSize: iosFontSize(12),
+    color: BaseColors.primaryDark,
+    opacity: 0.75,
+    marginBottom: 3,
   },
   pilotDialogPricingItem: {
     fontSize: iosFontSize(14),
