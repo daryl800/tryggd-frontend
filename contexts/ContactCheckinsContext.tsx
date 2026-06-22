@@ -144,7 +144,7 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
       const location = payload.location;
       const checkinTimeIso = payload.checkinTimeIso;
       if (!notif.sender_user_id || !checkinTimeIso || location?.latitude == null) continue;
-      const key = `${notif.sender_user_id}:${checkinTimeIso}`;
+      const key = `${notif.sender_user_id}:${new Date(checkinTimeIso).toISOString()}`;
       if (!locMap.has(key)) {
         locMap.set(key, {
           latitude: location.latitude,
@@ -230,7 +230,7 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
           const checkinTimeIso = data.checkinTimeIso;
           const senderUserId = payload.new.sender_user_id;
           if (!senderUserId || !checkinTimeIso || location?.latitude == null) return;
-          const key = `${senderUserId}:${checkinTimeIso}`;
+          const key = `${senderUserId}:${new Date(checkinTimeIso).toISOString()}`;
           setLocationMap((prev) => {
             if (prev.has(key)) return prev;
             const next = new Map(prev);
