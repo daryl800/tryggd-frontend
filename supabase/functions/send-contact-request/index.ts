@@ -1,6 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { sendAliyunPush } from '../_shared/aliyunPush.ts'
 
 const CONTACT_REQUEST_MESSAGES = {
   en: { title: '📩 Contact Request', body: (name: string) => `${name} wants to add you as a contact` },
@@ -108,7 +107,7 @@ serve(async (req) => {
     const [{ data: tokenData }, { data: senderProfile }, { data: receiverSettings }] = await Promise.all([
       supabase
         .from('user_push_tokens')
-        .select('expo_push_token, aliyun_device_id, contact_checkin_notifications')
+        .select('expo_push_token, contact_checkin_notifications')
         .eq('user_id', receiverUserId)
         .maybeSingle(),
       supabase
@@ -123,7 +122,7 @@ serve(async (req) => {
         .maybeSingle(),
     ])
 
-    if (!tokenData?.expo_push_token && !tokenData?.aliyun_device_id) {
+    if (!tokenData?.expo_push_token) {
       return new Response(JSON.stringify({ error: 'No push token found for recipient' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -170,30 +169,6 @@ serve(async (req) => {
 
     if (dbError) {
       console.error('Failed to insert contact request notification', dbError)
-    }
-
-    if (tokenData.aliyun_device_id && !tokenData.expo_push_token) {
-      const aliyunResult = await sendAliyunPush({
-        accessKeyId: Deno.env.get('ALIYUN_ACCESS_KEY_ID') ?? '',
-        accessKeySecret: Deno.env.get('ALIYUN_ACCESS_KEY_SECRET') ?? '',
-        appKey: Deno.env.get('ALIYUN_ANDROID_APP_KEY') ?? '',
-        targetUserId: receiverUserId,
-        title: locale.title,
-        body: locale.body(displayName),
-        extraData: notificationData,
-      })
-
-      if (!aliyunResult.success) {
-        return new Response(JSON.stringify({ error: 'Aliyun push failed', detail: aliyunResult.error }), {
-          status: 502,
-          headers: { 'Content-Type': 'application/json' },
-        })
-      }
-
-      return new Response(JSON.stringify({ success: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
     }
 
     const response = await fetch('https://exp.host/--/api/v2/push/send', {

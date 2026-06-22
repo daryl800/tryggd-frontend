@@ -20,7 +20,6 @@ import { tokenManager } from '@/lib/auth/tokenManager';
 import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { hasCompletedOnboarding } from '@/lib/onboarding/state';
 import { registerAndSavePushToken } from '@/lib/notifications/core';
-import { initAliyunPushForUser, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
@@ -129,21 +128,6 @@ function useNotifications(user: any) {
 }
 
 // ============================================
-// Aliyun Push Manager
-// ============================================
-function useAliyunPush(user: any) {
-  useEffect(() => {
-    if (!user?.id) return;
-    void initAliyunPushForUser(user.id);
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (user) return;
-    void unbindAliyunAccount();
-  }, [user]);
-}
-
-// ============================================
 // Deep Link Manager
 // ============================================
 function useDeepLinking(router: any) {
@@ -228,7 +212,6 @@ function RootLayoutNav() {
   // Use custom hooks
   const isNavReady = useNavigationPersistence(navigationRef);
   useNotifications(user);
-  useAliyunPush(user);
   useDeepLinking(router);
 
   useEffect(() => {

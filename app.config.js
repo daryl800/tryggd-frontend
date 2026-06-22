@@ -100,63 +100,10 @@ export default ({ config }) => ({
                     enableProguardInReleaseBuilds: true,
                     extraMavenRepos: [
                         "../../node_modules/@notifee/react-native/android/libs",
-                        "https://maven.aliyun.com/nexus/content/repositories/releases/",
                         "https://developer.huawei.com/repo/",
                         "https://developer.hihonor.com/repo/",
                     ],
-                    extraProguardRules: `
--keepclasseswithmembernames class ** { native <methods>; }
--keepattributes Signature
--keep class sun.misc.Unsafe { *; }
--keep class com.taobao.** {*;}
--keep class com.alibaba.** {*;}
--keep class com.alipay.** {*;}
--keep class com.ut.** {*;}
--keep class com.ta.** {*;}
--keep class anet.**{*;}
--keep class anetwork.**{*;}
--keep class org.android.spdy.**{*;}
--keep class org.android.agoo.**{*;}
--keep class android.os.**{*;}
--keep class org.json.**{*;}
--dontwarn com.taobao.**
--dontwarn com.alibaba.**
--dontwarn com.alipay.**
--dontwarn anet.**
--dontwarn org.android.spdy.**
--dontwarn org.android.agoo.**
--dontwarn anetwork.**
--dontwarn com.ut.**
--dontwarn com.ta.**
--keep class com.xiaomi.** {*;}
--dontwarn com.xiaomi.**
--keep class com.huawei.** {*;}
--dontwarn com.huawei.**
--ignorewarnings
--keepattributes *Annotation*
--keepattributes Exceptions
--keepattributes InnerClasses
--keepattributes Signature
--keepattributes SourceFile,LineNumberTable
--keep class com.hihonor.push.**{*;}
--keep class com.vivo.** {*;}
--dontwarn com.vivo.**
--keep public class * extends android.app.Service
--keep class com.google.firebase.**{*;}
--dontwarn com.google.firebase.**
-`,
                 },
-            },
-        ],
-        [
-            "expo-aliyun-push",
-            {
-                extraAndroidThirdPartyPushConfigFiles: {
-                    "assets/aliyun-emas-services.json": "/app",
-                },
-                extraIOSThirdPartyPushConfigFiles: [
-                    "assets/AliyunEmasServices-Info.plist",
-                ],
             },
         ],
     ],
