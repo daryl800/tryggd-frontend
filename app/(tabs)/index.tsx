@@ -723,7 +723,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { user, profile, loading, capabilities, refreshProfile } = useAuth();
-  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPaidPlusAccess, campaignId, pilotPreviewEndsAt } = useEntitlement();
+  const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess, hasPaidPlusAccess, campaignId, pilotPreviewEndsAt } = useEntitlement();
   const pilotPreviewDeadline = pilotPreviewEndsAt
     ? pilotPreviewEndsAt.toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
@@ -756,6 +756,7 @@ export default function HomeScreen() {
   const [moodTooltipVisible, setLatestStatusWellnessTooltipVisible] = useState(false);
   const [pilotDialogDismissed, setPilotDialogDismissed] = useState(false);
   const [homeStyleUserSelected, setHomeStyleUserSelected] = useState(false);
+  const [pilotPreviewActivatedLocally, setPilotPreviewActivatedLocally] = useState(false);
   const [showPlusActivatedBanner, setShowPlusActivatedBanner] = useState(false);
 
   // Shared contact check-in data (one fetch/subscription shared with Activity)
@@ -920,7 +921,7 @@ export default function HomeScreen() {
 
   const handleActivatePilotPreview = useCallback(async () => {
     await supabase.rpc('activate_pilot_preview');
-    await refreshProfile();
+    setPilotPreviewActivatedLocally(true);
     if (!homeStyleUserSelected) {
       const enhanced: HomeStyle = 'enhanced';
       setHomeStyle(enhanced);
@@ -935,6 +936,7 @@ export default function HomeScreen() {
       setShowPlusActivatedBanner(true);
       setTimeout(() => setShowPlusActivatedBanner(false), 6000);
     }
+    await refreshProfile();
   }, [refreshProfile, homeStyleUserSelected, user]);
 
   const handleDismissPilotDialog = useCallback(async () => {
@@ -944,7 +946,8 @@ export default function HomeScreen() {
     setPilotDialogDismissed(true);
   }, [campaignId]);
 
-  const homeLayout = getHomeLayout(capabilities.isPlus, homeStyle);
+  const effectiveIsPlus = capabilities.isPlus || hasPilotPreviewAccess || pilotPreviewActivatedLocally;
+  const homeLayout = getHomeLayout(effectiveIsPlus, homeStyle);
   const canUseEnhancedHome = homeLayout === 'plus-enhanced';
   const canUseWellnessHome = homeLayout !== 'free';
 

@@ -1,10 +1,12 @@
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
+import { HOME_STYLE_STORAGE_KEY } from '@/constants/homeLayout';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEntitlement } from '@/lib/entitlements/useEntitlement';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +33,7 @@ const FEATURE_ICONS = [
 export default function PlusScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { refreshProfile } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess, isPilotPreviewExpired } = useEntitlement();
   const [activating, setActivating] = useState(false);
 
@@ -44,7 +46,26 @@ export default function PlusScreen() {
       setActivating(true);
       const { error } = await supabase.rpc('activate_pilot_preview');
       if (error) throw error;
+
+      const enhanced = 'enhanced';
+      await AsyncStorage.setItem(HOME_STYLE_STORAGE_KEY, enhanced);
+      if (user?.id) {
+        const { error: settingsError } = await supabase
+          .from('user_settings')
+          .upsert(
+            {
+              user_id: user.id,
+              home_style: enhanced,
+              home_style_user_selected: false,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'user_id' },
+          );
+        if (settingsError) throw settingsError;
+      }
+
       await refreshProfile();
+      router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert(
         t('errors.title'),
@@ -53,7 +74,7 @@ export default function PlusScreen() {
     } finally {
       setActivating(false);
     }
-  }, [activating, canActivatePreview, refreshProfile, t]);
+  }, [activating, canActivatePreview, refreshProfile, router, t, user]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
