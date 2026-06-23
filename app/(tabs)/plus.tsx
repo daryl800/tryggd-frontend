@@ -65,7 +65,7 @@ export default function PlusScreen() {
       }
 
       await refreshProfile();
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (error: any) {
       Alert.alert(
         t('errors.title'),

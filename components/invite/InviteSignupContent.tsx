@@ -374,7 +374,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
 
       if (signInError) throw signInError;
 
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (error: any) {
       const localizedMessage = await extractFunctionErrorMessage(error);
       Alert.alert(

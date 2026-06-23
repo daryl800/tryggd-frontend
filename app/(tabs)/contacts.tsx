@@ -1285,8 +1285,23 @@ export default function ContactsScreen() {
                 .select('id, checkin_notifications_enabled')
                 .maybeSingle();
 
-            if (error) {
-                console.error('Toggle check-in notifications error:', error);
+            let updatedContact = data;
+            let updateError = error;
+
+            if (!updatedContact && !updateError && contact.user_id && user?.id) {
+                const retryResult = await supabase
+                    .from('contacts')
+                    .update({ checkin_notifications_enabled: enabled })
+                    .eq('owner_user_id', user.id)
+                    .eq('contact_user_id', contact.user_id)
+                    .select('id, checkin_notifications_enabled')
+                    .maybeSingle();
+                updatedContact = retryResult.data;
+                updateError = retryResult.error;
+            }
+
+            if (updateError) {
+                console.error('Toggle check-in notifications error:', updateError);
                 setExistingContacts((prev) =>
                     prev.map((item, itemIndex) =>
                         itemIndex === index
@@ -1301,12 +1316,12 @@ export default function ContactsScreen() {
                 );
                 Alert.alert(
                     t('errors.title'),
-                error.message || t('contacts.errors.updateCheckinNotifications')
+                updateError.message || t('contacts.errors.updateCheckinNotifications')
                 );
                 return;
             }
 
-            if (!data) {
+            if (!updatedContact) {
                 setExistingContacts((prev) =>
                     prev.map((item, itemIndex) =>
                         itemIndex === index
@@ -1329,7 +1344,7 @@ export default function ContactsScreen() {
                         ? {
                             ...item,
                             checkin_notifications_enabled:
-                                data.checkin_notifications_enabled !== false,
+                                updatedContact.checkin_notifications_enabled !== false,
                             toggling_notifications: false,
                         }
                         : item
@@ -1337,7 +1352,7 @@ export default function ContactsScreen() {
             );
 
             Alert.alert(
-                data.checkin_notifications_enabled !== false
+                updatedContact.checkin_notifications_enabled !== false
                     ? t('contacts.status.checkinsEnabled', {
                         name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
                       })
@@ -1375,8 +1390,23 @@ export default function ContactsScreen() {
                 .select('id, location_sharing_enabled')
                 .maybeSingle();
 
-            if (error) {
-                console.error('Toggle location sharing error:', error);
+            let updatedContact = data;
+            let updateError = error;
+
+            if (!updatedContact && !updateError && contact.user_id && user?.id) {
+                const retryResult = await supabase
+                    .from('contacts')
+                    .update({ location_sharing_enabled: enabled })
+                    .eq('owner_user_id', user.id)
+                    .eq('contact_user_id', contact.user_id)
+                    .select('id, location_sharing_enabled')
+                    .maybeSingle();
+                updatedContact = retryResult.data;
+                updateError = retryResult.error;
+            }
+
+            if (updateError) {
+                console.error('Toggle location sharing error:', updateError);
                 setExistingContacts((prev) =>
                     prev.map((item, itemIndex) =>
                         itemIndex === index
@@ -1391,12 +1421,12 @@ export default function ContactsScreen() {
                 );
                 Alert.alert(
                     t('errors.title'),
-                error.message || t('contacts.errors.updateLocationSharing')
+                updateError.message || t('contacts.errors.updateLocationSharing')
                 );
                 return;
             }
 
-            if (!data) {
+            if (!updatedContact) {
                 setExistingContacts((prev) =>
                     prev.map((item, itemIndex) =>
                         itemIndex === index
@@ -1419,7 +1449,7 @@ export default function ContactsScreen() {
                         ? {
                             ...item,
                             location_sharing_enabled:
-                                data.location_sharing_enabled === true,
+                                updatedContact.location_sharing_enabled === true,
                             toggling_location: false,
                         }
                         : item
@@ -1427,7 +1457,7 @@ export default function ContactsScreen() {
             );
 
             Alert.alert(
-                data.location_sharing_enabled === true
+                updatedContact.location_sharing_enabled === true
                     ? t('contacts.status.locationEnabled', {
                         name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
                       })
