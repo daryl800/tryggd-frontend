@@ -1961,7 +1961,7 @@ export default function ActivityScreen() {
                             {parsed.name ? (
                               <>
                                 <Text style={styles.todayResponseName}>{parsed.name}</Text>
-                                {`: ${parsed.content}`}
+                                {`: ${parsed.leadingMark ? `${parsed.leadingMark} ` : ''}${parsed.content}`}
                               </>
                             ) : (
                               response.body || response.title
