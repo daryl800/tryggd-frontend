@@ -61,6 +61,7 @@ const STROKE_WIDTH = 40;
 const STORAGE_KEY = '@checkin_state';
 const HOME_PRESENCE_STORAGE_KEY = '@settings_home_presence';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
+const HOME_FOCUS_REFRESH_STALE_MS = 60 * 1000;
 
 const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
@@ -799,6 +800,7 @@ export default function HomeScreen() {
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const presenceBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const moodTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastHomeRefreshAtRef = useRef(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -1176,8 +1178,19 @@ export default function HomeScreen() {
     if (!loading && user) {
       fetchLastCheckin();
       fetchContactsCount();
+      lastHomeRefreshAtRef.current = Date.now();
     }
   }, [loading, user, fetchLastCheckin, fetchContactsCount]);
+
+  const refreshHomeData = useCallback((reason: 'focus' | 'active' | 'manual' = 'manual') => {
+    console.log(`📱 Home refresh (${reason})`);
+    fetchLastCheckin();
+    fetchContactsCount();
+    loadHomeStyle();
+    void fetchLatestStatusNotificationRef.current();
+    void refreshCheckins();
+    lastHomeRefreshAtRef.current = Date.now();
+  }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, refreshCheckins]);
 
   // Timer and AppState handler (CONSOLIDATED)
   useEffect(() => {
@@ -1186,11 +1199,8 @@ export default function HomeScreen() {
         console.log('📱 App became active - refreshing data');
         setNow(new Date());
         checkDateAndReset();
-        fetchLastCheckin();
         refetchStreak();
-        fetchContactsCount();
-        void fetchLatestStatusNotificationRef.current();
-        void refreshCheckins();
+        refreshHomeData('active');
       }
     };
 
@@ -1207,7 +1217,7 @@ export default function HomeScreen() {
       clearInterval(resetCheckInterval);
       subscription.remove();
     };
-  }, [checkDateAndReset, fetchLastCheckin, refetchStreak, fetchContactsCount]);
+  }, [checkDateAndReset, refetchStreak, refreshHomeData]);
 
   // Hourly streak refresh
   useEffect(() => {
@@ -1389,13 +1399,16 @@ export default function HomeScreen() {
   // Focus effect for tab navigation
   useFocusEffect(
     useCallback(() => {
-      console.log('📱 Home screen focused - fetching fresh data');
-      fetchLastCheckin();
-      fetchContactsCount();
-      loadHomeStyle();
-      void fetchLatestStatusNotification();
-      void refreshCheckins();
-    }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, fetchLatestStatusNotification, refreshCheckins])
+      const nowMs = Date.now();
+      const isStale = nowMs - lastHomeRefreshAtRef.current > HOME_FOCUS_REFRESH_STALE_MS;
+
+      if (!isStale) {
+        console.log('📱 Home screen focused - skip refresh (fresh)');
+        return;
+      }
+
+      refreshHomeData('focus');
+    }, [refreshHomeData])
   );
 
   useEffect(() => {

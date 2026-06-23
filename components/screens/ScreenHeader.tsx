@@ -39,7 +39,13 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                     <View style={styles.greetingRow}>
                         <View style={styles.greetingLeft}>
                             <Ionicons name={iconName} size={ICON_SIZES.MD} color={BaseColors.primary} />
-                            <Text style={styles.greetingText}>{subtitle}</Text>
+                            <Text
+                                style={styles.greetingText}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                            >
+                                {subtitle}
+                            </Text>
                         </View>
                         {rightElement}
                     </View>
@@ -130,6 +136,8 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         textTransform: 'capitalize',
         marginLeft: 8,
+        flexShrink: 1,
+        minWidth: 0,
     },
     titleLarge: {
         fontSize: iosFontSize(34),
