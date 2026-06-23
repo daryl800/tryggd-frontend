@@ -4,7 +4,7 @@ export default ({ config }) => ({
 
     name: "tryggd",
     slug: "tryggd-frontend",
-    version: "4.5.0",
+    version: "4.5.1",
     orientation: "portrait",
     icon: "./assets/images/tryggd-app-icon-1024.png",
     scheme: "tryggd",

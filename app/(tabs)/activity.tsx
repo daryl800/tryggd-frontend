@@ -8,7 +8,6 @@ import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasSentWelfareCheck
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -869,17 +868,6 @@ export default function ActivityScreen() {
     void buildActivities();
   }, [buildActivities]);
 
-  // Focus effect for when tab is revisited
-  useFocusEffect(
-    useCallback(() => {
-      console.log('🎯 Screen focused - refreshing data');
-      fetchOwnerActivity();
-      void refreshCheckins(); // triggers buildActivities via context useEffect
-      fetchResponseNotifications();
-      loadInitialTodayResponses();
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-  );
-
   // ============================================
   // ResponseItem Component
   // ============================================
@@ -944,6 +932,7 @@ export default function ActivityScreen() {
     });
     const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
     const [lastWelfareCheckSentAt, setLastWelfareCheckSentAt] = useState<string | null>(null);
+    const [welfareClockMs, setWelfareClockMs] = useState(() => Date.now());
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
     const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [tripTooltipVisible, setTripTooltipVisible] = useState(false);
@@ -952,7 +941,6 @@ export default function ActivityScreen() {
     const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [reachOutTooltipVisible, setReachOutTooltipVisible] = useState(false);
     const reachOutTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const welfareCheckMountedRef = useRef(false);
 
     useEffect(() => {
       setAvatarLoadFailed(false);
@@ -1043,40 +1031,36 @@ export default function ActivityScreen() {
       checkIfWelfareSent();
     }, [userId, user?.id, timestamp, isOwner, resolvedActionState]);
 
-    useFocusEffect(
-      useCallback(() => {
-        if (!welfareCheckMountedRef.current) {
-          welfareCheckMountedRef.current = true;
-          return;
-        }
-        const checkOnFocus = async () => {
-          if (!user || !timestamp || isOwner) return;
-          const alreadyResponded = await responseService.hasResponded(userId, user.id, timestamp);
-          setResponseSent(alreadyResponded);
-          const currentWelfareKind = resolvedActionState === 'today_check' ? 'today_check' : 'overdue_check';
-          if (currentWelfareKind === 'overdue_check') {
-            const sentAt = await getLastWelfareCheckSentAt(userId, user.id, timestamp, currentWelfareKind);
-            setLastWelfareCheckSentAt(sentAt);
-            setWelfareCheckSent(false);
-          } else {
-            const alreadySent = await hasSentWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
-            setWelfareCheckSent(alreadySent);
-            setLastWelfareCheckSentAt(null);
-          }
-        };
-        checkOnFocus();
-      }, [userId, user?.id, timestamp, isOwner, resolvedActionState])
-    );
-
     const isLikeMode = resolvedActionState === 'like';
     const isTodayCheckMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'today_check';
     const isWelfareMode = capabilities.canUseWelfareGreeting && resolvedActionState === 'overdue_check';
     const isSupportMode = isLikeMode && typeof wellness_score === 'number' && wellness_score <= -1;
     const isReachOutResponseMode = isLikeMode && !!reach_out_status;
+
+    useEffect(() => {
+      if (!isWelfareMode || !lastWelfareCheckSentAt) return;
+
+      setWelfareClockMs(Date.now());
+      const sentAtMs = new Date(lastWelfareCheckSentAt).getTime();
+      const elapsedMs = Math.max(0, Date.now() - sentAtMs);
+      const nextMinuteDelay = Math.max(250, 60000 - (elapsedMs % 60000));
+      let minuteInterval: ReturnType<typeof setInterval> | null = null;
+
+      const minuteTimeout = setTimeout(() => {
+        setWelfareClockMs(Date.now());
+        minuteInterval = setInterval(() => setWelfareClockMs(Date.now()), 60000);
+      }, nextMinuteDelay);
+
+      return () => {
+        clearTimeout(minuteTimeout);
+        if (minuteInterval) clearInterval(minuteInterval);
+      };
+    }, [isWelfareMode, lastWelfareCheckSentAt]);
+
     const overdueCooldownActive =
       isWelfareMode &&
       !!lastWelfareCheckSentAt &&
-      Date.now() - new Date(lastWelfareCheckSentAt).getTime() < OVERDUE_WELFARE_COOLDOWN_HOURS * 3600000;
+      welfareClockMs - new Date(lastWelfareCheckSentAt).getTime() < OVERDUE_WELFARE_COOLDOWN_HOURS * 3600000;
     const isButtonEnabled = isLikeMode && !isOwner && !responseSent;
     const isSingleActionEnabled =
       (isLikeMode && !responseSent) ||
@@ -1344,7 +1328,7 @@ export default function ActivityScreen() {
         })
       : '';
     const lastWelfareFollowUpElapsedMs = lastWelfareCheckSentAt
-      ? Math.max(0, Date.now() - new Date(lastWelfareCheckSentAt).getTime())
+      ? Math.max(0, welfareClockMs - new Date(lastWelfareCheckSentAt).getTime())
       : 0;
     const lastWelfareFollowUpMinutesAgo = lastWelfareCheckSentAt
       ? Math.floor(lastWelfareFollowUpElapsedMs / 60000)
@@ -1353,7 +1337,7 @@ export default function ActivityScreen() {
       ? Math.floor(lastWelfareFollowUpElapsedMs / 3600000)
       : 0;
     const overdueCooldownHoursRemaining = overdueCooldownActive && lastWelfareCheckSentAt
-      ? Math.max(1, Math.ceil(OVERDUE_WELFARE_COOLDOWN_HOURS - ((Date.now() - new Date(lastWelfareCheckSentAt).getTime()) / 3600000)))
+      ? Math.max(1, Math.ceil(OVERDUE_WELFARE_COOLDOWN_HOURS - ((welfareClockMs - new Date(lastWelfareCheckSentAt).getTime()) / 3600000)))
       : 0;
 
     return (
