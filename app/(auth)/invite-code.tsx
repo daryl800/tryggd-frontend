@@ -68,11 +68,13 @@ export default function InviteCodeScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
       >
         <ScrollView
           contentContainerStyle={styles.container}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.content}>
@@ -131,10 +133,12 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 24,
+    paddingTop: 72,
+    paddingBottom: 48,
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   title: {
     fontSize: iosFontSize(32),

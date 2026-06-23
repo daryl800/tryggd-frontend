@@ -70,6 +70,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
   const passwordRef = useRef<TextInput>(null);
   const confirmPasswordRef = useRef<TextInput>(null);
   const autoVerifyAttemptedRef = useRef(false);
+  const displayNameTouchedRef = useRef(false);
 
   useEffect(() => {
     const loadInvite = async () => {
@@ -100,9 +101,11 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
         setInvite(data);
         if (data.suggested_username) {
           setUsername(data.suggested_username);
-          if (!displayNameTouched && !displayName.trim()) {
-            setDisplayName(data.suggested_username);
-          }
+          setDisplayName((currentName) =>
+            !displayNameTouchedRef.current && !currentName.trim()
+              ? data.suggested_username || ''
+              : currentName
+          );
         }
       }
 
@@ -110,7 +113,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
     };
 
     void loadInvite();
-  }, [displayName, displayNameTouched, t, token]);
+  }, [t, token]);
 
   useEffect(() => {
     if (!initialCode || code.length > 0) return;
@@ -143,6 +146,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
   }, [code, codeVerified, initialCode, invite, verifyingCode]);
 
   const handleDisplayNameChange = (value: string) => {
+    displayNameTouchedRef.current = true;
     setDisplayNameTouched(true);
     setDisplayName(value);
   };
@@ -475,9 +479,14 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 12 : 0}
       >
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
           <View style={styles.header}>
             <Ionicons name="people-circle" size={60} color={BaseColors.primary} />
             <Text style={styles.title} allowFontScaling={false}>
@@ -719,6 +728,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 24,
+    paddingBottom: 48,
     backgroundColor: '#fff',
   },
   header: {
