@@ -574,18 +574,49 @@ async function getUserPlan(
   supabase: ReturnType<typeof createClient>,
   userId: string
 ): Promise<UserPlan> {
-  const { data, error } = await supabase
+  const { data: entitlement, error: entitlementError } = await supabase
     .from('user_entitlements')
     .select('plan')
     .eq('user_id', userId)
     .maybeSingle()
 
-  if (error) {
-    console.error('Failed to load user entitlements, defaulting to free:', error.message)
+  if (entitlementError) {
+    console.error('Failed to load user entitlements, defaulting to free:', entitlementError.message)
     return 'free'
   }
 
-  return data?.plan === 'plus' ? 'plus' : 'free'
+  if (entitlement?.plan === 'plus') {
+    return 'plus'
+  }
+
+  const [{ data: profile, error: profileError }, { data: settings, error: settingsError }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('pilot_preview_activated_at')
+      .eq('id', userId)
+      .maybeSingle(),
+    supabase
+      .from('app_settings')
+      .select('pilot_preview_enabled, pilot_preview_ends_at')
+      .eq('id', 1)
+      .maybeSingle(),
+  ])
+
+  if (profileError) {
+    console.error('Failed to load user pilot preview profile:', profileError.message)
+  }
+
+  if (settingsError) {
+    console.error('Failed to load pilot preview settings:', settingsError.message)
+  }
+
+  const previewOpen =
+    settings?.pilot_preview_enabled === true &&
+    !!settings.pilot_preview_ends_at &&
+    new Date(settings.pilot_preview_ends_at).getTime() > Date.now()
+  const previewActivated = !!profile?.pilot_preview_activated_at
+
+  return previewOpen && previewActivated ? 'plus' : 'free'
 }
 
 async function getUserHomeStyle(
@@ -938,8 +969,30 @@ serve(async (req) => {
       .select('user_id, plan')
       .in('user_id', recipientIds)
 
-    const recipientPlanMap = new Map(
-      (recipientEntitlements || []).map((row: any) => [row.user_id, row.plan === 'plus' ? 'plus' : 'free'])
+    const { data: recipientProfiles } = await supabase
+      .from('profiles')
+      .select('id, pilot_preview_activated_at')
+      .in('id', recipientIds)
+
+    const { data: appSettings } = await supabase
+      .from('app_settings')
+      .select('pilot_preview_enabled, pilot_preview_ends_at')
+      .eq('id', 1)
+      .maybeSingle()
+
+    const previewOpen =
+      appSettings?.pilot_preview_enabled === true &&
+      !!appSettings.pilot_preview_ends_at &&
+      new Date(appSettings.pilot_preview_ends_at).getTime() > Date.now()
+    const paidRecipientIds = new Set(
+      (recipientEntitlements || [])
+        .filter((row: any) => row.plan === 'plus')
+        .map((row: any) => row.user_id)
+    )
+    const previewRecipientIds = new Set(
+      (recipientProfiles || [])
+        .filter((row: any) => previewOpen && !!row.pilot_preview_activated_at)
+        .map((row: any) => row.id)
     )
 
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
@@ -952,7 +1005,8 @@ serve(async (req) => {
 
       const recipientLang = recipientLanguageMap.get(recipientUserId) ?? 'en'
       const locale = getCheckinLocale(recipientLang)
-      const isRecipientPlus = recipientPlanMap.get(recipientUserId) === 'plus'
+      const isRecipientPlus =
+        paidRecipientIds.has(recipientUserId) || previewRecipientIds.has(recipientUserId)
       const pushRecipient = pushRecipientMap.get(recipientUserId)
 
       const payload = buildContactCheckinNotification(
