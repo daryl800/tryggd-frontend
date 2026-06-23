@@ -101,9 +101,10 @@
         "exhausted": "😩 Uupunut",
         "sleepy": "😪 Uninen",
         "daydreaming": "💭 Haaveilemassa",
-        "having_fun": "🎉 Hauskaa pitäen",
         "playing_sport": "⚽ Urheilemassa",
+        "having_fun": "🎉 Hauskaa pitäen",
         "watching_movie": "🎬 Katsomassa elokuvaa",
+        "resting": "😌 Lepäämässä",
         "goodmorning": "🌅 Hyvää huomenta",
         "goodafternoon": "🌞 Hyvää iltapäivää",
         "goodnight": "🌙 Hyvää yötä"

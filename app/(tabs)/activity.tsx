@@ -1347,7 +1347,7 @@ export default function ActivityScreen() {
       ? Math.max(0, Date.now() - new Date(lastWelfareCheckSentAt).getTime())
       : 0;
     const lastWelfareFollowUpMinutesAgo = lastWelfareCheckSentAt
-      ? Math.max(1, Math.floor(lastWelfareFollowUpElapsedMs / 60000))
+      ? Math.floor(lastWelfareFollowUpElapsedMs / 60000)
       : 0;
     const lastWelfareFollowUpHoursAgo = lastWelfareCheckSentAt
       ? Math.floor(lastWelfareFollowUpElapsedMs / 3600000)
@@ -1565,7 +1565,7 @@ export default function ActivityScreen() {
                     })()
                   )}
                 </TouchableOpacity>
-                {isWelfareMode && lastWelfareCheckSentAt ? (
+                {isWelfareMode && lastWelfareCheckSentAt && lastWelfareFollowUpElapsedMs >= 60000 ? (
                   <Text style={[
                     styles.followUpMetaText,
                     overdueCooldownActive ? styles.followUpMetaTextMuted : styles.followUpMetaTextReady,
