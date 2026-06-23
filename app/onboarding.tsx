@@ -114,7 +114,7 @@ export default function OnboardingScreen() {
 
     setSaving(true);
     try {
-      await completeOnboarding();
+      await completeOnboarding(user?.id);
       router.replace(user ? (needsUsername ? '/complete-profile' : '/') : '/(auth)/login');
     } catch (error: any) {
       Alert.alert(

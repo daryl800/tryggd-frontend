@@ -216,27 +216,28 @@ function RootLayoutNav() {
 
   useEffect(() => {
     const loadOnboardingState = async () => {
+      setOnboardingReady(false);
       try {
-        setHasSeenOnboarding(await hasCompletedOnboarding());
+        setHasSeenOnboarding(await hasCompletedOnboarding(user?.id));
       } finally {
         setOnboardingReady(true);
       }
     };
 
     void loadOnboardingState();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!onboardingReady || hasSeenOnboarding) return;
 
     const refreshOnboardingState = async () => {
-      if (await hasCompletedOnboarding()) {
+      if (await hasCompletedOnboarding(user?.id)) {
         setHasSeenOnboarding(true);
       }
     };
 
     void refreshOnboardingState();
-  }, [hasSeenOnboarding, onboardingReady, segments]);
+  }, [hasSeenOnboarding, onboardingReady, segments, user?.id]);
 
   useEffect(() => {
     const syncLanguage = async () => {

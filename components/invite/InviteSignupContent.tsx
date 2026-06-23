@@ -1,6 +1,7 @@
 import { BaseColors } from "@/constants/colors";
 import { iosFontSize } from "@/constants/typography";
 import { buildSyntheticEmailFromTryggdId, isValidTryggdId, normalizePhoneNumber } from "@/lib/auth/phoneIdentity";
+import { resetOnboarding } from "@/lib/onboarding/state";
 import { supabase } from "@/lib/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -321,14 +322,15 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
 
       const authEmail = data?.auth_email || buildSyntheticEmailFromTryggdId(username.trim());
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: authEmail,
         password,
       });
 
       if (signInError) throw signInError;
 
-      router.replace('/(tabs)');
+      await resetOnboarding(signInData.user?.id);
+      router.replace('/onboarding');
     } catch (error: any) {
       const localizedMessage = await extractFunctionErrorMessage(error);
       Alert.alert(
