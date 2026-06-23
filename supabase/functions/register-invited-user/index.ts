@@ -517,6 +517,23 @@ serve(async (req) => {
 
       if (inviteeContactError) throw inviteeContactError
 
+      const { error: acceptedRequestError } = await supabase
+        .from('contact_requests')
+        .insert({
+          sender_user_id: invite.inviter_user_id,
+          receiver_user_id: createdUser.id,
+          sender_email: inviterIdentifier,
+          sender_display_name: inviterDisplayName,
+          status: 'accepted',
+        })
+
+      if (
+        acceptedRequestError &&
+        acceptedRequestError.code !== '23505'
+      ) {
+        throw acceptedRequestError
+      }
+
       const { error: claimError } = await supabase
         .from('contact_invites')
         .update({

@@ -769,7 +769,6 @@ export default function ContactsScreen() {
         const initialize = async () => {
             await fetchAllData(true);
             await checkUnreadRequests();
-            cleanupContactData();
         };
 
         initialize();
@@ -1964,77 +1963,8 @@ export default function ContactsScreen() {
     };
 
     const cleanupContactData = async () => {
-        try {
-            const { data: userData } = await supabase.auth.getUser();
-            const user = userData.user;
-            if (!user) return;
-
-            const { data: acceptedRequests } = await supabase
-                .from('contact_requests')
-                .select('*')
-                .or(`sender_user_id.eq.${user.id},receiver_user_id.eq.${user.id}`)
-                .eq('status', 'accepted');
-
-            if (acceptedRequests && acceptedRequests.length > 0) {
-                for (const request of acceptedRequests) {
-                    const otherUserId =
-                        request.sender_user_id === user.id
-                            ? request.receiver_user_id
-                            : request.sender_user_id;
-
-                    const { data: contact } = await supabase
-                        .from('contacts')
-                        .select('*')
-                        .eq('owner_user_id', user.id)
-                        .eq('contact_user_id', otherUserId)
-                        .maybeSingle();
-
-                    if (!contact) {
-                        await supabase
-                            .from('contact_requests')
-                            .delete()
-                            .eq('id', request.id);
-                    }
-                }
-            }
-
-            const { data: allContacts } = await supabase
-                .from('contacts')
-                .select('*')
-                .eq('owner_user_id', user.id);
-
-            if (allContacts && allContacts.length > 0) {
-                for (const contact of allContacts) {
-                    const { data: acceptedRequest } = await supabase
-                        .from('contact_requests')
-                        .select('*')
-                        .or(
-                            `and(sender_user_id.eq.${user.id},receiver_user_id.eq.${contact.contact_user_id}),and(sender_user_id.eq.${contact.contact_user_id},receiver_user_id.eq.${user.id})`
-                        )
-                        .eq('status', 'accepted')
-                        .maybeSingle();
-
-                    const { data: claimedInvite } = await supabase
-                        .from('contact_invites')
-                        .select('id')
-                        .eq('invite_kind', 'signup')
-                        .eq('status', 'claimed')
-                        .or(
-                            `and(inviter_user_id.eq.${user.id},claimed_by_user_id.eq.${contact.contact_user_id}),and(inviter_user_id.eq.${contact.contact_user_id},claimed_by_user_id.eq.${user.id})`
-                        )
-                        .maybeSingle();
-
-                    if (!acceptedRequest && !claimedInvite) {
-                        await supabase
-                            .from('contacts')
-                            .delete()
-                            .eq('id', contact.id);
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Cleanup error:', error);
-        }
+        // Intentionally non-destructive. Older cleanup deleted contacts when
+        // the local user could not see the backing request/invite because of RLS.
     };
 
 
