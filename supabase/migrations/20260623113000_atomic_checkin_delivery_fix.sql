@@ -1,8 +1,6 @@
-alter table public.checkins
-add column if not exists wellness_score smallint;
-
-alter table public.users_latest_checkin
-add column if not exists wellness_score smallint;
+-- Make the check-in row and users_latest_checkin snapshot atomic.
+-- The notification trigger runs from users_latest_checkin, so all notification
+-- fields must be present before last_checked_in_utc changes.
 
 alter table public.checkins
 add column if not exists trip_status text,
@@ -13,29 +11,6 @@ alter table public.users_latest_checkin
 add column if not exists trip_status text,
 add column if not exists home_presence text,
 add column if not exists reach_out_status text;
-
-do $$
-begin
-  if not exists (
-    select 1
-    from pg_constraint
-    where conname = 'checkins_wellness_score_range'
-  ) then
-    alter table public.checkins
-    add constraint checkins_wellness_score_range
-    check (wellness_score is null or wellness_score between -5 and 5);
-  end if;
-
-  if not exists (
-    select 1
-    from pg_constraint
-    where conname = 'users_latest_checkin_wellness_score_range'
-  ) then
-    alter table public.users_latest_checkin
-    add constraint users_latest_checkin_wellness_score_range
-    check (wellness_score is null or wellness_score between -5 and 5);
-  end if;
-end $$;
 
 create or replace function public.upsert_daily_checkin(
   p_checkin_timezone text,
@@ -183,6 +158,7 @@ grant execute on function public.upsert_daily_checkin(
   text
 ) to authenticated;
 
+-- Keep the previous RPC signature available for installed app versions.
 create or replace function public.upsert_daily_checkin(
   p_checkin_timezone text,
   p_local_day_start_utc timestamptz,

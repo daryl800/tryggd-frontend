@@ -1538,7 +1538,7 @@ export default function HomeScreen() {
         'UTC';
 
       // Do the actual API calls in the background
-      Promise.all([
+      await Promise.all([
         // Insert checkin to database
         getOptionalCheckinLocation(user.id, capabilities.canShareLocation)
           .then(async (locationPayload) => {
@@ -1546,6 +1546,9 @@ export default function HomeScreen() {
 
             const nowDate = new Date();
             const { startIso, endIso } = getLocalDayBounds(nowDate);
+            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripPresence : null;
+            const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
+            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutPresence : null;
             const fallbackLegacyWrite = async () => {
               const shouldUpdateToday = !!lastCheckinUtc && isSameDay(new Date(lastCheckinUtc), nowDate);
 
@@ -1568,6 +1571,9 @@ export default function HomeScreen() {
                     .update({
                       checked_in_at_utc: new Date().toISOString(),
                       checkin_timezone: timeZone,
+                      trip_status: nextTripStatus,
+                      home_presence: nextHomePresence,
+                      reach_out_status: nextReachOutStatus,
                       ...(locationPayload || {}),
                     })
                     .eq('id', existingId)
@@ -1581,6 +1587,9 @@ export default function HomeScreen() {
                 .insert({
                   user_id: user.id,
                   checkin_timezone: timeZone,
+                  trip_status: nextTripStatus,
+                  home_presence: nextHomePresence,
+                  reach_out_status: nextReachOutStatus,
                   ...(locationPayload || {}),
                 })
                 .select('id, checked_in_at_utc')
@@ -1595,6 +1604,9 @@ export default function HomeScreen() {
               p_location_latitude: locationPayload?.location_latitude ?? null,
               p_location_longitude: locationPayload?.location_longitude ?? null,
               p_location_accuracy_meters: locationPayload?.location_accuracy_meters ?? null,
+              p_trip_status: nextTripStatus,
+              p_home_presence: nextHomePresence,
+              p_reach_out_status: nextReachOutStatus,
             });
 
             if (!rpcResult.error) {
@@ -1638,17 +1650,6 @@ export default function HomeScreen() {
 
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
-
-            // Keep trip status and home presence aligned with the active home layout/mode so
-            // stale enhanced-mode state does not leak into simple/free experiences or the other mode.
-            const nextTripStatus = canUseEnhancedHome && checkinMode === 'trip' ? tripPresence : null;
-            const nextHomePresence = canUseEnhancedHome && checkinMode === 'home' ? homePresence : null;
-            const nextReachOutStatus = canUseEnhancedHome && checkinMode === 'reach_out' ? reachOutPresence : null;
-            supabase
-              .from('users_latest_checkin')
-              .update({ trip_status: nextTripStatus, home_presence: nextHomePresence, reach_out_status: nextReachOutStatus })
-              .eq('user_id', user.id)
-              .then(() => {});
           })
       ]).catch(err => {
         // If something fails, revert the optimistic update
@@ -1660,7 +1661,23 @@ export default function HomeScreen() {
     } finally {
       setIsCheckingIn(false);
     }
-  }, [canUseEnhancedHome, canUseWellnessHome, capabilities.canShareLocation, user, t, triggerCheckInAnimation, refetchStreak, moodScore, homePresence]);
+  }, [
+    canUseEnhancedHome,
+    canUseWellnessHome,
+    capabilities.canShareLocation,
+    checkinMode,
+    homePresence,
+    isCheckingIn,
+    lastCheckinId,
+    lastCheckinUtc,
+    moodScore,
+    reachOutPresence,
+    refetchStreak,
+    t,
+    tripPresence,
+    triggerCheckInAnimation,
+    user,
+  ]);
 
 
   const startOfDay = new Date();

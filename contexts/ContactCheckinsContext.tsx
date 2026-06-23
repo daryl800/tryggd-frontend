@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import * as Notifications from 'expo-notifications';
@@ -64,8 +65,11 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
   const [profiles, setProfiles] = useState<Map<string, ContactCheckinProfile>>(new Map());
   const [locationMap, setLocationMap] = useState<Map<string, ContactCheckinLocation>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
+  const fetchGenerationRef = useRef(0);
 
   const fetchAll = useCallback(async () => {
+    const fetchGeneration = ++fetchGenerationRef.current;
+
     if (!user) {
       setContactIds([]);
       setCheckins([]);
@@ -79,6 +83,8 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
       .from('contacts')
       .select('contact_user_id, contact_display_name')
       .eq('owner_user_id', user.id);
+
+    if (fetchGeneration !== fetchGenerationRef.current) return;
 
     const ids = ((contactRows || []) as any[])
       .map((r) => r.contact_user_id)
@@ -125,6 +131,8 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
         .limit(200),
     ]);
 
+    if (fetchGeneration !== fetchGenerationRef.current) return;
+
     const profileMap = new Map<string, ContactCheckinProfile>();
     for (const p of profilesResult.data || []) {
       profileMap.set(p.id, {
@@ -155,9 +163,35 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
       }
     }
 
-    setCheckins((checkinsResult.data || []) as ContactCheckinRow[]);
+    const fetchedCheckins = (checkinsResult.data || []) as ContactCheckinRow[];
+    setCheckins((prev) => {
+      const previousByUserId = new Map(prev.map((row) => [row.user_id, row]));
+      return fetchedCheckins.map((row) => {
+        const previous = previousByUserId.get(row.user_id);
+        if (
+          previous?.last_checked_in_utc &&
+          (!row.last_checked_in_utc ||
+            new Date(previous.last_checked_in_utc).getTime() >
+              new Date(row.last_checked_in_utc).getTime())
+        ) {
+          return previous;
+        }
+        return row;
+      });
+    });
     setProfiles(profileMap);
-    setLocationMap(locMap);
+    setLocationMap((prev) => {
+      const next = new Map(locMap);
+      const activeContactIds = new Set(ids);
+      for (const [key, location] of prev) {
+        const separatorIndex = key.indexOf(':');
+        const senderUserId = separatorIndex === -1 ? key : key.slice(0, separatorIndex);
+        if (activeContactIds.has(senderUserId) && !next.has(key)) {
+          next.set(key, location);
+        }
+      }
+      return next;
+    });
     setIsLoading(false);
   }, [user]);
 
@@ -253,13 +287,20 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
     const subscription = Notifications.addNotificationReceivedListener((notification) => {
       const data = notification.request.content.data as any;
       if (!data?.contactUserId || !data?.checkinTimeIso) return;
+      const normalizedCheckinTime = new Date(data.checkinTimeIso).toISOString();
 
       setCheckins((prev) => {
         const existing = prev.find((c) => c.user_id === data.contactUserId);
-        if (existing && existing.last_checked_in_utc === data.checkinTimeIso) return prev;
+        if (
+          existing?.last_checked_in_utc &&
+          new Date(existing.last_checked_in_utc).getTime() >=
+            new Date(data.checkinTimeIso).getTime()
+        ) {
+          return prev;
+        }
         const optimistic: ContactCheckinRow = {
           user_id: data.contactUserId,
-          last_checked_in_utc: data.checkinTimeIso,
+          last_checked_in_utc: normalizedCheckinTime,
           wellness_score: data.wellnessScore ?? null,
           trip_status: data.tripStatus ?? null,
           home_presence: data.homePresence ?? null,
@@ -274,6 +315,20 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
           (b.last_checked_in_utc ?? '').localeCompare(a.last_checked_in_utc ?? '')
         );
       });
+
+      if (data.location?.latitude != null && data.location?.longitude != null) {
+        const key = `${data.contactUserId}:${normalizedCheckinTime}`;
+        setLocationMap((prev) => {
+          const next = new Map(prev);
+          next.set(key, {
+            latitude: data.location.latitude,
+            longitude: data.location.longitude,
+            accuracyMeters: data.location.accuracyMeters ?? null,
+            checkinTimeIso: normalizedCheckinTime,
+          });
+          return next;
+        });
+      }
 
       void fetchAll();
     });

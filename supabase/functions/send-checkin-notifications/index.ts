@@ -757,20 +757,6 @@ serve(async (req) => {
       })
     }
 
-    // ============================================
-    // 4. Rate limit (60 seconds cooldown)
-    // ============================================
-    const now = new Date()
-    const cooldownSeconds = 60
-
-    const { data: rateLimit } = await supabase
-      .from('notification_rate_limits')
-      .select('last_contact_checkin_push_at')
-      .eq('user_id', user_id)
-      .single()
-
-    console.log('🕒 Rate limit row:', rateLimit)
-
     const senderPlan = await getUserPlan(supabase, user_id)
     const isPlusSender = senderPlan === 'plus'
     const senderHomeStyle = await getUserHomeStyle(supabase, user_id)
@@ -778,22 +764,8 @@ serve(async (req) => {
     const canSendEnhancedStatus = isPlusSender && senderHomeStyle === 'enhanced'
     console.log('💳 Sender plan/style:', { senderPlan, senderHomeStyle })
 
-    if (rateLimit?.last_contact_checkin_push_at) {
-      const lastPush = new Date(rateLimit.last_contact_checkin_push_at)
-      const diffSeconds = (now.getTime() - lastPush.getTime()) / 1000
-
-      if (diffSeconds < cooldownSeconds) {
-        console.log('⛔ Push skipped (cooldown active)')
-        return new Response(JSON.stringify({
-          success: true,
-          skipped: true,
-          reason: 'cooldown_active'
-        }), { status: 200 })
-      }
-    }
-
     // ============================================
-    // 5. Find contacts
+    // 4. Find contacts
     // ============================================
     const { data: contactRelationships, error: contactsError } = await supabase
       .from('contacts')
@@ -817,45 +789,48 @@ serve(async (req) => {
     console.log(`✅ Found ${eligibleContacts.length} contacts`)
     console.log('📋 Eligible contact relationships:', eligibleContacts)
 
-    const { data: latestCheckinRow, error: latestCheckinError } = await supabase
+    const { data: checkinRow, error: checkinError } = await supabase
       .from('checkins')
-      .select('location_latitude, location_longitude, location_accuracy_meters, checked_in_at_utc, wellness_score')
+      .select('location_latitude, location_longitude, location_accuracy_meters, checked_in_at_utc, wellness_score, trip_status, home_presence, reach_out_status')
       .eq('user_id', user_id)
-      .order('checked_in_at_utc', { ascending: false })
-      .limit(1)
+      .eq('checked_in_at_utc', checkin_time)
       .maybeSingle()
 
-    if (latestCheckinError) {
-      throw latestCheckinError
+    if (checkinError) {
+      throw checkinError
     }
 
-    // Fetch trip_status / home_presence / reach_out_status from users_latest_checkin
-    const { data: latestCheckinMeta } = await supabase
-      .from('users_latest_checkin')
-      .select('trip_status, home_presence, reach_out_status')
-      .eq('user_id', user_id)
-      .maybeSingle()
+    if (!checkinRow) {
+      console.error('Exact check-in row was not found', { user_id, checkin_time })
+      return new Response(JSON.stringify({
+        error: 'Exact check-in row was not found',
+        code: 'checkin_not_found'
+      }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
 
     const tripStatus: string | null = canSendEnhancedStatus
-      ? latestCheckinMeta?.trip_status ?? null
+      ? checkinRow.trip_status ?? null
       : null
 
     const homePresence: string | null = canSendEnhancedStatus && !tripStatus
-      ? latestCheckinMeta?.home_presence ?? null
+      ? checkinRow.home_presence ?? null
       : null
 
     const reachOutStatus: string | null = canSendEnhancedStatus && !tripStatus
-      ? latestCheckinMeta?.reach_out_status ?? null
+      ? checkinRow.reach_out_status ?? null
       : null
 
     const sharedLocation: SharedLocation | null =
       isPlusSender &&
-      latestCheckinRow?.location_latitude != null &&
-      latestCheckinRow?.location_longitude != null
+      checkinRow.location_latitude != null &&
+      checkinRow.location_longitude != null
         ? {
-            latitude: latestCheckinRow.location_latitude,
-            longitude: latestCheckinRow.location_longitude,
-            accuracyMeters: latestCheckinRow.location_accuracy_meters ?? null,
+            latitude: checkinRow.location_latitude,
+            longitude: checkinRow.location_longitude,
+            accuracyMeters: checkinRow.location_accuracy_meters ?? null,
           }
         : null
 
@@ -866,8 +841,8 @@ serve(async (req) => {
     )
 
     const rawWellnessScore =
-      canSendWellness && typeof latestCheckinRow?.wellness_score === 'number'
-        ? latestCheckinRow.wellness_score
+      canSendWellness && typeof checkinRow.wellness_score === 'number'
+        ? checkinRow.wellness_score
         : null
     // Suppress wellness when user is in reach-out mode — the two messages contradict each other
     const wellnessScore = reachOutStatus ? null : rawWellnessScore
@@ -912,24 +887,21 @@ serve(async (req) => {
       console.log('🧾 Existing notifications found for recipients:', [...alreadyNotifiedUserIds])
     }
 
-    const { data: recipients, error: tokensError } = await supabase
+    const { data: pushRecipients, error: tokensError } = await supabase
       .from('user_push_tokens')
       .select('user_id, expo_push_token, contact_checkin_notifications')
       .in('user_id', recipientIds)
-      .eq('contact_checkin_notifications', true)
-      .not('expo_push_token', 'is', null)
 
     if (tokensError) throw tokensError
 
-    if (!recipients?.length) {
-      console.log('⏩ No push tokens found')
-      return new Response(JSON.stringify({ message: 'No push tokens found' }), { status: 200 })
-    }
+    const pushRecipientMap = new Map(
+      (pushRecipients || []).map((recipient) => [recipient.user_id, recipient])
+    )
 
-    console.log(`✅ Found ${recipients.length} recipients with tokens`)
+    console.log(`✅ Found ${pushRecipients?.length ?? 0} recipient push settings`)
     console.log(
-      '📋 Recipients with tokens:',
-      recipients.map((recipient) => ({
+      '📋 Recipient push settings:',
+      (pushRecipients || []).map((recipient) => ({
         user_id: recipient.user_id,
         has_token: !!recipient.expo_push_token,
         contact_checkin_notifications: recipient.contact_checkin_notifications,
@@ -972,25 +944,26 @@ serve(async (req) => {
 
     const expoAccessToken = Deno.env.get('EXPO_ACCESS_TOKEN')
 
-    for (const recipient of recipients) {
-      if (alreadyNotifiedUserIds.has(recipient.user_id)) {
-        console.log(`⏩ Skipping duplicate notification for ${recipient.user_id}`)
+    for (const recipientUserId of recipientIds) {
+      if (alreadyNotifiedUserIds.has(recipientUserId)) {
+        console.log(`⏩ Skipping duplicate notification for ${recipientUserId}`)
         continue
       }
 
-      const recipientLang = recipientLanguageMap.get(recipient.user_id) ?? 'en'
+      const recipientLang = recipientLanguageMap.get(recipientUserId) ?? 'en'
       const locale = getCheckinLocale(recipientLang)
-      const isRecipientPlus = recipientPlanMap.get(recipient.user_id) === 'plus'
+      const isRecipientPlus = recipientPlanMap.get(recipientUserId) === 'plus'
+      const pushRecipient = pushRecipientMap.get(recipientUserId)
 
       const payload = buildContactCheckinNotification(
         locale,
         checkingUserName,
         formattedTime,
         user_id,
-        recipient.user_id,
+        recipientUserId,
         checkin_time,
         timezone,
-        isRecipientPlus && sharedLocation && locationRecipientIds.has(recipient.user_id)
+        isRecipientPlus && sharedLocation && locationRecipientIds.has(recipientUserId)
           ? sharedLocation
           : null,
         isRecipientPlus ? wellnessScore : null,
@@ -1001,7 +974,7 @@ serve(async (req) => {
       )
 
       notificationsToInsert.push({
-        user_id: recipient.user_id,
+        user_id: recipientUserId,
         type: payload.type,
         title: payload.title,
         body: payload.body,
@@ -1011,12 +984,15 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       })
 
-      if (recipient.expo_push_token && Expo.isExpoPushToken(recipient.expo_push_token)) {
+      if (
+        pushRecipient?.contact_checkin_notifications === true &&
+        pushRecipient.expo_push_token &&
+        Expo.isExpoPushToken(pushRecipient.expo_push_token)
+      ) {
         const pushData = { ...payload.data }
-        delete pushData.location
 
         messages.push({
-          to: recipient.expo_push_token,
+          to: pushRecipient.expo_push_token,
           sound: 'default',
           title: payload.title,
           body: payload.body,
@@ -1033,7 +1009,11 @@ serve(async (req) => {
     // ============================================
     console.log(`💾 Saving ${notificationsToInsert.length} notifications`)
     if (notificationsToInsert.length > 0) {
-      await supabase.from('notifications').insert(notificationsToInsert)
+      const { error: insertError } = await supabase
+        .from('notifications')
+        .insert(notificationsToInsert)
+
+      if (insertError) throw insertError
     }
 
     // ============================================
@@ -1080,22 +1060,7 @@ serve(async (req) => {
 
 
     // ============================================
-    // 12. Update rate limit
-    // ============================================
-    if (successfulPushes.length > 0) {
-      await supabase
-        .from('notification_rate_limits')
-        .upsert(
-          {
-            user_id: user_id,
-            last_contact_checkin_push_at: now.toISOString()
-          },
-          { onConflict: 'user_id' }
-        )
-    }
-
-    // ============================================
-    // 13. Return success
+    // 12. Return success
     // ============================================
     console.log('✅ Notification process completed', {
       auth_kind: auth.kind,
