@@ -11,8 +11,6 @@ type RegisterInvitePayload = {
   language?: string
 }
 
-type UserPlan = 'free' | 'plus'
-
 type InviteLocale = 'en' | 'sv' | 'no' | 'fr' | 'fi' | 'da' | 'es' | 'it' | 'de' | 'ja' | 'ko' | 'zh-Hant' | 'zh-Hans'
 
 function normalizeLocale(input?: string | null): InviteLocale {
@@ -276,22 +274,19 @@ async function sha256Hex(value: string) {
     .join('')
 }
 
-async function getUserPlan(
+async function getContactLimit(
   supabase: ReturnType<typeof createClient>,
   userId: string
-): Promise<UserPlan> {
-  const { data, error } = await supabase
-    .from('user_entitlements')
-    .select('plan')
-    .eq('user_id', userId)
-    .maybeSingle()
+): Promise<number> {
+  const { data, error } = await supabase.rpc('get_contact_limit', {
+    p_user_id: userId,
+  })
 
   if (error) {
-    console.error('Failed to load inviter plan, defaulting to free:', error.message)
-    return 'free'
+    throw error
   }
 
-  return data?.plan === 'plus' ? 'plus' : 'free'
+  return typeof data === 'number' ? data : 5
 }
 
 serve(async (req) => {
@@ -435,22 +430,22 @@ serve(async (req) => {
 
     if (inviterProfileError) throw inviterProfileError
 
-    const inviterPlan = await getUserPlan(supabase, invite.inviter_user_id)
-    if (inviterPlan !== 'plus') {
-      const { count: inviterContactCount, error: inviterContactCountError } = await supabase
+    const [inviterContactLimit, inviterContactCountResult] = await Promise.all([
+      getContactLimit(supabase, invite.inviter_user_id),
+      supabase
         .from('contacts')
         .select('*', { count: 'exact', head: true })
-        .eq('owner_user_id', invite.inviter_user_id)
+        .eq('owner_user_id', invite.inviter_user_id),
+    ])
 
-      if (inviterContactCountError) throw inviterContactCountError
-      if ((inviterContactCount || 0) >= 3) {
-        return new Response(JSON.stringify({
-          error: localizeInviteMessage(locale, 'inviter_limit'),
-        }), {
-          status: 409,
-          headers: { 'Content-Type': 'application/json' },
-        })
-      }
+    if (inviterContactCountResult.error) throw inviterContactCountResult.error
+    if ((inviterContactCountResult.count || 0) >= inviterContactLimit) {
+      return new Response(JSON.stringify({
+        error: localizeInviteMessage(locale, 'inviter_limit'),
+      }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const { data: createdUserData, error: createUserError } = await supabase.auth.admin.createUser({

@@ -549,6 +549,10 @@ export default function ContactsScreen() {
             return suggestedInviteValidationMessage || t('contacts.invite.suggestedUsernameHelp');
         }
 
+        if (normalized.includes('contact limit')) {
+            return t('contacts.alerts.limitReached.message');
+        }
+
         return message;
     }, [suggestedInviteValidationMessage, t]);
     const [activeInputIndex, setActiveInputIndex] = useState<number | null>(null);
@@ -565,6 +569,19 @@ export default function ContactsScreen() {
 
     const totalContactsCount = existingContacts.length + newContacts.length;
     const totalRequestsCount = incomingRequests.length + outgoingRequests.length;
+
+    const handleOpenInviteModal = useCallback(() => {
+        if (totalContactsCount >= capabilities.maxContacts) {
+            Alert.alert(
+                t('contacts.alerts.limitReached.title'),
+                t('contacts.alerts.limitReached.message'),
+                [{ text: t('common.ok') }]
+            );
+            return;
+        }
+
+        setInviteModalVisible(true);
+    }, [capabilities.maxContacts, t, totalContactsCount]);
 
     const getUserIdentity = useCallback(async (userId: string) => {
         const { data: rows } = await supabase.rpc(
@@ -2039,13 +2056,17 @@ export default function ContactsScreen() {
                     rightElement={
                         <View style={styles.headerActions}>
                             <TouchableOpacity
-                                onPress={() => setInviteModalVisible(true)}
+                                onPress={handleOpenInviteModal}
                                 style={styles.inviteButton}
                             >
                                 <Ionicons
                                     name="link"
                                     size={ICON_SIZES.LG}
-                                    color={BaseColors.primary}
+                                    color={
+                                        totalContactsCount >= capabilities.maxContacts
+                                            ? BaseColors.neutral[300]
+                                            : BaseColors.primary
+                                    }
                                 />
                             </TouchableOpacity>
                             {/* <TouchableOpacity
@@ -2444,12 +2465,15 @@ export default function ContactsScreen() {
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={[styles.modalPrimaryButton, (creatingInvite || !!suggestedInviteValidationMessage) && styles.saveButtonDisabled]}
+                                    style={[
+                                        styles.modalPrimaryButton,
+                                        (creatingInvite || !!suggestedInviteValidationMessage || totalContactsCount >= capabilities.maxContacts) && styles.saveButtonDisabled,
+                                    ]}
                                     onPress={() => {
                                         Keyboard.dismiss();
                                         void handleCreateInvite();
                                     }}
-                                    disabled={creatingInvite || !!suggestedInviteValidationMessage}
+                                    disabled={creatingInvite || !!suggestedInviteValidationMessage || totalContactsCount >= capabilities.maxContacts}
                                 >
                                     <Text style={styles.modalPrimaryButtonText} allowFontScaling={false}>
                                         {creatingInvite ? t('contacts.invite.creating') : t('contacts.invite.createButton')}

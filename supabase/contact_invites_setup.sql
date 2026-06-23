@@ -61,10 +61,23 @@ declare
   v_token text;
   v_expires_at timestamptz;
   v_suggested_username text;
+  v_contact_count integer;
+  v_contact_limit integer;
 begin
   v_user_id := auth.uid();
   if v_user_id is null then
     raise exception 'Not authenticated';
+  end if;
+
+  select count(*)
+  into v_contact_count
+  from public.contacts
+  where owner_user_id = v_user_id;
+
+  v_contact_limit := public.get_contact_limit(v_user_id);
+
+  if v_contact_count >= v_contact_limit then
+    raise exception 'Contact limit reached.';
   end if;
 
   v_suggested_username := nullif(lower(regexp_replace(trim(coalesce(p_suggested_username, '')), '\s+', '', 'g')), '');

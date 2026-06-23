@@ -3,6 +3,7 @@ import { Session } from "@supabase/supabase-js";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { AppState } from "react-native";
 import {
+    FREE_CONTACT_LIMIT,
     getCapabilities,
     type UserCapabilities,
     type UserPlan,
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<any | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [plan, setPlan] = useState<UserPlan>(DEFAULT_PLAN);
-    const [contactLimit, setContactLimit] = useState<number>(3);
+    const [contactLimit, setContactLimit] = useState<number>(FREE_CONTACT_LIMIT);
     const [pilotPreviewConfig, setPilotPreviewConfig] = useState<PilotPreviewConfig | null>(null);
     const [initialized, setInitialized] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
@@ -117,7 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setPlan(effectivePlan);
             }
 
-            setContactLimit(limitResult.data ?? 3);
+            setContactLimit(limitResult.data ?? FREE_CONTACT_LIMIT);
 
             console.log("[AuthContext] Profile loaded:", data, error);
 
@@ -201,7 +202,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!user) {
             setProfile(null);
             setPlan(DEFAULT_PLAN);
-            setContactLimit(3);
+            setContactLimit(FREE_CONTACT_LIMIT);
             return;
         }
 

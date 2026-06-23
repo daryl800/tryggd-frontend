@@ -81,10 +81,10 @@ security definer
 set search_path = public
 as $$
   select coalesce(
-    (select case when coalesce(plan, 'free') = 'plus' then 999 else 3 end
+    (select case when coalesce(plan, 'free') = 'plus' then 999 else 5 end
      from public.user_entitlements
      where user_id = p_user_id),
-    3
+    5
   );
 $$;
 
@@ -243,5 +243,5 @@ begin
 end;
 $$;
 
-grant execute on function public.get_contact_limit(uuid)       to authenticated;
+grant execute on function public.get_contact_limit(uuid)       to authenticated, service_role;
 grant execute on function public.check_can_add_contact(uuid)   to authenticated;

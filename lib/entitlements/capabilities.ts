@@ -1,5 +1,8 @@
 export type UserPlan = 'free' | 'plus';
 
+export const FREE_CONTACT_LIMIT = 5;
+export const PLUS_CONTACT_LIMIT = 999;
+
 export type UserCapabilities = {
   isPlus: boolean;
   canUseWelfareGreeting: boolean;
@@ -24,6 +27,6 @@ export function getCapabilities(plan: UserPlan, contactLimit?: number): UserCapa
     canControlCheckinRecipients: isPlus,
     canAddUnlimitedContacts: isPlus,
     canSendEmergencyMessage: isPlus,
-    maxContacts: contactLimit ?? (isPlus ? 999 : 3),
+    maxContacts: contactLimit ?? (isPlus ? PLUS_CONTACT_LIMIT : FREE_CONTACT_LIMIT),
   };
 }
