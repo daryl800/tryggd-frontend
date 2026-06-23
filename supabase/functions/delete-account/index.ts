@@ -50,13 +50,26 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     )
 
-    const { error: latestCheckinError } = await supabase
-      .from('users_latest_checkin')
-      .delete()
-      .eq('user_id', user.id)
+    const cleanupOperations = [
+      supabase.from('contacts').delete().or(`owner_user_id.eq.${user.id},contact_user_id.eq.${user.id}`),
+      supabase.from('contact_requests').delete().or(`sender_user_id.eq.${user.id},receiver_user_id.eq.${user.id}`),
+      supabase.from('contact_invites').delete().or(`inviter_user_id.eq.${user.id},target_user_id.eq.${user.id},claimed_by_user_id.eq.${user.id}`),
+      supabase.from('notifications').delete().or(`user_id.eq.${user.id},sender_user_id.eq.${user.id}`),
+      supabase.from('notification_rate_limits').delete().eq('sender_user_id', user.id),
+      supabase.from('user_push_tokens').delete().eq('user_id', user.id),
+      supabase.from('user_reminder_times').delete().eq('user_id', user.id),
+      supabase.from('user_settings').delete().eq('user_id', user.id),
+      supabase.from('user_entitlements').delete().eq('user_id', user.id),
+      supabase.from('checkins').delete().eq('user_id', user.id),
+      supabase.from('users_latest_checkin').delete().eq('user_id', user.id),
+      supabase.from('profiles').delete().eq('id', user.id),
+    ]
 
-    if (latestCheckinError) {
-      console.error('Failed to delete users_latest_checkin row', latestCheckinError)
+    const cleanupResults = await Promise.all(cleanupOperations)
+    const failedCleanup = cleanupResults.find((result) => result.error)
+
+    if (failedCleanup?.error) {
+      console.error('Failed to delete account data', failedCleanup.error)
       return new Response(JSON.stringify({ error: 'Failed to prepare account deletion' }), {
         status: 500,
         headers: jsonHeaders,
