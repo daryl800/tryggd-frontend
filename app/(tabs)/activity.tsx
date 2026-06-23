@@ -8,6 +8,7 @@ import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasSentWelfareCheck
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -862,6 +863,15 @@ export default function ActivityScreen() {
       lastCheckinTimes.current.clear();
     };
   }, [initialize, refreshCheckins]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchOwnerActivity();
+      void refreshCheckins();
+      fetchResponseNotifications();
+      loadInitialTodayResponses();
+    }, [refreshCheckins])
+  );
 
   // Rebuild activities whenever context check-in data changes
   useEffect(() => {
