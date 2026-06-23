@@ -2189,7 +2189,7 @@ export default function HomeScreen() {
                         top: innerButtonOffset,
                       },
                       checkedInToday ? styles.innerButtonChecked : styles.innerButtonUnchecked,
-                      !checkedInToday && capabilities.isPlus && {
+                      !checkedInToday && {
                         justifyContent: 'flex-start',
                         paddingTop: innerButtonSize * 0.07,
                         paddingBottom: innerButtonSize * 0.06,
@@ -2227,7 +2227,7 @@ export default function HomeScreen() {
                     <View style={[
                       styles.textContainer,
                       !checkedInToday && styles.textContainerUnchecked,
-                      !checkedInToday && capabilities.isPlus && styles.textContainerUncheckedPlus,
+                      !checkedInToday && styles.textContainerUncheckedPlus,
                       checkedInToday && isLongCheckedInText && styles.textContainerCompactCheckedIn,
                       checkedInToday && capabilities.isPlus && { flex: 1 },
                     ]}>
