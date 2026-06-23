@@ -1283,7 +1283,7 @@ export default function ContactsScreen() {
                 .update({ checkin_notifications_enabled: enabled })
                 .eq('id', contact.id)
                 .select('id, checkin_notifications_enabled')
-                .single();
+                .maybeSingle();
 
             if (error) {
                 console.error('Toggle check-in notifications error:', error);
@@ -1373,7 +1373,7 @@ export default function ContactsScreen() {
                 .update({ location_sharing_enabled: enabled })
                 .eq('id', contact.id)
                 .select('id, location_sharing_enabled')
-                .single();
+                .maybeSingle();
 
             if (error) {
                 console.error('Toggle location sharing error:', error);

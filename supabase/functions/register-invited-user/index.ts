@@ -489,24 +489,33 @@ serve(async (req) => {
       const inviteeIdentifier = username
       const inviterIdentifier = inviterProfile?.username || inviterProfile?.phone || ''
 
-      const { error: contactsError } = await supabase
+      const { error: inviterContactError } = await supabase
         .from('contacts')
-        .upsert([
+        .upsert(
           {
             owner_user_id: invite.inviter_user_id,
             contact_user_id: createdUser.id,
             contact_email: inviteeIdentifier,
             contact_display_name: displayName,
           },
+          { onConflict: 'owner_user_id,contact_user_id' }
+        )
+
+      if (inviterContactError) throw inviterContactError
+
+      const { error: inviteeContactError } = await supabase
+        .from('contacts')
+        .upsert(
           {
             owner_user_id: createdUser.id,
             contact_user_id: invite.inviter_user_id,
             contact_email: inviterIdentifier,
             contact_display_name: inviterDisplayName,
           },
-        ])
+          { onConflict: 'owner_user_id,contact_user_id' }
+        )
 
-      if (contactsError) throw contactsError
+      if (inviteeContactError) throw inviteeContactError
 
       const { error: claimError } = await supabase
         .from('contact_invites')
