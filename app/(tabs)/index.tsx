@@ -797,6 +797,7 @@ export default function HomeScreen() {
   const latestStatusChannelRef = useRef<any>(null);
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const refreshHomeDataRef = useRef<(reason?: 'focus' | 'active' | 'manual') => void>(() => {});
+  const lastHomeFocusRefreshAtRef = useRef(0);
   const presenceBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const moodTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1181,13 +1182,12 @@ export default function HomeScreen() {
 
   const refreshHomeData = useCallback((reason: 'focus' | 'active' | 'manual' = 'manual') => {
     console.log(`📱 Home refresh (${reason})`);
-    void refreshProfile();
     fetchLastCheckin();
     fetchContactsCount();
     loadHomeStyle();
     void fetchLatestStatusNotificationRef.current();
     void refreshCheckins();
-  }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, refreshCheckins, refreshProfile]);
+  }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, refreshCheckins]);
 
   useEffect(() => {
     refreshHomeDataRef.current = refreshHomeData;
@@ -1400,6 +1400,9 @@ export default function HomeScreen() {
   // Focus effect for tab navigation
   useFocusEffect(
     useCallback(() => {
+      const nowMs = Date.now();
+      if (nowMs - lastHomeFocusRefreshAtRef.current < 5000) return;
+      lastHomeFocusRefreshAtRef.current = nowMs;
       refreshHomeDataRef.current('focus');
     }, [])
   );
