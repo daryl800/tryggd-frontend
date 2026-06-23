@@ -61,8 +61,6 @@ const STROKE_WIDTH = 40;
 const STORAGE_KEY = '@checkin_state';
 const HOME_PRESENCE_STORAGE_KEY = '@settings_home_presence';
 const MS_IN_DAY = 24 * 60 * 60 * 1000;
-const HOME_FOCUS_REFRESH_STALE_MS = 60 * 1000;
-
 const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
@@ -800,7 +798,6 @@ export default function HomeScreen() {
   const fetchLatestStatusNotificationRef = useRef<() => void>(() => {});
   const presenceBadgeTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const moodTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastHomeRefreshAtRef = useRef(0);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -1178,19 +1175,18 @@ export default function HomeScreen() {
     if (!loading && user) {
       fetchLastCheckin();
       fetchContactsCount();
-      lastHomeRefreshAtRef.current = Date.now();
     }
   }, [loading, user, fetchLastCheckin, fetchContactsCount]);
 
   const refreshHomeData = useCallback((reason: 'focus' | 'active' | 'manual' = 'manual') => {
     console.log(`📱 Home refresh (${reason})`);
+    void refreshProfile();
     fetchLastCheckin();
     fetchContactsCount();
     loadHomeStyle();
     void fetchLatestStatusNotificationRef.current();
     void refreshCheckins();
-    lastHomeRefreshAtRef.current = Date.now();
-  }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, refreshCheckins]);
+  }, [fetchLastCheckin, fetchContactsCount, loadHomeStyle, refreshCheckins, refreshProfile]);
 
   // Timer and AppState handler (CONSOLIDATED)
   useEffect(() => {
@@ -1399,14 +1395,6 @@ export default function HomeScreen() {
   // Focus effect for tab navigation
   useFocusEffect(
     useCallback(() => {
-      const nowMs = Date.now();
-      const isStale = nowMs - lastHomeRefreshAtRef.current > HOME_FOCUS_REFRESH_STALE_MS;
-
-      if (!isStale) {
-        console.log('📱 Home screen focused - skip refresh (fresh)');
-        return;
-      }
-
       refreshHomeData('focus');
     }, [refreshHomeData])
   );
