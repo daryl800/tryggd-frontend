@@ -2430,7 +2430,8 @@ export default function ContactsScreen() {
                 >
                     <KeyboardAvoidingView
                         style={styles.modalBackdrop}
-                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        keyboardVerticalOffset={Platform.OS === 'ios' ? 24 : 0}
                     >
                         <View style={styles.modalCard}>
                             <Text style={styles.modalTitle} allowFontScaling={false}>
