@@ -50,11 +50,25 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     )
 
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    const deleteAuthResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users/${user.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${serviceRoleKey}`,
+        'apikey': serviceRoleKey,
+      },
+    })
 
-    if (deleteError) {
-      console.error('Failed to delete auth user', deleteError)
-      return new Response(JSON.stringify({ error: 'Failed to delete account' }), {
+    if (!deleteAuthResponse.ok) {
+      const body = await deleteAuthResponse.text().catch(() => '')
+      console.error('Failed to delete auth user', deleteAuthResponse.status, body)
+      return new Response(JSON.stringify({
+        error: 'Failed to delete account',
+        details: body,
+        status: deleteAuthResponse.status,
+        user_id: user.id,
+      }), {
         status: 500,
         headers: jsonHeaders,
       })
@@ -71,7 +85,6 @@ serve(async (req) => {
       supabase.from('user_settings').delete().eq('user_id', user.id),
       supabase.from('user_entitlements').delete().eq('user_id', user.id),
       supabase.from('checkins').delete().eq('user_id', user.id),
-      supabase.from('users_latest_checkin').delete().eq('user_id', user.id),
       supabase.from('profiles').delete().eq('id', user.id),
     ]
 
