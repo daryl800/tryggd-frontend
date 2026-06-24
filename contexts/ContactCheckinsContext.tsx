@@ -253,6 +253,7 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
         },
         (payload) => {
           if (payload.new.type !== 'contact_checkin') return;
+          void fetchAll();
           let data: any = {};
           try {
             data =
@@ -280,7 +281,7 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user]);
+  }, [user, fetchAll]);
 
   // Foreground push — optimistic update from push payload, then DB confirm
   useEffect(() => {
