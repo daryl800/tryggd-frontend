@@ -219,9 +219,9 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
     return () => { supabase.removeChannel(channel); };
   }, [user, fetchAll]);
 
-  // users_latest_checkin — re-subscribe when contactIds change so the filter stays current
+  // users_latest_checkin — RLS ensures only own row + contacts' rows are delivered
   useEffect(() => {
-    if (!user || contactIds.length === 0) return;
+    if (!user) return;
     const channel = supabase
       .channel(`ctx-checkins:${user.id}`)
       .on(
@@ -230,13 +230,12 @@ export function ContactCheckinsProvider({ children }: { children: React.ReactNod
           event: '*',
           schema: 'public',
           table: 'users_latest_checkin',
-          filter: `user_id=in.(${contactIds.join(',')})`,
         },
         () => { void fetchAll(); }
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user, contactIds, fetchAll]);
+  }, [user, fetchAll]);
 
   // notifications — inline-update locationMap when a contact_checkin notification arrives
   useEffect(() => {
