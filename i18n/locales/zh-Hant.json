@@ -797,17 +797,17 @@
     "slides": {
       "checkin": {
         "eyebrow": "每日節奏",
-        "title": "快速每日報到",
-        "body": "💚 一鍵報到，讓信任聯絡人知道你一切安好。",
+        "title": "快速每日打卡",
+        "body": "💚 一鍵打卡，讓信任聯絡人知道你一切安好。",
         "points": {
-          "one": "✓ 一鍵完成報到",
+          "one": "✓ 一鍵完成打卡",
           "two": "✓ 簡單傳送「我沒事」更新"
         }
       },
       "contacts": {
         "eyebrow": "你的安全圈",
         "title": "信任聯絡人",
-        "body": "👥 新增家人或親近朋友，接收你的報到、求助訊號和分享更新。",
+        "body": "👥 新增家人或親近朋友，接收你的打卡、求助訊號和分享更新。",
         "points": {
           "one": "✓ 由你選擇誰可看到更新",
           "two": "✓ 求助訊號會傳給正確的人"
@@ -826,7 +826,7 @@
         "eyebrow": "預設保持簡單",
         "title": "Plus 預覽",
         "body": "Tryggd Free 保留簡單基本功能。試用期間，你可以預覽 Plus 功能：",
-        "freeSummary": "Free：報到、信任聯絡人、基本狀態",
+        "freeSummary": "Free：打卡、信任聯絡人、基本狀態",
         "bodyFreeSuffix": " 保留簡單基本功能。",
         "bodyPilotPrefix": "試用期間，預覽 ",
         "bodyPilotSuffix": "：",
@@ -843,7 +843,7 @@
       "eyebrow": "請先了解",
       "title": "幾點重要說明",
       "productName": "Tryggd ",
-      "paragraph1": "可協助你向信任聯絡人分享手動報到、求助訊號和你選擇的更新。",
+      "paragraph1": "可協助你向信任聯絡人分享手動打卡、求助訊號和你選擇的更新。",
       "paragraph2": "你的聯絡人可能會看到你選擇分享的狀態更新。位置只會在你開啟位置分享時才會分享。",
       "paragraph3": "通知可能會因網絡連線、電量、裝置設定或第三方推送服務而延遲。",
       "paragraph4": "Tryggd 不是緊急服務，緊急或危及生命的情況下不應依賴它。",
@@ -881,7 +881,7 @@
     "notNow": "使用 Basic plan",
     "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
     "expiredTitle": "Plus 預覽已結束",
-    "expiredBody": "你可以繼續使用 Tryggd Basic plan，包括一鍵報到、信任聯絡人和基本動態。\n\n之前的報到和動態記錄不會被移除。",
+    "expiredBody": "你可以繼續使用 Tryggd Basic plan，包括一鍵打卡、信任聯絡人和基本動態。\n\n之前的打卡和動態記錄不會被移除。",
     "expiredButton": "知道了",
     "settingsRowTitle": "Plus 預覽",
     "settingsRowSubtitle": "試用期間可免費體驗目前的 Plus 功能。",
