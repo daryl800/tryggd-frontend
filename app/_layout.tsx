@@ -309,7 +309,7 @@ function RootLayoutNav() {
 
   const isOnboardingRoute = segments[0] === 'onboarding';
 
-  if (!hasSeenOnboarding && !isOnboardingRoute) {
+  if (user && !hasSeenOnboarding && !isOnboardingRoute) {
     return <Redirect href="/onboarding" />;
   }
 
