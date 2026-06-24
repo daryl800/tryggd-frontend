@@ -314,7 +314,7 @@ function RootLayoutNav() {
   }
 
   if (hasSeenOnboarding && isOnboardingRoute) {
-    return <Redirect href={user ? (needsUsername ? "/complete-profile" : "/(tabs)") : "/(auth)/login"} />;
+    return <Redirect href={user ? (needsUsername ? "/complete-profile" : "/") : "/(auth)/login"} />;
   }
 
   return <Slot />;

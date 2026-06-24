@@ -79,7 +79,7 @@ function handleNotificationNavigation(data: any) {
             break;
 
         case 'daily_reminder':
-            router.push('/(tabs)');
+            router.push('/');
             console.log('→ Navigated to activity');
             break;
 

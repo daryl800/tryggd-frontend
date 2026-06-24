@@ -13,7 +13,7 @@ export default function AuthLayout() {
     // If user is already logged in, redirect to tabs
     if (user) {
         console.log("[AuthLayout] User already logged in, redirecting");
-        return <Redirect href={needsUsername ? "/complete-profile" : "/(tabs)"} />;
+        return <Redirect href={needsUsername ? "/complete-profile" : "/"} />;
     }
 
     // User is not logged in, show auth screens
