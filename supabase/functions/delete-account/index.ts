@@ -50,6 +50,16 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     )
 
+    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id)
+
+    if (deleteError) {
+      console.error('Failed to delete auth user', deleteError)
+      return new Response(JSON.stringify({ error: 'Failed to delete account' }), {
+        status: 500,
+        headers: jsonHeaders,
+      })
+    }
+
     const cleanupOperations = [
       supabase.from('contacts').delete().or(`owner_user_id.eq.${user.id},contact_user_id.eq.${user.id}`),
       supabase.from('contact_requests').delete().or(`sender_user_id.eq.${user.id},receiver_user_id.eq.${user.id}`),
@@ -69,21 +79,7 @@ serve(async (req) => {
     const failedCleanup = cleanupResults.find((result) => result.error)
 
     if (failedCleanup?.error) {
-      console.error('Failed to delete account data', failedCleanup.error)
-      return new Response(JSON.stringify({ error: 'Failed to prepare account deletion' }), {
-        status: 500,
-        headers: jsonHeaders,
-      })
-    }
-
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id)
-
-    if (deleteError) {
-      console.error('Failed to delete auth user', deleteError)
-      return new Response(JSON.stringify({ error: 'Failed to delete account' }), {
-        status: 500,
-        headers: jsonHeaders,
-      })
+      console.warn('Account auth user deleted, but leftover cleanup had an error', failedCleanup.error)
     }
 
     return new Response(JSON.stringify({ success: true }), {
