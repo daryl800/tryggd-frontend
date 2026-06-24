@@ -90,6 +90,7 @@ type WelfarePayload = {
   senderName?: string
   checkinTime: string
   welfareKind: 'today_check' | 'overdue_check'
+  forceResend?: boolean
 }
 
 async function validateAndGetUser(req: Request) {
@@ -132,7 +133,7 @@ serve(async (req) => {
       })
     }
 
-    const { receiverUserId, senderUserId, senderName, checkinTime, welfareKind } = await req.json() as WelfarePayload
+    const { receiverUserId, senderUserId, senderName, checkinTime, welfareKind, forceResend } = await req.json() as WelfarePayload
 
     if (user.id !== senderUserId) {
       return new Response(JSON.stringify({ error: 'User ID mismatch' }), {
@@ -147,21 +148,23 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     )
 
-    const { data: existing } = await supabase
-      .from('notifications')
-      .select('id')
-      .eq('user_id', receiverUserId)
-      .eq('sender_user_id', senderUserId)
-      .eq('type', 'welfare_check')
-      .filter('data->>checkinTime', 'eq', checkinTime)
-      .filter('data->>welfareKind', 'eq', welfareKind)
-      .limit(1)
+    if (!forceResend) {
+      const { data: existing } = await supabase
+        .from('notifications')
+        .select('id')
+        .eq('user_id', receiverUserId)
+        .eq('sender_user_id', senderUserId)
+        .eq('type', 'welfare_check')
+        .filter('data->>checkinTime', 'eq', checkinTime)
+        .filter('data->>welfareKind', 'eq', welfareKind)
+        .limit(1)
 
-    if (existing && existing.length > 0) {
-      return new Response(JSON.stringify({ success: true, alreadySent: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      if (existing && existing.length > 0) {
+        return new Response(JSON.stringify({ success: true, alreadySent: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
     }
 
     const [{ data: tokenData }, { data: senderProfile }, { data: receiverSettings }] = await Promise.all([

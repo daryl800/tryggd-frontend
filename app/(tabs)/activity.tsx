@@ -4,7 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
-import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasCachedWelfareCheck, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
@@ -929,6 +929,7 @@ export default function ActivityScreen() {
     const { user, capabilities } = useAuth();
     const timeScaleAnim = useRef(new Animated.Value(1)).current;
     const timeColorAnim = useRef(new Animated.Value(0)).current;
+    const devForceResendRef = useRef(false);
     const displayAvatarUrl = (avatarUrl?.trim() && !isLocalAvatarUri(avatarUrl)) ? avatarUrl.trim() : '';
 
     const [sendingResponse, setSendingResponse] = useState(false);
@@ -940,7 +941,10 @@ export default function ActivityScreen() {
       const cacheKey = `${userId}_${user.id}_${timestamp}`;
       return responseService.hasCachedResponse(cacheKey);
     });
-    const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(false);
+    const [welfareCheckSent, setWelfareCheckSent] = useState<boolean>(() => {
+      if (!user || !timestamp || isOwner) return false;
+      return hasCachedWelfareCheck(userId, user.id, timestamp, 'today_check');
+    });
     const [lastWelfareCheckSentAt, setLastWelfareCheckSentAt] = useState<string | null>(null);
     const [welfareClockMs, setWelfareClockMs] = useState(() => Date.now());
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
@@ -1115,6 +1119,8 @@ export default function ActivityScreen() {
         !timestamp
       ) return;
 
+      const forceResend = __DEV__ && devForceResendRef.current;
+      devForceResendRef.current = false;
       setSendingWelfareCheck(true);
       try {
         const result = await sendWelfareCheckNotification({
@@ -1124,6 +1130,7 @@ export default function ActivityScreen() {
           checkinTime: timestamp,
           welfareKind: isTodayCheckMode ? 'today_check' : 'overdue_check',
           cooldownHours: isWelfareMode ? OVERDUE_WELFARE_COOLDOWN_HOURS : undefined,
+          forceResend: forceResend || undefined,
         });
 
         if (result.success) {
@@ -1148,6 +1155,7 @@ export default function ActivityScreen() {
 
       const currentWelfareKind = isTodayCheckMode ? 'today_check' : 'overdue_check';
       await clearCachedWelfareCheck(userId, user.id, timestamp, currentWelfareKind);
+      devForceResendRef.current = true;
       setWelfareCheckSent(false);
       setLastWelfareCheckSentAt(null);
     };

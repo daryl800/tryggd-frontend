@@ -23,6 +23,22 @@ export const IS_EXPO_GO = Constants.appOwnership === 'expo';
 const welfareSentMemoryCache = new Set<string>();
 const welfareSentAtMemoryCache = new Map<string, string>();
 
+let welfareCacheInitialized = false;
+
+export async function initWelfareCache(): Promise<void> {
+    if (welfareCacheInitialized) return;
+    welfareCacheInitialized = true;
+    try {
+        const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
+        if (cached) {
+            const parsed = JSON.parse(cached) as Record<string, boolean>;
+            for (const key of Object.keys(parsed)) {
+                if (parsed[key]) welfareSentMemoryCache.add(key);
+            }
+        }
+    } catch {}
+}
+
 export function hasCachedWelfareCheck(
     recipientUserId: string,
     senderUserId: string,
@@ -373,10 +389,12 @@ export async function hasSentWelfareCheck(
 ): Promise<boolean> {
     try {
         const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
+        if (welfareSentMemoryCache.has(cacheKey)) return true;
         const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
         if (cached) {
             const parsed = JSON.parse(cached) as Record<string, boolean>;
             if (parsed[cacheKey]) {
+                welfareSentMemoryCache.add(cacheKey);
                 return true;
             }
         }
@@ -456,6 +474,7 @@ export async function sendWelfareCheckNotification({
     checkinTime,
     welfareKind,
     cooldownHours,
+    forceResend,
 }: {
     receiverUserId: string;
     senderUserId: string;
@@ -463,6 +482,7 @@ export async function sendWelfareCheckNotification({
     checkinTime: string;
     welfareKind: 'today_check' | 'overdue_check';
     cooldownHours?: number;
+    forceResend?: boolean;
 }): Promise<{ success: boolean; alreadySent?: boolean; error?: string }> {
     try {
         console.log('📤 Sending welfare check notification...', {
@@ -471,24 +491,27 @@ export async function sendWelfareCheckNotification({
             checkinTime,
             welfareKind,
             cooldownHours,
+            forceResend,
         });
 
         const cacheKey = `${receiverUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
-        if (welfareKind === 'overdue_check' && typeof cooldownHours === 'number' && cooldownHours > 0) {
-            const lastSentAt = await getLastWelfareCheckSentAt(receiverUserId, senderUserId, checkinTime, welfareKind);
-            if (lastSentAt) {
-                const cooldownMs = cooldownHours * 60 * 60 * 1000;
-                const elapsedMs = Date.now() - new Date(lastSentAt).getTime();
-                if (elapsedMs < cooldownMs) {
-                    console.log('⏩ Welfare check still in cooldown window');
+        if (!forceResend) {
+            if (welfareKind === 'overdue_check' && typeof cooldownHours === 'number' && cooldownHours > 0) {
+                const lastSentAt = await getLastWelfareCheckSentAt(receiverUserId, senderUserId, checkinTime, welfareKind);
+                if (lastSentAt) {
+                    const cooldownMs = cooldownHours * 60 * 60 * 1000;
+                    const elapsedMs = Date.now() - new Date(lastSentAt).getTime();
+                    if (elapsedMs < cooldownMs) {
+                        console.log('⏩ Welfare check still in cooldown window');
+                        return { success: true, alreadySent: true };
+                    }
+                }
+            } else {
+                const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime, welfareKind);
+                if (alreadySent) {
+                    console.log('⏩ Welfare check already sent for this state/check-in');
                     return { success: true, alreadySent: true };
                 }
-            }
-        } else {
-            const alreadySent = await hasSentWelfareCheck(receiverUserId, senderUserId, checkinTime, welfareKind);
-            if (alreadySent) {
-                console.log('⏩ Welfare check already sent for this state/check-in');
-                return { success: true, alreadySent: true };
             }
         }
         const { data: sessionData } = await supabase.auth.getSession();
@@ -511,6 +534,7 @@ export async function sendWelfareCheckNotification({
                 senderName,
                 checkinTime,
                 welfareKind,
+                forceResend,
             }),
         });
 

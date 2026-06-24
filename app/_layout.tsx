@@ -19,7 +19,7 @@ import i18n, { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupporte
 import { tokenManager } from '@/lib/auth/tokenManager';
 import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { hasCompletedOnboarding } from '@/lib/onboarding/state';
-import { registerAndSavePushToken } from '@/lib/notifications/core';
+import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/core';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
@@ -79,6 +79,8 @@ function useNavigationPersistence(navigationRef: any) {
 // ============================================
 function useNotifications(user: any) {
   useEffect(() => {
+    void initWelfareCache();
+
     // Setup notification handler
     let subscription: any;
     const initNotifications = async () => {
