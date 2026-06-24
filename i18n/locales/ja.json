@@ -693,9 +693,10 @@
     "heading": "Unlock more context",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "パイロット期間中、Plus Previewは無料で利用できます。支払い情報は不要で、自動請求もありません。",
+      "button": "Plus planを無料でプレビュー",
+      "note": "いつでもBasic planに戻れます。"
     },
     "features": {
       "wellness": {
@@ -717,38 +718,56 @@
       "welfare": {
         "title": "Welfare greeting",
         "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ 無料版 または Plus",
-    "dialogIntro": "無料版は日常使いに — シンプルで実用的、広告もありません。\n{{deadline}}までにPlusプレビューを試して、より多くの共有機能を体験できます。",
-    "dialogFreeSectionTitle": "無料版に含まれるもの：",
-    "dialogFreeFeature1": "✓ ワンタップ チェックイン",
-    "dialogFreeFeature2": "✓ 信頼できる連絡先",
-    "dialogFreeFeature3": "✓ 基本的なステータス更新",
-    "dialogFreeFeature4": "✓ 広告なし",
-    "dialogPlusSectionTitle": "Plusは無料版のすべてに加えて：",
-    "dialogFeature1": "✈️ 旅行モード｜✋ ヘルプシグナル",
-    "dialogFeature2": "📍 位置情報の共有オプション",
-    "dialogFeature3": "🙂 気分のアップデート",
-    "dialogFeature4": "⚙️ 共有設定の詳細管理",
-    "dialogPricingTitle": "Plusの価格",
-    "dialogPricingNote": "{{deadline}}以降、Plusを継続する場合：",
+    "dialogTitle": "✨ Plus planを無料でプレビュー",
+    "dialogIntro": "Tryggd Plus planを今すぐ無料で試せます。\n支払い情報は不要で、自動請求もありません。",
+    "dialogFreeSectionTitle": "Basic planに含まれるもの：",
+    "dialogFreeFeature1": "✓ チェックイン   🔔 連絡先更新通知   👥 最大5件の連絡先",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus planはBasic planのすべてに加えて：",
+    "dialogFeature1": "🌿 日常モード   ✈️ 旅行モード   ✋ ヘルプシグナル",
+    "dialogFeature2": "🙂 気分の更新   📍 位置情報共有   👥 より多くの連絡先",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus planの価格",
+    "dialogPricingNote": "{{deadline}}以降、Plus planの継続を選択する場合：",
     "dialogPricingMonthly": "US$2.99 / 月",
     "dialogPricingYearly": "US$19.99 / 年",
-    "dialogSupportNote": "PlusはTryggdを支援し、広告なし・安定・継続的な改善を維持するための方法です。",
-    "dialogPreviewNote": "Plusプレビューは{{deadline}}まで公開されています。\n支払い情報は不要で、自動請求もありません。",
-    "activate": "Plusプレビューを開始",
-    "notNow": "まずは無料版を使う",
+    "dialogSupportNote": "Plus planはTryggdの継続的な運営と改善を支援する方法です。\nTryggdを実用的で、安定し、信頼でき、広告のないサービスとして保ちたいと考えています。",
+    "dialogPreviewNote": "Plus Previewは{{deadline}}まで利用できます。\nプレビュー終了後、アカウントは自動的にBasic planに戻ります。",
+    "activate": "Plus planを無料でプレビュー",
+    "notNow": "Basic planを使う",
     "activatedMessage": "Plusが有効になりました。ホームが拡張に切り替わりました。いつでも設定からシンプルに戻せます。",
     "expiredTitle": "Plusプレビューが終了しました",
-    "expiredBody": "Tryggd 無料版を引き続きご利用いただけます。ワンタップ チェックイン、信頼できる連絡先、基本的なアップデートを含みます。\n\n過去のチェックインとアクティビティは削除されません。",
+    "expiredBody": "Tryggd Basic planを引き続き利用できます。チェックイン、信頼できる連絡先、基本的な更新が含まれます。\n\n過去のチェックインとアクティビティは削除されません。",
     "expiredButton": "わかりました",
     "settingsRowTitle": "Plusプレビュー",
     "settingsRowSubtitle": "パイロット期間中、現在のPlus機能を無料でお試しください。",
     "settingsRowAction": "プレビューを始める",
     "activeRowTitle": "Plusプレビュー進行中",
-    "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。"
+    "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }

@@ -2724,19 +2724,30 @@ export default function HomeScreen() {
               <View style={styles.pilotDialogFreeSection}>
                 <Text style={styles.pilotDialogSectionLabel}>{t('pilotPreview.dialogFreeSectionTitle' as any) as string}</Text>
                 <View style={styles.pilotDialogFeatureList}>
-                  {(['dialogFreeFeature1', 'dialogFreeFeature2', 'dialogFreeFeature3', 'dialogFreeFeature4'] as const).map(key => (
-                    <Text key={key} style={styles.pilotDialogFeatureItem}>{t(`pilotPreview.${key}` as any) as string}</Text>
-                  ))}
+                  {(['dialogFreeFeature1', 'dialogFreeFeature2', 'dialogFreeFeature3', 'dialogFreeFeature4'] as const)
+                    .map(key => t(`pilotPreview.${key}` as any, { defaultValue: '' }) as string)
+                    .filter(item => item.trim().length > 0)
+                    .map(item => (
+                      <Text key={item} style={styles.pilotDialogFeatureItem}>{item}</Text>
+                    ))}
                 </View>
               </View>
 
               <View style={styles.pilotDialogPlusSection}>
                 <Text style={styles.pilotDialogSectionLabel}>{t('pilotPreview.dialogPlusSectionTitle' as any) as string}</Text>
                 <View style={styles.pilotDialogFeatureList}>
-                  {(['dialogFeature1', 'dialogFeature2', 'dialogFeature3', 'dialogFeature4'] as const).map(key => (
-                    <Text key={key} style={styles.pilotDialogFeatureItem}>{t(`pilotPreview.${key}` as any) as string}</Text>
-                  ))}
+                  {(['dialogFeature1', 'dialogFeature2', 'dialogFeature3', 'dialogFeature4', 'dialogFeature5', 'dialogFeature6'] as const)
+                    .map(key => t(`pilotPreview.${key}` as any, { defaultValue: '' }) as string)
+                    .filter(item => item.trim().length > 0)
+                    .map(item => (
+                      <Text key={item} style={styles.pilotDialogFeatureItem}>{item}</Text>
+                    ))}
                 </View>
+              </View>
+
+              <View style={styles.pilotDialogNoteWrap}>
+                <Text style={styles.pilotDialogSupportNote}>{t('pilotPreview.dialogSupportNote' as any) as string}</Text>
+                <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
               </View>
 
               <View style={styles.pilotDialogPricingBox}>
@@ -2745,9 +2756,6 @@ export default function HomeScreen() {
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingMonthly' as any) as string}</Text>
                 <Text style={styles.pilotDialogPricingItem}>{t('pilotPreview.dialogPricingYearly' as any) as string}</Text>
               </View>
-
-              <Text style={styles.pilotDialogSupportNote}>{t('pilotPreview.dialogSupportNote' as any) as string}</Text>
-              <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
             </RNScrollView>
             <TouchableOpacity
               style={styles.pilotDialogActivateButton}
@@ -3931,7 +3939,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: BaseColors.text.dark,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 18,
   },
   pilotDialogIntro: {
     fontSize: iosFontSize(14),
@@ -3961,14 +3969,22 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(13),
     fontWeight: '600',
     color: BaseColors.text.dark,
-    marginBottom: 6,
+    marginBottom: 5,
   },
   pilotDialogFeatureList: {
-    gap: 3,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    columnGap: 12,
+    rowGap: 6,
   },
   pilotDialogFeatureItem: {
     fontSize: iosFontSize(14),
     color: BaseColors.text.dark,
+    lineHeight: iosFontSize(20),
+  },
+  pilotDialogNoteWrap: {
+    width: '92%',
+    alignSelf: 'center',
   },
   pilotDialogPricingBox: {
     backgroundColor: BaseColors.primaryLight,

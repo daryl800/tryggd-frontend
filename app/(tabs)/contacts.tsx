@@ -1471,7 +1471,7 @@ export default function ContactsScreen() {
     );
 
     const showPlusFeatureAlert = useCallback(() => {
-        router.push('/(tabs)/plus');
+        router.push('/plus');
     }, [router]);
 
     const handleLockedCheckinNotificationPress = useCallback(() => {

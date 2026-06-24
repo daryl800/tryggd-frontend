@@ -83,9 +83,9 @@ export default function OnboardingScreen() {
         icon: 'leaf',
         variant: 'plus-preview',
         eyebrow: t('onboarding.slides.free.eyebrow', { defaultValue: 'Simple by default' }),
-        title: t('onboarding.slides.free.title', { defaultValue: 'Free and Plus Preview' }),
+        title: t('onboarding.slides.free.title', { defaultValue: 'Plus Preview' }),
         body: t('onboarding.slides.free.body', {
-          defaultValue: 'Tryggd Free is simple, useful, and ad-free.\n\nDuring the pilot, you can preview Plus features:',
+          defaultValue: 'Tryggd Free keeps the basics simple. During the pilot, you can preview Plus features:',
         }),
         highlights: [
           t('onboarding.slides.free.points.one', { defaultValue: '✈️ Trip Mode' }),
@@ -93,7 +93,6 @@ export default function OnboardingScreen() {
           t('onboarding.slides.free.points.three', { defaultValue: '🙂 Mood updates' }),
           t('onboarding.slides.free.points.four', { defaultValue: '⚙️ More sharing control' }),
         ],
-        footerNote: t('onboarding.slides.free.footer', { defaultValue: 'Plus Preview is optional.' }),
       },
       {
         icon: 'shield-checkmark',
@@ -148,19 +147,18 @@ export default function OnboardingScreen() {
 
   const renderPlusPreviewBody = () => (
     <View style={styles.plusPreviewBodyWrap}>
-      <Text style={styles.subtitle}>
-        <Text style={styles.plusPreviewStrong}>Free</Text>
-        {t('onboarding.slides.free.bodyFreeSuffix', {
-          defaultValue: ' is simple, useful, and ad-free.',
+      <Text style={styles.plusPreviewFreeSummary}>
+        {t('onboarding.slides.free.freeSummary', {
+          defaultValue: 'Free: check-in, trusted contacts, basic status',
         })}
       </Text>
       <Text style={[styles.subtitle, styles.plusPreviewBodySecondary]}>
         {t('onboarding.slides.free.bodyPilotPrefix', {
-          defaultValue: 'During the pilot, you can preview ',
+          defaultValue: 'During the pilot, preview ',
         })}
         <Text style={styles.plusPreviewStrong}>Plus</Text>
         {t('onboarding.slides.free.bodyPilotSuffix', {
-          defaultValue: ' features:',
+          defaultValue: ':',
         })}
       </Text>
     </View>
@@ -249,9 +247,9 @@ export default function OnboardingScreen() {
                 : null}
 
               {activeSlide.highlights?.length ? (
-                <View style={styles.highlightsWrap}>
+                <View style={[styles.highlightsWrap, activeSlide.variant === 'plus-preview' && styles.plusHighlightsWrap]}>
                   {activeSlide.highlights.map((item) => (
-                    <View key={item} style={styles.highlightPill}>
+                    <View key={item} style={[styles.highlightPill, activeSlide.variant === 'plus-preview' && styles.plusHighlightPill]}>
                       <Ionicons
                         name={activeSlide.variant === 'plus-preview' ? 'sparkles' : 'checkmark-circle'}
                         size={16}
@@ -387,7 +385,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   plusPreviewBodyWrap: {
-    marginBottom: 20,
+    marginBottom: 14,
+  },
+  plusPreviewFreeSummary: {
+    textAlign: 'center',
+    color: BaseColors.neutral[600],
+    fontSize: iosFontSize(14),
+    lineHeight: 20,
+    marginBottom: 10,
+    paddingHorizontal: 6,
   },
   plusPreviewBodySecondary: {
     marginBottom: 0,
@@ -399,6 +405,11 @@ const styles = StyleSheet.create({
   highlightsWrap: {
     gap: 10,
   },
+  plusHighlightsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   highlightPill: {
     minHeight: 46,
     borderRadius: 14,
@@ -408,6 +419,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  plusHighlightPill: {
+    flexBasis: '48%',
+    flexGrow: 1,
+    minHeight: 42,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap: 8,
   },
   highlightText: {
     flex: 1,

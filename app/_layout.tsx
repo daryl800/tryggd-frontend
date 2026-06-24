@@ -272,7 +272,7 @@ function RootLayoutNav() {
         const serverLanguage = resolveSupportedLanguage(settings?.language);
         const shouldPreferLocal =
           !settings?.language ||
-          (currentLanguage !== 'en' && serverLanguage === 'en' && needsUsername);
+          (currentLanguage !== 'en' && serverLanguage === 'en' && (needsUsername || !hasSeenOnboarding));
 
         if (shouldPreferLocal) {
           await supabase
@@ -297,7 +297,7 @@ function RootLayoutNav() {
     };
 
     void syncLanguage();
-  }, [initialized, needsUsername, user?.id]);
+  }, [hasSeenOnboarding, initialized, needsUsername, user?.id]);
 
   if (!initialized || !isNavReady || !languageReady || !onboardingReady) {
     return (

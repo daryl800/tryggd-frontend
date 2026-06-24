@@ -693,9 +693,10 @@
     "heading": "Unlock more context",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "Plus Preview ist während der Pilotphase kostenlos. Keine Zahlungsdaten erforderlich, keine automatische Abbuchung.",
+      "button": "Plus plan kostenlos testen",
+      "note": "Du kannst jederzeit zum Basic plan zurückkehren."
     },
     "features": {
       "wellness": {
@@ -717,38 +718,56 @@
       "welfare": {
         "title": "Welfare greeting",
         "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Kostenlos oder Plus",
-    "dialogIntro": "Kostenlos ist für den Alltag — einfach, nützlich und werbefrei.\nDu kannst auch die Plus-Vorschau vor dem {{deadline}} ausprobieren, um mehr Freigabefunktionen zu entdecken.",
-    "dialogFreeSectionTitle": "Kostenlos beinhaltet:",
-    "dialogFreeFeature1": "✓ Ein-Tipp-Check-in",
-    "dialogFreeFeature2": "✓ Vertrauenskontakte",
-    "dialogFreeFeature3": "✓ Grundlegende Statusupdates",
-    "dialogFreeFeature4": "✓ Keine Werbung",
-    "dialogPlusSectionTitle": "Plus beinhaltet alles aus Kostenlos, plus:",
-    "dialogFeature1": "✈️ Reisemodus｜✋ Hilfesignal",
-    "dialogFeature2": "📍 Standortfreigabe-Optionen",
-    "dialogFeature3": "🙂 Stimmungs-Updates",
-    "dialogFeature4": "⚙️ Mehr Freigabekontrolle",
-    "dialogPricingTitle": "Plus-Preis",
-    "dialogPricingNote": "Nach dem {{deadline}}, falls du Plus weiter nutzt:",
+    "dialogTitle": "✨ Plus plan kostenlos testen",
+    "dialogIntro": "Teste Tryggd Plus plan jetzt kostenlos.\nKeine Zahlungsdaten erforderlich, keine automatische Abbuchung.",
+    "dialogFreeSectionTitle": "Basic plan beinhaltet:",
+    "dialogFreeFeature1": "✓ Check-in   🔔 Kontakt-Update-Benachrichtigungen   👥 bis zu 5 Kontakte",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan beinhaltet alles aus Basic plan, plus:",
+    "dialogFeature1": "🌿 Tagesmodus   ✈️ Reisemodus   ✋ Hilfesignal",
+    "dialogFeature2": "🙂 Stimmungs-Updates   📍 Standortfreigabe   👥 Mehr Kontakte",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan-Preis",
+    "dialogPricingNote": "Nach dem {{deadline}}, wenn du Plus plan weiter nutzen möchtest:",
     "dialogPricingMonthly": "2,99 US$ / Monat",
     "dialogPricingYearly": "19,99 US$ / Jahr",
-    "dialogSupportNote": "Plus ist eine Möglichkeit, Tryggd zu unterstützen und uns dabei zu helfen, werbefrei, zuverlässig und in Entwicklung zu bleiben.",
-    "dialogPreviewNote": "Die Plus-Vorschau ist bis {{deadline}} geöffnet.\nKeine Zahlungsdaten erforderlich, keine automatische Abbuchung.",
-    "activate": "Plus-Vorschau starten",
-    "notNow": "Erst Kostenlos nutzen",
+    "dialogSupportNote": "Plus plan ist eine Möglichkeit, den fortlaufenden Betrieb und die Verbesserung von Tryggd zu unterstützen.\nWir möchten Tryggd nützlich, stabil, zuverlässig und werbefrei halten.",
+    "dialogPreviewNote": "Plus Preview ist bis {{deadline}} geöffnet.\nNach dem Ende der Preview kehrt dein Konto automatisch zum Basic plan zurück.",
+    "activate": "Plus plan kostenlos testen",
+    "notNow": "Basic plan nutzen",
     "activatedMessage": "Plus ist jetzt aktiv. Der Startbereich wurde auf Erweitert gesetzt. Du kannst jederzeit in den Einstellungen zu Einfach wechseln.",
     "expiredTitle": "Plus-Vorschau beendet",
-    "expiredBody": "Du kannst weiterhin Tryggd Kostenlos nutzen, inkl. Ein-Tipp-Check-in, Vertrauenskontakte und grundlegende Updates.\n\nDeine vergangenen Check-ins und Aktivitäten werden nicht gelöscht.",
+    "expiredBody": "Du kannst Tryggd Basic plan weiter nutzen, einschließlich Check-in, Vertrauenskontakte und grundlegende Updates.\n\nDeine bisherigen Check-ins und Aktivitäten werden nicht entfernt.",
     "expiredButton": "Verstanden",
     "settingsRowTitle": "Plus-Vorschau",
     "settingsRowSubtitle": "Teste aktuelle Plus-Funktionen kostenlos während des Piloten.",
     "settingsRowAction": "Vorschau starten",
     "activeRowTitle": "Plus-Vorschau aktiv",
-    "activeRowSubtitle": "Aktuelle Plus-Funktionen sind während des Piloten verfügbar."
+    "activeRowSubtitle": "Aktuelle Plus-Funktionen sind während des Piloten verfügbar.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }

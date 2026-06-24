@@ -593,14 +593,15 @@
   },
   "plus": {
     "title": "Tryggd Plus",
-    "subtitle": "為每日打卡加入更多資訊",
+    "subtitle": "Basic plan 保持實用且不加入廣告。Plus plan 提供更多連繫方式，並支持 Tryggd 持續改善。",
     "badge": "Plus",
-    "heading": "解鎖更多狀態資訊",
-    "description": "Tryggd Plus 讓每日打卡提供更多背景資訊，但不改變原本簡單的流程。",
+    "heading": "免費預覽 Plus plan",
+    "description": "試用更多分享功能，同時保留原本簡單的打卡流程。",
     "comingSoon": {
-      "title": "升級方式",
-      "message": "應用程式內升級尚未接通。此頁面目前作為鎖定功能的目的地，也會是之後的升級入口。",
-      "button": "升級即將推出"
+      "title": "Plus 預覽",
+      "message": "試用期間可免費使用 Plus Preview。不需要付款資料，也不會自動收費。",
+      "button": "免費預覽 Plus plan",
+      "note": "你可以隨時回到 Basic plan。"
     },
     "features": {
       "wellness": {
@@ -609,19 +610,35 @@
       },
       "location": {
         "title": "位置分享",
-        "description": "讓信任的聯絡人在活動頁看見您分享的位置。"
+        "description": "由你選擇何時向指定聯繫人分享位置。"
       },
       "notifications": {
         "title": "通知控制",
         "description": "控制哪些聯絡人可以收到您的打卡通知。"
       },
       "contacts": {
-        "title": "無上限聯絡人",
-        "description": "突破免費方案的聯絡人數量限制。"
+        "title": "更多聯繫人",
+        "description": "把更多親友加入你的 Tryggd 圈子。"
       },
       "welfare": {
         "title": "關懷問候",
         "description": "為聯絡人使用額外的關懷追蹤功能。"
+      },
+      "tripMode": {
+        "title": "出行模式",
+        "description": "分享出行進度和旅程相關更新。"
+      },
+      "mood": {
+        "title": "心情更新",
+        "description": "在打卡中加入更多心情背景。"
+      },
+      "controls": {
+        "title": "更多分享控制",
+        "description": "決定哪些信任聯繫人接收哪些更新。"
+      },
+      "activity": {
+        "title": "更完整的活動更新",
+        "description": "在打卡和狀態記錄中顯示更多細節。"
       }
     }
   },
@@ -773,30 +790,98 @@
       "chars": "只能使用小寫字母、數字、點或底線。"
     }
   },
+  "onboarding": {
+    "skip": "跳過",
+    "next": "下一步",
+    "getStarted": "開始使用",
+    "slides": {
+      "checkin": {
+        "eyebrow": "每日節奏",
+        "title": "快速每日報到",
+        "body": "💚 一鍵報到，讓信任聯絡人知道你一切安好。",
+        "points": {
+          "one": "✓ 一鍵完成報到",
+          "two": "✓ 簡單傳送「我沒事」更新"
+        }
+      },
+      "contacts": {
+        "eyebrow": "你的安全圈",
+        "title": "信任聯絡人",
+        "body": "👥 新增家人或親近朋友，接收你的報到、求助訊號和分享更新。",
+        "points": {
+          "one": "✓ 由你選擇誰可看到更新",
+          "two": "✓ 求助訊號會傳給正確的人"
+        }
+      },
+      "sharing": {
+        "eyebrow": "可選資訊",
+        "title": "狀態和位置",
+        "body": "📍 你可以與指定聯絡人分享心情、在家或外出、出行狀態或位置。",
+        "points": {
+          "one": "✓ 🙂 心情、🏠 在家/外出，或 ✈️ 出行狀態",
+          "two": "✓ 📍 只有在你選擇分享時才會分享位置"
+        }
+      },
+      "free": {
+        "eyebrow": "預設保持簡單",
+        "title": "Plus 預覽",
+        "body": "Tryggd Free 保留簡單基本功能。試用期間，你可以預覽 Plus 功能：",
+        "freeSummary": "Free：報到、信任聯絡人、基本狀態",
+        "bodyFreeSuffix": " 保留簡單基本功能。",
+        "bodyPilotPrefix": "試用期間，預覽 ",
+        "bodyPilotSuffix": "：",
+        "points": {
+          "one": "✈️ 出行模式",
+          "two": "📍 位置分享選項",
+          "three": "🙂 心情更新",
+          "four": "⚙️ 更多分享控制"
+        },
+        "footer": "Plus 預覽可自由選擇。"
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "請先了解",
+      "title": "幾點重要說明",
+      "productName": "Tryggd ",
+      "paragraph1": "可協助你向信任聯絡人分享手動報到、求助訊號和你選擇的更新。",
+      "paragraph2": "你的聯絡人可能會看到你選擇分享的狀態更新。位置只會在你開啟位置分享時才會分享。",
+      "paragraph3": "通知可能會因網絡連線、電量、裝置設定或第三方推送服務而延遲。",
+      "paragraph4": "Tryggd 不是緊急服務，緊急或危及生命的情況下不應依賴它。",
+      "acceptLabel": "我明白",
+      "saving": "儲存中...",
+      "decline": "拒絕 / 返回"
+    },
+    "errors": {
+      "saveTitle": "無法繼續",
+      "saveBody": "請再試一次。"
+    }
+  },
   "pilotPreview": {
-    "dialogTitle": "✨ Free 或 Plus",
-    "dialogIntro": "免費版可日常使用，簡單實用，而且沒有廣告。\n你也可以在 {{deadline}} 前，開啟 Plus 預覽，先試用更多分享功能。",
-    "dialogFreeSectionTitle": "免費版包括：",
-    "dialogFreeFeature1": "✓ 一鍵報到",
-    "dialogFreeFeature2": "✓ 信任聯絡人",
-    "dialogFreeFeature3": "✓ 基本動態更新",
-    "dialogFreeFeature4": "✓ 沒有廣告",
-    "dialogPlusSectionTitle": "Plus 包括免費版全部功能，並加入：",
-    "dialogFeature1": "✈️ 出行模式｜✋ 求助功能",
-    "dialogFeature2": "📍 位置分享選項",
-    "dialogFeature3": "🙂 心情更新",
-    "dialogFeature4": "⚙️ 更多分享控制",
-    "dialogPricingTitle": "Plus 價格",
-    "dialogPricingNote": "{{deadline}} 後，如繼續使用 Plus：",
+    "dialogTitle": "✨ 免費預覽 Plus plan",
+    "dialogIntro": "現在可以免費試用 Tryggd Plus plan。\n不需要付款資料，也不會自動收費。",
+    "dialogFreeSectionTitle": "Basic plan 包括：",
+    "dialogFreeFeature1": "✓ 打卡   🔔 親友即時收到打卡通知   👥 5位聯繫人",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan 包括 Basic plan 全部功能，並加入：",
+    "dialogFeature1": "🌿 日常模式   ✈️ 出行模式   ✋ 求助功能",
+    "dialogFeature2": "🙂 心情更新   📍 位置分享   👥 更多聯繫人",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogFeature5": "",
+    "dialogFeature6": "",
+    "dialogPricingTitle": "Plus plan 價格",
+    "dialogPricingNote": "{{deadline}} 後，如選擇繼續使用 Plus plan：",
     "dialogPricingMonthly": "US$2.99 / 月",
     "dialogPricingYearly": "US$19.99 / 年",
-    "dialogSupportNote": "Plus 是支持 Tryggd 持續運作和改善的一種方式，幫助我們保持無廣告體驗，並持續提供實用、穩定、可靠的服務。",
-    "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n期間不需要付款資料，也不會自動收費。",
-    "activate": "開始試用 Plus",
-    "notNow": "先用免費版",
+    "dialogSupportNote": "Plus plan 是支持 Tryggd 持續運作和改善的一種方式。\n我們希望保持 Tryggd 實用、穩定、可靠，並且不加入廣告。",
+    "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n預覽結束後，帳戶會自動回到 Basic plan。",
+    "activate": "免費預覽 Plus plan",
+    "notNow": "使用 Basic plan",
     "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
     "expiredTitle": "Plus 預覽已結束",
-    "expiredBody": "你可以繼續使用 Tryggd 免費版，包括一鍵報到、信任聯絡人和基本動態。\n\n之前的報到和動態記錄不會被移除。",
+    "expiredBody": "你可以繼續使用 Tryggd Basic plan，包括一鍵報到、信任聯絡人和基本動態。\n\n之前的報到和動態記錄不會被移除。",
     "expiredButton": "知道了",
     "settingsRowTitle": "Plus 預覽",
     "settingsRowSubtitle": "試用期間可免費體驗目前的 Plus 功能。",

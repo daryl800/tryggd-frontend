@@ -696,9 +696,10 @@
     "heading": "Unlock more context",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "Plus Preview er gratis under piloten. Ingen betalingsopplysninger kreves, ingen automatisk belastning.",
+      "button": "Prøv Plus plan gratis",
+      "note": "Du kan når som helst gå tilbake til Basic plan."
     },
     "features": {
       "wellness": {
@@ -720,38 +721,56 @@
       "welfare": {
         "title": "Welfare greeting",
         "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Gratis eller Plus",
-    "dialogIntro": "Gratis er for daglig bruk — enkel, nyttig og reklamefri.\nDu kan også prøve Plus-forhåndsvisningen innen {{deadline}} for flere delingsfunksjoner.",
-    "dialogFreeSectionTitle": "Gratis inkluderer:",
-    "dialogFreeFeature1": "✓ Éntrykks-innsjekk",
-    "dialogFreeFeature2": "✓ Betrodde kontakter",
-    "dialogFreeFeature3": "✓ Grunnleggende statusoppdateringer",
-    "dialogFreeFeature4": "✓ Ingen reklame",
-    "dialogPlusSectionTitle": "Plus inkluderer alt i Gratis pluss:",
-    "dialogFeature1": "✈️ Reisemodus｜✋ Hjelpesignal",
-    "dialogFeature2": "📍 Deling av plassering",
-    "dialogFeature3": "🙂 Stemningsoppdateringer",
-    "dialogFeature4": "⚙️ Mer kontroll over deling",
-    "dialogPricingTitle": "Plus-pris",
-    "dialogPricingNote": "Etter {{deadline}}, hvis du fortsetter med Plus:",
+    "dialogTitle": "✨ Prøv Plus plan gratis",
+    "dialogIntro": "Prøv Tryggd Plus plan gratis nå.\nIngen betalingsopplysninger kreves, ingen automatisk belastning.",
+    "dialogFreeSectionTitle": "Basic plan inkluderer:",
+    "dialogFreeFeature1": "✓ Innsjekk   🔔 kontaktoppdateringsvarsler   👥 opptil 5 kontakter",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan inkluderer alt i Basic plan pluss:",
+    "dialogFeature1": "🌿 Daglig modus   ✈️ Reisemodus   ✋ Hjelpesignal",
+    "dialogFeature2": "🙂 Stemningsoppdateringer   📍 Deling av plassering   👥 Flere kontakter",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan-pris",
+    "dialogPricingNote": "Etter {{deadline}}, hvis du velger å fortsette med Plus plan:",
     "dialogPricingMonthly": "US$2.99 / måned",
     "dialogPricingYearly": "US$19.99 / år",
-    "dialogSupportNote": "Plus er en måte å støtte Tryggd på og hjelpe oss med å forbli reklamefri, pålitelig og i utvikling.",
-    "dialogPreviewNote": "Plus-forhåndsvisningen er åpen til {{deadline}}.\nIngen betalingsopplysninger kreves, ingen automatisk belastning.",
-    "activate": "Start Plus-forhåndsvisning",
-    "notNow": "Bruk Gratis foreløpig",
+    "dialogSupportNote": "Plus plan er en måte å støtte Tryggds videre drift og forbedring på.\nVi ønsker å holde Tryggd nyttig, stabil, pålitelig og reklamefri.",
+    "dialogPreviewNote": "Plus Preview er åpen til {{deadline}}.\nNår preview-perioden er over, går kontoen din automatisk tilbake til Basic plan.",
+    "activate": "Prøv Plus plan gratis",
+    "notNow": "Bruk Basic plan",
     "activatedMessage": "Plus er nå aktivt. Hjem er satt til Utvidet. Du kan når som helst bytte tilbake til Enkel i Innstillinger.",
     "expiredTitle": "Plus-forhåndsvisning er avsluttet",
-    "expiredBody": "Du kan fortsette å bruke Tryggd Gratis, inkludert éntrykks-innsjekk, betrodde kontakter og grunnleggende oppdateringer.\n\nTidligere innsjekker og aktiviteter slettes ikke.",
+    "expiredBody": "Du kan fortsette å bruke Tryggd Basic plan, inkludert innsjekk, betrodde kontakter og grunnleggende oppdateringer.\n\nDine tidligere innsjekker og aktiviteter blir ikke fjernet.",
     "expiredButton": "Forstått",
     "settingsRowTitle": "Plus-forhåndsvisning",
     "settingsRowSubtitle": "Prøv nåværende Plus-funksjoner gratis i pilotperioden.",
     "settingsRowAction": "Start forhåndsvisning",
     "activeRowTitle": "Plus-forhåndsvisning aktiv",
-    "activeRowSubtitle": "Nåværende Plus-funksjoner er tilgjengelige i pilotperioden."
+    "activeRowSubtitle": "Nåværende Plus-funksjoner er tilgjengelige i pilotperioden.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }

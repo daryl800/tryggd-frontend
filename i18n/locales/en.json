@@ -557,15 +557,15 @@
   },
   "plus": {
     "title": "Tryggd Plus",
-    "subtitle": "Free stays useful and ad-free. Plus gives you more ways to stay connected and helps us keep improving Tryggd.",
+    "subtitle": "Basic plan stays useful and ad-free. Plus plan gives you more ways to stay connected and helps us keep improving Tryggd.",
     "badge": "Plus",
-    "heading": "Tryggd Plus",
-    "description": "Preview extra sharing tools during the pilot without changing the simple core check-in flow.",
+    "heading": "Preview Plus plan for free",
+    "description": "Try extra sharing tools during the pilot without changing the simple core check-in flow.",
     "comingSoon": {
       "title": "Plus Preview",
-      "message": "Payment is not available yet. During the pilot, Plus Preview is free to use.",
-      "note": "No ads — Free is ad-free too.",
-      "button": "Start Plus Preview"
+      "message": "Plus Preview is free during the pilot. No payment details needed, no automatic charge.",
+      "button": "Preview Plus plan for free",
+      "note": "You can return to Basic plan anytime."
     },
     "features": {
       "contacts": {
@@ -577,15 +577,15 @@
         "description": "Share travel progress and trip-specific updates."
       },
       "location": {
-        "title": "Location sharing options",
+        "title": "Location sharing",
         "description": "Choose when location is shared with selected contacts."
       },
       "mood": {
-        "title": "Mood and wellbeing sharing",
-        "description": "Add more emotional context to your check-ins."
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
       },
       "controls": {
-        "title": "More control over who receives updates",
+        "title": "More sharing control",
         "description": "Decide which trusted contacts receive which updates."
       },
       "activity": {
@@ -742,27 +742,95 @@
       "chars": "Use only lowercase letters, numbers, dots, or underscores."
     }
   },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "getStarted": "Get started",
+    "slides": {
+      "checkin": {
+        "eyebrow": "Daily rhythm",
+        "title": "Quick daily check-ins",
+        "body": "💚 Check in with one tap and let trusted contacts know you are okay.",
+        "points": {
+          "one": "✓ One tap to check in",
+          "two": "✓ A simple “I am safe” update"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Your circle",
+        "title": "Trusted contacts",
+        "body": "👥 Add family or close friends who can receive your check-ins, help signals, and shared updates.",
+        "points": {
+          "one": "✓ Choose who sees your updates",
+          "two": "✓ Help signals go to the right people"
+        }
+      },
+      "sharing": {
+        "eyebrow": "Optional context",
+        "title": "Status and location",
+        "body": "📍 Share how you are, whether you are home or out, trip status, or location with selected contacts.",
+        "points": {
+          "one": "✓ 🙂 Mood, 🏠 home/away, or ✈️ trip status",
+          "two": "✓ 📍 Location only when you choose to share it"
+        }
+      },
+      "free": {
+        "eyebrow": "Simple by default",
+        "title": "Plus Preview",
+        "body": "Tryggd Free keeps the basics simple. During the pilot, you can preview Plus features:",
+        "freeSummary": "Free: check-in, trusted contacts, basic status",
+        "bodyFreeSuffix": " keeps the basics simple.",
+        "bodyPilotPrefix": "During the pilot, preview ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ Trip Mode",
+          "two": "📍 Location sharing options",
+          "three": "🙂 Mood updates",
+          "four": "⚙️ More sharing control"
+        },
+        "footer": "Plus Preview is optional."
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "Good to know",
+      "title": "A few important notes",
+      "productName": "Tryggd ",
+      "paragraph1": "helps you share manual check-ins, help signals, and selected updates with trusted contacts.",
+      "paragraph2": "Your contacts may see the status updates you choose to share. Location is only shared when you turn location sharing on.",
+      "paragraph3": "Notifications may be delayed because of network connection, battery level, device settings, or third-party push services.",
+      "paragraph4": "Tryggd is not an emergency service and should not be relied on in urgent or life-threatening situations.",
+      "acceptLabel": "I understand",
+      "saving": "Saving...",
+      "decline": "Decline / Back"
+    },
+    "errors": {
+      "saveTitle": "Unable to continue",
+      "saveBody": "Please try again."
+    }
+  },
   "pilotPreview": {
-    "dialogTitle": "✨ Free or Plus",
-    "dialogIntro": "Free is for everyday use — simple, useful, and ad-free.\nYou can also try the Plus Preview before {{deadline}} for more sharing features.",
-    "dialogFreeSectionTitle": "Free includes:",
-    "dialogFreeFeature1": "✓ One-tap check-in",
-    "dialogFreeFeature2": "✓ Trusted contacts",
-    "dialogFreeFeature3": "✓ Basic status updates",
-    "dialogFreeFeature4": "✓ No ads",
-    "dialogPlusSectionTitle": "Plus includes everything in Free, plus:",
-    "dialogFeature1": "✈️ Trip Mode｜✋ Help signal",
-    "dialogFeature2": "📍 Location sharing options",
-    "dialogFeature3": "🙂 Mood updates",
-    "dialogFeature4": "⚙️ More sharing controls",
-    "dialogPricingTitle": "Plus price",
-    "dialogPricingNote": "After {{deadline}}, if you continue with Plus:",
+    "dialogTitle": "✨ Preview Plus plan for free",
+    "dialogIntro": "Try Tryggd Plus plan for free now.\nNo payment details needed, no automatic charge.",
+    "dialogFreeSectionTitle": "Basic plan includes:",
+    "dialogFreeFeature1": "✓ Check-in   🔔 contact update notifications   👥 up to 5 contacts",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan includes everything in Basic plan, plus:",
+    "dialogFeature1": "🌿 Daily mode   ✈️ Trip Mode   ✋ Help signal",
+    "dialogFeature2": "🙂 Mood updates   📍 Location sharing   👥 More contacts",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogFeature5": "",
+    "dialogFeature6": "",
+    "dialogPricingTitle": "Plus plan price",
+    "dialogPricingNote": "After {{deadline}}, if you choose to continue with Plus plan:",
     "dialogPricingMonthly": "US$2.99 / month",
     "dialogPricingYearly": "US$19.99 / year",
-    "dialogSupportNote": "Plus is a way to support Tryggd and help us stay ad-free, reliable, and improving.",
-    "dialogPreviewNote": "Plus Preview is open until {{deadline}}.\nNo payment details needed, no automatic charge.",
-    "activate": "Start Plus Preview",
-    "notNow": "Use Free for now",
+    "dialogSupportNote": "Plus plan is a way to support Tryggd's continued operation and improvement.\nWe want to keep Tryggd useful, stable, reliable, and ad-free.",
+    "dialogPreviewNote": "Plus Preview is open until {{deadline}}.\nAfter the preview ends, your account will automatically return to the Basic plan.",
+    "activate": "Preview Plus plan for free",
+    "notNow": "Use Basic plan",
     "activatedMessage": "Plus is now active. Home has been set to Enhanced so you can try more sharing options. You can switch back to Simple anytime in Settings.",
     "expiredTitle": "Plus Preview has ended",
     "expiredBody": "You can continue using Tryggd Free, including one-tap check-in, trusted contacts, and basic updates.\n\nYour past check-ins and activity are not removed.",

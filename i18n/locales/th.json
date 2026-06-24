@@ -545,9 +545,10 @@
     "heading": "ปลดล็อกข้อมูลเพิ่มเติม",
     "description": "Tryggd Plus เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
     "comingSoon": {
-      "title": "เส้นทางการอัปเกรด",
-      "message": "การอัปเกรดในแอปยังไม่เชื่อมต่อ หน้านี้เป็นปลายทางของฟีเจอร์ที่ถูกล็อกและเส้นทางอัปเกรดในอนาคต",
-      "button": "การอัปเกรดกำลังมา"
+      "title": "Plus Preview",
+      "message": "Plus Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+      "button": "ทดลอง Plus plan ฟรี",
+      "note": "คุณสามารถกลับไปใช้ Basic plan ได้ทุกเมื่อ"
     },
     "features": {
       "wellness": {
@@ -569,6 +570,22 @@
       "welfare": {
         "title": "คำทักทายห่วงใย",
         "description": "ใช้ฟีเจอร์ติดตามความเป็นอยู่เพิ่มเติมสำหรับผู้ติดต่อของคุณ"
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
@@ -721,34 +738,36 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ ฟรี หรือ Plus",
-    "dialogIntro": "ฟรีสำหรับการใช้งานในชีวิตประจำวัน — เรียบง่าย มีประโยชน์ และไม่มีโฆษณา\nคุณยังสามารถลองใช้ Plus Preview ก่อน {{deadline}} เพื่อสัมผัสฟีเจอร์การแชร์เพิ่มเติม",
-    "dialogFreeSectionTitle": "ฟรีรวมถึง:",
-    "dialogFreeFeature1": "✓ เช็คอินด้วยแตะเดียว",
-    "dialogFreeFeature2": "✓ ผู้ติดต่อที่เชื่อถือได้",
-    "dialogFreeFeature3": "✓ อัปเดตสถานะพื้นฐาน",
-    "dialogFreeFeature4": "✓ ไม่มีโฆษณา",
-    "dialogPlusSectionTitle": "Plus รวมทุกอย่างในฟรี บวกเพิ่ม:",
-    "dialogFeature1": "✈️ โหมดการเดินทาง｜✋ สัญญาณช่วยเหลือ",
-    "dialogFeature2": "📍 ตัวเลือกแชร์ตำแหน่ง",
-    "dialogFeature3": "🙂 อัปเดตอารมณ์",
-    "dialogFeature4": "⚙️ ควบคุมการแชร์มากขึ้น",
-    "dialogPricingTitle": "ราคา Plus",
-    "dialogPricingNote": "หลัง {{deadline}} หากคุณต้องการใช้ Plus ต่อ:",
+    "dialogTitle": "✨ ทดลอง Plus plan ฟรี",
+    "dialogIntro": "ลองใช้ Tryggd Plus plan ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+    "dialogFreeSectionTitle": "Basic plan รวมถึง:",
+    "dialogFreeFeature1": "✓ เช็คอิน   🔔 แจ้งเตือนอัปเดตผู้ติดต่อ   👥 สูงสุด 5 ผู้ติดต่อ",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan รวมทุกอย่างใน Basic plan และเพิ่ม:",
+    "dialogFeature1": "🌿 โหมดประจำวัน   ✈️ โหมดการเดินทาง   ✋ สัญญาณช่วยเหลือ",
+    "dialogFeature2": "🙂 อัปเดตอารมณ์   📍 แชร์ตำแหน่ง   👥 ผู้ติดต่อเพิ่มเติม",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "ราคา Plus plan",
+    "dialogPricingNote": "หลัง {{deadline}} หากคุณเลือกใช้ Plus plan ต่อ:",
     "dialogPricingMonthly": "US$2.99 / เดือน",
     "dialogPricingYearly": "US$19.99 / ปี",
-    "dialogSupportNote": "Plus เป็นวิธีหนึ่งในการสนับสนุน Tryggd เพื่อช่วยให้เราคงความปราศจากโฆษณา มีความเสถียร และพัฒนาอย่างต่อเนื่อง",
-    "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
-    "activate": "เริ่มดูตัวอย่าง Plus",
-    "notNow": "ใช้ฟรีก่อน",
+    "dialogSupportNote": "Plus plan เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
+    "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
+    "activate": "ทดลอง Plus plan ฟรี",
+    "notNow": "ใช้ Basic plan",
     "activatedMessage": "Plus เปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
     "expiredTitle": "การดูตัวอย่าง Plus สิ้นสุดแล้ว",
-    "expiredBody": "คุณสามารถใช้งาน Tryggd ฟรีต่อไปได้ รวมถึงการเช็คอินด้วยแตะเดียว ผู้ติดต่อที่เชื่อถือได้ และอัปเดตพื้นฐาน\n\nการเช็คอินและกิจกรรมในอดีตของคุณจะไม่ถูกลบ",
+    "expiredBody": "คุณยังสามารถใช้ Tryggd Basic plan ต่อได้ รวมถึงการเช็คอิน ผู้ติดต่อที่เชื่อถือได้ และการอัปเดตพื้นฐาน\n\nการเช็คอินและกิจกรรมก่อนหน้าของคุณจะไม่ถูกลบ",
     "expiredButton": "เข้าใจแล้ว",
     "settingsRowTitle": "ดูตัวอย่าง Plus",
     "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงนำร่อง",
     "settingsRowAction": "เริ่มดูตัวอย่าง",
     "activeRowTitle": "กำลังดูตัวอย่าง Plus",
-    "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง"
+    "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }

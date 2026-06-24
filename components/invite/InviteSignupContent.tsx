@@ -3,6 +3,7 @@ import { iosFontSize } from "@/constants/typography";
 import { buildSyntheticEmailFromTryggdId, isValidTryggdId, normalizePhoneNumber } from "@/lib/auth/phoneIdentity";
 import { resetOnboarding } from "@/lib/onboarding/state";
 import { supabase } from "@/lib/supabase";
+import { getDevicePreferredLanguage, resolveSupportedLanguage } from "../../i18n";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -192,6 +193,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
   const webLanguage = i18n.resolvedLanguage === 'zh-Hant' ? 'zh-TW' : i18n.resolvedLanguage === 'zh-Hans' ? 'zh-CN' : i18n.resolvedLanguage || 'en';
   const webInviteUrl = token ? `https://tryggd.com/invite?token=${token}&lang=${encodeURIComponent(webLanguage)}` : `https://tryggd.com?lang=${encodeURIComponent(webLanguage)}`;
   const appInviteUrl = token ? `tryggd://invite?token=${token}` : 'tryggd://';
+  const registrationLanguage = resolveSupportedLanguage(i18n.resolvedLanguage || i18n.language || getDevicePreferredLanguage());
 
   const getLocalizedInviteError = (message?: string | null) => {
     if (!message) return null;
@@ -317,7 +319,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
           phone: phone.trim(),
           password,
           username: username.trim(),
-          language: i18n.resolvedLanguage || 'en',
+          language: registrationLanguage,
         },
       });
 

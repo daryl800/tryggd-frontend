@@ -693,9 +693,10 @@
     "heading": "Unlock more context",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "파일럿 기간 동안 Plus Preview를 무료로 사용할 수 있습니다. 결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
+      "button": "Plus plan 무료 미리보기",
+      "note": "언제든지 Basic plan으로 돌아갈 수 있습니다."
     },
     "features": {
       "wellness": {
@@ -717,38 +718,56 @@
       "welfare": {
         "title": "Welfare greeting",
         "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ 무료 또는 Plus",
-    "dialogIntro": "무료는 일상적인 사용을 위한 것입니다 — 간단하고 실용적이며 광고가 없습니다.\n{{deadline}} 전에 Plus 프리뷰를 체험하여 더 많은 공유 기능을 사용해 볼 수 있습니다.",
-    "dialogFreeSectionTitle": "무료에 포함된 기능:",
-    "dialogFreeFeature1": "✓ 한 번에 체크인",
-    "dialogFreeFeature2": "✓ 신뢰할 수 있는 연락처",
-    "dialogFreeFeature3": "✓ 기본 상태 업데이트",
-    "dialogFreeFeature4": "✓ 광고 없음",
-    "dialogPlusSectionTitle": "Plus는 무료의 모든 기능에 추가로:",
-    "dialogFeature1": "✈️ 여행 모드｜✋ 도움 신호",
-    "dialogFeature2": "📍 위치 공유 옵션",
-    "dialogFeature3": "🙂 기분 업데이트",
-    "dialogFeature4": "⚙️ 더 많은 공유 설정",
-    "dialogPricingTitle": "Plus 가격",
-    "dialogPricingNote": "{{deadline}} 이후, Plus를 계속 사용한다면:",
+    "dialogTitle": "✨ Plus plan 무료 미리보기",
+    "dialogIntro": "지금 Tryggd Plus plan을 무료로 사용해 보세요.\n결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
+    "dialogFreeSectionTitle": "Basic plan 포함:",
+    "dialogFreeFeature1": "✓ 체크인   🔔 연락처 업데이트 알림   👥 최대 5명 연락처",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan은 Basic plan의 모든 기능에 추가로:",
+    "dialogFeature1": "🌿 일상 모드   ✈️ 여행 모드   ✋ 도움 신호",
+    "dialogFeature2": "🙂 기분 업데이트   📍 위치 공유   👥 더 많은 연락처",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan 가격",
+    "dialogPricingNote": "{{deadline}} 이후 Plus plan을 계속 사용하기로 선택하면:",
     "dialogPricingMonthly": "US$2.99 / 월",
     "dialogPricingYearly": "US$19.99 / 년",
-    "dialogSupportNote": "Plus는 Tryggd를 지원하고 광고 없이, 안정적으로, 계속 개선하는 데 도움이 됩니다.",
-    "dialogPreviewNote": "Plus 프리뷰는 {{deadline}}까지 열려 있습니다.\n결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
-    "activate": "Plus 프리뷰 시작",
-    "notNow": "일단 무료로 사용하기",
+    "dialogSupportNote": "Plus plan은 Tryggd의 지속적인 운영과 개선을 지원하는 방법입니다.\nTryggd를 유용하고 안정적이며 신뢰할 수 있고 광고 없는 서비스로 유지하고 싶습니다.",
+    "dialogPreviewNote": "Plus Preview는 {{deadline}}까지 열려 있습니다.\nPreview가 끝나면 계정은 자동으로 Basic plan으로 돌아갑니다.",
+    "activate": "Plus plan 무료 미리보기",
+    "notNow": "Basic plan 사용",
     "activatedMessage": "Plus가 활성화되었습니다. 홈이 강화됨으로 전환되었습니다. 설정에서 언제든지 간단으로 전환할 수 있습니다.",
     "expiredTitle": "Plus 프리뷰가 종료되었습니다",
-    "expiredBody": "한 번에 체크인, 신뢰할 수 있는 연락처, 기본 업데이트를 포함한 Tryggd 무료를 계속 사용할 수 있습니다.\n\n이전 체크인 및 활동은 삭제되지 않습니다.",
+    "expiredBody": "Tryggd Basic plan을 계속 사용할 수 있으며 체크인, 신뢰할 수 있는 연락처, 기본 업데이트가 포함됩니다.\n\n이전 체크인과 활동은 삭제되지 않습니다.",
     "expiredButton": "알겠습니다",
     "settingsRowTitle": "Plus 프리뷰",
     "settingsRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 무료로 체험하세요.",
     "settingsRowAction": "프리뷰 시작",
     "activeRowTitle": "Plus 프리뷰 진행 중",
-    "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다."
+    "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }

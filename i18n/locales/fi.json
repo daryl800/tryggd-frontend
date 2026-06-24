@@ -696,9 +696,10 @@
     "heading": "Unlock more context",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Upgrade path",
-      "message": "In-app upgrade is not connected yet. This screen is the destination for locked features and the future upgrade flow.",
-      "button": "Upgrade coming soon"
+      "title": "Plus Preview",
+      "message": "Plus Preview on pilotin aikana ilmainen. Maksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+      "button": "Kokeile Plus plania ilmaiseksi",
+      "note": "Voit palata Basic planiin milloin tahansa."
     },
     "features": {
       "wellness": {
@@ -720,38 +721,56 @@
       "welfare": {
         "title": "Welfare greeting",
         "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
       }
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Ilmainen tai Plus",
-    "dialogIntro": "Ilmainen on jokapäiväiseen käyttöön — yksinkertainen, hyödyllinen ja mainokseton.\nVoit myös kokeilla Plus-esikatselua ennen {{deadline}} saadaksesi lisää jakamisominaisuuksia.",
-    "dialogFreeSectionTitle": "Ilmainen sisältää:",
-    "dialogFreeFeature1": "✓ Yhden napaukseen kirjautuminen",
-    "dialogFreeFeature2": "✓ Luotetut kontaktit",
-    "dialogFreeFeature3": "✓ Perustilapäivitykset",
-    "dialogFreeFeature4": "✓ Ei mainoksia",
-    "dialogPlusSectionTitle": "Plus sisältää kaiken Ilmaisesta sekä lisäksi:",
-    "dialogFeature1": "✈️ Matkatila｜✋ Hätäsignaali",
-    "dialogFeature2": "📍 Sijainnin jakamisvaihtoehdot",
-    "dialogFeature3": "🙂 Mielialan päivitykset",
-    "dialogFeature4": "⚙️ Lisää jakamisasetuksia",
-    "dialogPricingTitle": "Plussan hinta",
-    "dialogPricingNote": "{{deadline}} jälkeen, jos jatkat Plussan käyttöä:",
+    "dialogTitle": "✨ Kokeile Plus plania ilmaiseksi",
+    "dialogIntro": "Kokeile Tryggd Plus plania ilmaiseksi nyt.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+    "dialogFreeSectionTitle": "Basic plan sisältää:",
+    "dialogFreeFeature1": "✓ Kirjautuminen   🔔 kontaktien päivitysilmoitukset   👥 enintään 5 kontaktia",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan sisältää kaiken Basic planista sekä lisäksi:",
+    "dialogFeature1": "🌿 Päivittäinen tila   ✈️ Matkatila   ✋ Hätäsignaali",
+    "dialogFeature2": "🙂 Mielialan päivitykset   📍 Sijainnin jakaminen   👥 Lisää kontakteja",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan -hinta",
+    "dialogPricingNote": "{{deadline}} jälkeen, jos valitset jatkaa Plus planilla:",
     "dialogPricingMonthly": "US$2.99 / kuukausi",
     "dialogPricingYearly": "US$19.99 / vuosi",
-    "dialogSupportNote": "Plus on tapa tukea Tryggdiä ja auttaa meitä pysymään mainoksettomana, luotettavana ja kehittyvänä.",
-    "dialogPreviewNote": "Plus-esikatselu on auki {{deadline}} asti.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
-    "activate": "Aloita Plus-esikatselu",
-    "notNow": "Käytä Ilmaista ensin",
+    "dialogSupportNote": "Plus plan on tapa tukea Tryggdin jatkuvaa toimintaa ja kehittämistä.\nHaluamme pitää Tryggdin hyödyllisenä, vakaana, luotettavana ja mainoksettomana.",
+    "dialogPreviewNote": "Plus Preview on avoinna {{deadline}} asti.\nPreview-jakson päättyessä tilisi palaa automaattisesti Basic planiin.",
+    "activate": "Kokeile Plus plania ilmaiseksi",
+    "notNow": "Käytä Basic plania",
     "activatedMessage": "Plus on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
     "expiredTitle": "Plus-esikatselu on päättynyt",
-    "expiredBody": "Voit jatkaa Tryggd Ilmaisen käyttöä, mukaan lukien yhden napaukseen kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAikaisempia kirjautumisia ja aktiviteetteja ei poisteta.",
+    "expiredBody": "Voit jatkaa Tryggd Basic planin käyttöä, mukaan lukien kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAiemmat kirjautumisesi ja toimintasi eivät poistu.",
     "expiredButton": "Selvä",
     "settingsRowTitle": "Plus-esikatselu",
     "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
     "settingsRowAction": "Aloita esikatselu",
     "activeRowTitle": "Plus-esikatselu aktiivinen",
-    "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana."
+    "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
   }
 }
