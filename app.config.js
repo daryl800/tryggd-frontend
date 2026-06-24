@@ -64,7 +64,7 @@ export default ({ config }) => ({
         edgeToEdgeEnabled: true,
         predictiveBackGestureEnabled: false,
         package: "com.marcustechnology.tryggd",
-        permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+        permissions: ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"],
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     },
 

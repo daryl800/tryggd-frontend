@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -114,6 +115,20 @@ export default function OnboardingScreen() {
     setSaving(true);
     try {
       await completeOnboarding(user?.id);
+
+      if (Platform.OS === 'android') {
+        try {
+          // expo-intent-launcher is an Android-only native module — requires a native build
+          const IntentLauncher = require('expo-intent-launcher');
+          await IntentLauncher.startActivityAsync(
+            IntentLauncher.ActivityAction.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+            { data: 'package:com.marcustechnology.tryggd' }
+          );
+        } catch {
+          // User dismissed or device doesn't support it — continue anyway
+        }
+      }
+
       router.replace(user ? (needsUsername ? '/complete-profile' : '/') : '/(auth)/login');
     } catch (error: any) {
       Alert.alert(
