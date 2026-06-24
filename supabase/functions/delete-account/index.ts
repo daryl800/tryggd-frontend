@@ -44,14 +44,35 @@ serve(async (req) => {
       })
     }
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      { auth: { persistSession: false } }
-    )
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } })
+
+    // Delete app data BEFORE deleting the auth user.
+    // users_latest_checkin has a FK → profiles, and profiles cascades from auth.users,
+    // so users_latest_checkin must be cleared first or the auth deletion is blocked.
+    const cleanupOperations = [
+      supabase.from('users_latest_checkin').delete().eq('user_id', user.id),
+      supabase.from('checkins').delete().eq('user_id', user.id),
+      supabase.from('contacts').delete().or(`owner_user_id.eq.${user.id},contact_user_id.eq.${user.id}`),
+      supabase.from('contact_requests').delete().or(`sender_user_id.eq.${user.id},receiver_user_id.eq.${user.id}`),
+      supabase.from('contact_invites').delete().or(`inviter_user_id.eq.${user.id},target_user_id.eq.${user.id},claimed_by_user_id.eq.${user.id}`),
+      supabase.from('notifications').delete().or(`user_id.eq.${user.id},sender_user_id.eq.${user.id}`),
+      supabase.from('notification_rate_limits').delete().eq('sender_user_id', user.id),
+      supabase.from('user_push_tokens').delete().eq('user_id', user.id),
+      supabase.from('user_reminder_times').delete().eq('user_id', user.id),
+      supabase.from('user_settings').delete().eq('user_id', user.id),
+      supabase.from('user_entitlements').delete().eq('user_id', user.id),
+      supabase.from('profiles').delete().eq('id', user.id),
+    ]
+
+    const cleanupResults = await Promise.all(cleanupOperations)
+    const failedCleanup = cleanupResults.find((result) => result.error)
+    if (failedCleanup?.error) {
+      console.warn('Pre-deletion cleanup had an error', failedCleanup.error)
+    }
+
     const deleteAuthResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users/${user.id}`, {
       method: 'DELETE',
       headers: {
@@ -72,27 +93,6 @@ serve(async (req) => {
         status: 500,
         headers: jsonHeaders,
       })
-    }
-
-    const cleanupOperations = [
-      supabase.from('contacts').delete().or(`owner_user_id.eq.${user.id},contact_user_id.eq.${user.id}`),
-      supabase.from('contact_requests').delete().or(`sender_user_id.eq.${user.id},receiver_user_id.eq.${user.id}`),
-      supabase.from('contact_invites').delete().or(`inviter_user_id.eq.${user.id},target_user_id.eq.${user.id},claimed_by_user_id.eq.${user.id}`),
-      supabase.from('notifications').delete().or(`user_id.eq.${user.id},sender_user_id.eq.${user.id}`),
-      supabase.from('notification_rate_limits').delete().eq('sender_user_id', user.id),
-      supabase.from('user_push_tokens').delete().eq('user_id', user.id),
-      supabase.from('user_reminder_times').delete().eq('user_id', user.id),
-      supabase.from('user_settings').delete().eq('user_id', user.id),
-      supabase.from('user_entitlements').delete().eq('user_id', user.id),
-      supabase.from('checkins').delete().eq('user_id', user.id),
-      supabase.from('profiles').delete().eq('id', user.id),
-    ]
-
-    const cleanupResults = await Promise.all(cleanupOperations)
-    const failedCleanup = cleanupResults.find((result) => result.error)
-
-    if (failedCleanup?.error) {
-      console.warn('Account auth user deleted, but leftover cleanup had an error', failedCleanup.error)
     }
 
     return new Response(JSON.stringify({ success: true }), {
