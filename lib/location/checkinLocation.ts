@@ -1,27 +1,8 @@
-import { supabase } from '../supabase';
-
 type CheckinLocationPayload = {
   location_latitude: number;
   location_longitude: number;
   location_accuracy_meters: number | null;
 };
-
-async function hasAnyLocationRecipients(userId: string) {
-  const { data, error } = await supabase
-    .from('contacts')
-    .select('id')
-    .eq('owner_user_id', userId)
-    .eq('location_sharing_enabled', true)
-    .limit(1);
-
-  if (error) {
-    console.error('Failed to check location-sharing recipients:', error);
-    return false;
-  }
-
-  console.log('📍 Location-sharing recipients found:', data?.length ?? 0);
-  return (data?.length ?? 0) > 0;
-}
 
 export async function getOptionalCheckinLocation(
   userId: string,
@@ -29,12 +10,6 @@ export async function getOptionalCheckinLocation(
 ): Promise<CheckinLocationPayload | null> {
   if (!canShareLocation) {
     console.log('📍 Skipping location capture because Tryggd Plus is not enabled');
-    return null;
-  }
-
-  const hasRecipients = await hasAnyLocationRecipients(userId);
-  if (!hasRecipients) {
-    console.log('📍 Skipping location capture because no contacts have location sharing enabled');
     return null;
   }
 
