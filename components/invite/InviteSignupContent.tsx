@@ -44,6 +44,12 @@ type Props = {
   initialCode?: string;
 };
 
+const formatInviteDisplayName = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  return trimmed.charAt(0).toLocaleUpperCase() + trimmed.slice(1);
+};
+
 export default function InviteSignupContent({ token, initialCode }: Props) {
   const { t, i18n } = useTranslation();
 
@@ -104,7 +110,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
           setUsername(data.suggested_username);
           setDisplayName((currentName) =>
             !displayNameTouchedRef.current && !currentName.trim()
-              ? data.suggested_username || ''
+              ? formatInviteDisplayName(data.suggested_username || '')
               : currentName
           );
         }
@@ -162,7 +168,7 @@ export default function InviteSignupContent({ token, initialCode }: Props) {
     setUsername(normalizedValue);
 
     if (shouldMirrorDisplayName) {
-      setDisplayName(normalizedValue);
+      setDisplayName(formatInviteDisplayName(normalizedValue));
     }
   };
 
