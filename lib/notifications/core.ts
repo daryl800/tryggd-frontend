@@ -121,30 +121,49 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
         const isEnabled = contactCheckInPref !== 'false'; // default to true
 
-        // Ensure this device token is owned by only one user row before upserting.
-        const { error: cleanupError } = await supabase
+        const pushTokenPayload = {
+            expo_push_token: token,
+            contact_checkin_notifications: isEnabled,
+            updated_at: new Date().toISOString(),
+        };
+
+        const { data: updatedRows, error: updateError } = await supabase
+            .from('user_push_tokens')
+            .update(pushTokenPayload)
+            .eq('user_id', userId)
+            .select('id');
+
+        if (updateError) throw updateError;
+
+        if (!updatedRows || updatedRows.length === 0) {
+            const { error: insertError } = await supabase
+                .from('user_push_tokens')
+                .insert({
+                    ...pushTokenPayload,
+                    user_id: userId,
+                });
+
+            if (insertError) {
+                if (insertError.code === '23505') {
+                    const { error: retryUpdateError } = await supabase
+                        .from('user_push_tokens')
+                        .update(pushTokenPayload)
+                        .eq('user_id', userId);
+
+                    if (retryUpdateError) throw retryUpdateError;
+                } else {
+                    throw insertError;
+                }
+            }
+        }
+
+        // Best-effort cleanup for duplicate rows visible to this user. Rows owned
+        // by other accounts are hidden by RLS and should not block this device.
+        await supabase
             .from('user_push_tokens')
             .delete()
             .eq('expo_push_token', token)
             .neq('user_id', userId);
-
-        if (cleanupError) {
-            throw cleanupError;
-        }
-
-        // Save to user_push_tokens table
-        const { error } = await supabase
-            .from('user_push_tokens')
-            .upsert({
-                user_id: userId,
-                expo_push_token: token,
-                contact_checkin_notifications: isEnabled,
-                updated_at: new Date().toISOString(),
-            }, {
-                onConflict: 'user_id'
-            });
-
-        if (error) throw error;
 
         console.log('✅ Push token and preferences saved to user_push_tokens');
         return true;
