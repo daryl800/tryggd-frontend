@@ -2,7 +2,7 @@
 export default ({ config }) => ({
     ...config,
 
-    name: "tryggd",
+    name: "Tryggd",
     slug: "tryggd-frontend",
     version: "4.5.3",
     orientation: "portrait",
@@ -91,6 +91,16 @@ export default ({ config }) => ({
                 icon: "./assets/images/tryggd-notification-icon-96.png",
                 color: "#5FA893",
                 defaultChannel: "default",
+            },
+        ],
+        [
+            "expo-plugin-app-name-localization",
+            {
+                default: "Tryggd",
+                locales: {
+                    "zh-Hans": "小报告",
+                    "zh-Hant": "小報告",
+                },
             },
         ],
         [
