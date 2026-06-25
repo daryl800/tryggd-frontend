@@ -4,7 +4,7 @@ import { BaseColors } from '@/constants/colors';
 import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
-import { clearCachedWelfareCheck, getLastWelfareCheckSentAt, hasCachedWelfareCheck, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { clearCachedWelfareCheck, getCachedWelfareCheckSentAt, getLastWelfareCheckSentAt, hasCachedWelfareCheck, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
@@ -945,7 +945,10 @@ export default function ActivityScreen() {
       if (!user || !timestamp || isOwner) return false;
       return hasCachedWelfareCheck(userId, user.id, timestamp, 'today_check');
     });
-    const [lastWelfareCheckSentAt, setLastWelfareCheckSentAt] = useState<string | null>(null);
+    const [lastWelfareCheckSentAt, setLastWelfareCheckSentAt] = useState<string | null>(() => {
+      if (!user || !timestamp || isOwner) return null;
+      return getCachedWelfareCheckSentAt(userId, user.id, timestamp, 'overdue_check');
+    });
     const [welfareClockMs, setWelfareClockMs] = useState(() => Date.now());
     const [wellnessTooltipVisible, setWellnessTooltipVisible] = useState(false);
     const wellnessTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
