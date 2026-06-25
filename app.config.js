@@ -96,8 +96,8 @@ export default ({ config }) => ({
         [
             "expo-plugin-app-name-localization",
             {
-                default: "Tryggd",
-                locales: {
+                localizations: {
+                    en: "Tryggd",
                     "zh-Hans": "小报告",
                     "zh-Hant": "小報告",
                 },
