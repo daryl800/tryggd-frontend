@@ -12,16 +12,15 @@ const CONTACT_REQUEST_FUNCTION_URL =
 // Storage keys
 const STORAGE_KEYS = {
     CONTACT_CHECK_IN: '@settings_contact_check_in',
-    WELFARE_SENT_CACHE: '@welfare_sent_cache',
     WELFARE_SENT_AT_CACHE: '@welfare_sent_at_cache',
+    WELFARE_SENT_CACHE_LEGACY: '@welfare_sent_cache', // read-only migration source
 };
 
 // Check environment
 export const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
-// In-memory welfare sent cache — populated on send and on async lookup hit,
-// so subsequent renders can read the state synchronously without a flash.
-const welfareSentMemoryCache = new Set<string>();
+// Single in-memory cache: value is ISO sentAt timestamp when known, or 'true' as a
+// sent-but-time-unknown sentinel. Presence of any value means "already sent".
 const welfareSentAtMemoryCache = new Map<string, string>();
 
 let welfareCacheInitialized = false;
@@ -30,20 +29,23 @@ export async function initWelfareCache(): Promise<void> {
     if (welfareCacheInitialized) return;
     welfareCacheInitialized = true;
     try {
-        const [sentCache, sentAtCache] = await Promise.all([
-            AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE),
+        const [sentAtCache, legacyCache] = await Promise.all([
             AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_AT_CACHE),
+            AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE_LEGACY),
         ]);
-        if (sentCache) {
-            const parsed = JSON.parse(sentCache) as Record<string, boolean>;
-            for (const key of Object.keys(parsed)) {
-                if (parsed[key]) welfareSentMemoryCache.add(key);
-            }
-        }
         if (sentAtCache) {
             const parsed = JSON.parse(sentAtCache) as Record<string, string>;
-            for (const [key, sentAt] of Object.entries(parsed)) {
-                welfareSentAtMemoryCache.set(key, sentAt);
+            for (const [key, value] of Object.entries(parsed)) {
+                welfareSentAtMemoryCache.set(key, value);
+            }
+        }
+        // Migrate entries that only exist in the legacy boolean cache
+        if (legacyCache) {
+            const parsed = JSON.parse(legacyCache) as Record<string, boolean>;
+            for (const key of Object.keys(parsed)) {
+                if (parsed[key] && !welfareSentAtMemoryCache.has(key)) {
+                    welfareSentAtMemoryCache.set(key, 'true');
+                }
             }
         }
     } catch {}
@@ -55,7 +57,7 @@ export function hasCachedWelfareCheck(
     checkinTime: string,
     welfareKind: 'today_check' | 'overdue_check'
 ): boolean {
-    return welfareSentMemoryCache.has(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`);
+    return welfareSentAtMemoryCache.has(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`);
 }
 
 export function getCachedWelfareCheckSentAt(
@@ -64,7 +66,8 @@ export function getCachedWelfareCheckSentAt(
     checkinTime: string,
     welfareKind: 'today_check' | 'overdue_check'
 ): string | null {
-    return welfareSentAtMemoryCache.get(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`) ?? null;
+    const value = welfareSentAtMemoryCache.get(`${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`);
+    return (value && value !== 'true') ? value : null;
 }
 
 export async function clearCachedWelfareCheck(
@@ -74,17 +77,15 @@ export async function clearCachedWelfareCheck(
     welfareKind: 'today_check' | 'overdue_check'
 ): Promise<void> {
     const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
-    welfareSentMemoryCache.delete(cacheKey);
     welfareSentAtMemoryCache.delete(cacheKey);
-
-    const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
-    if (!cached) return;
-
-    const parsed = JSON.parse(cached) as Record<string, boolean>;
-    if (!(cacheKey in parsed)) return;
-
-    delete parsed[cacheKey];
-    await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_CACHE, JSON.stringify(parsed));
+    try {
+        const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_AT_CACHE);
+        if (!cached) return;
+        const parsed = JSON.parse(cached) as Record<string, string>;
+        if (!(cacheKey in parsed)) return;
+        delete parsed[cacheKey];
+        await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_AT_CACHE, JSON.stringify(parsed));
+    } catch {}
 }
 
 /**
@@ -408,15 +409,7 @@ export async function hasSentWelfareCheck(
 ): Promise<boolean> {
     try {
         const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
-        if (welfareSentMemoryCache.has(cacheKey)) return true;
-        const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
-        if (cached) {
-            const parsed = JSON.parse(cached) as Record<string, boolean>;
-            if (parsed[cacheKey]) {
-                welfareSentMemoryCache.add(cacheKey);
-                return true;
-            }
-        }
+        if (welfareSentAtMemoryCache.has(cacheKey)) return true;
 
         const { data, error } = await supabase
             .from('notifications')
@@ -431,7 +424,7 @@ export async function hasSentWelfareCheck(
         if (error) throw error;
         const hasSent = !!data && data.length > 0;
         if (hasSent) {
-            await cacheWelfareCheckStatus(cacheKey);
+            await cacheWelfareSent(cacheKey);
         }
         return hasSent;
     } catch (error) {
@@ -449,9 +442,7 @@ export async function getLastWelfareCheckSentAt(
     try {
         const cacheKey = `${recipientUserId}_${senderUserId}_${checkinTime}_${welfareKind}`;
         const cached = welfareSentAtMemoryCache.get(cacheKey);
-        if (cached) {
-            return cached;
-        }
+        if (cached && cached !== 'true') return cached;
 
         const { data, error } = await supabase
             .from('notifications')
@@ -469,8 +460,7 @@ export async function getLastWelfareCheckSentAt(
 
         const sentAt = data?.created_at ?? null;
         if (sentAt) {
-            welfareSentAtMemoryCache.set(cacheKey, sentAt);
-            void persistWelfareSentAt(cacheKey, sentAt);
+            await cacheWelfareSent(cacheKey, sentAt);
         }
         return sentAt;
     } catch (error) {
@@ -479,19 +469,13 @@ export async function getLastWelfareCheckSentAt(
     }
 }
 
-async function cacheWelfareCheckStatus(cacheKey: string): Promise<void> {
-    welfareSentMemoryCache.add(cacheKey);
-    const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_CACHE);
-    const parsed = cached ? JSON.parse(cached) as Record<string, boolean> : {};
-    parsed[cacheKey] = true;
-    await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_CACHE, JSON.stringify(parsed));
-}
-
-async function persistWelfareSentAt(cacheKey: string, sentAt: string): Promise<void> {
+async function cacheWelfareSent(cacheKey: string, sentAt?: string): Promise<void> {
+    const value = sentAt ?? 'true';
+    welfareSentAtMemoryCache.set(cacheKey, value);
     try {
         const cached = await AsyncStorage.getItem(STORAGE_KEYS.WELFARE_SENT_AT_CACHE);
         const parsed = cached ? JSON.parse(cached) as Record<string, string> : {};
-        parsed[cacheKey] = sentAt;
+        parsed[cacheKey] = value;
         await AsyncStorage.setItem(STORAGE_KEYS.WELFARE_SENT_AT_CACHE, JSON.stringify(parsed));
     } catch {}
 }
@@ -579,10 +563,7 @@ export async function sendWelfareCheckNotification({
             return { success: false, error: result?.error || 'Welfare check failed' };
         }
 
-        await cacheWelfareCheckStatus(cacheKey);
-        const sentAt = new Date().toISOString();
-        welfareSentAtMemoryCache.set(cacheKey, sentAt);
-        void persistWelfareSentAt(cacheKey, sentAt);
+        void cacheWelfareSent(cacheKey, new Date().toISOString());
 
         console.log('✅ Welfare check notification sent successfully');
         return {
