@@ -739,6 +739,7 @@ export default function HomeScreen() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const isCheckingInRef = useRef(false);
   const [contactsCount, setContactsCount] = useState(0);
   const [moodScore, setMoodScore] = useState(WELLNESS_DEFAULT);
   const [, setSubmittedMoodScore] = useState(WELLNESS_DEFAULT);
@@ -1517,7 +1518,8 @@ export default function HomeScreen() {
   // }, [user, t, triggerCheckInAnimation, refetchStreak, isCheckingIn]);
 
   const handleCheckIn = useCallback(async () => {
-    if (isCheckingIn) return;
+    if (isCheckingInRef.current) return;
+    isCheckingInRef.current = true;
 
     try {
       if (!user) throw new Error(t('home.errors.noUser'));
@@ -1658,6 +1660,7 @@ export default function HomeScreen() {
       });
 
     } finally {
+      isCheckingInRef.current = false;
       setIsCheckingIn(false);
     }
   }, [
@@ -1666,7 +1669,6 @@ export default function HomeScreen() {
     capabilities.canShareLocation,
     checkinMode,
     homePresence,
-    isCheckingIn,
     lastCheckinId,
     lastCheckinUtc,
     moodScore,

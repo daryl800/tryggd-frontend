@@ -900,13 +900,16 @@ serve(async (req) => {
     const recipientIds = eligibleContacts.map(rel => rel.contact_user_id)
     console.log('📋 Recipient IDs:', recipientIds)
 
+    // Deduplicate within a 5-minute window so rapid re-taps (each with a new now()
+    // timestamp) don't each slip past the exact-match check.
+    const dedupeWindowStart = new Date(new Date(checkin_time).getTime() - 5 * 60 * 1000).toISOString()
     const { data: existingNotifications, error: existingNotificationsError } = await supabase
       .from('notifications')
       .select('user_id')
       .in('user_id', recipientIds)
       .eq('sender_user_id', user_id)
       .eq('type', 'contact_checkin')
-      .filter('data->>checkinTimeIso', 'eq', checkin_time)
+      .gte('data->>checkinTimeIso', dedupeWindowStart)
 
     if (existingNotificationsError) throw existingNotificationsError
 
