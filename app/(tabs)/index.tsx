@@ -740,6 +740,7 @@ export default function HomeScreen() {
   const [fontScale, setFontScale] = useState(1);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const isCheckingInRef = useRef(false);
+  const isModeChangingRef = useRef(false);
   const [contactsCount, setContactsCount] = useState(0);
   const [moodScore, setMoodScore] = useState(WELLNESS_DEFAULT);
   const [, setSubmittedMoodScore] = useState(WELLNESS_DEFAULT);
@@ -1014,18 +1015,24 @@ export default function HomeScreen() {
 
   const handleCheckinModeChange = useCallback(async (mode: 'home' | 'trip' | 'reach_out') => {
     if (mode === checkinMode) return;
-    void Haptics.selectionAsync();
-    setCheckinMode(mode);
-    if (mode !== 'trip') setTripPresence(null);
-    await AsyncStorage.setItem('@settings_checkin_mode', mode);
-    if (user) {
-      await supabase
-        .from('user_settings')
-        .upsert({
-          user_id: user.id,
-          checkin_mode: mode,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' });
+    if (isModeChangingRef.current) return;
+    isModeChangingRef.current = true;
+    try {
+      void Haptics.selectionAsync();
+      setCheckinMode(mode);
+      if (mode !== 'trip') setTripPresence(null);
+      await AsyncStorage.setItem('@settings_checkin_mode', mode);
+      if (user) {
+        await supabase
+          .from('user_settings')
+          .upsert({
+            user_id: user.id,
+            checkin_mode: mode,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id' });
+      }
+    } finally {
+      isModeChangingRef.current = false;
     }
   }, [checkinMode, user]);
 
