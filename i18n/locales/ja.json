@@ -177,7 +177,7 @@
     "welfareButton": {
       "send": "🍀 大丈夫ですか?",
       "sent": "挨拶送信済み ✓",
-      "sentOffline": "送信済み ✓ — {{name}} がオンラインに戻ったときに表示されます"
+      "sentOffline": "送信済み ✓ — {{name}} がオンラインに戻るとメッセージを確認できます"
     },
     "sharedLocation": {
       "view": "View shared location"

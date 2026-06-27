@@ -230,7 +230,7 @@
       "sentRecentlyMetaMinutes_other": "{{count}} 分鐘前已發送上次問候",
       "sentRecentlyMeta_one": "{{count}} 小時前已發送上次問候",
       "sentRecentlyMeta_other": "{{count}} 小時前已發送上次問候",
-      "sentOffline": "已發送 ✓ — {{name}} 上線後即可看到"
+      "sentOffline": "已發送 ✓ — {{name}} 上線後即可看到您的訊息"
     },
     "sharedLocation": {
       "view": "查看分享位置"

@@ -184,7 +184,7 @@
       "followUpIn_other": "Följ upp igen om {{count}} tim",
       "sentRecentlyMeta_one": "Senaste hälsning skickades för {{count}} timme sedan",
       "sentRecentlyMeta_other": "Senaste hälsning skickades för {{count}} timmar sedan",
-      "sentOffline": "Skickat ✓ — {{name}} ser det när de är online igen"
+      "sentOffline": "Skickat ✓ — {{name}} ser ditt meddelande när de är online igen"
     },
     "sharedLocation": {
       "view": "View shared location"

@@ -177,7 +177,7 @@
     "welfareButton": {
       "send": "🍀 Stai bene?",
       "sent": "Saluto inviato ✓",
-      "sentOffline": "Inviato ✓ — {{name}} lo vedrà quando sarà di nuovo online"
+      "sentOffline": "Inviato ✓ — {{name}} vedrà il tuo messaggio quando sarà di nuovo online"
     },
     "sharedLocation": {
       "view": "View shared location"
