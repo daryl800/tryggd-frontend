@@ -185,14 +185,7 @@ serve(async (req) => {
         .maybeSingle(),
     ])
 
-    if (!tokenData?.expo_push_token) {
-      return new Response(JSON.stringify({ error: 'No push token found for recipient' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    if (tokenData.contact_checkin_notifications === false) {
+    if (tokenData?.contact_checkin_notifications === false) {
       return new Response(JSON.stringify({ error: 'Recipient has disabled contact notifications' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -233,6 +226,15 @@ serve(async (req) => {
         read: false,
         created_at: new Date().toISOString(),
       })
+
+    // If recipient has no push token (e.g. logged out), the notification is
+    // saved to the DB so they'll see it when they log back in — just skip push.
+    if (!tokenData?.expo_push_token) {
+      return new Response(JSON.stringify({ success: true, delivered: false }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
     const response = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
