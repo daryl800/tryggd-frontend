@@ -20,6 +20,7 @@ import { tokenManager } from '@/lib/auth/tokenManager';
 import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { hasCompletedOnboarding } from '@/lib/onboarding/state';
 import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/core';
+import { initAliyunPush, bindAliyunAccount, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
 import { supabase } from '../lib/supabase';
@@ -80,6 +81,7 @@ function useNavigationPersistence(navigationRef: any) {
 function useNotifications(user: any) {
   useEffect(() => {
     void initWelfareCache();
+    void initAliyunPush();
 
     // Setup notification handler
     let subscription: any;
@@ -120,6 +122,7 @@ function useNotifications(user: any) {
         console.log('🚀 Setting up push notifications for user:', user.id);
         const success = await registerAndSavePushToken(user.id);
         console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues');
+        await bindAliyunAccount(user.id);
       } catch (error: any) {
         console.error('⚠️ Push setup error:', error.message || error);
       }

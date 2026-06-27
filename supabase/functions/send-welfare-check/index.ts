@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendAliyunPushByDevice } from '../_shared/aliyunPush.ts'
 
 const WELFARE_MESSAGES = {
   en: {
@@ -170,7 +171,7 @@ serve(async (req) => {
     const [{ data: tokenData }, { data: senderProfile }, { data: receiverSettings }] = await Promise.all([
       supabase
         .from('user_push_tokens')
-        .select('expo_push_token, contact_checkin_notifications')
+        .select('expo_push_token, contact_checkin_notifications, aliyun_device_id')
         .eq('user_id', receiverUserId)
         .maybeSingle(),
       supabase
@@ -227,9 +228,20 @@ serve(async (req) => {
         created_at: new Date().toISOString(),
       })
 
-    // If recipient has no push token (e.g. logged out), the notification is
-    // saved to the DB so they'll see it when they log back in — just skip push.
+    // Aliyun fallback: if no Expo token but user has Aliyun device ID, push via Aliyun
     if (!tokenData?.expo_push_token) {
+      if (tokenData?.aliyun_device_id) {
+        const aliyunResult = await sendAliyunPushByDevice(tokenData.aliyun_device_id, {
+          title: locale.title,
+          body,
+          data: notificationData,
+        })
+        return new Response(JSON.stringify({ success: true, delivered: aliyunResult.success }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      // No push token at all — notification saved to DB, will show on next login
       return new Response(JSON.stringify({ success: true, delivered: false }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
