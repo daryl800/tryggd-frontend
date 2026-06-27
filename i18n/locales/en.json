@@ -193,7 +193,8 @@
       "sentRecentlyMetaMinutes_one": "Last greeting sent {{count}} minute ago",
       "sentRecentlyMetaMinutes_other": "Last greeting sent {{count}} minutes ago",
       "sentRecentlyMeta_one": "Last greeting sent {{count}} hour ago",
-      "sentRecentlyMeta_other": "Last greeting sent {{count}} hours ago"
+      "sentRecentlyMeta_other": "Last greeting sent {{count}} hours ago",
+      "sentOffline": "Sent ✓ — {{name}} will see it when they're back online"
     },
     "sharedLocation": {
       "view": "View shared location"

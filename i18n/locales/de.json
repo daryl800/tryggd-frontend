@@ -176,7 +176,8 @@
     },
     "welfareButton": {
       "send": "🍀 Geht es dir gut?",
-      "sent": "Gruß gesendet ✓"
+      "sent": "Gruß gesendet ✓",
+      "sentOffline": "Gesendet ✓ — {{name}} sieht es, wenn sie wieder online sind"
     },
     "sharedLocation": {
       "view": "View shared location"

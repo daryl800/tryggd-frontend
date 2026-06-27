@@ -176,7 +176,8 @@
     },
     "welfareButton": {
       "send": "🍀 Oletko kunnossa?",
-      "sent": "Tervehdys lähetetty ✓"
+      "sent": "Tervehdys lähetetty ✓",
+      "sentOffline": "Lähetetty ✓ — {{name}} näkee sen, kun hän on taas verkossa"
     },
     "sharedLocation": {
       "view": "View shared location"

@@ -496,7 +496,7 @@ export async function sendWelfareCheckNotification({
     welfareKind: 'today_check' | 'overdue_check';
     cooldownHours?: number;
     forceResend?: boolean;
-}): Promise<{ success: boolean; alreadySent?: boolean; error?: string }> {
+}): Promise<{ success: boolean; alreadySent?: boolean; delivered?: boolean; error?: string }> {
     try {
         console.log('📤 Sending welfare check notification...', {
             receiverUserId,

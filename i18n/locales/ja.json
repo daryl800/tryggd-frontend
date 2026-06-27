@@ -176,7 +176,8 @@
     },
     "welfareButton": {
       "send": "🍀 大丈夫ですか?",
-      "sent": "挨拶送信済み ✓"
+      "sent": "挨拶送信済み ✓",
+      "sentOffline": "送信済み ✓ — {{name}} がオンラインに戻ったときに表示されます"
     },
     "sharedLocation": {
       "view": "View shared location"

@@ -176,7 +176,8 @@
     },
     "welfareButton": {
       "send": "🍀 Går det bra?",
-      "sent": "Hilsen sendt ✓"
+      "sent": "Hilsen sendt ✓",
+      "sentOffline": "Sendt ✓ — {{name}} vil se det når de er tilbake på nett"
     },
     "sharedLocation": {
       "view": "View shared location"

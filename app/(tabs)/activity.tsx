@@ -1142,6 +1142,9 @@ export default function ActivityScreen() {
           } else {
             setWelfareCheckSent(true);
           }
+          if (result.delivered === false) {
+            Alert.alert('', t('activity.welfareButton.sentOffline', { name: name || username || '' }));
+          }
         } else if (result.error) {
           Alert.alert(t('errors.title'), result.error);
         }
