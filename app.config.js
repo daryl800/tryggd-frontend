@@ -33,11 +33,6 @@ export default ({ config }) => ({
                 "Tryggd uses your location so you can optionally share your current location with selected contacts when you check in.",
             NSPhotoLibraryUsageDescription:
                 "Tryggd uses your photo library so you can choose a profile photo, for example when selecting an account picture in Profile.",
-            LSApplicationQueriesSchemes: [
-                "iosamap",
-                "baidumap",
-                "qqmap",
-            ],
             CFBundleLocalizations: [
                 "en",
                 "da",
@@ -81,7 +76,6 @@ export default ({ config }) => ({
     plugins: [
         "expo-router",
         "expo-font",
-        "react-native-map-link",
         [
             "expo-splash-screen",
             {

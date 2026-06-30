@@ -2,11 +2,8 @@ import { ActionSheetIOS, Alert, Linking, Platform } from 'react-native';
 import * as Localization from 'expo-localization';
 import { wgs84ToGcj02, wgs84ToBd09 } from './coordinateTransform';
 
-// ─── China detection ──────────────────────────────────────────────────────────
-
 function isUserInChina(): boolean {
   if (Localization.region === 'CN') return true;
-  // Secondary check: device timezone is a China timezone
   const tz = Localization.timezone ?? '';
   return (
     tz === 'Asia/Shanghai' ||
@@ -17,140 +14,103 @@ function isUserInChina(): boolean {
   );
 }
 
-// ─── China map apps ───────────────────────────────────────────────────────────
+type MapOption = { label: string; url: string };
 
-type ChinaMapApp = {
-  name: string;
-  canOpen: () => Promise<boolean>;
-  open: (lat: number, lng: number) => Promise<void>;
-};
+function chinaMapOptions(wgsLat: number, wgsLng: number): MapOption[] {
+  // Amap: dev=1 means pass WGS-84, Amap converts internally
+  const amapUrl = Platform.OS === 'ios'
+    ? `iosamap://viewMap?sourceApplication=tryggd&poiname=&lat=${wgsLat}&lon=${wgsLng}&dev=1`
+    : `androidamap://viewMap?sourceApplication=tryggd&poiname=&lat=${wgsLat}&lon=${wgsLng}&dev=1`;
 
-function chinaMapApps(wgsLat: number, wgsLng: number): ChinaMapApp[] {
-  // Amap accepts dev=1 (WGS-84) and converts internally — no transform needed
-  const amapSchemeCheck = Platform.OS === 'ios' ? 'iosamap://' : 'androidamap://';
-  const amapUrl =
-    Platform.OS === 'ios'
-      ? `iosamap://viewMap?sourceApplication=tryggd&poiname=&lat=${wgsLat}&lon=${wgsLng}&dev=1`
-      : `androidamap://viewMap?sourceApplication=tryggd&poiname=&lat=${wgsLat}&lon=${wgsLng}&dev=1`;
-
-  // Baidu uses BD-09
   const bd = wgs84ToBd09(wgsLat, wgsLng);
   const baiduUrl = `baidumap://map/marker?location=${bd.lat},${bd.lng}&title=位置&traffic=on`;
 
-  // Tencent uses GCJ-02
   const gcj = wgs84ToGcj02(wgsLat, wgsLng);
   const tencentUrl = `qqmap://map/marker?lat=${gcj.lat}&lon=${gcj.lng}&title=位置`;
 
-  // Google Maps as a universal fallback (no coordinate transform — Google handles it)
   const googleUrl = `https://www.google.com/maps/search/?api=1&query=${wgsLat},${wgsLng}`;
 
   return [
-    {
-      name: '高德地图',
-      canOpen: () => Linking.canOpenURL(amapSchemeCheck),
-      open: () => Linking.openURL(amapUrl),
-    },
-    {
-      name: '百度地图',
-      canOpen: () => Linking.canOpenURL('baidumap://'),
-      open: () => Linking.openURL(baiduUrl),
-    },
-    {
-      name: '腾讯地图',
-      canOpen: () => Linking.canOpenURL('qqmap://'),
-      open: () => Linking.openURL(tencentUrl),
-    },
-    {
-      name: 'Google Maps',
-      canOpen: async () => true, // universal link, always works
-      open: () => Linking.openURL(googleUrl),
-    },
+    { label: '高德地图', url: amapUrl },
+    { label: '百度地图', url: baiduUrl },
+    { label: '腾讯地图', url: tencentUrl },
+    { label: 'Google Maps', url: googleUrl },
   ];
 }
 
-async function openChinaMap(
-  lat: number,
-  lng: number,
-  strings: { title: string; cancel: string }
-): Promise<void> {
-  const apps = chinaMapApps(lat, lng);
-  const available = (
-    await Promise.all(apps.map(async (a) => ({ app: a, ok: await a.canOpen() })))
-  )
-    .filter((x) => x.ok)
-    .map((x) => x.app);
-
-  if (available.length === 0) {
-    await Linking.openURL(
-      `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-    );
-    return;
+function globalMapOptions(lat: number, lng: number): MapOption[] {
+  const googleUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  if (Platform.OS === 'ios') {
+    return [
+      { label: 'Apple Maps', url: `maps://?q=${lat},${lng}` },
+      { label: 'Google Maps', url: googleUrl },
+    ];
   }
+  // Android: Google Maps web link works universally
+  return [{ label: 'Google Maps', url: googleUrl }];
+}
 
-  if (available.length === 1) {
-    await available[0].open(lat, lng);
-    return;
+async function openUrl(url: string): Promise<boolean> {
+  try {
+    await Linking.openURL(url);
+    return true;
+  } catch {
+    return false;
   }
+}
 
+function showMapPicker(
+  options: MapOption[],
+  dialogTitle: string,
+  cancelText: string
+): void {
   if (Platform.OS === 'ios') {
     ActionSheetIOS.showActionSheetWithOptions(
       {
-        title: strings.title,
-        options: [...available.map((a) => a.name), strings.cancel],
-        cancelButtonIndex: available.length,
+        title: dialogTitle,
+        options: [...options.map((o) => o.label), cancelText],
+        cancelButtonIndex: options.length,
       },
       (index) => {
-        if (index < available.length) {
-          void available[index].open(lat, lng);
+        if (index < options.length) {
+          void openUrl(options[index].url);
         }
       }
     );
   } else {
     Alert.alert(
-      strings.title,
+      dialogTitle,
       undefined,
       [
-        ...available.map((a) => ({
-          text: a.name,
-          onPress: () => void a.open(lat, lng),
+        ...options.map((o) => ({
+          text: o.label,
+          onPress: () => void openUrl(o.url),
         })),
-        { text: strings.cancel, style: 'cancel' as const },
+        { text: cancelText, style: 'cancel' as const },
       ]
     );
   }
 }
 
-// ─── Global map (react-native-map-link) ──────────────────────────────────────
-
-async function openGlobalMap(lat: number, lng: number, title?: string): Promise<void> {
-  const { showLocation } = await import('react-native-map-link');
-  await showLocation({ latitude: lat, longitude: lng, title: title ?? '' });
-}
-
-// ─── Public API ───────────────────────────────────────────────────────────────
-
 export type OpenMapStrings = {
-  dialogTitle: string;    // e.g. "Open in Maps"
-  cancelText: string;     // e.g. "Cancel"
+  dialogTitle: string;
+  cancelText: string;
 };
 
-/**
- * Open coordinates in the user's preferred map app.
- * Shows Chinese map apps (Amap, Baidu, Tencent) for users in China,
- * and the globally installed apps (via react-native-map-link) elsewhere.
- */
 export async function openInMaps(
   latitude: number,
   longitude: number,
-  strings: OpenMapStrings,
-  title?: string
+  strings: OpenMapStrings
 ): Promise<void> {
-  if (isUserInChina()) {
-    await openChinaMap(latitude, longitude, {
-      title: strings.dialogTitle,
-      cancel: strings.cancelText,
-    });
-  } else {
-    await openGlobalMap(latitude, longitude, title);
+  const options = isUserInChina()
+    ? chinaMapOptions(latitude, longitude)
+    : globalMapOptions(latitude, longitude);
+
+  // Single option (Android outside China) — open directly, no dialog
+  if (options.length === 1) {
+    await openUrl(options[0].url);
+    return;
   }
+
+  showMapPicker(options, strings.dialogTitle, strings.cancelText);
 }
