@@ -201,7 +201,8 @@
       "loadActivities": "無法載入活動",
       "fetchContacts": "無法取得聯絡人",
       "fetchOwnerActivity": "無法取得擁有者活動",
-      "openSharedLocation": "無法開啟分享位置。"
+      "openSharedLocation": "無法開啟分享位置。",
+      "locationPermission": "需要位置權限才能分享您的位置。"
     },
     "day": {
       "today": "今天",
@@ -272,7 +273,8 @@
     "reachOutResponseButton": {
       "send": "知道了",
       "sent": "已回應 ✓"
-    }
+    },
+    "openInMaps": "在地圖中開啟"
   },
   "contacts": {
     "title": "聯絡人",

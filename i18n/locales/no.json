@@ -157,7 +157,8 @@
       "loadActivities": "Kunne ikke laste aktivitet",
       "fetchContacts": "Kunne ikke hente kontakter",
       "fetchOwnerActivity": "Kunne ikke hente brukeraktivitet",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Plasseringstillatelse er nødvendig for å dele posisjonen din."
     },
     "day": {
       "today": "I dag",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "Forstått",
       "sent": "Besvart ✓"
-    }
+    },
+    "openInMaps": "Åpne i kart"
   },
   "contacts": {
     "title": "Kontakter",

@@ -5,6 +5,8 @@ import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { clearCachedWelfareCheck, getCachedWelfareCheckSentAt, getLastWelfareCheckSentAt, hasCachedWelfareCheck, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { getCurrentCoordinates } from '@/lib/location/geolocator';
+import { openInMaps } from '@/lib/location/mapOpener';
 import { responseService } from '@/lib/notifications/responseService';
 import { useStreak } from '@/hooks/useStreak';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,7 +19,6 @@ import {
   Alert,
   AppState,
   Image,
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -1168,11 +1169,12 @@ export default function ActivityScreen() {
 
     const openSharedLocation = async () => {
       if (!shared_location) return;
-
-      const url = `https://www.google.com/maps/search/?api=1&query=${shared_location.latitude},${shared_location.longitude}`;
-
       try {
-        await Linking.openURL(url);
+        await openInMaps(
+          shared_location.latitude,
+          shared_location.longitude,
+          { dialogTitle: t('activity.openInMaps'), cancelText: t('common.cancel') }
+        );
       } catch (error) {
         console.error('Error opening shared location:', error);
         Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
@@ -1183,30 +1185,19 @@ export default function ActivityScreen() {
       if (fetchingLocation) return;
       setFetchingLocation(true);
       try {
-        const locationModule = await import('expo-location');
-        const Location = locationModule?.default ?? locationModule;
-
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
-          return;
-        }
-
-        const position = await Promise.race([
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy?.Balanced ?? 3 }),
-          new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000)),
-        ]);
-
-        if (!position) {
-          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
-          return;
-        }
-
-        const url = `https://www.google.com/maps/search/?api=1&query=${position.coords.latitude},${position.coords.longitude}`;
-        await Linking.openURL(url);
-      } catch (error) {
+        const coords = await getCurrentCoordinates();
+        await openInMaps(
+          coords.latitude,
+          coords.longitude,
+          { dialogTitle: t('activity.openInMaps'), cancelText: t('common.cancel') }
+        );
+      } catch (error: any) {
         console.error('Error opening current location:', error);
-        Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+        if (error?.message === 'location_permission_denied') {
+          Alert.alert(t('errors.title'), t('activity.errors.locationPermission'));
+        } else {
+          Alert.alert(t('errors.title'), t('activity.errors.openSharedLocation'));
+        }
       } finally {
         setFetchingLocation(false);
       }

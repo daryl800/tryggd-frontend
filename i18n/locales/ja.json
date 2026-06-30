@@ -157,7 +157,8 @@
       "loadActivities": "アクティビティの読み込みに失敗しました",
       "fetchContacts": "連絡先の取得に失敗しました",
       "fetchOwnerActivity": "自分のアクティビティ取得に失敗しました",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "位置情報の共有には、位置情報の許可が必要です。"
     },
     "day": {
       "today": "今日",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "了解",
       "sent": "返答済 ✓"
-    }
+    },
+    "openInMaps": "マップで開く"
   },
   "contacts": {
     "title": "連絡先",
