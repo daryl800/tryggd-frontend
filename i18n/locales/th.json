@@ -157,7 +157,8 @@
       "loadActivities": "ไม่สามารถโหลดกิจกรรมได้",
       "fetchContacts": "ไม่สามารถดึงผู้ติดต่อได้",
       "fetchOwnerActivity": "ไม่สามารถดึงกิจกรรมของเจ้าของบัญชีได้",
-      "openSharedLocation": "ไม่สามารถเปิดตำแหน่งที่แชร์ได้"
+      "openSharedLocation": "ไม่สามารถเปิดตำแหน่งที่แชร์ได้",
+      "locationPermission": "ต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อแชร์ตำแหน่งของคุณ"
     },
     "day": {
       "today": "วันนี้",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "รับทราบ",
       "sent": "ตอบแล้ว ✓"
-    }
+    },
+    "openInMaps": "เปิดในแผนที่"
   },
   "contacts": {
     "title": "ผู้ติดต่อ",

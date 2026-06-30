@@ -157,7 +157,8 @@
       "loadActivities": "Kunde inte ladda aktivitet",
       "fetchContacts": "Kunde inte hämta kontakter",
       "fetchOwnerActivity": "Kunde inte hämta användarens aktivitet",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Platstillstånd krävs för att dela din plats."
     },
     "day": {
       "today": "Idag",
@@ -226,7 +227,8 @@
     "reachOutResponseButton": {
       "send": "Förstått",
       "sent": "Besvarat ✓"
-    }
+    },
+    "openInMaps": "Öppna i karta"
   },
   "contacts": {
     "title": "Kontakter",

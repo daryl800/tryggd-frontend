@@ -165,7 +165,8 @@
       "loadActivities": "Failed to load activities",
       "fetchContacts": "Failed to fetch contacts",
       "fetchOwnerActivity": "Failed to fetch owner activity",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Location permission is required to share your location."
     },
     "day": {
       "today": "Today",
@@ -236,7 +237,8 @@
     "emergencyMessage": {
       "todayMessages_one": "🚨 You got {{count}} emergency message today:",
       "todayMessages_other": "🚨 You got {{count}} emergency messages today:"
-    }
+    },
+    "openInMaps": "Open in Maps"
   },
   "contacts": {
     "title": "Contacts",

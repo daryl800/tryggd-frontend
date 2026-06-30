@@ -157,7 +157,8 @@
       "loadActivities": "Toimintoja ei voitu ladata",
       "fetchContacts": "Yhteystietoja ei voitu hakea",
       "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Sijaintilupa tarvitaan sijaintisi jakamiseen."
     },
     "day": {
       "today": "Tänään",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "Ymmärsin",
       "sent": "Vastattu ✓"
-    }
+    },
+    "openInMaps": "Avaa kartassa"
   },
   "contacts": {
     "title": "Yhteystiedot",

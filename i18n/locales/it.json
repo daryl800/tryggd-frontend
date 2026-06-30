@@ -157,7 +157,8 @@
       "loadActivities": "Impossibile caricare le attività",
       "fetchContacts": "Impossibile recuperare i contatti",
       "fetchOwnerActivity": "Impossibile recuperare la tua attività",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "È necessaria l'autorizzazione alla posizione per condividere la tua posizione."
     },
     "day": {
       "today": "Oggi",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "Capito",
       "sent": "Risposto ✓"
-    }
+    },
+    "openInMaps": "Apri in Mappe"
   },
   "contacts": {
     "title": "Contatti",

@@ -157,7 +157,8 @@
       "loadActivities": "Aktivitäten konnten nicht geladen werden",
       "fetchContacts": "Kontakte konnten nicht geladen werden",
       "fetchOwnerActivity": "Eigene Aktivität konnte nicht geladen werden",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Standortberechtigung erforderlich, um deinen Standort zu teilen."
     },
     "day": {
       "today": "Heute",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "Verstanden",
       "sent": "Geantwortet ✓"
-    }
+    },
+    "openInMaps": "In Karten öffnen"
   },
   "contacts": {
     "title": "Kontakte",

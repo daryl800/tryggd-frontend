@@ -157,7 +157,8 @@
       "loadActivities": "활동을 불러오지 못했습니다",
       "fetchContacts": "연락처를 가져오지 못했습니다",
       "fetchOwnerActivity": "내 활동을 가져오지 못했습니다",
-      "openSharedLocation": "Failed to open shared location."
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "위치를 공유하려면 위치 권한이 필요합니다."
     },
     "day": {
       "today": "오늘",
@@ -219,7 +220,8 @@
     "reachOutResponseButton": {
       "send": "알겠어요",
       "sent": "응답함 ✓"
-    }
+    },
+    "openInMaps": "지도에서 열기"
   },
   "contacts": {
     "title": "연락처",

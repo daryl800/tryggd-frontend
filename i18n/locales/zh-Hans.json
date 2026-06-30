@@ -201,7 +201,8 @@
       "loadActivities": "无法加载活动",
       "fetchContacts": "无法获取联系人",
       "fetchOwnerActivity": "无法获取所有者活动",
-      "openSharedLocation": "无法打开共享位置。"
+      "openSharedLocation": "无法打开共享位置。",
+      "locationPermission": "需要位置权限才能分享您的位置。"
     },
     "day": {
       "today": "今天",
@@ -272,7 +273,8 @@
     "reachOutResponseButton": {
       "send": "知道了",
       "sent": "已回应 ✓"
-    }
+    },
+    "openInMaps": "在地图中打开"
   },
   "contacts": {
     "title": "联系人",
