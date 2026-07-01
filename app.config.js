@@ -98,8 +98,8 @@ export default ({ config }) => ({
             {
                 localizations: {
                     en: "Tryggd",
-                    "zh-Hans": "小报告",
-                    "zh-Hant": "小報告",
+                    "zh-CN": "小报告",
+                    "zh-TW": "小報告",
                 },
             },
         ],
