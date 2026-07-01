@@ -2,6 +2,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { Expo } from 'https://esm.sh/expo-server-sdk@3.6.0'
+import { sendAliyunPushByDevice } from '../_shared/aliyunPush.ts'
 
 interface CheckinPayload {
   user_id: string
@@ -926,7 +927,7 @@ serve(async (req) => {
 
     const { data: pushRecipients, error: tokensError } = await supabase
       .from('user_push_tokens')
-      .select('user_id, expo_push_token, contact_checkin_notifications')
+      .select('user_id, expo_push_token, contact_checkin_notifications, aliyun_device_id')
       .in('user_id', recipientIds)
 
     if (tokensError) throw tokensError
@@ -960,6 +961,7 @@ serve(async (req) => {
     // ============================================
     const notificationsToInsert = []
     const messages = []
+    const aliyunMessages: { deviceId: string; title: string; body: string; data: Record<string, any> }[] = []
 
     const { data: recipientSettings } = await supabase
       .from('user_settings')
@@ -1044,23 +1046,27 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       })
 
-      if (
-        pushRecipient?.contact_checkin_notifications === true &&
-        pushRecipient.expo_push_token &&
-        Expo.isExpoPushToken(pushRecipient.expo_push_token)
-      ) {
-        const pushData = { ...payload.data }
-
-        messages.push({
-          to: pushRecipient.expo_push_token,
-          sound: 'default',
-          title: payload.title,
-          body: payload.body,
-          data: pushData,
-          channelId: 'contact-checkins',
-          priority: 'high',
-          badge: 1
-        })
+      if (pushRecipient?.contact_checkin_notifications === true) {
+        if (pushRecipient.expo_push_token && Expo.isExpoPushToken(pushRecipient.expo_push_token)) {
+          messages.push({
+            to: pushRecipient.expo_push_token,
+            sound: 'default',
+            title: payload.title,
+            body: payload.body,
+            data: { ...payload.data },
+            channelId: 'contact-checkins',
+            priority: 'high',
+            badge: 1
+          })
+        } else if (pushRecipient.aliyun_device_id) {
+          // Aliyun fallback for China Android users without Expo/FCM push
+          aliyunMessages.push({
+            deviceId: pushRecipient.aliyun_device_id,
+            title: payload.title,
+            body: payload.body,
+            data: payload.data,
+          })
+        }
       }
     }
 
@@ -1120,7 +1126,28 @@ serve(async (req) => {
 
 
     // ============================================
-    // 12. Return success
+    // 12. Send Aliyun push notifications (China Android fallback)
+    // ============================================
+    let aliyunSent = 0
+    let aliyunFailed = 0
+    if (aliyunMessages.length > 0) {
+      console.log(`📱 Sending ${aliyunMessages.length} Aliyun push notifications`)
+      for (const msg of aliyunMessages) {
+        const result = await sendAliyunPushByDevice(msg.deviceId, {
+          title: msg.title,
+          body: msg.body,
+          data: msg.data,
+        })
+        if (result.success) {
+          aliyunSent++
+        } else {
+          aliyunFailed++
+        }
+      }
+    }
+
+    // ============================================
+    // 13. Return success
     // ============================================
     console.log('✅ Notification process completed', {
       auth_kind: auth.kind,
@@ -1131,7 +1158,9 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       pushes_sent: successfulPushes.length,
-      pushes_failed: failedPushes.length
+      pushes_failed: failedPushes.length,
+      aliyun_sent: aliyunSent,
+      aliyun_failed: aliyunFailed,
     }), { status: 200 })
 
   } catch (error) {

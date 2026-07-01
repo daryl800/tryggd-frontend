@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { sendAliyunPushByDevice } from '../_shared/aliyunPush.ts'
 
 const CONTACT_REQUEST_MESSAGES = {
   en: { title: '📩 Contact Request', body: (name: string) => `${name} wants to add you as a contact` },
@@ -107,7 +108,7 @@ serve(async (req) => {
     const [{ data: tokenData }, { data: senderProfile }, { data: receiverSettings }] = await Promise.all([
       supabase
         .from('user_push_tokens')
-        .select('expo_push_token, contact_checkin_notifications')
+        .select('expo_push_token, contact_checkin_notifications, aliyun_device_id')
         .eq('user_id', receiverUserId)
         .maybeSingle(),
       supabase
@@ -122,14 +123,7 @@ serve(async (req) => {
         .maybeSingle(),
     ])
 
-    if (!tokenData?.expo_push_token) {
-      return new Response(JSON.stringify({ error: 'No push token found for recipient' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    if (tokenData.contact_checkin_notifications === false) {
+    if (tokenData?.contact_checkin_notifications === false) {
       return new Response(JSON.stringify({ error: 'Recipient has disabled contact notifications' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
@@ -169,6 +163,25 @@ serve(async (req) => {
 
     if (dbError) {
       console.error('Failed to insert contact request notification', dbError)
+    }
+
+    // Aliyun fallback: if no Expo token but user has Aliyun device ID, push via Aliyun
+    if (!tokenData?.expo_push_token) {
+      if (tokenData?.aliyun_device_id) {
+        const aliyunResult = await sendAliyunPushByDevice(tokenData.aliyun_device_id, {
+          title: locale.title,
+          body: locale.body(displayName),
+          data: notificationData,
+        })
+        return new Response(JSON.stringify({ success: true, delivered: aliyunResult.success }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      }
+      return new Response(JSON.stringify({ success: true, delivered: false }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const response = await fetch('https://exp.host/--/api/v2/push/send', {
