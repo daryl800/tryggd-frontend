@@ -46,8 +46,8 @@ function globalMapOptions(lat: number, lng: number): MapOption[] {
       { label: 'Google Maps', url: googleUrl },
     ];
   }
-  // Android: Google Maps web link works universally
-  return [{ label: 'Google Maps', url: googleUrl }];
+  // Android: geo: URI lets the OS present its app chooser (user can set a default)
+  return [{ label: 'Google Maps', url: `geo:${lat},${lng}?q=${lat},${lng}` }];
 }
 
 async function openUrl(url: string): Promise<boolean> {
