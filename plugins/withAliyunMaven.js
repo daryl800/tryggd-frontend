@@ -1,19 +1,13 @@
 const { withProjectBuildGradle } = require('@expo/config-plugins');
 
-// Adds the Aliyun Maven repo with content filtering so Gradle only looks there
-// for com.aliyun.ams packages. Without filtering, Gradle tries this repo for
-// every dependency and a 502 from Aliyun's server kills the entire build.
+// Adds the Aliyun Maven repo for the expo-aliyun-push SDK and its transitive
+// dependencies (com.aliyun.ams, com.taobao.android, etc.).
 module.exports = function withAliyunMaven(config) {
   return withProjectBuildGradle(config, (mod) => {
     const contents = mod.modResults.contents;
 
     const snippet = `
-        maven {
-            url "https://maven.aliyun.com/nexus/content/repositories/releases/"
-            content {
-                includeGroup "com.aliyun.ams"
-            }
-        }`;
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases/" }`;
 
     if (contents.includes('maven.aliyun.com')) {
       return mod;
