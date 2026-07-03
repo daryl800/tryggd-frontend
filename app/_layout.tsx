@@ -254,10 +254,11 @@ function RootLayoutNav() {
         const deviceLanguage = getDevicePreferredLanguage();
 
         if (!user) {
-          if (resolveSupportedLanguage(i18n.language) !== deviceLanguage) {
-            await i18n.changeLanguage(deviceLanguage);
+          const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+          const displayLanguage = (savedLanguage && resolveSupportedLanguage(savedLanguage)) || deviceLanguage;
+          if (resolveSupportedLanguage(i18n.language) !== displayLanguage) {
+            await i18n.changeLanguage(displayLanguage);
           }
-          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, deviceLanguage);
           return;
         }
 
