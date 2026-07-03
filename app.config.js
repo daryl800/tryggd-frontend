@@ -112,7 +112,6 @@ export default ({ config }) => ({
                 iosAliyunAppSecret: process.env.ALIYUN_IOS_APP_SECRET,
             },
         ],
-        "./plugins/withAliyunMaven",
         [
             "expo-build-properties",
             {
@@ -120,6 +119,7 @@ export default ({ config }) => ({
                     enableProguardInReleaseBuilds: true,
                     extraMavenRepos: [
                         "../../node_modules/@notifee/react-native/android/libs",
+                        "https://maven.aliyun.com/nexus/content/repositories/releases/",
                         "https://developer.huawei.com/repo/",
                         "https://developer.hihonor.com/repo/",
                     ],
