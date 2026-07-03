@@ -251,8 +251,9 @@ function RootLayoutNav() {
       setLanguageReady(false);
 
       try {
+        const deviceLanguage = getDevicePreferredLanguage();
+
         if (!user) {
-          const deviceLanguage = getDevicePreferredLanguage();
           if (resolveSupportedLanguage(i18n.language) !== deviceLanguage) {
             await i18n.changeLanguage(deviceLanguage);
           }
@@ -261,10 +262,20 @@ function RootLayoutNav() {
         }
 
         const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-        const currentLanguage = resolveSupportedLanguage(savedLanguage || i18n.language || getDevicePreferredLanguage());
+        const resolvedSaved = savedLanguage ? resolveSupportedLanguage(savedLanguage) : null;
 
-        if (!savedLanguage) {
+        // During first-run (onboarding / profile setup), prefer device language if the
+        // cached value is English — older builds had an Android timing bug that wrongly
+        // cached 'en' before native localization modules were ready.
+        const isFirstRun = needsUsername || !hasSeenOnboarding;
+        const currentLanguage = (resolvedSaved && (!isFirstRun || resolvedSaved !== 'en'))
+          ? resolvedSaved
+          : deviceLanguage;
+
+        if (resolveSupportedLanguage(i18n.language) !== currentLanguage) {
           await i18n.changeLanguage(currentLanguage);
+        }
+        if (resolvedSaved !== currentLanguage) {
           await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
         }
 
@@ -277,7 +288,7 @@ function RootLayoutNav() {
         const serverLanguage = resolveSupportedLanguage(settings?.language);
         const shouldPreferLocal =
           !settings?.language ||
-          (currentLanguage !== 'en' && serverLanguage === 'en' && (needsUsername || !hasSeenOnboarding));
+          (deviceLanguage !== 'en' && serverLanguage === 'en' && isFirstRun);
 
         if (shouldPreferLocal) {
           await supabase

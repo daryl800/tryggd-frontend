@@ -3,10 +3,8 @@ import { BaseColors } from "@/constants/colors";
 import { signInWithSocial } from "@/lib/auth/oauth";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getDevicePreferredLanguage, LANGUAGE_STORAGE_KEY, resolveSupportedLanguage } from "../../i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { resolveAuthEmailCandidates } from "@/lib/auth/phoneIdentity";
 import {
     Alert,
@@ -24,36 +22,13 @@ import { supabase } from "../../lib/supabase";
 import { iosFontSize } from '@/constants/typography';
 
 export default function LoginScreen() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
     const passwordRef = useRef<TextInput>(null);
-
-    useEffect(() => {
-        const syncLoginLanguage = async () => {
-            try {
-                const deviceLanguage = getDevicePreferredLanguage();
-                const currentLanguage = resolveSupportedLanguage(i18n.language);
-                console.log('[LoginScreen] language sync', {
-                    rawI18nLanguage: i18n.language,
-                    currentLanguage,
-                    deviceLanguage,
-                });
-                if (currentLanguage !== deviceLanguage) {
-                    await i18n.changeLanguage(deviceLanguage);
-                    console.log('[LoginScreen] changed language to', deviceLanguage);
-                }
-                await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, deviceLanguage);
-            } catch (error) {
-                console.error('Failed to sync login language', error);
-            }
-        };
-
-        void syncLoginLanguage();
-    }, [i18n]);
 
     const canSubmit = identifier && password.length >= 6 && !loading;
 
