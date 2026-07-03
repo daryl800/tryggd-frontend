@@ -293,7 +293,12 @@ function RootLayoutNav() {
 
         const serverLanguage = resolveSupportedLanguage(settings?.language);
         const shouldPreferLocal =
-          !settings?.language ||
+          // No server language yet and we have a non-English preference to save.
+          // English is the i18n fallback — don't bake it in as a permanent server
+          // preference just because the device defaults to it (would lock English in
+          // permanently after a memory clear on English-language devices).
+          (!settings?.language && currentLanguage !== 'en') ||
+          // Non-English device where server has 'en' from the old Android timing bug.
           (deviceLanguage !== 'en' && serverLanguage === 'en' && isFirstRun);
 
         if (shouldPreferLocal) {
