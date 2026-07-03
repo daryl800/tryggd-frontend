@@ -1,776 +1,842 @@
 {
-  "home": {
-    "title": "ホーム",
-    "welcome": "ようこそ",
-    "greetings": {
-      "morning": "おはようございます",
-      "afternoon": "こんにちは",
-      "evening": "こんばんは",
-      "night": "おやすみなさい"
+    "home": {
+        "title": "ホーム",
+        "welcome": "ようこそ",
+        "greetings": {
+            "morning": "おはようございます",
+            "afternoon": "こんにちは",
+            "evening": "こんばんは",
+            "night": "おやすみなさい"
+        },
+        "everythingIsFine": "すべて順調です",
+        "dontForget": "今日のチェックインをお忘れなく!",
+        "youCheckedInTodayAt": "今日は {{time}} にチェックインしました",
+        "pressMeToCheckIn": "ここを押してチェックイン",
+        "reset": "リセット",
+        "timer": "タイマー",
+        "timeLeftToday": "今日の残り時間",
+        "reachOut": {
+            "pressToSendHelp": "助けを求める",
+            "lastSentLabel": "最後に助けを求めた："
+        },
+        "activity": "アクティビティ",
+        "contacts_one": "連絡先 {{count}} 件",
+        "contacts_other": "連絡先 {{count}} 件",
+        "streak": "連続記録",
+        "days_one": "{{count}} 日",
+        "days_other": "{{count}} 日",
+        "dateFormats": {
+            "weekdays": [
+                "日曜日",
+                "月曜日",
+                "火曜日",
+                "水曜日",
+                "木曜日",
+                "金曜日",
+                "土曜日"
+            ],
+            "months": [
+                "1月",
+                "2月",
+                "3月",
+                "4月",
+                "5月",
+                "6月",
+                "7月",
+                "8月",
+                "9月",
+                "10月",
+                "11月",
+                "12月"
+            ]
+        },
+        "errors": {
+            "fetchLastCheckin": "最新のチェックイン取得に失敗しました",
+            "noUser": "ユーザーが見つかりません",
+            "checkin": "チェックインに失敗しました",
+            "loadState": "状態の読み込みに失敗しました"
+        },
+        "status": {
+            "contactCheckedIn": "{{name}}さんがチェックインしました",
+            "sentWave": "{{name}}さんが手を振りました",
+            "respondedToYou": "{{name}}さんがあなたのチェックインに返信しました",
+            "emergencyMessage": "🚨 {{name}}：{{message}}",
+            "messageFrom": "{{name}}さんからのメッセージ",
+            "justNow": "たった今",
+            "minutesAgo_one": "{{count}}分前",
+            "minutesAgo_other": "{{count}}分前",
+            "hoursAgo_one": "{{count}}時間前",
+            "hoursAgo_other": "{{count}}時間前",
+            "hoursAgoDecimal": "{{value}}時間前",
+            "daysAgo_one": "{{count}}日前",
+            "daysAgo_other": "{{count}}日前",
+            "lastCheckinAgo": "前回のチェックイン {{timeAgo}}",
+            "lastCheckinLabel": "前回のチェックイン："
+        },
+        "wellnessPrompt": "How are you feeling today?",
+        "context": {
+            "title": "今日のステータス",
+            "home": "在宅",
+            "trip": "旅行中",
+            "homeTab": "🌿 日常",
+            "tripTab": "✈️ 旅行",
+            "reachOutTab": "✋ 助けて",
+            "reachOutStatuses": {
+                "call_now": "✋ 助けが必要",
+                "call_available": "📞 電話して"
+            },
+            "statusTitle": "ステータス",
+            "tripStatusPrompt": "旅行のステータスを選択",
+            "homeStatuses": {
+                "chilling": "🛋️ のんびり中",
+                "home": "🏠 在宅",
+                "outside": "🚶 外出中",
+                "at_school": "🏫 学校にいます",
+                "working": "💼 仕事中",
+                "busy": "💼 忙しい",
+                "relaxing": "☕ お茶の時間",
+                "gathering": "🥳 みんなで話し中",
+                "on_call": "📞 通話中",
+                "eating": "🍽️ 食事中",
+                "exhausted": "😩 くたくた",
+                "sleepy": "😪 眠い",
+                "daydreaming": "💭 ぼーっとしてる",
+                "playing_sport": "⚽ スポーツ中",
+                "having_fun": "🎉 楽しんでる",
+                "watching_movie": "🎬 映画を観てる",
+                "resting": "😌 休憩中",
+                "goodmorning": "🌅 おはよう",
+                "goodafternoon": "🌞 こんにちは",
+                "goodnight": "🌙 おやすみ"
+            },
+            "summaryHome": "通常のチェックイン",
+            "summaryTrip": "旅行のステータスを追加",
+            "summaryWithStatus": "旅行中 · {{status}}"
+        },
+        "plusWellness": {
+            "title": "Plus feature",
+            "message": "Upgrade to Plus to share how you feel with your check-in."
+        },
+        "tripMode": {
+            "statuses": {
+                "leaving": "🧳 旅立ちます",
+                "boarding": "🛫 搭乗・🚅 運転",
+                "layover": "🛑 乗り継ぎ中",
+                "landed": "🛬 無事到着",
+                "on_the_move": "🚕 移動中",
+                "at_hotel": "🏨 ホテルに到着",
+                "on_trip": "🗺️ 旅行中",
+                "heading_home": "🏠 帰宅中",
+                "trip_ended": "✅ 旅行終了・無事帰宅"
+            }
+        }
     },
-    "everythingIsFine": "すべて順調です",
-    "dontForget": "今日のチェックインをお忘れなく!",
-    "youCheckedInTodayAt": "今日は {{time}} にチェックインしました",
-    "pressMeToCheckIn": "ここを押してチェックイン",
-    "reset": "リセット",
-    "timer": "タイマー",
-    "timeLeftToday": "今日の残り時間",
-    "reachOut": {
-      "pressToSendHelp": "助けを求める",
-      "lastSentLabel": "最後に助けを求めた："
+    "activity": {
+        "title": "アクティビティ",
+        "subtitle": "あなたと連絡先の最新チェックイン",
+        "you": "あなた",
+        "yourActivity": "自分",
+        "contacts": "連絡先",
+        "loading": "アクティビティを読み込み中...",
+        "noCheckIn": "まだチェックインがありません",
+        "staleCheckinMessage_one": "{{name}}は{{count}}日間チェックインしていません",
+        "staleCheckinMessage_other": "{{name}}は{{count}}日間チェックインしていません",
+        "emptyState": {
+            "title": "連絡先がありません",
+            "message": "連絡先を追加するとアクティビティが表示されます"
+        },
+        "priority": {
+            "failed": "失敗",
+            "ongoing": "進行中",
+            "successful": "完了"
+        },
+        "time": {
+            "locale": "ja-JP"
+        },
+        "errors": {
+            "loadActivities": "アクティビティの読み込みに失敗しました",
+            "fetchContacts": "連絡先の取得に失敗しました",
+            "fetchOwnerActivity": "自分のアクティビティ取得に失敗しました",
+            "openSharedLocation": "Failed to open shared location.",
+            "locationPermission": "位置情報の共有には、位置情報の許可が必要です。"
+        },
+        "day": {
+            "today": "今日",
+            "yesterday": "昨日",
+            "other": "{{date, date, yyyy年M月d日}}"
+        },
+        "responseButton": {
+            "sendResponse": "いいね 👍 を送る",
+            "sent": "いいね送信済み ✓"
+        },
+        "checkinResponse": {
+            "todayLikes_one": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
+            "todayLikes_other": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
+            "prefix": "あなたのチェックインに反応しました",
+            "defaultMessage": "があなたのチェックインに 👍 しました!"
+        },
+        "welfareButton": {
+            "send": "🍀 大丈夫ですか?",
+            "sent": "挨拶送信済み ✓",
+            "sentOffline": "送信済み ✓ — {{name}} がオンラインに戻るとメッセージを確認できます"
+        },
+        "sharedLocation": {
+            "view": "View shared location"
+        },
+        "timezoneLabels": {
+            "utc": "UTC",
+            "china": "China",
+            "hongKong": "Hong Kong",
+            "taiwan": "Taiwan",
+            "sweden": "Sweden",
+            "norway": "Norway",
+            "denmark": "Denmark",
+            "finland": "Finland"
+        },
+        "wellness": {
+            "veryLow": "つらいです\n😔",
+            "low": "少し落ち込んでいます\n😕",
+            "neutral": "大丈夫です\n🙂",
+            "good": "気分はいいです\n☺️",
+            "great": "今日はとてもうれしいです\n😊"
+        },
+        "todayCheckButton": {
+            "send": "👋 今日はどうですか?",
+            "sent": "挨拶送信済み ✓"
+        },
+        "checkedInAt": "{{date}} {{time}} にチェックイン",
+        "welfareCheck": {
+            "todayGreetings_one": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:",
+            "todayGreetings_other": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:"
+        },
+        "emergencyMessage": {
+            "todayMessages_one": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:",
+            "todayMessages_other": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:"
+        },
+        "supportButton": {
+            "send": "💪 サポートを送る",
+            "sent": "送りました ✓"
+        },
+        "reachOutResponseButton": {
+            "send": "了解",
+            "sent": "返答済 ✓"
+        },
+        "openInMaps": "マップで開く"
     },
-    "activity": "アクティビティ",
-    "contacts_one": "連絡先 {{count}} 件",
-    "contacts_other": "連絡先 {{count}} 件",
-    "streak": "連続記録",
-    "days_one": "{{count}} 日",
-    "days_other": "{{count}} 日",
-    "dateFormats": {
-      "weekdays": [
-        "日曜日",
-        "月曜日",
-        "火曜日",
-        "水曜日",
-        "木曜日",
-        "金曜日",
-        "土曜日"
-      ],
-      "months": [
-        "1月",
-        "2月",
-        "3月",
-        "4月",
-        "5月",
-        "6月",
-        "7月",
-        "8月",
-        "9月",
-        "10月",
-        "11月",
-        "12月"
-      ]
+    "contacts": {
+        "title": "連絡先",
+        "contact": "連絡先",
+        "newContact": "新しい連絡先",
+        "displayingAs": "表示名",
+        "loading": "連絡先を読み込み中...",
+        "subtitle": {
+            "withContacts": "連絡先 {{count}} / {{max}}",
+            "noContacts": "共有するには連絡先を追加してください",
+            "withContactsUnlimited": "{{count}} contacts"
+        },
+        "emptyState": {
+            "title": "連絡先がありません",
+            "message": "+ ボタンを押して最初の連絡先を追加してください"
+        },
+        "tabs": {
+            "contacts": "連絡先",
+            "requests": "リクエスト"
+        },
+        "requests": {
+            "received": "受信したリクエスト",
+            "sent": "送信したリクエスト",
+            "waiting": "返答待ち",
+            "loading": "リクエストを読み込み中...",
+            "emptyState": {
+                "title": "リクエストがありません",
+                "message": "誰かが連絡先リクエストを送るとここに表示されます"
+            }
+        },
+        "placeholders": {
+            "email": "Tryggd ID を入力",
+            "identifier": "Enter Tryggd ID or email",
+            "suggestedUsername": "候補の Tryggd ID（任意）"
+        },
+        "buttons": {
+            "accept": "承認",
+            "reject": "拒否",
+            "delete": "削除",
+            "cancelRequest": "リクエストを取り消す",
+            "sending": "送信中...",
+            "sendRequests_one": "リクエストを送信",
+            "sendRequests_other": "リクエストを送信"
+        },
+        "alerts": {
+            "limitReached": {
+                "title": "上限に達しました",
+                "message": "追加できる連絡先は最大 3 件です。"
+            },
+            "senderLimitReached": {
+                "title": "リクエストを承認できません",
+                "message": "この方の連絡先リストがいっぱいです。"
+            },
+            "delete": {
+                "title": "連絡先を削除",
+                "message": "{{name}} を削除してもよろしいですか?"
+            },
+            "contactExists": {
+                "title": "すでに追加されています",
+                "message": "{{name}} はすでに連絡先に登録されています"
+            },
+            "requestExists": {
+                "title": "リクエスト送信済み",
+                "message": "このユーザーにはすでにリクエストを送信しています。"
+            },
+            "requestReceived": {
+                "title": "リクエスト受信済み",
+                "message": "{{email}} からのリクエストがあります。\"リクエスト\" タブを確認してください。"
+            },
+            "invalidEmail": {
+                "title": "無効な Tryggd ID",
+                "message": "{{email}} は登録されていないか、確認されていません"
+            },
+            "selfContact": {
+                "title": "無効な連絡先",
+                "message": "自分自身を連絡先に追加することはできません"
+            },
+            "noChanges": {
+                "title": "変更はありません",
+                "message": "保存する新しい連絡先はありません。"
+            },
+            "alreadyInContacts": "このユーザーはすでに連絡先にいます",
+            "requestHandled": {
+                "title": "リクエストは処理済みです",
+                "message": "このリクエストはすでに処理されています"
+            }
+        },
+        "success": {
+            "requestSent": {
+                "title": "リクエストを送信しました",
+                "message": "{{name}} に連絡先リクエストを送信しました"
+            },
+            "contactAdded": {
+                "title": "連絡先を追加しました",
+                "message": "{{name}} を連絡先に追加しました"
+            },
+            "deleted": {
+                "title": "連絡先を削除しました",
+                "message": "{{name}} を削除しました。関連する接続も削除されました。"
+            },
+            "requestRejected": {
+                "title": "リクエストを拒否しました",
+                "message": "連絡先リクエストを拒否しました"
+            },
+            "requestCancelled": {
+                "title": "リクエストを取り消しました",
+                "message": "連絡先リクエストを取り消しました"
+            }
+        },
+        "errors": {
+            "loadData": "データの読み込みに失敗しました",
+            "save": "連絡先の保存に失敗しました",
+            "delete": "連絡先の削除に失敗しました",
+            "sendRequest": "連絡先リクエストの送信に失敗しました",
+            "search": "ユーザーを検索できませんでした",
+            "requestNotFound": "連絡先リクエストが見つからないか、すでに処理されています",
+            "accept": "連絡先リクエストの承認に失敗しました",
+            "reject": "リクエストの拒否に失敗しました",
+            "cancel": "リクエストの取り消しに失敗しました",
+            "createInvite": "招待を作成できませんでした。",
+            "shareInvite": "招待リンクを共有できませんでした。",
+            "recoveryUnavailable": "この連絡先はまだ再設定招待を受け取れません。",
+            "createRecoveryInvite": "再設定招待を作成できませんでした。",
+            "updateCheckinNotifications": "Failed to update check-in notifications.",
+            "updateLocationSharing": "Failed to update location sharing.",
+            "noContactUpdated": "No contact row was updated."
+        },
+        "qr": {
+            "permissionTitle": "カメラの許可が必要です",
+            "permissionMessage": "QRコードをスキャンするにはカメラのアクセスを許可してください。",
+            "scanHint": "TryggdのQRコードにカメラを向けて連絡先を追加",
+            "successTitle": "連絡先を追加しました",
+            "successMessage": "{{name}} が連絡先に追加されました",
+            "newContact": "新しい連絡先",
+            "ownerLimitReached": "この人の連絡先リストがいっぱいです。現在、新しい連絡先を受け入れることができません。"
+        },
+        "messages": {
+            "contactDefault": "This contact"
+        },
+        "emergencyMessage": {
+            "modalTitle": "{{name}} さんに緊急メッセージを送る",
+            "modalDescription": "プッシュ通知が即座に送信され、相手のアクティビティに表示されます。",
+            "placeholder": "何が起きていますか？",
+            "send": "送信",
+            "sending": "送信中…",
+            "sendError": "緊急メッセージの送信に失敗しました。"
+        },
+        "status": {
+            "checkinsEnabled": "{{name}} will receive your check-ins",
+            "checkinsDisabled": "{{name}} will not receive your check-ins",
+            "locationEnabled": "{{name}} will see your location in Activity",
+            "locationDisabled": "{{name}} will not see your location in Activity"
+        },
+        "invite": {
+            "ready": "招待の準備ができました",
+            "recoveryReady": "再設定リンクの準備ができました",
+            "instructions": "まずリンクを送信してください。その後、このコードを伝えてください：",
+            "recoveryInstructions": "まず再設定リンクを送信してください。その後、このコードを伝えてください：",
+            "expiresOn": "この招待の有効期限は {{date}} です。",
+            "resettingTryggdId": "Tryggd ID をリセット中: {{id}}",
+            "suggestedTryggdId": "候補の Tryggd ID: {{id}}",
+            "shareMessage": "Tryggd でつながりましょう:",
+            "recoveryShareMessage": "このリンクを使って Tryggd のパスワードを再設定してください:",
+            "modalTitle": "Tryggd に招待する",
+            "modalDescription": "非公開の招待リンクと6桁のコードを作成します。招待された人が後で選ばなくて済むように、今のうちに Tryggd ID を提案してください。",
+            "suggestedUsernameHelp": "小文字、数字、ドット、またはアンダースコアを使用してください。招待を作成する前に利用可能か確認します。",
+            "createButton": "招待を作成",
+            "creating": "作成中…",
+            "shareButton": "リンクを共有"
+        },
+        "plusFeature": {
+            "title": "Plus feature",
+            "notifications": "Upgrade to Plus to control contact check-in notifications.",
+            "location": "Upgrade to Plus to enable location sharing for a contact."
+        }
     },
-    "errors": {
-      "fetchLastCheckin": "最新のチェックイン取得に失敗しました",
-      "noUser": "ユーザーが見つかりません",
-      "checkin": "チェックインに失敗しました",
-      "loadState": "状態の読み込みに失敗しました"
-    },
-    "status": {
-      "contactCheckedIn": "{{name}}さんがチェックインしました",
-      "sentWave": "{{name}}さんが手を振りました",
-      "respondedToYou": "{{name}}さんがあなたのチェックインに返信しました",
-      "emergencyMessage": "🚨 {{name}}：{{message}}",
-      "messageFrom": "{{name}}さんからのメッセージ",
-      "justNow": "たった今",
-      "minutesAgo_one": "{{count}}分前",
-      "minutesAgo_other": "{{count}}分前",
-      "hoursAgo_one": "{{count}}時間前",
-      "hoursAgo_other": "{{count}}時間前",
-      "hoursAgoDecimal": "{{value}}時間前",
-      "daysAgo_one": "{{count}}日前",
-      "daysAgo_other": "{{count}}日前",
-      "lastCheckinAgo": "前回のチェックイン {{timeAgo}}",
-      "lastCheckinLabel": "前回のチェックイン："
-    },
-    "wellnessPrompt": "How are you feeling today?",
-    "context": {
-      "title": "今日のステータス",
-      "home": "在宅",
-      "trip": "旅行中",
-      "homeTab": "🌿 日常",
-      "tripTab": "✈️ 旅行",
-      "reachOutTab": "✋ 助けて",
-      "reachOutStatuses": {
-        "call_now": "✋ 助けが必要",
-        "call_available": "📞 電話して"
-      },
-      "statusTitle": "ステータス",
-      "tripStatusPrompt": "旅行のステータスを選択",
-      "homeStatuses": {
-        "chilling": "🛋️ のんびり中",
-        "home": "🏠 在宅",
-        "outside": "🚶 外出中",
-        "at_school": "🏫 学校にいます",
-        "working": "💼 仕事中",
-        "busy": "💼 忙しい",
-        "relaxing": "☕ お茶の時間",
-        "gathering": "🥳 みんなで話し中",
-        "on_call": "📞 通話中",
-        "eating": "🍽️ 食事中",
-        "exhausted": "😩 くたくた",
-        "sleepy": "😪 眠い",
-        "daydreaming": "💭 ぼーっとしてる",
-        "playing_sport": "⚽ スポーツ中",
-        "having_fun": "🎉 楽しんでる",
-        "watching_movie": "🎬 映画を観てる",
-        "resting": "😌 休憩中",
-        "goodmorning": "🌅 おはよう",
-        "goodafternoon": "🌞 こんにちは",
-        "goodnight": "🌙 おやすみ"
-      },
-      "summaryHome": "通常のチェックイン",
-      "summaryTrip": "旅行のステータスを追加",
-      "summaryWithStatus": "旅行中 · {{status}}"
-    },
-    "plusWellness": {
-      "title": "Plus feature",
-      "message": "Upgrade to Plus to share how you feel with your check-in."
-    },
-    "tripMode": {
-      "statuses": {
-        "leaving": "🧳 旅立ちます",
-        "boarding": "🛫 搭乗・🚅 運転",
-        "layover": "🛑 乗り継ぎ中",
-        "landed": "🛬 無事到着",
-        "on_the_move": "🚕 移動中",
-        "at_hotel": "🏨 ホテルに到着",
-        "on_trip": "🗺️ 旅行中",
-        "heading_home": "🏠 帰宅中",
-        "trip_ended": "✅ 旅行終了・無事帰宅"
-      }
-    }
-  },
-  "activity": {
-    "title": "アクティビティ",
-    "subtitle": "あなたと連絡先の最新チェックイン",
-    "you": "あなた",
-    "yourActivity": "自分",
-    "contacts": "連絡先",
-    "loading": "アクティビティを読み込み中...",
-    "noCheckIn": "まだチェックインがありません",
-    "staleCheckinMessage_one": "{{name}}は{{count}}日間チェックインしていません",
-    "staleCheckinMessage_other": "{{name}}は{{count}}日間チェックインしていません",
-    "emptyState": {
-      "title": "連絡先がありません",
-      "message": "連絡先を追加するとアクティビティが表示されます"
-    },
-    "priority": {
-      "failed": "失敗",
-      "ongoing": "進行中",
-      "successful": "完了"
-    },
-    "time": {
-      "locale": "ja-JP"
-    },
-    "errors": {
-      "loadActivities": "アクティビティの読み込みに失敗しました",
-      "fetchContacts": "連絡先の取得に失敗しました",
-      "fetchOwnerActivity": "自分のアクティビティ取得に失敗しました",
-      "openSharedLocation": "Failed to open shared location.",
-      "locationPermission": "位置情報の共有には、位置情報の許可が必要です。"
-    },
-    "day": {
-      "today": "今日",
-      "yesterday": "昨日",
-      "other": "{{date, date, yyyy年M月d日}}"
-    },
-    "responseButton": {
-      "sendResponse": "いいね 👍 を送る",
-      "sent": "いいね送信済み ✓"
-    },
-    "checkinResponse": {
-      "todayLikes_one": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
-      "todayLikes_other": "⭐️ 今日 {{count}} 件のチェックインへの反応を受け取りました:",
-      "prefix": "あなたのチェックインに反応しました",
-      "defaultMessage": "があなたのチェックインに 👍 しました!"
-    },
-    "welfareButton": {
-      "send": "🍀 大丈夫ですか?",
-      "sent": "挨拶送信済み ✓",
-      "sentOffline": "送信済み ✓ — {{name}} がオンラインに戻るとメッセージを確認できます"
-    },
-    "sharedLocation": {
-      "view": "View shared location"
-    },
-    "timezoneLabels": {
-      "utc": "UTC",
-      "china": "China",
-      "hongKong": "Hong Kong",
-      "taiwan": "Taiwan",
-      "sweden": "Sweden",
-      "norway": "Norway",
-      "denmark": "Denmark",
-      "finland": "Finland"
-    },
-    "wellness": {
-      "veryLow": "つらいです\n😔",
-      "low": "少し落ち込んでいます\n😕",
-      "neutral": "大丈夫です\n🙂",
-      "good": "気分はいいです\n☺️",
-      "great": "今日はとてもうれしいです\n😊"
-    },
-    "todayCheckButton": {
-      "send": "👋 今日はどうですか?",
-      "sent": "挨拶送信済み ✓"
-    },
-    "checkedInAt": "{{date}} {{time}} にチェックイン",
-    "welfareCheck": {
-      "todayGreetings_one": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:",
-      "todayGreetings_other": "💛 今日 {{count}} 件の気づかいメッセージを受け取りました:"
-    },
-    "emergencyMessage": {
-      "todayMessages_one": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:",
-      "todayMessages_other": "🚨 今日 {{count}} 件の緊急メッセージを受け取りました:"
-    },
-    "supportButton": {
-      "send": "💪 サポートを送る",
-      "sent": "送りました ✓"
-    },
-    "reachOutResponseButton": {
-      "send": "了解",
-      "sent": "返答済 ✓"
-    },
-    "openInMaps": "マップで開く"
-  },
-  "contacts": {
-    "title": "連絡先",
-    "contact": "連絡先",
-    "newContact": "新しい連絡先",
-    "displayingAs": "表示名",
-    "loading": "連絡先を読み込み中...",
-    "subtitle": {
-      "withContacts": "連絡先 {{count}} / {{max}}",
-      "noContacts": "共有するには連絡先を追加してください",
-      "withContactsUnlimited": "{{count}} contacts"
-    },
-    "emptyState": {
-      "title": "連絡先がありません",
-      "message": "+ ボタンを押して最初の連絡先を追加してください"
-    },
-    "tabs": {
-      "contacts": "連絡先",
-      "requests": "リクエスト"
-    },
-    "requests": {
-      "received": "受信したリクエスト",
-      "sent": "送信したリクエスト",
-      "waiting": "返答待ち",
-      "loading": "リクエストを読み込み中...",
-      "emptyState": {
-        "title": "リクエストがありません",
-        "message": "誰かが連絡先リクエストを送るとここに表示されます"
-      }
-    },
-    "placeholders": {
-      "email": "Tryggd ID を入力",
-      "identifier": "Enter Tryggd ID or email",
-      "suggestedUsername": "候補の Tryggd ID（任意）"
-    },
-    "buttons": {
-      "accept": "承認",
-      "reject": "拒否",
-      "delete": "削除",
-      "cancelRequest": "リクエストを取り消す",
-      "sending": "送信中...",
-      "sendRequests_one": "リクエストを送信",
-      "sendRequests_other": "リクエストを送信"
-    },
-    "alerts": {
-      "limitReached": {
-        "title": "上限に達しました",
-        "message": "追加できる連絡先は最大 3 件です。"
-      },
-      "senderLimitReached": {
-        "title": "リクエストを承認できません",
-        "message": "この方の連絡先リストがいっぱいです。"
-      },
-      "delete": {
-        "title": "連絡先を削除",
-        "message": "{{name}} を削除してもよろしいですか?"
-      },
-      "contactExists": {
-        "title": "すでに追加されています",
-        "message": "{{name}} はすでに連絡先に登録されています"
-      },
-      "requestExists": {
-        "title": "リクエスト送信済み",
-        "message": "このユーザーにはすでにリクエストを送信しています。"
-      },
-      "requestReceived": {
-        "title": "リクエスト受信済み",
-        "message": "{{email}} からのリクエストがあります。\"リクエスト\" タブを確認してください。"
-      },
-      "invalidEmail": {
-        "title": "無効な Tryggd ID",
-        "message": "{{email}} は登録されていないか、確認されていません"
-      },
-      "selfContact": {
-        "title": "無効な連絡先",
-        "message": "自分自身を連絡先に追加することはできません"
-      },
-      "noChanges": {
-        "title": "変更はありません",
-        "message": "保存する新しい連絡先はありません。"
-      },
-      "alreadyInContacts": "このユーザーはすでに連絡先にいます",
-      "requestHandled": {
-        "title": "リクエストは処理済みです",
-        "message": "このリクエストはすでに処理されています"
-      }
-    },
-    "success": {
-      "requestSent": {
-        "title": "リクエストを送信しました",
-        "message": "{{name}} に連絡先リクエストを送信しました"
-      },
-      "contactAdded": {
-        "title": "連絡先を追加しました",
-        "message": "{{name}} を連絡先に追加しました"
-      },
-      "deleted": {
-        "title": "連絡先を削除しました",
-        "message": "{{name}} を削除しました。関連する接続も削除されました。"
-      },
-      "requestRejected": {
-        "title": "リクエストを拒否しました",
-        "message": "連絡先リクエストを拒否しました"
-      },
-      "requestCancelled": {
-        "title": "リクエストを取り消しました",
-        "message": "連絡先リクエストを取り消しました"
-      }
-    },
-    "errors": {
-      "loadData": "データの読み込みに失敗しました",
-      "save": "連絡先の保存に失敗しました",
-      "delete": "連絡先の削除に失敗しました",
-      "sendRequest": "連絡先リクエストの送信に失敗しました",
-      "search": "ユーザーを検索できませんでした",
-      "requestNotFound": "連絡先リクエストが見つからないか、すでに処理されています",
-      "accept": "連絡先リクエストの承認に失敗しました",
-      "reject": "リクエストの拒否に失敗しました",
-      "cancel": "リクエストの取り消しに失敗しました",
-      "createInvite": "招待を作成できませんでした。",
-      "shareInvite": "招待リンクを共有できませんでした。",
-      "recoveryUnavailable": "この連絡先はまだ再設定招待を受け取れません。",
-      "createRecoveryInvite": "再設定招待を作成できませんでした。",
-      "updateCheckinNotifications": "Failed to update check-in notifications.",
-      "updateLocationSharing": "Failed to update location sharing.",
-      "noContactUpdated": "No contact row was updated."
-    },
-    "qr": {
-      "permissionTitle": "カメラの許可が必要です",
-      "permissionMessage": "QRコードをスキャンするにはカメラのアクセスを許可してください。",
-      "scanHint": "TryggdのQRコードにカメラを向けて連絡先を追加",
-      "successTitle": "連絡先を追加しました",
-      "successMessage": "{{name}} が連絡先に追加されました",
-      "newContact": "新しい連絡先",
-      "ownerLimitReached": "この人の連絡先リストがいっぱいです。現在、新しい連絡先を受け入れることができません。"
-    },
-    "messages": {
-      "contactDefault": "This contact"
-    },
-    "emergencyMessage": {
-      "modalTitle": "{{name}} さんに緊急メッセージを送る",
-      "modalDescription": "プッシュ通知が即座に送信され、相手のアクティビティに表示されます。",
-      "placeholder": "何が起きていますか？",
-      "send": "送信",
-      "sending": "送信中…",
-      "sendError": "緊急メッセージの送信に失敗しました。"
-    },
-    "status": {
-      "checkinsEnabled": "{{name}} will receive your check-ins",
-      "checkinsDisabled": "{{name}} will not receive your check-ins",
-      "locationEnabled": "{{name}} will see your location in Activity",
-      "locationDisabled": "{{name}} will not see your location in Activity"
-    },
-    "invite": {
-      "ready": "招待の準備ができました",
-      "recoveryReady": "再設定リンクの準備ができました",
-      "instructions": "まずリンクを送信してください。その後、このコードを伝えてください：",
-      "recoveryInstructions": "まず再設定リンクを送信してください。その後、このコードを伝えてください：",
-      "expiresOn": "この招待の有効期限は {{date}} です。",
-      "resettingTryggdId": "Tryggd ID をリセット中: {{id}}",
-      "suggestedTryggdId": "候補の Tryggd ID: {{id}}",
-      "shareMessage": "Tryggd でつながりましょう:",
-      "recoveryShareMessage": "このリンクを使って Tryggd のパスワードを再設定してください:",
-      "modalTitle": "Tryggd に招待する",
-      "modalDescription": "非公開の招待リンクと6桁のコードを作成します。招待された人が後で選ばなくて済むように、今のうちに Tryggd ID を提案してください。",
-      "suggestedUsernameHelp": "小文字、数字、ドット、またはアンダースコアを使用してください。招待を作成する前に利用可能か確認します。",
-      "createButton": "招待を作成",
-      "creating": "作成中…",
-      "shareButton": "リンクを共有"
-    },
-    "plusFeature": {
-      "title": "Plus feature",
-      "notifications": "Upgrade to Plus to control contact check-in notifications.",
-      "location": "Upgrade to Plus to enable location sharing for a contact."
-    }
-  },
-  "profile": {
-    "title": "プロフィール",
-    "defaultName": "ユーザー",
-    "loading": "プロフィールを読み込み中...",
-    "buttons": {
-      "edit": "編集",
-      "save": "保存",
-      "saving": "保存中...",
-      "logout": "ログアウト"
-    },
-    "fields": {
-      "name": "名前",
-      "email": "メール",
-      "phone": "電話番号",
-      "notSpecified": "未設定"
+    "profile": {
+        "title": "プロフィール",
+        "defaultName": "ユーザー",
+        "loading": "プロフィールを読み込み中...",
+        "buttons": {
+            "edit": "編集",
+            "save": "保存",
+            "saving": "保存中...",
+            "logout": "ログアウト"
+        },
+        "fields": {
+            "name": "名前",
+            "email": "メール",
+            "phone": "電話番号",
+            "notSpecified": "未設定"
+        },
+        "settings": {
+            "title": "設定",
+            "subtitle": "アプリ設定と通知"
+        },
+        "avatarModal": {
+            "title": "プロフィール画像を変更",
+            "takePhoto": "写真を撮る",
+            "chooseFromLibrary": "ライブラリから選択"
+        },
+        "logout": {
+            "title": "ログアウト",
+            "confirm": "よろしいですか?",
+            "button": "ログアウト"
+        },
+        "permissions": {
+            "camera": "カメラへのアクセスが必要です"
+        },
+        "notices": {
+            "title": "お知らせ",
+            "emailConfirmation": "プロフィールは保存されましたが、メール変更には確認が必要です"
+        },
+        "success": {
+            "title": "保存しました",
+            "saved": "プロフィールを更新しました。"
+        },
+        "errors": {
+            "loadProfile": "プロフィールを読み込めませんでした",
+            "notLoggedIn": "ログインしていません",
+            "updateProfile": "プロフィールを更新できませんでした",
+            "saveProfile": "プロフィールを保存できませんでした",
+            "deleteAccount": "アカウントを削除できませんでした"
+        },
+        "deleteAccount": {
+            "title": "アカウントを削除",
+            "confirm": "アカウントとデータは完全に削除されます。この操作は元に戻せません。",
+            "finalTitle": "アカウントを完全に削除しますか？",
+            "finalConfirm": "アカウント、連絡先、チェックイン、設定が完全に削除されます。",
+            "button": "アカウントを削除",
+            "deleting": "削除中...",
+            "successTitle": "アカウントを削除しました",
+            "successMessage": "アカウントは完全に削除されました。"
+        },
+        "qr": {
+            "title": "マイQRコード",
+            "hint": "このコードをスキャンしてもらうと、すぐに連絡先として追加されます。",
+            "errorGenerating": "QRコードを生成できませんでした。もう一度お試しください。"
+        }
     },
     "settings": {
-      "title": "設定",
-      "subtitle": "アプリ設定と通知"
+        "title": "設定",
+        "account": "アカウント",
+        "information": "情報",
+        "language": "言語",
+        "theme": "テーマ",
+        "homeStyle": {
+            "title": "ホーム表示を選択",
+            "plusBadge": "Plus",
+            "simple": {
+                "title": "シンプル",
+                "description": "ワンタップでチェックイン、気を散らすものなし。"
+            },
+            "enhanced": {
+                "title": "拡張",
+                "description": "気分、外出状況、位置情報を共有。"
+            }
+        },
+        "notifications": {
+            "title": "通知",
+            "preferences": "通知設定",
+            "summary": {
+                "reminders": "リマインダー",
+                "activity": "アクティビティ",
+                "allOff": "すべての通知がオフ"
+            },
+            "stayOnTrack": {
+                "title": "継続をサポート",
+                "description": "毎日の安全チェックインを完了するよう通知する"
+            },
+            "contactActivity": {
+                "title": "連絡先のアクティビティ",
+                "description": "連絡先がチェックインを完了したときに通知する"
+            }
+        },
+        "about": "このアプリについて",
+        "privacy": "プライバシーポリシー",
+        "terms": "利用規約",
+        "feedback": "フィードバックを送る",
+        "logout": "ログアウト",
+        "resetData": "データをリセット",
+        "light": "ライト",
+        "dark": "ダーク",
+        "systemDefault": "システム設定を使用",
+        "english": "英語",
+        "swedish": "スウェーデン語",
+        "norwegian": "ノルウェー語",
+        "danish": "デンマーク語",
+        "finnish": "フィンランド語",
+        "chineseSimplified": "中国語（簡体字）",
+        "chineseTraditional": "中国語（繁体字）",
+        "tripMode": {
+            "title": "チェックインモード",
+            "home": "通常",
+            "trip": "旅行",
+            "homeDescription": "毎日の標準チェックイン",
+            "tripDescription": "旅行状況を連絡先と共有"
+        },
+        "resetWarning": "よろしいですか? すべてのデータが削除されます。",
+        "logoutConfirm": "本当にログアウトしますか?",
+        "confirmReset": "リセット",
+        "cancel": "キャンセル",
+        "ok": "OK"
     },
-    "avatarModal": {
-      "title": "プロフィール画像を変更",
-      "takePhoto": "写真を撮る",
-      "chooseFromLibrary": "ライブラリから選択"
+    "common": {
+        "ok": "OK",
+        "cancel": "キャンセル",
+        "save": "保存",
+        "delete": "削除",
+        "edit": "編集",
+        "loading": "読み込み中...",
+        "refreshing": "更新中...",
+        "back": "戻る",
+        "next": "次へ",
+        "submit": "送信",
+        "yes": "はい",
+        "no": "いいえ",
+        "done": "Done"
     },
-    "logout": {
-      "title": "ログアウト",
-      "confirm": "よろしいですか?",
-      "button": "ログアウト"
-    },
-    "permissions": {
-      "camera": "カメラへのアクセスが必要です"
-    },
-    "notices": {
-      "title": "お知らせ",
-      "emailConfirmation": "プロフィールは保存されましたが、メール変更には確認が必要です"
-    },
-    "success": {
-      "title": "保存しました",
-      "saved": "プロフィールを更新しました。"
+    "time": {
+        "justNow": "たった今",
+        "minutesAgo": "{{count}} 分前",
+        "hoursAgo_one": "{{count}} 時間前",
+        "hoursAgo_other": "{{count}} 時間前",
+        "daysAgo_one": "{{count}} 日前",
+        "daysAgo_other": "{{count}} 日前"
     },
     "errors": {
-      "loadProfile": "プロフィールを読み込めませんでした",
-      "notLoggedIn": "ログインしていません",
-      "updateProfile": "プロフィールを更新できませんでした",
-      "saveProfile": "プロフィールを保存できませんでした",
-      "deleteAccount": "アカウントを削除できませんでした"
+        "title": "エラー",
+        "notAuthenticated": "認証されていません"
     },
-    "deleteAccount": {
-      "title": "アカウントを削除",
-      "confirm": "アカウントとデータは完全に削除されます。この操作は元に戻せません。",
-      "finalTitle": "アカウントを完全に削除しますか？",
-      "finalConfirm": "アカウント、連絡先、チェックイン、設定が完全に削除されます。",
-      "button": "アカウントを削除",
-      "deleting": "削除中...",
-      "successTitle": "アカウントを削除しました",
-      "successMessage": "アカウントは完全に削除されました。"
+    "permissions": {
+        "title": "権限"
     },
-    "qr": {
-      "title": "マイQRコード",
-      "hint": "このコードをスキャンしてもらうと、すぐに連絡先として追加されます。",
-      "errorGenerating": "QRコードを生成できませんでした。もう一度お試しください。"
+    "auth": {
+        "signup": {
+            "title": "アカウント作成",
+            "create": "アカウントを作成",
+            "creating": "アカウントを作成中...",
+            "success": {
+                "title": "🎉 アカウントを作成しました",
+                "message": "アカウントの準備ができました。ログインできます。"
+            },
+            "verifyEmail": {
+                "title": "メールアドレスを確認してください!",
+                "message": "確認メールを送信しました。確認後にログインしてください。"
+            },
+            "error": "サインアップに失敗しました"
+        },
+        "login": {
+            "title": "ログイン",
+            "signIn": "ログイン",
+            "loggingIn": "ログイン中...",
+            "error": "ログインに失敗しました",
+            "continueWithGoogle": "Google で続ける",
+            "connectingToGoogle": "Google に接続中...",
+            "continueWithApple": "Apple で続ける",
+            "connectingToApple": "Apple に接続中...",
+            "orContinueWithEmail": "またはメールで続ける",
+            "socialError": "サインインに失敗しました",
+            "useInviteCode": "招待コードをお持ちですか？"
+        },
+        "email": "メール",
+        "displayName": "名前",
+        "password": {
+            "placeholder": "パスワード（6文字以上）",
+            "minimumLength": "Use at least 8 characters."
+        },
+        "confirmPassword": "パスワードを確認",
+        "passwordsMatch": "✔ パスワードが一致しています",
+        "passwordsNoMatch": "✖ パスワードが一致しません",
+        "alreadyHaveAccount": "すでにアカウントをお持ちですか? ログイン",
+        "noAccount": "アカウントをお持ちでないですか? 新規登録",
+        "unknownError": "不明なエラー",
+        "forgotPassword": {
+            "title": "パスワードをお忘れですか",
+            "instructions": "メールアドレスを入力してください",
+            "send": "リセットメールを送信",
+            "sending": "送信中...",
+            "sentTitle": "メールを確認してください",
+            "sentMessage": "パスワード再設定リンクをメールで送信しました。",
+            "login": "ログインへ",
+            "error": "リセットメールの送信エラー"
+        },
+        "resetPassword": {
+            "title": "パスワードを再設定",
+            "instructions": "新しいパスワードを入力してください。",
+            "save": "新しいパスワードを保存",
+            "saving": "保存中...",
+            "successTitle": "パスワードを再設定しました!",
+            "successMessage": "新しいパスワードでログインできます。",
+            "login": "ログインへ",
+            "error": "パスワード再設定エラー",
+            "passwordPlaceholder": "新しいパスワード"
+        },
+        "invite": {
+            "enterCodeStandaloneHint": "招待を受け取った後にアプリをインストールした場合は、6桁のコードを入力して続行してください。",
+            "invalidLink": "Invite link is invalid.",
+            "notFound": "Invite not found.",
+            "alreadyUsed": "This invite has already been used.",
+            "expired": "This invite has expired.",
+            "unavailable": "This invite is not available anymore.",
+            "unavailableTitle": "Invite unavailable",
+            "couldNotOpen": "This invite could not be opened.",
+            "backToLogin": "Back to login",
+            "recoveryTitle": "Reset your Tryggd password",
+            "invitedTitle": "You're invited to Tryggd",
+            "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+            "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+            "yourAccount": "your Tryggd account",
+            "you": "you",
+            "installTitle": "Install or open the app",
+            "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+            "openInApp": "Open in Tryggd",
+            "downloadAppStore": "Download on App Store",
+            "downloadGooglePlay": "Get it on Google Play",
+            "keepLink": "Keep this invite link:",
+            "enterCodeTitle": "Enter your invite code",
+            "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+            "codePlaceholder": "6-digit invite code",
+            "checkingCode": "Checking code…",
+            "setPasswordTitle": "Set a new password",
+            "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+            "tryggdIdPlaceholder": "Tryggd ID",
+            "resettingPassword": "Resetting password…",
+            "resetPassword": "Reset password",
+            "createAccountTitle": "Create your account",
+            "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+            "mobilePlaceholder": "Mobile number (optional)",
+            "creatingAccount": "Creating account…",
+            "createAccountButton": "Create account",
+            "errors": {
+                "incorrectCode": "The code is incorrect.",
+                "verifyCode": "Failed to verify invite code.",
+                "createAccount": "Failed to create account.",
+                "completeSignup": "Failed to complete invited signup.",
+                "missingAccount": "Could not determine the account to sign in.",
+                "completeRecovery": "Failed to complete password recovery.",
+                "phoneAlreadyInUse": "This phone number is already in use.",
+                "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+            }
+        }
+    },
+    "completeProfile": {
+        "kicker": "あともう一歩",
+        "title": "プロフィールを完成させましょう",
+        "description": "連絡先に表示する名前と、検索に使う Tryggd ID を追加してください。",
+        "nameLabel": "名前",
+        "namePlaceholder": "例: Emily Cooper",
+        "nameHelperEmpty": "連絡先にはこの名前が表示されます。",
+        "nameHelper": "連絡先にはこの名前が表示されます。",
+        "tryggdIdLabel": "Tryggd ID",
+        "tryggdIdPlaceholder": "例: emilycooper",
+        "tryggdIdHelper": "Tryggd であなたを見つけて追加するときに使われます。",
+        "continue": "続ける",
+        "saving": "保存中...",
+        "saveErrorTitle": "プロフィールを保存できませんでした",
+        "saveErrorBody": "もう一度お試しください。",
+        "duplicateTitle": "別の Tryggd ID を試してください",
+        "duplicateBody": "その Tryggd ID はすでに使われています。",
+        "validation": {
+            "required": "Tryggd であなたを見つけて追加するときに使われます。",
+            "min": "Tryggd ID は3文字以上で入力してください。",
+            "max": "Tryggd ID は24文字以内で入力してください。",
+            "chars": "使用できるのは小文字、数字、ドット、アンダースコアのみです。"
+        }
+    },
+    "plus": {
+        "title": "Tryggd Plus",
+        "subtitle": "Additional features for richer daily check-ins",
+        "badge": "Plus",
+        "heading": "Unlock more context",
+        "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+        "comingSoon": {
+            "title": "Plus Preview",
+            "message": "パイロット期間中、Plus Previewは無料で利用できます。支払い情報は不要で、自動請求もありません。",
+            "button": "Plus planを無料でプレビュー",
+            "note": "いつでもBasic planに戻れます。"
+        },
+        "features": {
+            "wellness": {
+                "title": "Wellness sharing",
+                "description": "Share how you feel as part of your daily check-in."
+            },
+            "location": {
+                "title": "Location sharing",
+                "description": "Let trusted contacts see your shared location in Activity."
+            },
+            "notifications": {
+                "title": "Notification controls",
+                "description": "Control which contacts receive your check-in notifications."
+            },
+            "contacts": {
+                "title": "Unlimited contacts",
+                "description": "Add more than the free-plan contact limit."
+            },
+            "welfare": {
+                "title": "Welfare greeting",
+                "description": "Use additional welfare follow-up features for your contacts."
+            },
+            "tripMode": {
+                "title": "Trip Mode",
+                "description": "Share travel progress and trip-specific updates."
+            },
+            "mood": {
+                "title": "Mood updates",
+                "description": "Add emotional context to your check-ins."
+            },
+            "controls": {
+                "title": "More sharing control",
+                "description": "Decide which trusted contacts receive which updates."
+            },
+            "activity": {
+                "title": "Richer activity updates",
+                "description": "Show more detail in shared check-in and status history."
+            }
+        }
+    },
+    "pilotPreview": {
+        "dialogTitle": "✨ Plus planを無料でプレビュー",
+        "dialogIntro": "Tryggd Plus planを今すぐ無料で試せます。\n支払い情報は不要で、自動請求もありません。",
+        "dialogFreeSectionTitle": "Basic planに含まれるもの：",
+        "dialogFreeFeature1": "✓ チェックイン   🔔 連絡先更新通知   👥 最大5件の連絡先",
+        "dialogFreeFeature2": "",
+        "dialogFreeFeature3": "",
+        "dialogFreeFeature4": "",
+        "dialogPlusSectionTitle": "Plus planはBasic planのすべてに加えて：",
+        "dialogFeature1": "🌿 日常モード   ✈️ 旅行モード   ✋ ヘルプシグナル",
+        "dialogFeature2": "🙂 気分の更新   📍 位置情報共有   👥 より多くの連絡先",
+        "dialogFeature3": "",
+        "dialogFeature4": "",
+        "dialogPricingTitle": "Plus planの価格",
+        "dialogPricingNote": "{{deadline}}以降、Plus planの継続を選択する場合：",
+        "dialogPricingMonthly": "US$2.99 / 月",
+        "dialogPricingYearly": "US$19.99 / 年",
+        "dialogSupportNote": "Plus planはTryggdの継続的な運営と改善を支援する方法です。\nTryggdを実用的で、安定し、信頼でき、広告のないサービスとして保ちたいと考えています。",
+        "dialogPreviewNote": "Plus Previewは{{deadline}}まで利用できます。\nプレビュー終了後、アカウントは自動的にBasic planに戻ります。",
+        "activate": "Plus planを無料でプレビュー",
+        "notNow": "Basic planを使う",
+        "activatedMessage": "Plusが有効になりました。ホームが拡張に切り替わりました。いつでも設定からシンプルに戻せます。",
+        "expiredTitle": "Plusプレビューが終了しました",
+        "expiredBody": "Tryggd Basic planを引き続き利用できます。チェックイン、信頼できる連絡先、基本的な更新が含まれます。\n\n過去のチェックインとアクティビティは削除されません。",
+        "expiredButton": "わかりました",
+        "settingsRowTitle": "Plusプレビュー",
+        "settingsRowSubtitle": "パイロット期間中、現在のPlus機能を無料でお試しください。",
+        "settingsRowAction": "プレビューを始める",
+        "activeRowTitle": "Plusプレビュー進行中",
+        "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。",
+        "dialogFeature5": "",
+        "dialogFeature6": ""
+    },
+    "onboarding": {
+        "skip": "スキップ",
+        "next": "次へ",
+        "getStarted": "始める",
+        "slides": {
+            "checkin": {
+                "eyebrow": "毎日のリズム",
+                "title": "素早い毎日のチェックイン",
+                "body": "💚 ワンタップでチェックインして、信頼できる連絡先にあなたが元気だということを知らせましょう。",
+                "points": {
+                    "one": "✓ ワンタップでチェックイン",
+                    "two": "✓ シンプルな「安全です」の更新"
+                }
+            },
+            "contacts": {
+                "eyebrow": "あなたのサークル",
+                "title": "信頼できる連絡先",
+                "body": "👥 チェックイン、助けのシグナル、共有された更新を受け取れる家族や親しい友人を追加しましょう。",
+                "points": {
+                    "one": "✓ 更新を見る人を選ぶ",
+                    "two": "✓ 助けのシグナルは適切な人に届く"
+                }
+            },
+            "sharing": {
+                "eyebrow": "オプションの情報",
+                "title": "状態と位置情報",
+                "body": "📍 選択した連絡先と、あなたの状況、家にいるか外出中か、旅行の状態、または位置情報を共有しましょう。",
+                "points": {
+                    "one": "✓ 🙂 気分、🏠 在宅/外出、または ✈️ 旅行状態",
+                    "two": "✓ 📍 共有を選択したときのみ位置情報を共有"
+                }
+            },
+            "free": {
+                "eyebrow": "デフォルトでシンプル",
+                "title": "Plus プレビュー",
+                "body": "Tryggd Free は基本をシンプルに保ちます。パイロット期間中は、Plus 機能をプレビューできます：",
+                "freeSummary": "Free：チェックイン、信頼できる連絡先、基本状態",
+                "bodyFreeSuffix": " は基本をシンプルに保ちます。",
+                "bodyPilotPrefix": "パイロット期間中、プレビュー ",
+                "bodyPilotSuffix": "：",
+                "points": {
+                    "one": "✈️ トリップモード",
+                    "two": "📍 位置情報共有オプション",
+                    "three": "🙂 気分の更新",
+                    "four": "⚙️ より多くの共有コントロール"
+                },
+                "footer": "Plus プレビューはオプションです。"
+            }
+        },
+        "disclaimer": {
+            "eyebrow": "知っておくこと",
+            "title": "いくつかの重要な注意事項",
+            "productName": "Tryggd ",
+            "paragraph1": "は、信頼できる連絡先と手動チェックイン、助けのシグナル、選択した更新を共有するのに役立ちます。",
+            "paragraph2": "連絡先は、あなたが共有することを選択した状態更新を見ることができます。位置情報は、位置情報の共有をオンにしたときのみ共有されます。",
+            "paragraph3": "通知は、ネットワーク接続、バッテリーレベル、デバイスの設定、またはサードパーティのプッシュサービスのために遅延する場合があります。",
+            "paragraph4": "Tryggd は緊急サービスではなく、緊急または生命の危機に関わる状況では使用しないでください。",
+            "acceptLabel": "理解しました",
+            "saving": "保存中...",
+            "decline": "拒否 / 戻る"
+        },
+        "errors": {
+            "saveTitle": "続行できません",
+            "saveBody": "もう一度お試しください。"
+        }
     }
-  },
-  "settings": {
-    "title": "設定",
-    "account": "アカウント",
-    "information": "情報",
-    "language": "言語",
-    "theme": "テーマ",
-    "homeStyle": {
-      "title": "ホーム表示を選択",
-      "plusBadge": "Plus",
-      "simple": {
-        "title": "シンプル",
-        "description": "ワンタップでチェックイン、気を散らすものなし。"
-      },
-      "enhanced": {
-        "title": "拡張",
-        "description": "気分、外出状況、位置情報を共有。"
-      }
-    },
-    "notifications": {
-      "title": "通知",
-      "preferences": "通知設定",
-      "summary": {
-        "reminders": "リマインダー",
-        "activity": "アクティビティ",
-        "allOff": "すべての通知がオフ"
-      },
-      "stayOnTrack": {
-        "title": "継続をサポート",
-        "description": "毎日の安全チェックインを完了するよう通知する"
-      },
-      "contactActivity": {
-        "title": "連絡先のアクティビティ",
-        "description": "連絡先がチェックインを完了したときに通知する"
-      }
-    },
-    "about": "このアプリについて",
-    "privacy": "プライバシーポリシー",
-    "terms": "利用規約",
-    "feedback": "フィードバックを送る",
-    "logout": "ログアウト",
-    "resetData": "データをリセット",
-    "light": "ライト",
-    "dark": "ダーク",
-    "systemDefault": "システム設定を使用",
-    "english": "英語",
-    "swedish": "スウェーデン語",
-    "norwegian": "ノルウェー語",
-    "danish": "デンマーク語",
-    "finnish": "フィンランド語",
-    "chineseSimplified": "中国語（簡体字）",
-    "chineseTraditional": "中国語（繁体字）",
-    "tripMode": {
-      "title": "チェックインモード",
-      "home": "通常",
-      "trip": "旅行",
-      "homeDescription": "毎日の標準チェックイン",
-      "tripDescription": "旅行状況を連絡先と共有"
-    },
-    "resetWarning": "よろしいですか? すべてのデータが削除されます。",
-    "logoutConfirm": "本当にログアウトしますか?",
-    "confirmReset": "リセット",
-    "cancel": "キャンセル",
-    "ok": "OK"
-  },
-  "common": {
-    "ok": "OK",
-    "cancel": "キャンセル",
-    "save": "保存",
-    "delete": "削除",
-    "edit": "編集",
-    "loading": "読み込み中...",
-    "refreshing": "更新中...",
-    "back": "戻る",
-    "next": "次へ",
-    "submit": "送信",
-    "yes": "はい",
-    "no": "いいえ",
-    "done": "Done"
-  },
-  "time": {
-    "justNow": "たった今",
-    "minutesAgo": "{{count}} 分前",
-    "hoursAgo_one": "{{count}} 時間前",
-    "hoursAgo_other": "{{count}} 時間前",
-    "daysAgo_one": "{{count}} 日前",
-    "daysAgo_other": "{{count}} 日前"
-  },
-  "errors": {
-    "title": "エラー",
-    "notAuthenticated": "認証されていません"
-  },
-  "permissions": {
-    "title": "権限"
-  },
-  "auth": {
-    "signup": {
-      "title": "アカウント作成",
-      "create": "アカウントを作成",
-      "creating": "アカウントを作成中...",
-      "success": {
-        "title": "🎉 アカウントを作成しました",
-        "message": "アカウントの準備ができました。ログインできます。"
-      },
-      "verifyEmail": {
-        "title": "メールアドレスを確認してください!",
-        "message": "確認メールを送信しました。確認後にログインしてください。"
-      },
-      "error": "サインアップに失敗しました"
-    },
-    "login": {
-      "title": "ログイン",
-      "signIn": "ログイン",
-      "loggingIn": "ログイン中...",
-      "error": "ログインに失敗しました",
-      "continueWithGoogle": "Google で続ける",
-      "connectingToGoogle": "Google に接続中...",
-      "continueWithApple": "Apple で続ける",
-      "connectingToApple": "Apple に接続中...",
-      "orContinueWithEmail": "またはメールで続ける",
-      "socialError": "サインインに失敗しました",
-      "useInviteCode": "招待コードをお持ちですか？"
-    },
-    "email": "メール",
-    "displayName": "名前",
-    "password": {
-      "placeholder": "パスワード（6文字以上）",
-      "minimumLength": "Use at least 8 characters."
-    },
-    "confirmPassword": "パスワードを確認",
-    "passwordsMatch": "✔ パスワードが一致しています",
-    "passwordsNoMatch": "✖ パスワードが一致しません",
-    "alreadyHaveAccount": "すでにアカウントをお持ちですか? ログイン",
-    "noAccount": "アカウントをお持ちでないですか? 新規登録",
-    "unknownError": "不明なエラー",
-    "forgotPassword": {
-      "title": "パスワードをお忘れですか",
-      "instructions": "メールアドレスを入力してください",
-      "send": "リセットメールを送信",
-      "sending": "送信中...",
-      "sentTitle": "メールを確認してください",
-      "sentMessage": "パスワード再設定リンクをメールで送信しました。",
-      "login": "ログインへ",
-      "error": "リセットメールの送信エラー"
-    },
-    "resetPassword": {
-      "title": "パスワードを再設定",
-      "instructions": "新しいパスワードを入力してください。",
-      "save": "新しいパスワードを保存",
-      "saving": "保存中...",
-      "successTitle": "パスワードを再設定しました!",
-      "successMessage": "新しいパスワードでログインできます。",
-      "login": "ログインへ",
-      "error": "パスワード再設定エラー",
-      "passwordPlaceholder": "新しいパスワード"
-    },
-    "invite": {
-      "enterCodeStandaloneHint": "招待を受け取った後にアプリをインストールした場合は、6桁のコードを入力して続行してください。",
-      "invalidLink": "Invite link is invalid.",
-      "notFound": "Invite not found.",
-      "alreadyUsed": "This invite has already been used.",
-      "expired": "This invite has expired.",
-      "unavailable": "This invite is not available anymore.",
-      "unavailableTitle": "Invite unavailable",
-      "couldNotOpen": "This invite could not be opened.",
-      "backToLogin": "Back to login",
-      "recoveryTitle": "Reset your Tryggd password",
-      "invitedTitle": "You're invited to Tryggd",
-      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
-      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
-      "yourAccount": "your Tryggd account",
-      "you": "you",
-      "installTitle": "Install or open the app",
-      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
-      "openInApp": "Open in Tryggd",
-      "downloadAppStore": "Download on App Store",
-      "downloadGooglePlay": "Get it on Google Play",
-      "keepLink": "Keep this invite link:",
-      "enterCodeTitle": "Enter your invite code",
-      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
-      "codePlaceholder": "6-digit invite code",
-      "checkingCode": "Checking code…",
-      "setPasswordTitle": "Set a new password",
-      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
-      "tryggdIdPlaceholder": "Tryggd ID",
-      "resettingPassword": "Resetting password…",
-      "resetPassword": "Reset password",
-      "createAccountTitle": "Create your account",
-      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
-      "mobilePlaceholder": "Mobile number (optional)",
-      "creatingAccount": "Creating account…",
-      "createAccountButton": "Create account",
-      "errors": {
-        "incorrectCode": "The code is incorrect.",
-        "verifyCode": "Failed to verify invite code.",
-        "createAccount": "Failed to create account.",
-        "completeSignup": "Failed to complete invited signup.",
-        "missingAccount": "Could not determine the account to sign in.",
-        "completeRecovery": "Failed to complete password recovery.",
-        "phoneAlreadyInUse": "This phone number is already in use.",
-        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-      }
-    }
-  },
-  "completeProfile": {
-    "kicker": "あともう一歩",
-    "title": "プロフィールを完成させましょう",
-    "description": "連絡先に表示する名前と、検索に使う Tryggd ID を追加してください。",
-    "nameLabel": "名前",
-    "namePlaceholder": "例: Emily Cooper",
-    "nameHelperEmpty": "連絡先にはこの名前が表示されます。",
-    "nameHelper": "連絡先にはこの名前が表示されます。",
-    "tryggdIdLabel": "Tryggd ID",
-    "tryggdIdPlaceholder": "例: emilycooper",
-    "tryggdIdHelper": "Tryggd であなたを見つけて追加するときに使われます。",
-    "continue": "続ける",
-    "saving": "保存中...",
-    "saveErrorTitle": "プロフィールを保存できませんでした",
-    "saveErrorBody": "もう一度お試しください。",
-    "duplicateTitle": "別の Tryggd ID を試してください",
-    "duplicateBody": "その Tryggd ID はすでに使われています。",
-    "validation": {
-      "required": "Tryggd であなたを見つけて追加するときに使われます。",
-      "min": "Tryggd ID は3文字以上で入力してください。",
-      "max": "Tryggd ID は24文字以内で入力してください。",
-      "chars": "使用できるのは小文字、数字、ドット、アンダースコアのみです。"
-    }
-  },
-  "plus": {
-    "title": "Tryggd Plus",
-    "subtitle": "Additional features for richer daily check-ins",
-    "badge": "Plus",
-    "heading": "Unlock more context",
-    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
-    "comingSoon": {
-      "title": "Plus Preview",
-      "message": "パイロット期間中、Plus Previewは無料で利用できます。支払い情報は不要で、自動請求もありません。",
-      "button": "Plus planを無料でプレビュー",
-      "note": "いつでもBasic planに戻れます。"
-    },
-    "features": {
-      "wellness": {
-        "title": "Wellness sharing",
-        "description": "Share how you feel as part of your daily check-in."
-      },
-      "location": {
-        "title": "Location sharing",
-        "description": "Let trusted contacts see your shared location in Activity."
-      },
-      "notifications": {
-        "title": "Notification controls",
-        "description": "Control which contacts receive your check-in notifications."
-      },
-      "contacts": {
-        "title": "Unlimited contacts",
-        "description": "Add more than the free-plan contact limit."
-      },
-      "welfare": {
-        "title": "Welfare greeting",
-        "description": "Use additional welfare follow-up features for your contacts."
-      },
-      "tripMode": {
-        "title": "Trip Mode",
-        "description": "Share travel progress and trip-specific updates."
-      },
-      "mood": {
-        "title": "Mood updates",
-        "description": "Add emotional context to your check-ins."
-      },
-      "controls": {
-        "title": "More sharing control",
-        "description": "Decide which trusted contacts receive which updates."
-      },
-      "activity": {
-        "title": "Richer activity updates",
-        "description": "Show more detail in shared check-in and status history."
-      }
-    }
-  },
-  "pilotPreview": {
-    "dialogTitle": "✨ Plus planを無料でプレビュー",
-    "dialogIntro": "Tryggd Plus planを今すぐ無料で試せます。\n支払い情報は不要で、自動請求もありません。",
-    "dialogFreeSectionTitle": "Basic planに含まれるもの：",
-    "dialogFreeFeature1": "✓ チェックイン   🔔 連絡先更新通知   👥 最大5件の連絡先",
-    "dialogFreeFeature2": "",
-    "dialogFreeFeature3": "",
-    "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus planはBasic planのすべてに加えて：",
-    "dialogFeature1": "🌿 日常モード   ✈️ 旅行モード   ✋ ヘルプシグナル",
-    "dialogFeature2": "🙂 気分の更新   📍 位置情報共有   👥 より多くの連絡先",
-    "dialogFeature3": "",
-    "dialogFeature4": "",
-    "dialogPricingTitle": "Plus planの価格",
-    "dialogPricingNote": "{{deadline}}以降、Plus planの継続を選択する場合：",
-    "dialogPricingMonthly": "US$2.99 / 月",
-    "dialogPricingYearly": "US$19.99 / 年",
-    "dialogSupportNote": "Plus planはTryggdの継続的な運営と改善を支援する方法です。\nTryggdを実用的で、安定し、信頼でき、広告のないサービスとして保ちたいと考えています。",
-    "dialogPreviewNote": "Plus Previewは{{deadline}}まで利用できます。\nプレビュー終了後、アカウントは自動的にBasic planに戻ります。",
-    "activate": "Plus planを無料でプレビュー",
-    "notNow": "Basic planを使う",
-    "activatedMessage": "Plusが有効になりました。ホームが拡張に切り替わりました。いつでも設定からシンプルに戻せます。",
-    "expiredTitle": "Plusプレビューが終了しました",
-    "expiredBody": "Tryggd Basic planを引き続き利用できます。チェックイン、信頼できる連絡先、基本的な更新が含まれます。\n\n過去のチェックインとアクティビティは削除されません。",
-    "expiredButton": "わかりました",
-    "settingsRowTitle": "Plusプレビュー",
-    "settingsRowSubtitle": "パイロット期間中、現在のPlus機能を無料でお試しください。",
-    "settingsRowAction": "プレビューを始める",
-    "activeRowTitle": "Plusプレビュー進行中",
-    "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。",
-    "dialogFeature5": "",
-    "dialogFeature6": ""
-  }
 }
