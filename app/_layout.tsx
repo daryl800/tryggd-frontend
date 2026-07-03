@@ -204,7 +204,11 @@ function RootLayoutNav() {
   const router = useRouter();
   const segments = useSegments();
   const navigationRef = useNavigationContainerRef();
-  const [languageReady, setLanguageReady] = useState(false);
+  // undefined = never synced; null = synced for logged-out state; string = synced for that user id
+  const [lastSyncedUserId, setLastSyncedUserId] = useState<string | null | undefined>(undefined);
+  // Derived: true only when the last completed sync matches the current auth state,
+  // so it flips to false the instant user?.id changes — no render-cycle gap.
+  const languageReady = lastSyncedUserId !== undefined && lastSyncedUserId === (user?.id ?? null);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
@@ -245,10 +249,11 @@ function RootLayoutNav() {
   }, [hasSeenOnboarding, onboardingReady, segments, user?.id]);
 
   useEffect(() => {
+    let cancelled = false;
+    const syncingForUserId = user?.id ?? null;
+
     const syncLanguage = async () => {
       if (!initialized) return;
-
-      setLanguageReady(false);
 
       try {
         const deviceLanguage = getDevicePreferredLanguage();
@@ -309,11 +314,12 @@ function RootLayoutNav() {
       } catch (error) {
         console.error('Failed to sync language preference', error);
       } finally {
-        setLanguageReady(true);
+        if (!cancelled) setLastSyncedUserId(syncingForUserId);
       }
     };
 
     void syncLanguage();
+    return () => { cancelled = true; };
   }, [hasSeenOnboarding, initialized, needsUsername, user?.id]);
 
   if (!initialized || !isNavReady || !languageReady || !onboardingReady) {
