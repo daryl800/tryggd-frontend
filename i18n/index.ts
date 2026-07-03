@@ -132,7 +132,6 @@ const languageDetector = {
 // Use type assertion to bypass TypeScript error
 const initOptions = {
     resources,
-    lng: getDevicePreferredLanguage(),
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LANGUAGES,
     nonExplicitSupportedLngs: true,
