@@ -327,18 +327,23 @@ function RootLayoutNav() {
     return () => { cancelled = true; };
   }, [hasSeenOnboarding, initialized, needsUsername, user?.id]);
 
-  if (!initialized || !isNavReady || !languageReady || !onboardingReady) {
+  const isOnboardingRoute = segments[0] === 'onboarding';
+  const needsOnboardingRedirect = Boolean(user) && !hasSeenOnboarding && !isOnboardingRoute;
+
+  // Navigate imperatively so the spinner stays visible until segments update to
+  // 'onboarding' — avoids the one-frame blank flash that <Redirect> causes by
+  // rendering null before router.replace fires.
+  useEffect(() => {
+    if (!initialized || !isNavReady || !languageReady || !onboardingReady) return;
+    if (needsOnboardingRedirect) router.replace('/onboarding');
+  }, [initialized, isNavReady, languageReady, onboardingReady, needsOnboardingRedirect, router]);
+
+  if (!initialized || !isNavReady || !languageReady || !onboardingReady || needsOnboardingRedirect) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
       </View>
     );
-  }
-
-  const isOnboardingRoute = segments[0] === 'onboarding';
-
-  if (user && !hasSeenOnboarding && !isOnboardingRoute) {
-    return <Redirect href="/onboarding" />;
   }
 
   if (hasSeenOnboarding && isOnboardingRoute) {
