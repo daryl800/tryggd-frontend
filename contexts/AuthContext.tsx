@@ -1,6 +1,6 @@
 // contexts/AuthContext.tsx
 import { Session } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppState } from "react-native";
 import {
     FREE_CONTACT_LIMIT,
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [profileLoading, setProfileLoading] = useState(false);
 
     const refreshProfile = useCallback(async () => {
-        if (!user) {
+        if (!user?.id) {
             setProfile(null);
             return;
         }
@@ -168,7 +168,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setProfileLoading(false);
         }
-    }, [user]);
+    }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Initialize auth state
     useEffect(() => {
@@ -199,7 +199,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Load profile when user changes
     useEffect(() => {
-        if (!user) {
+        if (!user?.id) {
             setProfile(null);
             setPlan(DEFAULT_PLAN);
             setContactLimit(FREE_CONTACT_LIMIT);
@@ -207,7 +207,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         void refreshProfile();
-    }, [refreshProfile, user]);
+    }, [refreshProfile, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Refresh when app returns to foreground (catches deadline expiry, session changes, etc.)
     useEffect(() => {
@@ -215,7 +215,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (nextState === 'active' && user) void refreshProfile();
         });
         return () => sub.remove();
-    }, [user, refreshProfile]);
+    }, [user?.id, refreshProfile]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Schedule a one-shot refresh exactly when the preview deadline passes while the app is open
     useEffect(() => {
@@ -227,7 +227,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, [pilotPreviewConfig?.pilot_preview_ends_at, refreshProfile]);
 
     const loading = !initialized || profileLoading;
-    const capabilities = getCapabilities(plan, contactLimit);
+    const capabilities = useMemo(() => getCapabilities(plan, contactLimit), [plan, contactLimit]);
     const hasValidDisplayName = Boolean(
         profile?.display_name?.trim() &&
         !isLikelyGeneratedDisplayName(profile.display_name)
