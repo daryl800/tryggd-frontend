@@ -186,18 +186,24 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         }
 
         // ── Step 6: Second DB write — add Expo token + notification prefs ──────
+        // Uses upsert (not update) so a row is always created even if the early
+        // upsert in Step 2 failed silently (e.g. schema/RLS error).
         if (expoToken) {
             const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
             const isEnabled = contactCheckInPref !== 'false';
 
-            await supabase
+            const { error: upsertError } = await supabase
                 .from('user_push_tokens')
-                .update({
+                .upsert({
+                    user_id: userId,
                     expo_push_token: expoToken,
                     contact_checkin_notifications: isEnabled,
                     updated_at: new Date().toISOString(),
-                })
-                .eq('user_id', userId);
+                }, { onConflict: 'user_id' });
+
+            if (upsertError) {
+                console.error('❌ Failed to save push token to DB:', upsertError.message);
+            }
 
             // Best-effort cleanup for duplicate token rows (e.g. device re-use).
             await supabase
