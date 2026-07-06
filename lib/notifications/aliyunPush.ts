@@ -9,14 +9,30 @@ let initialized = false;
 export async function initAliyunPush(): Promise<void> {
   if (!IS_ANDROID) return;
   try {
-    // Dynamic import so the native module is not referenced on iOS/web
     const ExpoAliyunPush = (await import('expo-aliyun-push')).default;
     await ExpoAliyunPush.initAliyunPush();
-    await ExpoAliyunPush.initThirdPush();
+    // initThirdPush() is NOT called here — it takes over FCM registration and
+    // breaks Expo push on regular Android (Google Play) devices. It is called
+    // only as a fallback by registerAndSavePushToken when Expo token fetch fails
+    // (i.e. China devices with no Google Play Services).
     initialized = true;
     console.log('✅ Aliyun Push initialized');
   } catch (error: any) {
     console.warn('⚠️ Aliyun Push init error:', error?.message ?? error);
+  }
+}
+
+// Called only when Expo push token fetch fails — signals no Google Play Services.
+// Activates Aliyun's third-party channel adapters (Huawei, Xiaomi, etc.) so China
+// devices can still receive pushes through those native channels.
+export async function initAliyunThirdPartyPush(): Promise<void> {
+  if (!IS_ANDROID || !initialized) return;
+  try {
+    const ExpoAliyunPush = (await import('expo-aliyun-push')).default;
+    await ExpoAliyunPush.initThirdPush();
+    console.log('✅ Aliyun third-party push initialized (China fallback)');
+  } catch (error: any) {
+    console.warn('⚠️ Aliyun third-party push init error:', error?.message ?? error);
   }
 }
 
