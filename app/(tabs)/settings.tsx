@@ -76,11 +76,12 @@ export default function SettingsScreen() {
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
     const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
+    const OTA_BUILD = 8;
     const appVersion = Constants.expoConfig?.version || 'Unknown';
     const buildNumber = Constants.nativeBuildVersion;
     const versionLabel = buildNumber
-        ? `Version ${appVersion} (${buildNumber})`
-        : `Version ${appVersion}`;
+        ? `Version ${appVersion} (${buildNumber}) · OTA ${OTA_BUILD}`
+        : `Version ${appVersion} · OTA ${OTA_BUILD}`;
 
     useEffect(() => {
         loadSettings();

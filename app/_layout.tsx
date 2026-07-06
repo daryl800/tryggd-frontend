@@ -23,6 +23,7 @@ import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/
 import { initAliyunPush, bindAliyunAccount, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
+import * as Updates from 'expo-updates';
 import { supabase } from '../lib/supabase';
 
 // Make custom components available globally
@@ -120,8 +121,12 @@ function useNotifications(user: any) {
     const setupPush = async () => {
       try {
         console.log('🚀 Setting up push notifications for user:', user.id);
+        // registerAndSavePushToken handles the Aliyun device ID upsert internally
+        // (before the permission check) so Aliyun users are always recorded.
+        // bindAliyunAccount runs after so the Aliyun SDK binds the account even
+        // when the Expo token fetch times out (China without VPN).
         const success = await registerAndSavePushToken(user.id);
-        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues');
+        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues (Aliyun may still work)');
         await bindAliyunAccount(user.id);
       } catch (error: any) {
         console.error('⚠️ Push setup error:', error.message || error);
@@ -211,6 +216,23 @@ function RootLayoutNav() {
   const languageReady = lastSyncedUserId !== undefined && lastSyncedUserId === (user?.id ?? null);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+
+  // Check and apply OTA updates immediately on startup (no cold-start required)
+  useEffect(() => {
+    if (__DEV__ || IS_EXPO_GO) return;
+    const applyUpdate = async () => {
+      try {
+        const check = await Updates.checkForUpdateAsync();
+        if (check.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (e) {
+        // Not fatal — app continues with current bundle
+      }
+    };
+    void applyUpdate();
+  }, []);
 
   // Initialize services
   useEffect(() => {
