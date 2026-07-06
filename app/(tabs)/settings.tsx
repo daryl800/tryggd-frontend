@@ -83,26 +83,8 @@ export default function SettingsScreen() {
         ? `Version ${appVersion} (${buildNumber}) · OTA ${OTA_BUILD}`
         : `Version ${appVersion} · OTA ${OTA_BUILD}`;
 
-    const [pushDiag, setPushDiag] = useState<string>('checking…');
-
     useEffect(() => {
         loadSettings();
-    }, []);
-
-    useEffect(() => {
-        const checkPush = async () => {
-            try {
-                const Notifications = await import('expo-notifications');
-                const { status } = await Notifications.getPermissionsAsync();
-                const token = await AsyncStorage.getItem('@expo_push_token');
-                const projectId = (Constants as any)?.expoConfig?.extra?.eas?.projectId ?? (Constants as any)?.easConfig?.projectId ?? 'NOT FOUND';
-                const appOwnership = (Constants as any).appOwnership ?? 'null';
-                setPushDiag(`permission:${status} | token:${token ? token.slice(-8) : 'none'} | proj:${projectId ? '✓' : '✗'} | owner:${appOwnership}`);
-            } catch (e: any) {
-                setPushDiag(`error: ${e?.message}`);
-            }
-        };
-        checkPush();
     }, []);
 
     const loadSettings = async () => {
@@ -638,7 +620,6 @@ export default function SettingsScreen() {
 
             <View style={styles.footer}>
                 <Text style={styles.versionText}>{versionLabel}</Text>
-                <Text style={styles.versionText}>{pushDiag}</Text>
             </View>
         </SafeAreaView>
     );
