@@ -120,8 +120,12 @@ function useNotifications(user: any) {
     const setupPush = async () => {
       try {
         console.log('🚀 Setting up push notifications for user:', user.id);
+        // registerAndSavePushToken handles the Aliyun device ID upsert internally
+        // (before the permission check) so Aliyun users are always recorded.
+        // bindAliyunAccount runs after so the Aliyun SDK binds the account even
+        // when the Expo token fetch times out (China without VPN).
         const success = await registerAndSavePushToken(user.id);
-        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues');
+        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues (Aliyun may still work)');
         await bindAliyunAccount(user.id);
       } catch (error: any) {
         console.error('⚠️ Push setup error:', error.message || error);

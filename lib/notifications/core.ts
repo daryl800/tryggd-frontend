@@ -89,12 +89,17 @@ export async function clearCachedWelfareCheck(
 }
 
 /**
- * Register for push notifications and save token + preferences to Supabase
+ * Register for push notifications and save token + preferences to Supabase.
+ *
+ * Registration is split into two DB writes so the Aliyun device ID and
+ * permission status are persisted even when Expo's token fetch times out
+ * (common on Android in mainland China without VPN):
+ *
+ *   Write 1 (early, unconditional): aliyun_device_id + notification_permission_granted
+ *   Write 2 (only if Expo token obtained): expo_push_token + contact_checkin_notifications
  */
-// In lib/notifications/core.ts - update registerAndSavePushToken
 export async function registerAndSavePushToken(userId: string): Promise<boolean> {
     try {
-        // Check if running on a real device
         if (!Device.isDevice) {
             console.log('⏩ Must use physical device for push notifications');
             return false;
@@ -109,31 +114,47 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             return false;
         }
 
-        // Get existing permissions
+        // ── Step 1: Aliyun device ID (Android only, no permissions needed) ────
+        let aliyunDeviceId: string | null = null;
+        if (Platform.OS === 'android') {
+            try {
+                const ExpoAliyunPush = (await import('expo-aliyun-push')).default;
+                const id = await ExpoAliyunPush.getDeviceId();
+                if (id) aliyunDeviceId = id;
+            } catch (e) {
+                console.log('⏩ Aliyun getDeviceId skipped:', e);
+            }
+        }
+
+        // ── Step 2: Check / request OS notification permission ────────────────
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
-
-        // If not granted, request permissions
         if (existingStatus !== 'granted') {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
+        const permissionGranted = finalStatus === 'granted';
 
-        // If still not granted, return false
-        if (finalStatus !== 'granted') {
-            console.log('❌ Push notification permission not granted');
+        // ── Step 3: Early DB write — persists even if Expo token fails ─────────
+        // This ensures Aliyun-only users (China) and permission-denied users are
+        // recorded so we can diagnose missing tokens and guide them later.
+        const earlyPayload: Record<string, unknown> = {
+            user_id: userId,
+            notification_permission_granted: permissionGranted,
+            updated_at: new Date().toISOString(),
+        };
+        if (aliyunDeviceId) earlyPayload.aliyun_device_id = aliyunDeviceId;
+
+        await supabase
+            .from('user_push_tokens')
+            .upsert(earlyPayload, { onConflict: 'user_id' });
+
+        if (!permissionGranted) {
+            console.log('❌ Push notification permission not granted — Aliyun ID saved, stopping here');
             return false;
         }
 
-        // Get the Expo push token
-        const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
-        const token = tokenData.data;
-        console.log('✅ Expo Push Token obtained');
-
-        // ✅ SAVE TO ASYNC STORAGE
-        await AsyncStorage.setItem('@expo_push_token', token);
-
-        // Android-specific channel setup
+        // ── Step 4: Android notification channels ─────────────────────────────
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('default', {
                 name: 'default',
@@ -142,8 +163,6 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
                 lightColor: '#5FA893',
                 lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
             });
-
-            // Add channel for contact check-ins
             await Notifications.setNotificationChannelAsync('contact-checkins', {
                 name: 'Contact Check-ins',
                 importance: Notifications.AndroidImportance.HIGH,
@@ -153,58 +172,49 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             });
         }
 
-        // Get notification preference from AsyncStorage
-        const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
-        const isEnabled = contactCheckInPref !== 'false'; // default to true
-
-        const pushTokenPayload = {
-            expo_push_token: token,
-            contact_checkin_notifications: isEnabled,
-            updated_at: new Date().toISOString(),
-        };
-
-        const { data: updatedRows, error: updateError } = await supabase
-            .from('user_push_tokens')
-            .update(pushTokenPayload)
-            .eq('user_id', userId)
-            .select('id');
-
-        if (updateError) throw updateError;
-
-        if (!updatedRows || updatedRows.length === 0) {
-            const { error: insertError } = await supabase
-                .from('user_push_tokens')
-                .insert({
-                    ...pushTokenPayload,
-                    user_id: userId,
-                });
-
-            if (insertError) {
-                if (insertError.code === '23505') {
-                    const { error: retryUpdateError } = await supabase
-                        .from('user_push_tokens')
-                        .update(pushTokenPayload)
-                        .eq('user_id', userId);
-
-                    if (retryUpdateError) throw retryUpdateError;
-                } else {
-                    throw insertError;
-                }
-            }
+        // ── Step 5: Expo push token — 10 s timeout so China users don't block ──
+        let expoToken: string | null = null;
+        try {
+            const tokenData = await Promise.race([
+                Notifications.getExpoPushTokenAsync({ projectId }),
+                new Promise<never>((_, reject) =>
+                    setTimeout(() => reject(new Error('Expo push token fetch timed out after 10 s')), 10_000)
+                ),
+            ]);
+            expoToken = tokenData.data;
+            await AsyncStorage.setItem('@expo_push_token', expoToken);
+            console.log('✅ Expo Push Token obtained');
+        } catch (e) {
+            console.warn('⚠️ Expo push token unavailable (timeout or no Google Play):', e);
         }
 
-        // Best-effort cleanup for duplicate rows visible to this user. Rows owned
-        // by other accounts are hidden by RLS and should not block this device.
-        await supabase
-            .from('user_push_tokens')
-            .delete()
-            .eq('expo_push_token', token)
-            .neq('user_id', userId);
+        // ── Step 6: Second DB write — add Expo token + notification prefs ──────
+        if (expoToken) {
+            const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
+            const isEnabled = contactCheckInPref !== 'false';
 
-        console.log('✅ Push token and preferences saved to user_push_tokens');
+            await supabase
+                .from('user_push_tokens')
+                .update({
+                    expo_push_token: expoToken,
+                    contact_checkin_notifications: isEnabled,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('user_id', userId);
+
+            // Best-effort cleanup for duplicate token rows (e.g. device re-use).
+            await supabase
+                .from('user_push_tokens')
+                .delete()
+                .eq('expo_push_token', expoToken)
+                .neq('user_id', userId);
+
+            console.log('✅ Push token and preferences saved to user_push_tokens');
+        }
+
         return true;
     } catch (err) {
-        console.error('❌ Error registering for push notifications:', err);
+        console.error('❌ Error in registerAndSavePushToken:', err);
         return false;
     }
 }
