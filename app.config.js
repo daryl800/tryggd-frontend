@@ -115,6 +115,11 @@ export default ({ config }) => ({
         [
             "expo-build-properties",
             {
+                ios: {
+                    extraPods: [
+                        { name: "libavif", version: "~> 0.11.1" },
+                    ],
+                },
                 android: {
                     enableProguardInReleaseBuilds: true,
                     extraMavenRepos: [
