@@ -95,7 +95,7 @@ export async function clearCachedWelfareCheck(
  * permission status are persisted even when Expo's token fetch times out
  * (common on Android in mainland China without VPN):
  *
- *   Write 1 (early, unconditional): aliyun_device_id + notification_permission_granted
+ *   Write 1 (early, unconditional): notification_permission_granted
  *   Write 2 (only if Expo token obtained): expo_push_token + contact_checkin_notifications
  */
 export async function registerAndSavePushToken(userId: string): Promise<boolean> {
@@ -114,19 +114,7 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             return false;
         }
 
-        // ── Step 1: Aliyun device ID (Android only, no permissions needed) ────
-        let aliyunDeviceId: string | null = null;
-        if (Platform.OS === 'android') {
-            try {
-                const ExpoAliyunPush = (await import('expo-aliyun-push')).default;
-                const id = await ExpoAliyunPush.getDeviceId();
-                if (id) aliyunDeviceId = id;
-            } catch (e) {
-                console.log('⏩ Aliyun getDeviceId skipped:', e);
-            }
-        }
-
-        // ── Step 2: Check / request OS notification permission ────────────────
+        // ── Step 1: Check / request OS notification permission ───────────────
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
         if (existingStatus !== 'granted') {
@@ -135,15 +123,15 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         }
         const permissionGranted = finalStatus === 'granted';
 
-        // ── Step 3: Early DB write — persists even if Expo token fails ─────────
-        // This ensures Aliyun-only users (China) and permission-denied users are
-        // recorded so we can diagnose missing tokens and guide them later.
+        // ── Step 2: Early DB write — persists even if Expo token fails ────────
+        // Records permission status so we can diagnose missing tokens and guide
+        // users to enable notifications. Aliyun device ID is saved separately by
+        // bindAliyunAccount (which has the proper initialized guard).
         const earlyPayload: Record<string, unknown> = {
             user_id: userId,
             notification_permission_granted: permissionGranted,
             updated_at: new Date().toISOString(),
         };
-        if (aliyunDeviceId) earlyPayload.aliyun_device_id = aliyunDeviceId;
 
         await supabase
             .from('user_push_tokens')
