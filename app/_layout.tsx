@@ -23,6 +23,7 @@ import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/
 import { initAliyunPush, bindAliyunAccount, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
+import * as Updates from 'expo-updates';
 import { supabase } from '../lib/supabase';
 
 // Make custom components available globally
@@ -215,6 +216,23 @@ function RootLayoutNav() {
   const languageReady = lastSyncedUserId !== undefined && lastSyncedUserId === (user?.id ?? null);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+
+  // Check and apply OTA updates immediately on startup (no cold-start required)
+  useEffect(() => {
+    if (__DEV__ || IS_EXPO_GO) return;
+    const applyUpdate = async () => {
+      try {
+        const check = await Updates.checkForUpdateAsync();
+        if (check.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (e) {
+        // Not fatal — app continues with current bundle
+      }
+    };
+    void applyUpdate();
+  }, []);
 
   // Initialize services
   useEffect(() => {
