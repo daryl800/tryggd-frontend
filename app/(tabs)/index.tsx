@@ -3503,7 +3503,7 @@ const styles = StyleSheet.create({
   },
   textContainerUncheckedPlus: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     paddingTop: 0,
     paddingBottom: 14,
     marginTop: 0,
@@ -3518,7 +3518,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 2,
   },
   textContainerCompactCheckedIn: {
     paddingHorizontal: 18,
