@@ -1778,8 +1778,8 @@ export default function HomeScreen() {
     ? (isTightSimpleHome ? 12 : isCompactSimpleHome ? 14 : 16)
     : 0;
   const circleSize = Math.min(
-    currentScreenWidth * (isTightSimpleHome ? 0.56 : isCompactSimpleHome ? 0.62 : 0.68),
-    (isTightSimpleHome ? 208 : isCompactSimpleHome ? 224 : 250) + uncheckedCircleBoost,
+    currentScreenWidth * (isTightSimpleHome ? 0.58 : isCompactSimpleHome ? 0.64 : 0.70),
+    (isTightSimpleHome ? 212 : isCompactSimpleHome ? 230 : 258) + uncheckedCircleBoost,
   ) - fitTightenOffset + uncheckedCircleBoost;
   const strokeWidth = Math.max(28, (isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH) - (overflowAmount > 72 ? 4 : overflowAmount > 0 ? 2 : 0));
   const maxStroke = strokeWidth + 3;
@@ -1836,9 +1836,9 @@ export default function HomeScreen() {
     isChineseUncheckedTypography ? 20 : 18,
   );
   const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * (isChineseUncheckedTypography ? 1.1 : 1.16));
-  const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.122), 15, 22);
+  const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.105), 13, 19);
   const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
-  const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.086), 11, 16);
+  const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.075), 10, 13);
   const uncheckedMetaLineHeight = Math.round(uncheckedMetaFontSize * 1.16);
   const uncheckedIconSize = clampNumber(Math.round(innerButtonSize * 0.26), 34, 60);
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
