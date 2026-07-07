@@ -65,7 +65,7 @@ const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
-const SCROLL_OVERFLOW_TOLERANCE = Platform.OS === 'android' ? 40 : 8;
+const SCROLL_OVERFLOW_TOLERANCE = 40;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
 type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'resting' | 'goodmorning' | 'goodafternoon' | 'goodnight';
 type ReachOutStatus = 'call_now' | 'call_available';
@@ -2209,6 +2209,7 @@ export default function HomeScreen() {
                     <View style={[
                       styles.iconContainer,
                       !checkedInToday && styles.iconContainerUnchecked,
+                      !checkedInToday && { marginTop: Math.round(innerButtonSize * 0.09) },
                       checkedInToday && isLongCheckedInText && styles.iconContainerCompactCheckedIn,
                     ]}>
                       {checkedInToday ? (
@@ -2302,7 +2303,7 @@ export default function HomeScreen() {
                         )
                       ) : (
                         <>
-                          <View style={styles.uncheckedCtaGroup}>
+                          <View style={[styles.uncheckedCtaGroup, { minHeight: uncheckedCtaLineHeight * 2 }]}>
                             <Text
                               style={[
                                 styles.ctaText,
@@ -2318,6 +2319,7 @@ export default function HomeScreen() {
                               {isReachOutMode ? t('home.reachOut.pressToSendHelp' as any) : t('home.pressMeToCheckIn')}
                             </Text>
                           </View>
+                          <View style={{ flex: 1 }} />
                           {!isReachOutMode && (
                             <View style={styles.uncheckedMetaGroup}>
                               <Text
@@ -3503,7 +3505,7 @@ const styles = StyleSheet.create({
   },
   textContainerUncheckedPlus: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     paddingTop: 0,
     paddingBottom: 14,
     marginTop: 0,
