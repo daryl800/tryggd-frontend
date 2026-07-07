@@ -1831,9 +1831,9 @@ export default function HomeScreen() {
   const checkedHeartOutlineSize = checkedHeartSize + (capabilities.canUseWellnessSlider ? 8 : 0);
   const isChineseUncheckedTypography = !!chineseFontFamily;
   const uncheckedCtaFontSize = clampNumber(
-    Math.round(innerButtonSize * (isChineseUncheckedTypography ? 0.118 : 0.108)),
-    isChineseUncheckedTypography ? 15 : 13,
-    isChineseUncheckedTypography ? 20 : 18,
+    Math.round(innerButtonSize * (isChineseUncheckedTypography ? 0.130 : 0.108)),
+    isChineseUncheckedTypography ? 17 : 13,
+    isChineseUncheckedTypography ? 24 : 18,
   );
   const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * (isChineseUncheckedTypography ? 1.1 : 1.16));
   const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.105), 13, 19);
