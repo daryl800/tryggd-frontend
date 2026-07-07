@@ -205,13 +205,6 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
                 console.error('❌ Failed to save push token to DB:', upsertError.message);
             }
 
-            // Best-effort cleanup for duplicate token rows (e.g. device re-use).
-            await supabase
-                .from('user_push_tokens')
-                .delete()
-                .eq('expo_push_token', expoToken)
-                .neq('user_id', userId);
-
             console.log('✅ Push token and preferences saved to user_push_tokens');
         }
 

@@ -76,7 +76,7 @@ export default function SettingsScreen() {
     const [checkInReminderEnabled, setCheckInReminderEnabled] = useState(true);
     const [contactCheckInEnabled, setContactCheckInEnabled] = useState(true);
     const [homeStyle, setHomeStyle] = useState<HomeStyle>(DEFAULT_HOME_STYLE);
-    const OTA_BUILD = 9;
+    const OTA_BUILD = 11;
     const appVersion = Constants.expoConfig?.version || 'Unknown';
     const buildNumber = Constants.nativeBuildVersion;
     const versionLabel = buildNumber

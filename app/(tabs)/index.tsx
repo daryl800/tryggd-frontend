@@ -1840,6 +1840,7 @@ export default function HomeScreen() {
   const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
   const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.086), 11, 16);
   const uncheckedMetaLineHeight = Math.round(uncheckedMetaFontSize * 1.16);
+  const uncheckedIconSize = clampNumber(Math.round(innerButtonSize * 0.26), 34, 60);
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const formatHomeStatusAgo = (createdAt?: string | null) => {
     if (!createdAt) return '';
@@ -2227,7 +2228,7 @@ export default function HomeScreen() {
                           />
                         </View>
                       ) : (
-                        <Ionicons name="heart" size={ICON_SIZES.SUPER_HUGE} color={heartColor} />
+                        <Ionicons name="heart" size={uncheckedIconSize} color={heartColor} />
                       )}
                     </View>
 
@@ -3456,6 +3457,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     margin: 0,
     padding: 0,
+    overflow: 'hidden',
   },
   innerButtonUnchecked: {
     backgroundColor: BaseColors.primaryLight,
@@ -3472,8 +3474,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   iconContainerUnchecked: {
-    marginTop: 18,
-    marginBottom: 8,
+    marginTop: 8,
+    marginBottom: 2,
+    minHeight: 0,
   },
   iconContainerCompactCheckedIn: {
     minHeight: 44,
@@ -3515,7 +3518,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 6,
+    marginTop: 2,
   },
   textContainerCompactCheckedIn: {
     paddingHorizontal: 18,
