@@ -2,7 +2,6 @@
 import HeaderWithBack from '@/components/common/HeaderWithBack';
 import { BaseColors } from '@/constants/colors';
 import { clearPushTokens } from '@/lib/notifications/core';
-import { unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -382,7 +381,6 @@ export default function ProfileScreen() {
 
                         if (user) {
                             await clearPushTokens(user.id);
-                            await unbindAliyunAccount();
                         }
 
                         await clearLocalSessionState();

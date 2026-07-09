@@ -174,15 +174,6 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             console.log('✅ Expo Push Token obtained');
         } catch (e) {
             console.warn('⚠️ Expo push token unavailable (timeout or no Google Play):', e);
-            // Expo failed → likely a China device without Google Play Services.
-            // Activate Aliyun's third-party channel adapters (Huawei, Xiaomi, etc.)
-            // as a fallback so those devices can still receive pushes via Aliyun.
-            // This must NOT run on regular Android (Google Play) devices because it
-            // hijacks FCM registration — that is why it lives here, not in initAliyunPush.
-            if (Platform.OS === 'android') {
-                const { initAliyunThirdPartyPush } = await import('./aliyunPush');
-                await initAliyunThirdPartyPush();
-            }
         }
 
         // ── Step 6: Second DB write — add Expo token + notification prefs ──────

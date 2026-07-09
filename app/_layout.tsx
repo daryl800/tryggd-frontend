@@ -20,7 +20,6 @@ import { tokenManager } from '@/lib/auth/tokenManager';
 import { authRedirectPath, createSessionFromUrl } from '@/lib/auth/oauth';
 import { hasCompletedOnboarding } from '@/lib/onboarding/state';
 import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/core';
-import { initAliyunPush, bindAliyunAccount, unbindAliyunAccount } from '@/lib/notifications/aliyunPush';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
 import * as Updates from 'expo-updates';
@@ -82,7 +81,6 @@ function useNavigationPersistence(navigationRef: any) {
 function useNotifications(user: any) {
   useEffect(() => {
     void initWelfareCache();
-    void initAliyunPush();
 
     // Setup notification handler
     let subscription: any;
@@ -121,13 +119,8 @@ function useNotifications(user: any) {
     const setupPush = async () => {
       try {
         console.log('🚀 Setting up push notifications for user:', user.id);
-        // registerAndSavePushToken handles the Aliyun device ID upsert internally
-        // (before the permission check) so Aliyun users are always recorded.
-        // bindAliyunAccount runs after so the Aliyun SDK binds the account even
-        // when the Expo token fetch times out (China without VPN).
         const success = await registerAndSavePushToken(user.id);
-        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues (Aliyun may still work)');
-        await bindAliyunAccount(user.id);
+        console.log(success ? '✅ Push setup complete' : '⚠️ Push setup had issues');
       } catch (error: any) {
         console.error('⚠️ Push setup error:', error.message || error);
       }
