@@ -258,6 +258,17 @@ const ContactCard = memo(
                                     </Text>
                                 ) : null}
                             </View>
+                            <TouchableOpacity
+                                onPress={onRemove}
+                                style={styles.removeButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons
+                                    name="trash-outline"
+                                    size={21}
+                                    color={BaseColors.error}
+                                />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.existingContactInfo}>
                             <View style={styles.existingContactMainRow}>
@@ -388,12 +399,9 @@ const ContactCard = memo(
                                                 styles.headerActionButton,
                                                 watchOverLimitReached && !contact.watch_over_enabled
                                                     ? styles.premiumLockedButton
-                                                    : contact.watch_over_enabled === true &&
-                                                        styles.watchOverToggleEnabled,
-                                                canUseWatchOver &&
-                                                    contact.watch_over_enabled !== true &&
-                                                    !watchOverLimitReached &&
-                                                    styles.watchOverToggleDisabled,
+                                                    : contact.watch_over_enabled === true
+                                                        ? styles.watchOverToggleEnabled
+                                                        : styles.watchOverToggleDisabled,
                                             ]}
                                             onPress={() =>
                                                 watchOverLimitReached && !contact.watch_over_enabled
@@ -411,11 +419,16 @@ const ContactCard = memo(
                                                 }
                                                 size={22}
                                                 color={
-                                                    contact.watch_over_enabled === true
+                                                    watchOverLimitReached && !contact.watch_over_enabled
+                                                        ? BaseColors.neutral[400]
+                                                        : contact.watch_over_enabled === true
                                                         ? BaseColors.primaryDark
-                                                        : BaseColors.neutral[400]
+                                                        : BaseColors.error
                                                 }
                                             />
+                                            {!watchOverLimitReached && contact.watch_over_enabled !== true && (
+                                                <View style={styles.watchOverToggleSlash} />
+                                            )}
                                             {watchOverLimitReached && !contact.watch_over_enabled && (
                                                 <View style={styles.premiumLockBadge}>
                                                     <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
@@ -432,17 +445,6 @@ const ContactCard = memo(
                                             name="key-outline"
                                             size={22}
                                             color={BaseColors.primary}
-                                        />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        onPress={onRemove}
-                                        style={styles.removeButton}
-                                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                                    >
-                                        <Ionicons
-                                            name="trash-outline"
-                                            size={21}
-                                            color={BaseColors.error}
                                         />
                                     </TouchableOpacity>
                                 </View>
@@ -2950,12 +2952,16 @@ const styles = StyleSheet.create({
         padding: 14,
     },
     existingContactHeading: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 14,
     },
     existingContactTitleRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '100%',
+        flex: 1,
+        marginRight: 8,
     },
     existingContactMainRow: {
         flexDirection: 'row',
@@ -3171,8 +3177,8 @@ const styles = StyleSheet.create({
     cardHeaderActions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        marginLeft: 'auto',
+        gap: 8,
+        justifyContent: 'flex-end',
     },
     headerActionButton: {
         width: 40,
@@ -3238,9 +3244,17 @@ const styles = StyleSheet.create({
         borderColor: BaseColors.primaryBorder,
     },
     watchOverToggleDisabled: {
-        backgroundColor: BaseColors.neutral[50],
+        backgroundColor: BaseColors.errorLight,
         borderWidth: 1,
-        borderColor: BaseColors.neutral[200],
+        borderColor: BaseColors.errorBorder,
+    },
+    watchOverToggleSlash: {
+        position: 'absolute',
+        width: 22,
+        height: 1.75,
+        backgroundColor: BaseColors.error,
+        transform: [{ rotate: '45deg' }],
+        borderRadius: 1,
     },
     initialLoadingContainer: {
         flex: 1,
