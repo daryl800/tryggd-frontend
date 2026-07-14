@@ -191,6 +191,26 @@ async function sendExpoPush(
 }
 
 // ──────────────────────────────────────────────
+// Timezone helpers
+// ──────────────────────────────────────────────
+
+// Target local hour to send watch over notifications (9am watcher's local time)
+const NOTIFY_LOCAL_HOUR = 9
+
+function getLocalHour(timezone: string | null): number {
+  try {
+    const tz = timezone || 'UTC'
+    const formatter = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hour12: false })
+    const parts = formatter.formatToParts(new Date())
+    const hourPart = parts.find(p => p.type === 'hour')
+    return parseInt(hourPart?.value ?? '0', 10)
+  } catch {
+    // Fall back to UTC hour if timezone is invalid
+    return new Date().getUTCHours()
+  }
+}
+
+// ──────────────────────────────────────────────
 // Main handler
 // ──────────────────────────────────────────────
 serve(async () => {
@@ -221,31 +241,62 @@ serve(async () => {
   const watchedIds  = [...new Set(pairs.map(p => p.contact_user_id))]
   const watcherIds  = [...new Set(pairs.map(p => p.owner_user_id))]
 
-  // ── 2. Load profiles (display names + away status) ──
+  // ── 2. Load watcher timezones and filter to those in the notify window ──
+  const { data: watcherSettings } = await supabase
+    .from('user_settings')
+    .select('user_id, timezone, language')
+    .in('user_id', watcherIds) as { data: { user_id: string; timezone: string | null; language: string | null }[] | null; error: unknown }
+
+  const settingsMap = new Map<string, { timezone: string | null; language: string | null }>()
+  for (const s of watcherSettings ?? []) settingsMap.set(s.user_id, { timezone: s.timezone, language: s.language })
+
+  // Only send to watchers whose local hour is the target notify hour
+  const eligibleWatcherIds = new Set(
+    watcherIds.filter(id => {
+      const tz = settingsMap.get(id)?.timezone ?? null
+      const localHour = getLocalHour(tz)
+      const eligible = localHour === NOTIFY_LOCAL_HOUR
+      if (!eligible) console.log(`⏭ Watcher ${id.slice(0, 8)} local hour=${localHour} — skipping`)
+      return eligible
+    })
+  )
+
+  if (eligibleWatcherIds.size === 0) {
+    console.log(`No watchers in the notify window (local hour ${NOTIFY_LOCAL_HOUR}) — done`)
+    return new Response(JSON.stringify({ sent: 0, reason: 'no_watchers_in_window' }), { status: 200 })
+  }
+
+  console.log(`✅ ${eligibleWatcherIds.size} watcher(s) in notify window`)
+
+  // Filter pairs to only eligible watchers
+  const eligiblePairs = pairs.filter(p => eligibleWatcherIds.has(p.owner_user_id))
+  const eligibleWatchedIds = [...new Set(eligiblePairs.map(p => p.contact_user_id))]
+
+  // ── 3. Load profiles (display names + away status) ──
   const { data: profiles } = await supabase
     .from('profiles')
     .select('id, display_name, away_until')
-    .in('id', [...watchedIds, ...watcherIds]) as { data: ProfileRow[] | null; error: unknown }
+    .in('id', [...eligibleWatchedIds, ...watcherIds]) as { data: ProfileRow[] | null; error: unknown }
 
   const profileMap = new Map<string, ProfileRow>()
   for (const p of profiles ?? []) profileMap.set(p.id, p)
 
-  // ── 3. Load latest check-in timestamps ──────
+  // ── 4. Load latest check-in timestamps ──────
   const { data: checkins } = await supabase
     .from('users_latest_checkin')
     .select('user_id, last_checked_in_utc')
-    .in('user_id', watchedIds) as { data: LatestCheckin[] | null; error: unknown }
+    .in('user_id', eligibleWatchedIds) as { data: LatestCheckin[] | null; error: unknown }
 
   const checkinMap = new Map<string, string | null>()
   for (const c of checkins ?? []) checkinMap.set(c.user_id, c.last_checked_in_utc)
 
-  // ── 4. Classify each watched user ──────────
+  // ── 5. Classify each watched user ──────────
   // absent:  last_checked_in_utc > ABSENCE_THRESHOLD_MS ago (or never)
   // present: checked in within 24h
   const absent:  string[] = []
   const present: string[] = []
 
-  for (const watchedId of watchedIds) {
+  for (const watchedId of eligibleWatchedIds) {
     const profile = profileMap.get(watchedId)
 
     // Skip users who are away
@@ -265,7 +316,7 @@ serve(async () => {
     }
   }
 
-  // ── 5. End episodes for users who checked in ──
+  // ── 6. End episodes for users who checked in ──
   if (present.length > 0) {
     const { error: endErr } = await supabase
       .from('watch_over_episodes')
@@ -325,23 +376,18 @@ serve(async () => {
     notifMap.get(row.episode_id)!.set(row.watcher_user_id, row)
   }
 
-  // ── 8. Load push tokens for watchers ────────
+  // ── 8. Load push tokens for eligible watchers ──
   const { data: pushTokens } = await supabase
     .from('user_push_tokens')
     .select('user_id, expo_push_token')
-    .in('user_id', watcherIds) as { data: PushToken[] | null; error: unknown }
+    .in('user_id', [...eligibleWatcherIds]) as { data: PushToken[] | null; error: unknown }
 
   const tokenMap = new Map<string, string>()
   for (const t of pushTokens ?? []) {
     if (t.expo_push_token) tokenMap.set(t.user_id, t.expo_push_token)
   }
 
-  // ── 9. Load watcher language preferences ────
-  const { data: watcherSettings } = await supabase
-    .from('user_settings')
-    .select('user_id, language')
-    .in('user_id', watcherIds) as { data: { user_id: string; language: string | null }[] | null; error: unknown }
-
+  // ── 9. Build language map from already-loaded settings ──
   const langMap = new Map<string, string>()
   for (const s of watcherSettings ?? []) {
     if (s.language) langMap.set(s.user_id, s.language)
@@ -366,8 +412,8 @@ serve(async () => {
     const absenceMs = now - new Date(episode.absence_start_at).getTime()
     const watchedName = profileMap.get(watchedId)?.display_name ?? 'Someone'
 
-    // Find all watchers of this person
-    const watchers = pairs
+    // Find eligible watchers of this person
+    const watchers = eligiblePairs
       .filter(p => p.contact_user_id === watchedId)
       .map(p => p.owner_user_id)
 
