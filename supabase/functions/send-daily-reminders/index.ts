@@ -42,7 +42,7 @@ serve(async (req) => {
 
     // Load ALL enabled reminders with timezone — filter by local time in JS
     const { data: reminders, error } = await supabase
-      .from('user_reminder_times')
+      .from('user_reminder_time')
       .select(`
         user_id,
         reminder_time,

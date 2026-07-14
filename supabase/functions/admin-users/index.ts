@@ -269,7 +269,7 @@ async function deleteUser(
     supabase.from('notifications').delete().or(`user_id.eq.${userId},sender_user_id.eq.${userId}`),
     supabase.from('notification_rate_limits').delete().eq('sender_user_id', userId),
     supabase.from('user_push_tokens').delete().eq('user_id', userId),
-    supabase.from('user_reminder_times').delete().eq('user_id', userId),
+    supabase.from('user_reminder_time').delete().eq('user_id', userId),
     supabase.from('user_settings').delete().eq('user_id', userId),
     supabase.from('user_entitlements').delete().eq('user_id', userId),
     supabase.from('checkins').delete().eq('user_id', userId),
