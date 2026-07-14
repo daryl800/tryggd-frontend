@@ -384,7 +384,9 @@
             "checkinsEnabled": "{{name}} จะได้รับการเช็กอินของคุณ",
             "checkinsDisabled": "{{name}} จะไม่ได้รับการเช็กอินของคุณ",
             "locationEnabled": "{{name}} จะเห็นตำแหน่งของคุณในกิจกรรม",
-            "locationDisabled": "{{name}} จะไม่เห็นตำแหน่งของคุณในกิจกรรม"
+            "locationDisabled": "{{name}} จะไม่เห็นตำแหน่งของคุณในกิจกรรม",
+            "watchOverEnabled": "คุณจะได้รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
+            "watchOverDisabled": "ปิดการดูแล {{name}} แล้ว"
         },
         "invite": {
             "ready": "คำเชิญพร้อมแล้ว",

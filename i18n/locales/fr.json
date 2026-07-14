@@ -379,7 +379,9 @@
             "checkinsEnabled": "{{name}} will receive your check-ins",
             "checkinsDisabled": "{{name}} will not receive your check-ins",
             "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity"
+            "locationDisabled": "{{name}} will not see your location in Activity",
+            "watchOverEnabled": "Vous serez notifié si {{name}} ne pointe pas pendant un jour",
+            "watchOverDisabled": "Surveillance de {{name}} désactivée"
         },
         "invite": {
             "ready": "Invitation prête",

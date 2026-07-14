@@ -437,7 +437,9 @@
             "checkinsEnabled": "{{name}} 会收到您的打卡",
             "checkinsDisabled": "{{name}} 不会收到您的打卡",
             "locationEnabled": "{{name}} 会在活动中看到您的位置",
-            "locationDisabled": "{{name}} 不会在活动中看到您的位置"
+            "locationDisabled": "{{name}} 不会在活动中看到您的位置",
+            "watchOverEnabled": "若 {{name}} 超过一天未打卡，您将收到通知",
+            "watchOverDisabled": "已关闭对 {{name}} 的关注"
         },
         "invite": {
             "ready": "邀请链接已准备好",

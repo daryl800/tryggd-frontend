@@ -380,7 +380,9 @@
             "checkinsEnabled": "{{name}} will receive your check-ins",
             "checkinsDisabled": "{{name}} will not receive your check-ins",
             "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity"
+            "locationDisabled": "{{name}} will not see your location in Activity",
+            "watchOverEnabled": "Du varsles hvis {{name}} ikke sjekker inn på en dag",
+            "watchOverDisabled": "Overvåking av {{name}} deaktivert"
         },
         "invite": {
             "ready": "Invitasjonen er klar",

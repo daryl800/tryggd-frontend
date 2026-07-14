@@ -380,7 +380,9 @@
             "checkinsEnabled": "{{name}} will receive your check-ins",
             "checkinsDisabled": "{{name}} will not receive your check-ins",
             "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity"
+            "locationDisabled": "{{name}} will not see your location in Activity",
+            "watchOverEnabled": "Saat ilmoituksen, jos {{name}} ei kirjaudu päivään",
+            "watchOverDisabled": "Seuranta poistettu käytöstä: {{name}}"
         },
         "invite": {
             "ready": "Kutsu on valmis",

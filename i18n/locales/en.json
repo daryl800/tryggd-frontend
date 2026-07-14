@@ -425,7 +425,9 @@
       "checkinsEnabled": "{{name}} will receive your check-ins",
       "checkinsDisabled": "{{name}} will not receive your check-ins",
       "locationEnabled": "{{name}} will see your location in Activity",
-      "locationDisabled": "{{name}} will not see your location in Activity"
+      "locationDisabled": "{{name}} will not see your location in Activity",
+      "watchOverEnabled": "You'll be notified if {{name}} hasn't checked in for a day",
+      "watchOverDisabled": "Watch over disabled for {{name}}"
     },
     "invite": {
       "ready": "Invite ready",

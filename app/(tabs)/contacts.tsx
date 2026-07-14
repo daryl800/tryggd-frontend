@@ -1580,6 +1580,16 @@ export default function ContactsScreen() {
                 )
             );
 
+            Alert.alert(
+                updatedContact.watch_over_enabled === true
+                    ? t('contacts.status.watchOverEnabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
+                    : t('contacts.status.watchOverDisabled', {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      })
+            );
+
             await fetchAllData();
         },
         [existingContacts, fetchAllData, t, user?.id]

@@ -379,7 +379,9 @@
             "checkinsEnabled": "{{name}} will receive your check-ins",
             "checkinsDisabled": "{{name}} will not receive your check-ins",
             "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity"
+            "locationDisabled": "{{name}} will not see your location in Activity",
+            "watchOverEnabled": "{{name}}が1日チェックインしていない場合に通知します",
+            "watchOverDisabled": "{{name}}の見守りを無効にしました"
         },
         "invite": {
             "ready": "招待の準備ができました",

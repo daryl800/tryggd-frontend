@@ -379,7 +379,9 @@
             "checkinsEnabled": "{{name}} will receive your check-ins",
             "checkinsDisabled": "{{name}} will not receive your check-ins",
             "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity"
+            "locationDisabled": "{{name}} will not see your location in Activity",
+            "watchOverEnabled": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다",
+            "watchOverDisabled": "{{name}} 지켜보기 비활성화됨"
         },
         "invite": {
             "ready": "초대가 준비되었습니다",
