@@ -22,8 +22,12 @@ import { hasCompletedOnboarding } from '@/lib/onboarding/state';
 import { initWelfareCache, registerAndSavePushToken } from '@/lib/notifications/core';
 import { setupNotificationHandler } from '@/lib/notifications/handlers';
 import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
 import * as Updates from 'expo-updates';
 import { supabase } from '../lib/supabase';
+
+// Keep splash screen visible until OTA check + app init complete
+SplashScreen.preventAutoHideAsync();
 
 // Make custom components available globally
 (global as any).Text = CustomText;
@@ -202,6 +206,7 @@ function RootLayoutNav() {
   const router = useRouter();
   const segments = useSegments();
   const navigationRef = useNavigationContainerRef();
+  const [otaReady, setOtaReady] = useState(false);
   // undefined = never synced; null = synced for logged-out state; string = synced for that user id
   const [lastSyncedUserId, setLastSyncedUserId] = useState<string | null | undefined>(undefined);
   // Derived: true only when the last completed sync matches the current auth state,
@@ -210,19 +215,25 @@ function RootLayoutNav() {
   const [onboardingReady, setOnboardingReady] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
-  // Check and apply OTA updates immediately on startup (no cold-start required)
+  // Check and apply OTA updates before hiding the splash screen.
+  // If a reload fires, it happens while the splash is still visible — no flicker.
   useEffect(() => {
-    if (__DEV__ || IS_EXPO_GO) return;
+    if (__DEV__ || IS_EXPO_GO) {
+      setOtaReady(true);
+      return;
+    }
     const applyUpdate = async () => {
       try {
         const check = await Updates.checkForUpdateAsync();
         if (check.isAvailable) {
           await Updates.fetchUpdateAsync();
           await Updates.reloadAsync();
+          return; // reloadAsync() restarts — never reaches here
         }
       } catch (e) {
         // Not fatal — app continues with current bundle
       }
+      setOtaReady(true);
     };
     void applyUpdate();
   }, []);
@@ -345,6 +356,15 @@ function RootLayoutNav() {
   const isOnboardingRoute = segments[0] === 'onboarding';
   const needsOnboardingRedirect = Boolean(user) && !hasSeenOnboarding && !isOnboardingRoute;
 
+  const allGatesPassed = otaReady && initialized && isNavReady && languageReady && onboardingReady;
+
+  // Hide splash screen once all gates pass — OTA check must complete first
+  // so any reload happens while the splash is still covering the screen.
+  useEffect(() => {
+    if (!allGatesPassed) return;
+    SplashScreen.hideAsync();
+  }, [allGatesPassed]);
+
   // Navigate imperatively so the spinner stays visible until segments update to
   // 'onboarding' — avoids the one-frame blank flash that <Redirect> causes by
   // rendering null before router.replace fires.
@@ -353,7 +373,7 @@ function RootLayoutNav() {
     if (needsOnboardingRedirect) router.replace('/onboarding');
   }, [initialized, isNavReady, languageReady, onboardingReady, needsOnboardingRedirect, router]);
 
-  if (!initialized || !isNavReady || !languageReady || !onboardingReady || needsOnboardingRedirect) {
+  if (!allGatesPassed || needsOnboardingRedirect) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
