@@ -5,6 +5,7 @@ import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import { ICON_SIZES } from '@/constants/ui';
 import { sendContactRequestNotification, sendEmergencyMessageNotification } from '@/lib/notifications';
 import { useContactStore } from '@/stores/contactStore';
+import { WATCH_OVER_LIMIT_ENFORCED } from '@/lib/entitlements/capabilities';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -46,8 +47,10 @@ type ContactSlot = {
     id?: string;
     checkin_notifications_enabled?: boolean;
     location_sharing_enabled?: boolean;
+    watch_over_enabled?: boolean;
     toggling_notifications?: boolean;
     toggling_location?: boolean;
+    toggling_watch_over?: boolean;
 };
 
 type ContactRequest = {
@@ -125,6 +128,7 @@ const ContactCard = memo(
         onRemove,
         onToggleCheckinNotifications,
         onToggleLocationSharing,
+        onToggleWatchOver,
         onCreateRecoveryInvite,
         onSendEmergencyMessage,
         showCheckinNotificationControl,
@@ -132,8 +136,11 @@ const ContactCard = memo(
         canEditCheckinNotificationControl,
         canEditLocationSharingControl,
         canSendEmergencyMessage,
+        canUseWatchOver,
+        watchOverLimitReached,
         onLockedCheckinNotificationPress,
         onLockedLocationSharingPress,
+        onWatchOverLimitPress,
         inputRef,
         isNewContact,
     }: {
@@ -146,6 +153,7 @@ const ContactCard = memo(
         onRemove: () => void;
         onToggleCheckinNotifications?: (value: boolean) => void;
         onToggleLocationSharing?: (value: boolean) => void;
+        onToggleWatchOver?: (value: boolean) => void;
         onCreateRecoveryInvite?: () => void;
         onSendEmergencyMessage?: () => void;
         showCheckinNotificationControl: boolean;
@@ -153,8 +161,11 @@ const ContactCard = memo(
         canEditCheckinNotificationControl?: boolean;
         canEditLocationSharingControl?: boolean;
         canSendEmergencyMessage?: boolean;
+        canUseWatchOver?: boolean;
+        watchOverLimitReached?: boolean;
         onLockedCheckinNotificationPress?: () => void;
         onLockedLocationSharingPress?: () => void;
+        onWatchOverLimitPress?: () => void;
         inputRef: (ref: TextInput | null) => void;
         isNewContact: boolean;
     }) => {
@@ -365,6 +376,47 @@ const ContactCard = memo(
                                                 <View style={styles.locationToggleSlash} />
                                             )}
                                             {!canEditLocationSharingControl && (
+                                                <View style={styles.premiumLockBadge}>
+                                                    <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
+                                                </View>
+                                            )}
+                                        </TouchableOpacity>
+                                    )}
+                                    {!isNewContact && (
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.headerActionButton,
+                                                watchOverLimitReached && !contact.watch_over_enabled
+                                                    ? styles.premiumLockedButton
+                                                    : contact.watch_over_enabled === true &&
+                                                        styles.watchOverToggleEnabled,
+                                                canUseWatchOver &&
+                                                    contact.watch_over_enabled !== true &&
+                                                    !watchOverLimitReached &&
+                                                    styles.watchOverToggleDisabled,
+                                            ]}
+                                            onPress={() =>
+                                                watchOverLimitReached && !contact.watch_over_enabled
+                                                    ? onWatchOverLimitPress?.()
+                                                    : onToggleWatchOver?.(!(contact.watch_over_enabled === true))
+                                            }
+                                            disabled={contact.toggling_watch_over}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Ionicons
+                                                name={
+                                                    contact.watch_over_enabled === true
+                                                        ? 'eye'
+                                                        : 'eye-outline'
+                                                }
+                                                size={22}
+                                                color={
+                                                    contact.watch_over_enabled === true
+                                                        ? BaseColors.primaryDark
+                                                        : BaseColors.neutral[400]
+                                                }
+                                            />
+                                            {watchOverLimitReached && !contact.watch_over_enabled && (
                                                 <View style={styles.premiumLockBadge}>
                                                     <Ionicons name="lock-closed" size={10} color={BaseColors.primaryDark} />
                                                 </View>
@@ -620,7 +672,7 @@ export default function ContactsScreen() {
             const [contactsResult, incomingResult, outgoingResult] = await Promise.all([
                 supabase
                     .from('contacts')
-                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled, location_sharing_enabled')
+                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled, location_sharing_enabled, watch_over_enabled')
                     .eq('owner_user_id', user.id)
                     .order('created_at'),
 
@@ -696,6 +748,8 @@ export default function ContactsScreen() {
                             row.checkin_notifications_enabled !== false,
                         location_sharing_enabled:
                             row.location_sharing_enabled === true,
+                        watch_over_enabled:
+                            row.watch_over_enabled === true,
                     })) || [];
 
                 setExistingContacts(contacts);
@@ -1470,6 +1524,67 @@ export default function ContactsScreen() {
         [existingContacts, fetchAllData, t]
     );
 
+    const toggleContactWatchOver = useCallback(
+        async (index: number, enabled: boolean) => {
+            const contact = existingContacts[index];
+            if (!contact?.id) return;
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? { ...item, watch_over_enabled: enabled, toggling_watch_over: true }
+                        : item
+                )
+            );
+
+            const { data, error } = await supabase
+                .from('contacts')
+                .update({ watch_over_enabled: enabled })
+                .eq('id', contact.id)
+                .select('id, watch_over_enabled')
+                .maybeSingle();
+
+            let updatedContact = data;
+            let updateError = error;
+
+            if (!updatedContact && !updateError && contact.user_id && user?.id) {
+                const retryResult = await supabase
+                    .from('contacts')
+                    .update({ watch_over_enabled: enabled })
+                    .eq('owner_user_id', user.id)
+                    .eq('contact_user_id', contact.user_id)
+                    .select('id, watch_over_enabled')
+                    .maybeSingle();
+                updatedContact = retryResult.data;
+                updateError = retryResult.error;
+            }
+
+            if (updateError || !updatedContact) {
+                console.error('Toggle watch over error:', updateError);
+                setExistingContacts((prev) =>
+                    prev.map((item, itemIndex) =>
+                        itemIndex === index
+                            ? { ...item, watch_over_enabled: contact.watch_over_enabled === true, toggling_watch_over: false }
+                            : item
+                    )
+                );
+                Alert.alert(t('errors.title'), updateError?.message || t('contacts.errors.noContactUpdated'));
+                return;
+            }
+
+            setExistingContacts((prev) =>
+                prev.map((item, itemIndex) =>
+                    itemIndex === index
+                        ? { ...item, watch_over_enabled: updatedContact.watch_over_enabled === true, toggling_watch_over: false }
+                        : item
+                )
+            );
+
+            await fetchAllData();
+        },
+        [existingContacts, fetchAllData, t, user?.id]
+    );
+
     const showPlusFeatureAlert = useCallback(() => {
         router.push('/plus');
     }, [router]);
@@ -1481,6 +1596,18 @@ export default function ContactsScreen() {
     const handleLockedLocationSharingPress = useCallback(() => {
         showPlusFeatureAlert();
     }, [showPlusFeatureAlert]);
+
+    const handleWatchOverLimitPress = useCallback(() => {
+        const { maxWatchOver } = capabilities;
+        Alert.alert(
+            t('watchOver.toggle'),
+            t('watchOver.limitReached', { max: maxWatchOver }),
+            [
+                { text: t('common.cancel'), style: 'cancel' },
+                { text: 'Plus', onPress: () => router.push('/plus') },
+            ]
+        );
+    }, [capabilities, router, t]);
 
     const handleOpenEmergencyMessage = useCallback((contact: ContactSlot) => {
         setEmergencyMessageTarget(contact);
@@ -2191,6 +2318,9 @@ export default function ContactsScreen() {
                                             onToggleLocationSharing={(value) =>
                                                 toggleContactLocationSharing(index, value)
                                             }
+                                            onToggleWatchOver={(value) =>
+                                                toggleContactWatchOver(index, value)
+                                            }
                                             onCreateRecoveryInvite={() => handleCreateRecoveryInvite(contact)}
                                             onSendEmergencyMessage={() => handleOpenEmergencyMessage(contact)}
                                             showCheckinNotificationControl={
@@ -2208,12 +2338,19 @@ export default function ContactsScreen() {
                                             canSendEmergencyMessage={
                                                 capabilities.canSendEmergencyMessage
                                             }
+                                            canUseWatchOver={capabilities.canUseWatchOver}
+                                            watchOverLimitReached={
+                                                WATCH_OVER_LIMIT_ENFORCED &&
+                                                !capabilities.isPlus &&
+                                                existingContacts.filter(c => c.watch_over_enabled && c.id !== contact.id).length >= capabilities.maxWatchOver
+                                            }
                                             onLockedCheckinNotificationPress={
                                                 handleLockedCheckinNotificationPress
                                             }
                                             onLockedLocationSharingPress={
                                                 handleLockedLocationSharingPress
                                             }
+                                            onWatchOverLimitPress={handleWatchOverLimitPress}
                                             inputRef={(ref) => (inputRefs.current[index] = ref)}
                                             isNewContact={false}
                                         />
@@ -3084,6 +3221,16 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.error,
         transform: [{ rotate: '45deg' }],
         borderRadius: 1,
+    },
+    watchOverToggleEnabled: {
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
+    watchOverToggleDisabled: {
+        backgroundColor: BaseColors.neutral[50],
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[200],
     },
     initialLoadingContainer: {
         flex: 1,

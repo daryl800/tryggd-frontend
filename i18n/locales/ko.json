@@ -221,7 +221,13 @@
             "send": "알겠어요",
             "sent": "응답함 ✓"
         },
-        "openInMaps": "지도에서 열기"
+        "openInMaps": "지도에서 열기",
+        "watchOver": {
+            "resolvedBy": "{{name}}이 해결함",
+            "markResolved": "연락했습니다 — 모든 것이 좋습니다",
+            "resolving": "처리 중...",
+            "resolveError": "해결됨으로 표시할 수 없습니다. 다시 시도해 주세요."
+        }
     },
     "contacts": {
         "title": "연락처",
@@ -838,5 +844,29 @@
             "saveTitle": "계속할 수 없습니다",
             "saveBody": "다시 시도해 주세요."
         }
+    },
+    "watchOver": {
+        "toggle": "지켜보기",
+        "toggleHint": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다.",
+        "limitReached": "무료 플랜에서 {{max}}명을 지켜볼 수 있습니다. Plus로 업그레이드하면 무제한.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "부재 상태",
+        "setAway": "부재 중으로 설정",
+        "clearAway": "부재 상태 해제",
+        "label": "메시지 (선택)",
+        "labelPlaceholder": "예: 휴가 중",
+        "until": "부재 중 종료일",
+        "active": "{{date}}까지 부재 중",
+        "activeNoDate": "부재 중 (종료일 없음)",
+        "hint": "부재 중에는 연락처에 부재 알림이 전송되지 않습니다.",
+        "saving": "저장 중...",
+        "error": "부재 상태를 업데이트할 수 없습니다."
     }
 }

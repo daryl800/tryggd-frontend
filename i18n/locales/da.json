@@ -221,7 +221,13 @@
             "send": "Forstået",
             "sent": "Besvaret ✓"
         },
-        "openInMaps": "Åbn i kort"
+        "openInMaps": "Åbn i kort",
+        "watchOver": {
+            "resolvedBy": "Håndteret af {{name}}",
+            "markResolved": "Jeg har været i kontakt — alt er godt",
+            "resolving": "Håndterer...",
+            "resolveError": "Kunne ikke markere som håndteret. Prøv igen."
+        }
     },
     "contacts": {
         "title": "Kontakter",
@@ -841,5 +847,29 @@
             "saveTitle": "Kan ikke fortsætte",
             "saveBody": "Prøv igen."
         }
+    },
+    "watchOver": {
+        "toggle": "Hold øje med",
+        "toggleHint": "Få besked hvis {{name}} ikke har tjekket ind i en dag.",
+        "limitReached": "Du kan holde øje med {{max}} person på gratisplanen. Opgrader til Plus for ubegrænset.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Fraværsstatus",
+        "setAway": "Sæt som fraværende",
+        "clearAway": "Fjern fraværsstatus",
+        "label": "Besked (valgfri)",
+        "labelPlaceholder": "f.eks. På ferie",
+        "until": "Fraværende til",
+        "active": "Fraværende til {{date}}",
+        "activeNoDate": "Fraværende (ingen slutdato)",
+        "hint": "Mens du er fraværende, modtager dine kontakter ikke fraværsnotifikationer.",
+        "saving": "Gemmer...",
+        "error": "Kunne ikke opdatere fraværsstatus."
     }
 }

@@ -136,6 +136,7 @@ export default function ActivityScreen() {
   const [, setResponses] = useState<ResponseNotification[]>([]);
   const [, setUnreadResponses] = useState<ResponseNotification[]>([]);
   const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
+  const [watchOverEpisodeMap, setWatchOverEpisodeMap] = useState<Map<string, string>>(new Map());
 
   // Refs
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -332,6 +333,18 @@ export default function ActivityScreen() {
       setLoading(false);
     }
   }, [contactIds, contactCheckins, contactProfiles, contactLocationMap, checkinsLoading]);
+
+  const fetchWatchOverEpisodes = useCallback(async () => {
+    if (!contactIds.length) return;
+    const { data } = await supabase
+      .from('watch_over_episodes')
+      .select('id, watched_user_id')
+      .in('watched_user_id', contactIds)
+      .eq('status', 'active');
+    const map = new Map<string, string>();
+    for (const ep of data ?? []) map.set(ep.watched_user_id, ep.id);
+    setWatchOverEpisodeMap(map);
+  }, [contactIds]);
 
   const fetchResponseNotifications = async () => {
     try {
@@ -805,6 +818,7 @@ export default function ActivityScreen() {
         fetchOwnerActivity(),
         fetchResponseNotifications(),
         loadInitialTodayResponses(),
+        fetchWatchOverEpisodes(),
       ]);
 
       setupOwnerCheckinsSubscription();
@@ -814,7 +828,7 @@ export default function ActivityScreen() {
     } catch (error) {
       console.error('Error during initialization:', error);
     }
-  }, [user]);
+  }, [user, fetchWatchOverEpisodes]);
 
   // ============================================
   // Effects
@@ -841,6 +855,7 @@ export default function ActivityScreen() {
         void refreshCheckins(); // triggers buildActivities via context useEffect
         fetchResponseNotifications();
         loadInitialTodayResponses();
+        fetchWatchOverEpisodes();
         setupResponsesSubscription();
         setupTodayResponsesSubscription();
       }
@@ -879,6 +894,11 @@ export default function ActivityScreen() {
     void buildActivities();
   }, [buildActivities]);
 
+  // Refresh watch over episodes when contact list changes
+  useEffect(() => {
+    void fetchWatchOverEpisodes();
+  }, [fetchWatchOverEpisodes]);
+
   // ============================================
   // ResponseItem Component
   // ============================================
@@ -905,6 +925,7 @@ export default function ActivityScreen() {
     reach_out_status,
     shared_location,
     isNewContact = false,
+    activeWatchOverEpisodeId,
   }: {
     name: string;
     username?: string | null;
@@ -925,6 +946,7 @@ export default function ActivityScreen() {
     reach_out_status?: string | null;
     shared_location?: SharedLocationInfo | null;
     isNewContact?: boolean;
+    activeWatchOverEpisodeId?: string | null;
   }) => {
     const { t } = useTranslation();
     const { user, capabilities } = useAuth();
@@ -957,6 +979,8 @@ export default function ActivityScreen() {
     const tripTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [homePresenceTooltipVisible, setHomePresenceTooltipVisible] = useState(false);
     const homePresenceTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isResolvingWatchOver, setIsResolvingWatchOver] = useState(false);
+    const [watchOverResolved, setWatchOverResolved] = useState(false);
     const [reachOutTooltipVisible, setReachOutTooltipVisible] = useState(false);
     const reachOutTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1165,6 +1189,23 @@ export default function ActivityScreen() {
       devForceResendRef.current = true;
       setWelfareCheckSent(false);
       setLastWelfareCheckSentAt(null);
+    };
+
+    const handleResolveWatchOver = async () => {
+      if (!activeWatchOverEpisodeId || isResolvingWatchOver) return;
+      setIsResolvingWatchOver(true);
+      try {
+        const { error } = await supabase.functions.invoke('resolve-watchover-episode', {
+          body: { episode_id: activeWatchOverEpisodeId },
+        });
+        if (error) throw error;
+        setWatchOverResolved(true);
+      } catch (e) {
+        console.error('Failed to resolve watch over episode', e);
+        Alert.alert(t('errors.title'), t('activity.watchOver.resolveError'));
+      } finally {
+        setIsResolvingWatchOver(false);
+      }
     };
 
     const openSharedLocation = async () => {
@@ -1484,6 +1525,25 @@ export default function ActivityScreen() {
                   </Text>
                 </View>
               ) : null}
+              {showStaleWarning && !!activeWatchOverEpisodeId && !watchOverResolved && (
+                <TouchableOpacity
+                  style={styles.resolveWatchOverButton}
+                  onPress={handleResolveWatchOver}
+                  disabled={isResolvingWatchOver}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.resolveWatchOverButtonText}>
+                    {isResolvingWatchOver
+                      ? t('activity.watchOver.resolving')
+                      : t('activity.watchOver.markResolved')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {showStaleWarning && watchOverResolved && (
+                <Text style={styles.resolveWatchOverDoneText}>
+                  {t('activity.watchOver.resolvedBy', { name: t('activity.you') })}
+                </Text>
+              )}
               <View style={styles.responseButtonContainer}>
                 <TouchableOpacity
                   style={[
@@ -2016,6 +2076,7 @@ export default function ActivityScreen() {
                       shared_location={item.shared_location}
                       isNewContact={item.isNewContact}
                       isLast={index === activities.length - 1}
+                      activeWatchOverEpisodeId={watchOverEpisodeMap.get(item.user_id) ?? null}
                     />
                   ))
                 ) : (
@@ -2297,6 +2358,30 @@ const styles = StyleSheet.create({
   staleWarningBlock: {
     marginTop: 2,
     marginBottom: 6,
+  },
+  resolveWatchOverButton: {
+    alignSelf: 'flex-start',
+    marginTop: 4,
+    marginBottom: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: BaseColors.primaryLight,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryBorder,
+  },
+  resolveWatchOverButtonText: {
+    fontSize: iosFontSize(13),
+    color: BaseColors.primaryDark,
+    fontWeight: '600',
+  },
+  resolveWatchOverDoneText: {
+    fontSize: iosFontSize(13),
+    color: BaseColors.primaryDark,
+    fontWeight: '500',
+    marginTop: 4,
+    marginBottom: 6,
+    fontStyle: 'italic',
   },
   followUpMetaText: {
     fontSize: iosFontSize(12),

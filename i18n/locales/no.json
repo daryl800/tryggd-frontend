@@ -221,7 +221,13 @@
             "send": "Forstått",
             "sent": "Besvart ✓"
         },
-        "openInMaps": "Åpne i kart"
+        "openInMaps": "Åpne i kart",
+        "watchOver": {
+            "resolvedBy": "Håndtert av {{name}}",
+            "markResolved": "Jeg har vært i kontakt — alt er bra",
+            "resolving": "Håndterer...",
+            "resolveError": "Kunne ikke markere som håndtert. Prøv igjen."
+        }
     },
     "contacts": {
         "title": "Kontakter",
@@ -841,5 +847,29 @@
             "saveTitle": "Kan ikke fortsette",
             "saveBody": "Prøv igjen."
         }
+    },
+    "watchOver": {
+        "toggle": "Hold øye med",
+        "toggleHint": "Få varsling hvis {{name}} ikke har sjekket inn på en dag.",
+        "limitReached": "Du kan holde øye med {{max}} person på gratisplanen. Oppgrader til Plus for ubegrenset.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Borte-status",
+        "setAway": "Sett som borte",
+        "clearAway": "Fjern borte-status",
+        "label": "Melding (valgfri)",
+        "labelPlaceholder": "f.eks. På ferie",
+        "until": "Borte til",
+        "active": "Borte til {{date}}",
+        "activeNoDate": "Borte (ingen sluttdato)",
+        "hint": "Mens du er borte vil ikke kontaktene dine motta fraværsvarsler.",
+        "saving": "Lagrer...",
+        "error": "Kunne ikke oppdatere borte-status."
     }
 }

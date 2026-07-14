@@ -221,7 +221,13 @@
             "send": "Ymmärsin",
             "sent": "Vastattu ✓"
         },
-        "openInMaps": "Avaa kartassa"
+        "openInMaps": "Avaa kartassa",
+        "watchOver": {
+            "resolvedBy": "{{name}} käsitteli",
+            "markResolved": "Olen ollut yhteydessä — kaikki hyvin",
+            "resolving": "Käsitellään...",
+            "resolveError": "Merkitseminen epäonnistui. Yritä uudelleen."
+        }
     },
     "contacts": {
         "title": "Yhteystiedot",
@@ -841,5 +847,29 @@
             "saveTitle": "Ei voi jatkaa",
             "saveBody": "Yritä uudelleen."
         }
+    },
+    "watchOver": {
+        "toggle": "Seuraa",
+        "toggleHint": "Saat ilmoituksen, jos {{name}} ei ole kirjautunut päivään.",
+        "limitReached": "Voit seurata {{max}} henkilöä ilmaisella suunnitelmalla. Päivitä Plus-versioon rajoittamattomasti.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Poissaolostatus",
+        "setAway": "Aseta poissa olevaksi",
+        "clearAway": "Poista poissaolostatus",
+        "label": "Viesti (valinnainen)",
+        "labelPlaceholder": "esim. Lomalla",
+        "until": "Poissa saakka",
+        "active": "Poissa {{date}} saakka",
+        "activeNoDate": "Poissa (ei loppupäivää)",
+        "hint": "Poissa ollessasi kontaktisi eivät saa poissaoloilmoituksia.",
+        "saving": "Tallennetaan...",
+        "error": "Poissaolostatuksen päivitys epäonnistui."
     }
 }

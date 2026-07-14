@@ -221,7 +221,13 @@
             "send": "Capito",
             "sent": "Risposto ✓"
         },
-        "openInMaps": "Apri in Mappe"
+        "openInMaps": "Apri in Mappe",
+        "watchOver": {
+            "resolvedBy": "Risolto da {{name}}",
+            "markResolved": "Sono stato in contatto — va tutto bene",
+            "resolving": "Risolvendo...",
+            "resolveError": "Impossibile contrassegnare come risolto. Riprova."
+        }
     },
     "contacts": {
         "title": "Contatti",
@@ -838,5 +844,29 @@
             "saveTitle": "Impossibile continuare",
             "saveBody": "Per favore riprova."
         }
+    },
+    "watchOver": {
+        "toggle": "Sorvegliare",
+        "toggleHint": "Ricevi una notifica se {{name}} non ha effettuato il check-in per un giorno.",
+        "limitReached": "Puoi sorvegliare {{max}} persona con il piano gratuito. Passa a Plus per illimitato.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Stato di assenza",
+        "setAway": "Imposta come assente",
+        "clearAway": "Rimuovi stato d'assenza",
+        "label": "Messaggio (opzionale)",
+        "labelPlaceholder": "es. In vacanza",
+        "until": "Assente fino al",
+        "active": "Assente fino al {{date}}",
+        "activeNoDate": "Assente (nessuna data di fine)",
+        "hint": "Mentre sei assente, i tuoi contatti non riceveranno notifiche di assenza.",
+        "saving": "Salvataggio...",
+        "error": "Impossibile aggiornare lo stato d'assenza."
     }
 }

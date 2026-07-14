@@ -228,7 +228,13 @@
             "send": "Förstått",
             "sent": "Besvarat ✓"
         },
-        "openInMaps": "Öppna i karta"
+        "openInMaps": "Öppna i karta",
+        "watchOver": {
+            "resolvedBy": "Hanterad av {{name}}",
+            "markResolved": "Jag har hört av mig — allt är bra",
+            "resolving": "Hanterar...",
+            "resolveError": "Kunde inte markera som hanterad. Försök igen."
+        }
     },
     "contacts": {
         "title": "Kontakter",
@@ -848,5 +854,29 @@
             "saveTitle": "Kan inte fortsätta",
             "saveBody": "Försök igen."
         }
+    },
+    "watchOver": {
+        "toggle": "Bevaka",
+        "toggleHint": "Få en notis om {{name}} inte har checkat in på en dag.",
+        "limitReached": "Du kan bevaka {{max}} person på gratisplanen. Uppgradera till Plus för obegränsat.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Borta-status",
+        "setAway": "Markera som borta",
+        "clearAway": "Ta bort borta-status",
+        "label": "Meddelande (valfritt)",
+        "labelPlaceholder": "t.ex. På semester",
+        "until": "Borta till",
+        "active": "Borta till {{date}}",
+        "activeNoDate": "Borta (inget slutdatum)",
+        "hint": "Medan du är borta får dina kontakter inga frånvaronotiser.",
+        "saving": "Sparar...",
+        "error": "Kunde inte uppdatera borta-status."
     }
 }

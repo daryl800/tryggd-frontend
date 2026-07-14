@@ -221,7 +221,13 @@
             "send": "รับทราบ",
             "sent": "ตอบแล้ว ✓"
         },
-        "openInMaps": "เปิดในแผนที่"
+        "openInMaps": "เปิดในแผนที่",
+        "watchOver": {
+            "resolvedBy": "แก้ไขโดย {{name}}",
+            "markResolved": "ฉันได้ติดต่อแล้ว — ทุกอย่างเรียบร้อย",
+            "resolving": "กำลังแก้ไข...",
+            "resolveError": "ไม่สามารถทำเครื่องหมายว่าแก้ไขแล้ว กรุณาลองอีกครั้ง"
+        }
     },
     "contacts": {
         "title": "ผู้ติดต่อ",
@@ -838,5 +844,29 @@
             "saveTitle": "ไม่สามารถดำเนินการต่อ",
             "saveBody": "โปรดลองอีกครั้ง"
         }
+    },
+    "watchOver": {
+        "toggle": "ดูแล",
+        "toggleHint": "รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
+        "limitReached": "คุณสามารถดูแลได้ {{max}} คนในแผนฟรี อัปเกรดเป็น Plus เพื่อไม่จำกัด",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "สถานะไม่อยู่",
+        "setAway": "ตั้งเป็นไม่อยู่",
+        "clearAway": "ยกเลิกสถานะไม่อยู่",
+        "label": "ข้อความ (ไม่บังคับ)",
+        "labelPlaceholder": "เช่น พักร้อน",
+        "until": "ไม่อยู่จนถึง",
+        "active": "ไม่อยู่จนถึง {{date}}",
+        "activeNoDate": "ไม่อยู่ (ไม่มีวันสิ้นสุด)",
+        "hint": "ขณะที่ไม่อยู่ ผู้ติดต่อของคุณจะไม่ได้รับการแจ้งเตือนการขาดหายไป",
+        "saving": "กำลังบันทึก...",
+        "error": "ไม่สามารถอัปเดตสถานะไม่อยู่"
     }
 }

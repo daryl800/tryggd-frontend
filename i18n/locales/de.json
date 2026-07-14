@@ -221,7 +221,13 @@
             "send": "Verstanden",
             "sent": "Geantwortet ✓"
         },
-        "openInMaps": "In Karten öffnen"
+        "openInMaps": "In Karten öffnen",
+        "watchOver": {
+            "resolvedBy": "Erledigt von {{name}}",
+            "markResolved": "Ich war in Kontakt — alles ist gut",
+            "resolving": "Wird erledigt...",
+            "resolveError": "Konnte nicht als erledigt markiert werden. Bitte erneut versuchen."
+        }
     },
     "contacts": {
         "title": "Kontakte",
@@ -838,5 +844,29 @@
             "saveTitle": "Kann nicht fortfahren",
             "saveBody": "Bitte erneut versuchen."
         }
+    },
+    "watchOver": {
+        "toggle": "Beobachten",
+        "toggleHint": "Benachrichtigung, wenn {{name}} sich einen Tag lang nicht eingecheckt hat.",
+        "limitReached": "Im kostenlosen Plan kannst du {{max}} Person beobachten. Upgraden auf Plus für unbegrenzte Nutzung.",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "Abwesenheitsstatus",
+        "setAway": "Als abwesend markieren",
+        "clearAway": "Abwesenheitsstatus entfernen",
+        "label": "Nachricht (optional)",
+        "labelPlaceholder": "z.B. Im Urlaub",
+        "until": "Abwesend bis",
+        "active": "Abwesend bis {{date}}",
+        "activeNoDate": "Abwesend (kein Enddatum)",
+        "hint": "Während du abwesend bist, erhalten deine Kontakte keine Abwesenheitsbenachrichtigungen.",
+        "saving": "Wird gespeichert...",
+        "error": "Abwesenheitsstatus konnte nicht aktualisiert werden."
     }
 }

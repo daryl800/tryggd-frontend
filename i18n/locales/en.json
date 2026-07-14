@@ -238,7 +238,37 @@
       "todayMessages_one": "🚨 You got {{count}} emergency message today:",
       "todayMessages_other": "🚨 You got {{count}} emergency messages today:"
     },
-    "openInMaps": "Open in Maps"
+    "openInMaps": "Open in Maps",
+    "watchOver": {
+      "resolvedBy": "Resolved by {{name}}",
+      "markResolved": "I've been in touch — all is well",
+      "resolving": "Resolving...",
+      "resolveError": "Could not mark as resolved. Please try again."
+    }
+  },
+  "watchOver": {
+    "toggle": "Watch over",
+    "toggleHint": "Get notified if {{name}} hasn't checked in for a day.",
+    "limitReached": "You can watch over {{max}} person on the free plan. Upgrade to Plus for unlimited.",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "Away status",
+    "setAway": "Set as away",
+    "clearAway": "Clear away status",
+    "label": "Away message (optional)",
+    "labelPlaceholder": "e.g. On holiday",
+    "until": "Away until",
+    "active": "Away until {{date}}",
+    "activeNoDate": "Away (no end date)",
+    "hint": "While away, your contacts won't receive absence notifications.",
+    "saving": "Saving...",
+    "error": "Could not update away status."
   },
   "contacts": {
     "title": "Contacts",

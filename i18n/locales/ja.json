@@ -221,7 +221,13 @@
             "send": "了解",
             "sent": "返答済 ✓"
         },
-        "openInMaps": "マップで開く"
+        "openInMaps": "マップで開く",
+        "watchOver": {
+            "resolvedBy": "{{name}}が解決済み",
+            "markResolved": "連絡済み — 問題ありません",
+            "resolving": "解決中...",
+            "resolveError": "解決済みにできませんでした。もう一度お試しください。"
+        }
     },
     "contacts": {
         "title": "連絡先",
@@ -838,5 +844,29 @@
             "saveTitle": "続行できません",
             "saveBody": "もう一度お試しください。"
         }
+    },
+    "watchOver": {
+        "toggle": "見守る",
+        "toggleHint": "{{name}}が1日チェックインしていない場合に通知します。",
+        "limitReached": "無料プランでは{{max}}人を見守ることができます。Plusにアップグレードして無制限に。",
+        "notification": {
+            "day1_one": "{{name}} has not checked in today.",
+            "day1_other": "{{count}} people have not checked in today.",
+            "day2_one": "{{name}} still hasn't checked in (2 days).",
+            "day2_other": "{{count}} people still haven't checked in (2 days)."
+        }
+    },
+    "away": {
+        "title": "外出中ステータス",
+        "setAway": "外出中に設定",
+        "clearAway": "外出中ステータスを解除",
+        "label": "メッセージ（任意）",
+        "labelPlaceholder": "例: 休暇中",
+        "until": "外出中（終了日）",
+        "active": "{{date}}まで外出中",
+        "activeNoDate": "外出中（終了日なし）",
+        "hint": "外出中は、コンタクトに不在通知が送られません。",
+        "saving": "保存中...",
+        "error": "外出中ステータスを更新できませんでした。"
     }
 }
