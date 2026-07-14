@@ -1,5 +1,6 @@
 // app/(auth)/signup.tsx
 import { BaseColors } from "@/constants/colors";
+import { signInWithSocial } from "@/lib/auth/oauth";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import { useRef, useState } from "react";
@@ -9,6 +10,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -28,8 +30,24 @@ export default function SignupScreen() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
 
     const confirmRef = useRef<TextInput>(null);
+
+    const signInWithProvider = async (provider: "google" | "apple") => {
+        if (loading || socialLoading) return;
+        setSocialLoading(provider);
+        try {
+            const result = await signInWithSocial(provider);
+            if (result) {
+                router.replace("/");
+            }
+        } catch (err: any) {
+            Alert.alert(t("auth.login.socialError"), err.message || t("auth.unknownError"));
+        } finally {
+            setSocialLoading(null);
+        }
+    };
 
     const passwordsMatch =
         password.length > 0 &&
@@ -117,6 +135,38 @@ export default function SignupScreen() {
                         <Text style={{ fontSize: iosFontSize(32), fontWeight: "700", marginBottom: 24 }}>
                             {t("auth.signup.title")}
                         </Text>
+
+                        <View style={socialButtons}>
+                            <TouchableOpacity
+                                onPress={() => signInWithProvider("google")}
+                                disabled={loading || socialLoading !== null}
+                                style={socialButton}
+                            >
+                                <Ionicons name="logo-google" size={18} color="#111827" />
+                                <Text style={socialButtonText} allowFontScaling={false}>
+                                    {socialLoading === "google" ? t("auth.login.connectingToGoogle") : t("auth.login.continueWithGoogle")}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => signInWithProvider("apple")}
+                                disabled={loading || socialLoading !== null}
+                                style={socialButton}
+                            >
+                                <Ionicons name="logo-apple" size={20} color="#111827" />
+                                <Text style={socialButtonText} allowFontScaling={false}>
+                                    {socialLoading === "apple" ? t("auth.login.connectingToApple") : t("auth.login.continueWithApple")}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={dividerRow}>
+                            <View style={dividerLine} />
+                            <Text style={dividerText} allowFontScaling={false}>
+                                {t("auth.login.orContinueWithEmail", { defaultValue: "or sign up with email" })}
+                            </Text>
+                            <View style={dividerLine} />
+                        </View>
 
                         {/* Name */}
                         <TextInput
@@ -246,6 +296,48 @@ export default function SignupScreen() {
 }
 
 /* ---------- styles ---------- */
+const socialButtons = {
+    gap: 12,
+    marginBottom: 24,
+};
+
+const socialButton = {
+    alignItems: "center" as const,
+    backgroundColor: "#F9FAFB",
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    borderWidth: 1,
+    flexDirection: "row" as const,
+    gap: 10,
+    justifyContent: "center" as const,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+};
+
+const socialButtonText = {
+    color: "#111827",
+    fontSize: iosFontSize(15),
+    fontWeight: "600" as const,
+};
+
+const dividerRow = {
+    alignItems: "center" as const,
+    flexDirection: "row" as const,
+    gap: 12,
+    marginBottom: 20,
+};
+
+const dividerLine = {
+    backgroundColor: "#E5E7EB",
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+};
+
+const dividerText = {
+    color: "#6B7280",
+    fontSize: iosFontSize(13),
+};
+
 const inputStyle = {
     borderWidth: 1,
     borderColor: "#E5E7EB",
