@@ -1,874 +1,876 @@
 {
-    "home": {
-        "title": "홈",
-        "welcome": "환영합니다",
-        "greetings": {
-            "morning": "좋은 아침입니다",
-            "afternoon": "안녕하세요",
-            "evening": "좋은 저녁입니다",
-            "night": "안녕히 주무세요"
-        },
-        "everythingIsFine": "모든 것이 순조로워요",
-        "dontForget": "오늘 체크인을 잊지 마세요!",
-        "youCheckedInTodayAt": "오늘 {{time}} 에 체크인했습니다",
-        "pressMeToCheckIn": "여기를 눌러 체크인",
-        "reset": "초기화",
-        "timer": "타이머",
-        "timeLeftToday": "오늘 남은 시간",
-        "reachOut": {
-            "pressToSendHelp": "도움 요청 보내기",
-            "lastSentLabel": "마지막 도움 요청:"
-        },
-        "activity": "활동",
-        "contacts_one": "연락처 {{count}}명",
-        "contacts_other": "연락처 {{count}}명",
-        "streak": "연속 기록",
-        "days_one": "{{count}}일",
-        "days_other": "{{count}}일",
-        "dateFormats": {
-            "weekdays": [
-                "일요일",
-                "월요일",
-                "화요일",
-                "수요일",
-                "목요일",
-                "금요일",
-                "토요일"
-            ],
-            "months": [
-                "1월",
-                "2월",
-                "3월",
-                "4월",
-                "5월",
-                "6월",
-                "7월",
-                "8월",
-                "9월",
-                "10월",
-                "11월",
-                "12월"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "마지막 체크인 불러오기에 실패했습니다",
-            "noUser": "사용자를 찾을 수 없습니다",
-            "checkin": "체크인에 실패했습니다",
-            "loadState": "상태를 불러오지 못했습니다"
-        },
-        "status": {
-            "contactCheckedIn": "{{name}}님이 체크인했어요",
-            "sentWave": "{{name}}님이 손을 흔들었어요",
-            "respondedToYou": "{{name}}님이 회원님의 체크인에 응답했어요",
-            "emergencyMessage": "🚨 {{name}}: {{message}}",
-            "messageFrom": "{{name}}님의 메시지",
-            "justNow": "방금",
-            "minutesAgo_one": "{{count}}분 전",
-            "minutesAgo_other": "{{count}}분 전",
-            "hoursAgo_one": "{{count}}시간 전",
-            "hoursAgo_other": "{{count}}시간 전",
-            "hoursAgoDecimal": "{{value}}시간 전",
-            "daysAgo_one": "{{count}}일 전",
-            "daysAgo_other": "{{count}}일 전",
-            "lastCheckinAgo": "마지막 체크인 {{timeAgo}}",
-            "lastCheckinLabel": "마지막 체크인:"
-        },
-        "wellnessPrompt": "How are you feeling today?",
-        "context": {
-            "title": "오늘의 상태",
-            "home": "집에 있음",
-            "trip": "여행 중",
-            "homeTab": "🌿 일상",
-            "tripTab": "✈️ 여행",
-            "reachOutTab": "✋ 도움",
-            "reachOutStatuses": {
-                "call_now": "✋ 도움이 필요해",
-                "call_available": "📞 전화해줘"
-            },
-            "statusTitle": "상태",
-            "tripStatusPrompt": "여행 상태 선택",
-            "homeStatuses": {
-                "chilling": "🛋️ 멍 때리는 중",
-                "home": "🏠 집에 있음",
-                "outside": "🚶 외출 중",
-                "at_school": "🏫 학교에 있어요",
-                "working": "💼 일하는 중",
-                "busy": "💼 바쁨",
-                "relaxing": "☕ 티타임",
-                "gathering": "🥳 같이 수다 중",
-                "on_call": "📞 통화 중",
-                "eating": "🍽️ 밥 먹는 중",
-                "exhausted": "😩 너무 피곤해",
-                "sleepy": "😪 졸려",
-                "daydreaming": "💭 몽상 중",
-                "playing_sport": "🏃 운동 중",
-                "having_fun": "🎉 즐기는 중",
-                "watching_movie": "🎬 영화 보는 중",
-                "resting": "😌 쉬는 중",
-                "goodmorning": "🌅 좋은 아침",
-                "goodafternoon": "🌞 좋은 오후",
-                "goodnight": "🌙 잘 자요"
-            },
-            "summaryHome": "일반 체크인",
-            "summaryTrip": "여행 상태 추가",
-            "summaryWithStatus": "여행 중 · {{status}}"
-        },
-        "plusWellness": {
-            "title": "Plus feature",
-            "message": "Upgrade to Plus to share how you feel with your check-in."
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 여행 출발",
-                "boarding": "🛫 탑승 / 🚅 운전",
-                "layover": "🛑 경유 / 환승 중",
-                "landed": "🛬 안전하게 도착",
-                "on_the_move": "🚕 이동 중",
-                "at_hotel": "🏨 호텔 도착",
-                "on_trip": "🗺️ 여행 중",
-                "heading_home": "🏠 집으로 향하는 중",
-                "trip_ended": "✅ 여행 종료 — 안전하게 귀가"
-            }
-        }
+  "home": {
+    "title": "홈",
+    "welcome": "환영합니다",
+    "greetings": {
+      "morning": "좋은 아침입니다",
+      "afternoon": "안녕하세요",
+      "evening": "좋은 저녁입니다",
+      "night": "안녕히 주무세요"
     },
-    "activity": {
-        "title": "활동",
-        "subtitle": "나와 연락처의 최근 체크인",
-        "you": "나",
-        "yourActivity": "본인",
-        "contacts": "연락처",
-        "loading": "활동을 불러오는 중...",
-        "noCheckIn": "아직 체크인이 없습니다",
-        "staleCheckinMessage_one": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
-        "staleCheckinMessage_other": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
-        "emptyState": {
-            "title": "연락처 없음",
-            "message": "활동을 보려면 연락처를 추가하세요"
-        },
-        "priority": {
-            "failed": "실패",
-            "ongoing": "진행 중",
-            "successful": "완료"
-        },
-        "time": {
-            "locale": "ko-KR"
-        },
-        "errors": {
-            "loadActivities": "활동을 불러오지 못했습니다",
-            "fetchContacts": "연락처를 가져오지 못했습니다",
-            "fetchOwnerActivity": "내 활동을 가져오지 못했습니다",
-            "openSharedLocation": "Failed to open shared location.",
-            "locationPermission": "위치를 공유하려면 위치 권한이 필요합니다."
-        },
-        "day": {
-            "today": "오늘",
-            "yesterday": "어제",
-            "other": "{{date, date, yyyy년 M월 d일}}"
-        },
-        "responseButton": {
-            "sendResponse": "좋아요 👍 보내기",
-            "sent": "좋아요 전송됨 ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ 오늘 {{count}}개의 체크인 반응을 받았습니다:",
-            "todayLikes_other": "⭐️ 오늘 {{count}}개의 체크인 반응을 받았습니다:",
-            "prefix": "회원님의 체크인에 반응했습니다",
-            "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
-        },
-        "welfareButton": {
-            "send": "🍀 괜찮으세요?",
-            "sent": "안부 전송됨 ✓",
-            "sentOffline": "전송됨 ✓ — {{name}}이(가) 다시 온라인 상태가 되면 메시지를 확인할 수 있어요"
-        },
-        "sharedLocation": {
-            "view": "View shared location"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "China",
-            "hongKong": "Hong Kong",
-            "taiwan": "Taiwan",
-            "sweden": "Sweden",
-            "norway": "Norway",
-            "denmark": "Denmark",
-            "finland": "Finland"
-        },
-        "wellness": {
-            "veryLow": "많이 불편해요\n😔",
-            "low": "조금 우울해요\n😕",
-            "neutral": "괜찮아요\n🙂",
-            "good": "기분이 좋아요\n☺️",
-            "great": "오늘 아주 행복해요\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 오늘은 어떠세요?",
-            "sent": "안부 전송됨 ✓"
-        },
-        "checkedInAt": "{{date}} {{time}} 체크인 완료",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 오늘 {{count}}개의 안부를 받았습니다:",
-            "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:",
-            "todayMessages_other": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:"
-        },
-        "supportButton": {
-            "send": "💪 응원 보내기",
-            "sent": "응원 보냄 ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "알겠어요",
-            "sent": "응답함 ✓"
-        },
-        "openInMaps": "지도에서 열기",
-        "watchOver": {
-            "resolvedBy": "{{name}}이 해결함",
-            "markResolved": "연락했습니다 — 모든 것이 좋습니다",
-            "resolving": "처리 중...",
-            "resolveError": "해결됨으로 표시할 수 없습니다. 다시 시도해 주세요."
-        }
+    "everythingIsFine": "모든 것이 순조로워요",
+    "dontForget": "오늘 체크인을 잊지 마세요!",
+    "youCheckedInTodayAt": "오늘 {{time}} 에 체크인했습니다",
+    "pressMeToCheckIn": "여기를 눌러 체크인",
+    "reset": "초기화",
+    "timer": "타이머",
+    "timeLeftToday": "오늘 남은 시간",
+    "reachOut": {
+      "pressToSendHelp": "도움 요청 보내기",
+      "lastSentLabel": "마지막 도움 요청:"
     },
-    "contacts": {
-        "title": "연락처",
-        "contact": "연락처",
-        "newContact": "새 연락처",
-        "displayingAs": "표시 이름",
-        "loading": "연락처를 불러오는 중...",
-        "subtitle": {
-            "withContacts": "연락처 {{count}}/{{max}}",
-            "noContacts": "공유하려면 연락처를 추가하세요",
-            "withContactsUnlimited": "{{count}} contacts"
-        },
-        "emptyState": {
-            "title": "연락처 없음",
-            "message": "+ 버튼을 눌러 첫 연락처를 추가하세요"
-        },
-        "tabs": {
-            "contacts": "연락처",
-            "requests": "요청"
-        },
-        "requests": {
-            "received": "받은 요청",
-            "sent": "보낸 요청",
-            "waiting": "응답 대기 중",
-            "loading": "요청을 불러오는 중...",
-            "emptyState": {
-                "title": "요청 없음",
-                "message": "누군가 연락처 요청을 보내면 여기에 표시됩니다"
-            }
-        },
-        "placeholders": {
-            "email": "Tryggd ID 입력",
-            "identifier": "Enter Tryggd ID or email",
-            "suggestedUsername": "추천 Tryggd ID (선택 사항)"
-        },
-        "buttons": {
-            "accept": "수락",
-            "reject": "거절",
-            "delete": "삭제",
-            "cancelRequest": "요청 취소",
-            "sending": "보내는 중...",
-            "sendRequests_one": "요청 보내기",
-            "sendRequests_other": "요청 보내기"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "한도 초과",
-                "message": "연락처는 최대 3명까지만 추가할 수 있습니다."
-            },
-            "senderLimitReached": {
-                "title": "요청을 수락할 수 없습니다",
-                "message": "이 사람의 연락처 목록이 가득 찼습니다."
-            },
-            "delete": {
-                "title": "연락처 삭제",
-                "message": "{{name}} 을(를) 삭제하시겠습니까?"
-            },
-            "contactExists": {
-                "title": "이미 연락처에 있습니다",
-                "message": "{{name}} 은(는) 이미 연락처에 있습니다"
-            },
-            "requestExists": {
-                "title": "이미 요청을 보냈습니다",
-                "message": "이 사용자에게 이미 요청을 보냈습니다."
-            },
-            "requestReceived": {
-                "title": "요청을 받았습니다",
-                "message": "{{email}} 로부터 이미 요청이 있습니다. \"요청\" 탭을 확인하세요."
-            },
-            "invalidEmail": {
-                "title": "잘못된 Tryggd ID",
-                "message": "{{email}} 은(는) 등록되지 않았거나 확인되지 않았습니다"
-            },
-            "selfContact": {
-                "title": "잘못된 연락처",
-                "message": "자기 자신을 연락처로 추가할 수 없습니다"
-            },
-            "noChanges": {
-                "title": "변경 사항 없음",
-                "message": "저장할 새 연락처가 없습니다."
-            },
-            "alreadyInContacts": "이 사용자는 이미 연락처에 있습니다",
-            "requestHandled": {
-                "title": "이미 처리된 요청",
-                "message": "이 요청은 이미 처리되었습니다"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "요청을 보냈습니다",
-                "message": "{{name}} 에게 연락처 요청을 보냈습니다"
-            },
-            "contactAdded": {
-                "title": "연락처가 추가되었습니다",
-                "message": "{{name}} 이(가) 연락처에 추가되었습니다"
-            },
-            "deleted": {
-                "title": "연락처가 삭제되었습니다",
-                "message": "{{name}} 이(가) 삭제되었습니다. 모든 관계도 함께 삭제되었습니다."
-            },
-            "requestRejected": {
-                "title": "요청이 거절되었습니다",
-                "message": "연락처 요청이 거절되었습니다"
-            },
-            "requestCancelled": {
-                "title": "요청이 취소되었습니다",
-                "message": "연락처 요청이 취소되었습니다"
-            }
-        },
-        "errors": {
-            "loadData": "데이터를 불러오지 못했습니다",
-            "save": "연락처 저장에 실패했습니다",
-            "delete": "연락처 삭제에 실패했습니다",
-            "sendRequest": "연락처 요청 전송에 실패했습니다",
-            "search": "사용자를 검색할 수 없습니다",
-            "requestNotFound": "연락처 요청을 찾을 수 없거나 이미 처리되었습니다",
-            "accept": "연락처 요청 수락에 실패했습니다",
-            "reject": "요청 거절에 실패했습니다",
-            "cancel": "요청 취소에 실패했습니다",
-            "createInvite": "초대를 만들지 못했습니다.",
-            "shareInvite": "초대 링크를 공유하지 못했습니다.",
-            "recoveryUnavailable": "이 연락처는 아직 복구 초대를 받을 수 없습니다.",
-            "createRecoveryInvite": "복구 초대를 만들지 못했습니다.",
-            "updateCheckinNotifications": "Failed to update check-in notifications.",
-            "updateLocationSharing": "Failed to update location sharing.",
-            "noContactUpdated": "No contact row was updated."
-        },
-        "qr": {
-            "permissionTitle": "카메라 권한이 필요합니다",
-            "permissionMessage": "QR 코드를 스캔하려면 카메라 접근을 허용해 주세요.",
-            "scanHint": "Tryggd QR 코드를 향해 카메라를 대세요",
-            "successTitle": "연락처 추가됨",
-            "successMessage": "{{name}}이(가) 연락처에 추가되었습니다",
-            "newContact": "새 연락처",
-            "ownerLimitReached": "이 사람의 연락처 목록이 가득 찼습니다. 지금은 새 연락처를 받을 수 없습니다."
-        },
-        "messages": {
-            "contactDefault": "This contact"
-        },
-        "emergencyMessage": {
-            "modalTitle": "{{name}}님에게 긴급 메시지 보내기",
-            "modalDescription": "즉시 푸시 알림이 전송되며 상대방의 활동 피드에 표시됩니다.",
-            "placeholder": "무슨 일이에요?",
-            "send": "보내기",
-            "sending": "보내는 중…",
-            "sendError": "긴급 메시지를 보내지 못했습니다."
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} will receive your check-ins",
-            "checkinsDisabled": "{{name}} will not receive your check-ins",
-            "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity",
-            "watchOverEnabled": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다",
-            "watchOverDisabled": "{{name}} 지켜보기 비활성화됨"
-        },
-        "invite": {
-            "ready": "초대가 준비되었습니다",
-            "recoveryReady": "복구 링크가 준비되었습니다",
-            "instructions": "먼저 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
-            "recoveryInstructions": "먼저 복구 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
-            "expiresOn": "이 초대는 {{date}}에 만료됩니다.",
-            "resettingTryggdId": "Tryggd ID 재설정 중: {{id}}",
-            "suggestedTryggdId": "추천 Tryggd ID: {{id}}",
-            "shareMessage": "Tryggd에서 저와 연결하세요:",
-            "recoveryShareMessage": "이 링크로 Tryggd 비밀번호를 재설정하세요:",
-            "modalTitle": "누군가를 Tryggd로 초대하기",
-            "modalDescription": "비공개 초대 링크와 6자리 코드를 만듭니다. 초대받은 사람이 나중에 고르지 않아도 되도록 지금 Tryggd ID를 제안하세요.",
-            "suggestedUsernameHelp": "소문자, 숫자, 점 또는 밑줄을 사용하세요. 초대를 만들기 전에 사용 가능 여부를 확인합니다.",
-            "createButton": "초대 만들기",
-            "creating": "생성 중…",
-            "shareButton": "링크 공유"
-        },
-        "plusFeature": {
-            "title": "Plus feature",
-            "notifications": "Upgrade to Plus to control contact check-in notifications.",
-            "location": "Upgrade to Plus to enable location sharing for a contact."
-        }
-    },
-    "profile": {
-        "title": "프로필",
-        "defaultName": "사용자",
-        "loading": "프로필을 불러오는 중...",
-        "buttons": {
-            "edit": "편집",
-            "save": "저장",
-            "saving": "저장 중...",
-            "logout": "로그아웃"
-        },
-        "fields": {
-            "name": "이름",
-            "email": "이메일",
-            "phone": "전화번호",
-            "notSpecified": "미입력"
-        },
-        "settings": {
-            "title": "설정",
-            "subtitle": "앱 설정 및 알림"
-        },
-        "avatarModal": {
-            "title": "프로필 사진 변경",
-            "takePhoto": "사진 촬영",
-            "chooseFromLibrary": "라이브러리에서 선택"
-        },
-        "logout": {
-            "title": "로그아웃",
-            "confirm": "정말 로그아웃하시겠습니까?",
-            "button": "로그아웃"
-        },
-        "permissions": {
-            "camera": "카메라 접근 권한이 필요합니다"
-        },
-        "notices": {
-            "title": "알림",
-            "emailConfirmation": "프로필은 저장되었지만 이메일 변경에는 확인이 필요합니다"
-        },
-        "success": {
-            "title": "저장됨",
-            "saved": "프로필이 업데이트되었습니다."
-        },
-        "errors": {
-            "loadProfile": "프로필을 불러오지 못했습니다",
-            "notLoggedIn": "로그인되어 있지 않습니다",
-            "updateProfile": "프로필을 업데이트할 수 없습니다",
-            "saveProfile": "프로필을 저장할 수 없습니다",
-            "deleteAccount": "계정을 삭제할 수 없습니다"
-        },
-        "deleteAccount": {
-            "title": "계정 삭제",
-            "confirm": "이 작업은 계정과 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
-            "finalTitle": "계정을 영구적으로 삭제할까요?",
-            "finalConfirm": "계정, 연락처, 체크인, 설정이 영구적으로 삭제됩니다.",
-            "button": "계정 삭제",
-            "deleting": "삭제 중...",
-            "successTitle": "계정 삭제 완료",
-            "successMessage": "계정이 영구적으로 삭제되었습니다."
-        },
-        "qr": {
-            "title": "내 QR 코드",
-            "hint": "이 코드를 스캔하면 즉시 연락처로 추가됩니다.",
-            "errorGenerating": "QR 코드를 생성할 수 없습니다. 다시 시도해 주세요."
-        }
-    },
-    "settings": {
-        "title": "설정",
-        "account": "계정",
-        "information": "정보",
-        "language": "언어",
-        "theme": "테마",
-        "homeStyle": {
-            "title": "홈 화면 선택",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "심플",
-                "description": "한 번 탭으로 체크인, 방해 요소 없음."
-            },
-            "enhanced": {
-                "title": "확장",
-                "description": "기분, 외출 상태, 위치를 공유하세요."
-            }
-        },
-        "notifications": {
-            "title": "알림",
-            "preferences": "알림 설정",
-            "summary": {
-                "reminders": "리마인더",
-                "activity": "활동",
-                "allOff": "모든 알림 꺼짐"
-            },
-            "stayOnTrack": {
-                "title": "계속 진행하기",
-                "description": "개인 안전 일일 체크인을 완료하도록 알려줍니다"
-            },
-            "contactActivity": {
-                "title": "연락처 활동",
-                "description": "연락처가 체크인을 완료하면 알려줍니다"
-            }
-        },
-        "about": "앱 정보",
-        "privacy": "개인정보 처리방침",
-        "terms": "서비스 약관",
-        "feedback": "피드백 보내기",
-        "logout": "로그아웃",
-        "resetData": "데이터 초기화",
-        "light": "라이트",
-        "dark": "다크",
-        "systemDefault": "시스템 설정 사용",
-        "english": "영어",
-        "swedish": "스웨덴어",
-        "norwegian": "노르웨이어",
-        "danish": "덴마크어",
-        "finnish": "핀란드어",
-        "chineseSimplified": "중국어(간체)",
-        "chineseTraditional": "중국어(번체)",
-        "tripMode": {
-            "title": "체크인 모드",
-            "home": "일반",
-            "trip": "여행",
-            "homeDescription": "일반 매일 체크인",
-            "tripDescription": "연락처와 여행 상태 공유"
-        },
-        "resetWarning": "정말 진행하시겠습니까? 모든 데이터가 삭제됩니다.",
-        "logoutConfirm": "정말 로그아웃하시겠습니까?",
-        "confirmReset": "초기화",
-        "cancel": "취소",
-        "ok": "확인"
-    },
-    "common": {
-        "ok": "확인",
-        "cancel": "취소",
-        "save": "저장",
-        "delete": "삭제",
-        "edit": "편집",
-        "loading": "불러오는 중...",
-        "refreshing": "새로 고치는 중...",
-        "back": "뒤로",
-        "next": "다음",
-        "submit": "제출",
-        "yes": "예",
-        "no": "아니요",
-        "done": "Done"
-    },
-    "time": {
-        "justNow": "방금 전",
-        "minutesAgo": "{{count}}분 전",
-        "hoursAgo_one": "{{count}}시간 전",
-        "hoursAgo_other": "{{count}}시간 전",
-        "daysAgo_one": "{{count}}일 전",
-        "daysAgo_other": "{{count}}일 전"
+    "activity": "활동",
+    "contacts_one": "연락처 {{count}}명",
+    "contacts_other": "연락처 {{count}}명",
+    "streak": "연속 기록",
+    "days_one": "{{count}}일",
+    "days_other": "{{count}}일",
+    "dateFormats": {
+      "weekdays": [
+        "일요일",
+        "월요일",
+        "화요일",
+        "수요일",
+        "목요일",
+        "금요일",
+        "토요일"
+      ],
+      "months": [
+        "1월",
+        "2월",
+        "3월",
+        "4월",
+        "5월",
+        "6월",
+        "7월",
+        "8월",
+        "9월",
+        "10월",
+        "11월",
+        "12월"
+      ]
     },
     "errors": {
-        "title": "오류",
-        "notAuthenticated": "인증되지 않았습니다"
+      "fetchLastCheckin": "마지막 체크인 불러오기에 실패했습니다",
+      "noUser": "사용자를 찾을 수 없습니다",
+      "checkin": "체크인에 실패했습니다",
+      "loadState": "상태를 불러오지 못했습니다"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}}님이 체크인했어요",
+      "sentWave": "{{name}}님이 손을 흔들었어요",
+      "respondedToYou": "{{name}}님이 회원님의 체크인에 응답했어요",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
+      "messageFrom": "{{name}}님의 메시지",
+      "justNow": "방금",
+      "minutesAgo_one": "{{count}}분 전",
+      "minutesAgo_other": "{{count}}분 전",
+      "hoursAgo_one": "{{count}}시간 전",
+      "hoursAgo_other": "{{count}}시간 전",
+      "hoursAgoDecimal": "{{value}}시간 전",
+      "daysAgo_one": "{{count}}일 전",
+      "daysAgo_other": "{{count}}일 전",
+      "lastCheckinAgo": "마지막 체크인 {{timeAgo}}",
+      "lastCheckinLabel": "마지막 체크인:"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "오늘의 상태",
+      "home": "집에 있음",
+      "trip": "여행 중",
+      "homeTab": "🌿 일상",
+      "tripTab": "✈️ 여행",
+      "reachOutTab": "✋ 도움",
+      "reachOutStatuses": {
+        "call_now": "✋ 도움이 필요해",
+        "call_available": "📞 전화해줘"
+      },
+      "statusTitle": "상태",
+      "tripStatusPrompt": "여행 상태 선택",
+      "homeStatuses": {
+        "chilling": "🛋️ 멍 때리는 중",
+        "home": "🏠 집에 있음",
+        "outside": "🚶 외출 중",
+        "at_school": "🏫 학교에 있어요",
+        "working": "💼 일하는 중",
+        "busy": "💼 바쁨",
+        "relaxing": "☕ 티타임",
+        "gathering": "🥳 같이 수다 중",
+        "on_call": "📞 통화 중",
+        "eating": "🍽️ 밥 먹는 중",
+        "exhausted": "😩 너무 피곤해",
+        "sleepy": "😪 졸려",
+        "daydreaming": "💭 몽상 중",
+        "playing_sport": "🏃 운동 중",
+        "having_fun": "🎉 즐기는 중",
+        "watching_movie": "🎬 영화 보는 중",
+        "resting": "😌 쉬는 중",
+        "goodmorning": "🌅 좋은 아침",
+        "goodafternoon": "🌞 좋은 오후",
+        "goodnight": "🌙 잘 자요",
+        "heading_home_alone": "🚶 혼자 귀가 중",
+        "hiking_alone": "🥾 혼자 하이킹 중"
+      },
+      "summaryHome": "일반 체크인",
+      "summaryTrip": "여행 상태 추가",
+      "summaryWithStatus": "여행 중 · {{status}}"
+    },
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 여행 출발",
+        "boarding": "🛫 탑승 / 🚅 운전",
+        "layover": "🛑 경유 / 환승 중",
+        "landed": "🛬 안전하게 도착",
+        "on_the_move": "🚕 이동 중",
+        "at_hotel": "🏨 호텔 도착",
+        "on_trip": "🗺️ 여행 중",
+        "heading_home": "🏠 집으로 향하는 중",
+        "trip_ended": "✅ 여행 종료 — 안전하게 귀가"
+      }
+    }
+  },
+  "activity": {
+    "title": "활동",
+    "subtitle": "나와 연락처의 최근 체크인",
+    "you": "나",
+    "yourActivity": "본인",
+    "contacts": "연락처",
+    "loading": "활동을 불러오는 중...",
+    "noCheckIn": "아직 체크인이 없습니다",
+    "staleCheckinMessage_one": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
+    "staleCheckinMessage_other": "{{name}}님이 {{count}}일 동안 체크인하지 않았습니다",
+    "emptyState": {
+      "title": "연락처 없음",
+      "message": "활동을 보려면 연락처를 추가하세요"
+    },
+    "priority": {
+      "failed": "실패",
+      "ongoing": "진행 중",
+      "successful": "완료"
+    },
+    "time": {
+      "locale": "ko-KR"
+    },
+    "errors": {
+      "loadActivities": "활동을 불러오지 못했습니다",
+      "fetchContacts": "연락처를 가져오지 못했습니다",
+      "fetchOwnerActivity": "내 활동을 가져오지 못했습니다",
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "위치를 공유하려면 위치 권한이 필요합니다."
+    },
+    "day": {
+      "today": "오늘",
+      "yesterday": "어제",
+      "other": "{{date, date, yyyy년 M월 d일}}"
+    },
+    "responseButton": {
+      "sendResponse": "좋아요 👍 보내기",
+      "sent": "좋아요 전송됨 ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ 오늘 {{count}}개의 체크인 반응을 받았습니다:",
+      "todayLikes_other": "⭐️ 오늘 {{count}}개의 체크인 반응을 받았습니다:",
+      "prefix": "회원님의 체크인에 반응했습니다",
+      "defaultMessage": "님이 당신의 체크인에 👍 했습니다!"
+    },
+    "welfareButton": {
+      "send": "🍀 괜찮으세요?",
+      "sent": "안부 전송됨 ✓",
+      "sentOffline": "전송됨 ✓ — {{name}}이(가) 다시 온라인 상태가 되면 메시지를 확인할 수 있어요"
+    },
+    "sharedLocation": {
+      "view": "View shared location"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "China",
+      "hongKong": "Hong Kong",
+      "taiwan": "Taiwan",
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "많이 불편해요\n😔",
+      "low": "조금 우울해요\n😕",
+      "neutral": "괜찮아요\n🙂",
+      "good": "기분이 좋아요\n☺️",
+      "great": "오늘 아주 행복해요\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 오늘은 어떠세요?",
+      "sent": "안부 전송됨 ✓"
+    },
+    "checkedInAt": "{{date}} {{time}} 체크인 완료",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 오늘 {{count}}개의 안부를 받았습니다:",
+      "todayGreetings_other": "💛 오늘 {{count}}개의 안부를 받았습니다:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:",
+      "todayMessages_other": "🚨 오늘 {{count}}개의 긴급 메시지를 받았습니다:"
+    },
+    "supportButton": {
+      "send": "💪 응원 보내기",
+      "sent": "응원 보냄 ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "알겠어요",
+      "sent": "응답함 ✓"
+    },
+    "openInMaps": "지도에서 열기",
+    "watchOver": {
+      "resolvedBy": "{{name}}이 해결함",
+      "markResolved": "연락했습니다 — 모든 것이 좋습니다",
+      "resolving": "처리 중...",
+      "resolveError": "해결됨으로 표시할 수 없습니다. 다시 시도해 주세요."
+    }
+  },
+  "contacts": {
+    "title": "연락처",
+    "contact": "연락처",
+    "newContact": "새 연락처",
+    "displayingAs": "표시 이름",
+    "loading": "연락처를 불러오는 중...",
+    "subtitle": {
+      "withContacts": "연락처 {{count}}/{{max}}",
+      "noContacts": "공유하려면 연락처를 추가하세요",
+      "withContactsUnlimited": "{{count}} contacts"
+    },
+    "emptyState": {
+      "title": "연락처 없음",
+      "message": "+ 버튼을 눌러 첫 연락처를 추가하세요"
+    },
+    "tabs": {
+      "contacts": "연락처",
+      "requests": "요청"
+    },
+    "requests": {
+      "received": "받은 요청",
+      "sent": "보낸 요청",
+      "waiting": "응답 대기 중",
+      "loading": "요청을 불러오는 중...",
+      "emptyState": {
+        "title": "요청 없음",
+        "message": "누군가 연락처 요청을 보내면 여기에 표시됩니다"
+      }
+    },
+    "placeholders": {
+      "email": "Tryggd ID 입력",
+      "identifier": "Enter Tryggd ID or email",
+      "suggestedUsername": "추천 Tryggd ID (선택 사항)"
+    },
+    "buttons": {
+      "accept": "수락",
+      "reject": "거절",
+      "delete": "삭제",
+      "cancelRequest": "요청 취소",
+      "sending": "보내는 중...",
+      "sendRequests_one": "요청 보내기",
+      "sendRequests_other": "요청 보내기"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "한도 초과",
+        "message": "연락처는 최대 3명까지만 추가할 수 있습니다."
+      },
+      "senderLimitReached": {
+        "title": "요청을 수락할 수 없습니다",
+        "message": "이 사람의 연락처 목록이 가득 찼습니다."
+      },
+      "delete": {
+        "title": "연락처 삭제",
+        "message": "{{name}} 을(를) 삭제하시겠습니까?"
+      },
+      "contactExists": {
+        "title": "이미 연락처에 있습니다",
+        "message": "{{name}} 은(는) 이미 연락처에 있습니다"
+      },
+      "requestExists": {
+        "title": "이미 요청을 보냈습니다",
+        "message": "이 사용자에게 이미 요청을 보냈습니다."
+      },
+      "requestReceived": {
+        "title": "요청을 받았습니다",
+        "message": "{{email}} 로부터 이미 요청이 있습니다. \"요청\" 탭을 확인하세요."
+      },
+      "invalidEmail": {
+        "title": "잘못된 Tryggd ID",
+        "message": "{{email}} 은(는) 등록되지 않았거나 확인되지 않았습니다"
+      },
+      "selfContact": {
+        "title": "잘못된 연락처",
+        "message": "자기 자신을 연락처로 추가할 수 없습니다"
+      },
+      "noChanges": {
+        "title": "변경 사항 없음",
+        "message": "저장할 새 연락처가 없습니다."
+      },
+      "alreadyInContacts": "이 사용자는 이미 연락처에 있습니다",
+      "requestHandled": {
+        "title": "이미 처리된 요청",
+        "message": "이 요청은 이미 처리되었습니다"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "요청을 보냈습니다",
+        "message": "{{name}} 에게 연락처 요청을 보냈습니다"
+      },
+      "contactAdded": {
+        "title": "연락처가 추가되었습니다",
+        "message": "{{name}} 이(가) 연락처에 추가되었습니다"
+      },
+      "deleted": {
+        "title": "연락처가 삭제되었습니다",
+        "message": "{{name}} 이(가) 삭제되었습니다. 모든 관계도 함께 삭제되었습니다."
+      },
+      "requestRejected": {
+        "title": "요청이 거절되었습니다",
+        "message": "연락처 요청이 거절되었습니다"
+      },
+      "requestCancelled": {
+        "title": "요청이 취소되었습니다",
+        "message": "연락처 요청이 취소되었습니다"
+      }
+    },
+    "errors": {
+      "loadData": "데이터를 불러오지 못했습니다",
+      "save": "연락처 저장에 실패했습니다",
+      "delete": "연락처 삭제에 실패했습니다",
+      "sendRequest": "연락처 요청 전송에 실패했습니다",
+      "search": "사용자를 검색할 수 없습니다",
+      "requestNotFound": "연락처 요청을 찾을 수 없거나 이미 처리되었습니다",
+      "accept": "연락처 요청 수락에 실패했습니다",
+      "reject": "요청 거절에 실패했습니다",
+      "cancel": "요청 취소에 실패했습니다",
+      "createInvite": "초대를 만들지 못했습니다.",
+      "shareInvite": "초대 링크를 공유하지 못했습니다.",
+      "recoveryUnavailable": "이 연락처는 아직 복구 초대를 받을 수 없습니다.",
+      "createRecoveryInvite": "복구 초대를 만들지 못했습니다.",
+      "updateCheckinNotifications": "Failed to update check-in notifications.",
+      "updateLocationSharing": "Failed to update location sharing.",
+      "noContactUpdated": "No contact row was updated."
+    },
+    "qr": {
+      "permissionTitle": "카메라 권한이 필요합니다",
+      "permissionMessage": "QR 코드를 스캔하려면 카메라 접근을 허용해 주세요.",
+      "scanHint": "Tryggd QR 코드를 향해 카메라를 대세요",
+      "successTitle": "연락처 추가됨",
+      "successMessage": "{{name}}이(가) 연락처에 추가되었습니다",
+      "newContact": "새 연락처",
+      "ownerLimitReached": "이 사람의 연락처 목록이 가득 찼습니다. 지금은 새 연락처를 받을 수 없습니다."
+    },
+    "messages": {
+      "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "{{name}}님에게 긴급 메시지 보내기",
+      "modalDescription": "즉시 푸시 알림이 전송되며 상대방의 활동 피드에 표시됩니다.",
+      "placeholder": "무슨 일이에요?",
+      "send": "보내기",
+      "sending": "보내는 중…",
+      "sendError": "긴급 메시지를 보내지 못했습니다."
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} will receive your check-ins",
+      "checkinsDisabled": "{{name}} will not receive your check-ins",
+      "locationEnabled": "{{name}} will see your location in Activity",
+      "locationDisabled": "{{name}} will not see your location in Activity",
+      "watchOverEnabled": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다",
+      "watchOverDisabled": "{{name}} 지켜보기 비활성화됨"
+    },
+    "invite": {
+      "ready": "초대가 준비되었습니다",
+      "recoveryReady": "복구 링크가 준비되었습니다",
+      "instructions": "먼저 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
+      "recoveryInstructions": "먼저 복구 링크를 보내세요. 그런 다음 이 코드를 알려주세요:",
+      "expiresOn": "이 초대는 {{date}}에 만료됩니다.",
+      "resettingTryggdId": "Tryggd ID 재설정 중: {{id}}",
+      "suggestedTryggdId": "추천 Tryggd ID: {{id}}",
+      "shareMessage": "Tryggd에서 저와 연결하세요:",
+      "recoveryShareMessage": "이 링크로 Tryggd 비밀번호를 재설정하세요:",
+      "modalTitle": "누군가를 Tryggd로 초대하기",
+      "modalDescription": "비공개 초대 링크와 6자리 코드를 만듭니다. 초대받은 사람이 나중에 고르지 않아도 되도록 지금 Tryggd ID를 제안하세요.",
+      "suggestedUsernameHelp": "소문자, 숫자, 점 또는 밑줄을 사용하세요. 초대를 만들기 전에 사용 가능 여부를 확인합니다.",
+      "createButton": "초대 만들기",
+      "creating": "생성 중…",
+      "shareButton": "링크 공유"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
+    }
+  },
+  "profile": {
+    "title": "프로필",
+    "defaultName": "사용자",
+    "loading": "프로필을 불러오는 중...",
+    "buttons": {
+      "edit": "편집",
+      "save": "저장",
+      "saving": "저장 중...",
+      "logout": "로그아웃"
+    },
+    "fields": {
+      "name": "이름",
+      "email": "이메일",
+      "phone": "전화번호",
+      "notSpecified": "미입력"
+    },
+    "settings": {
+      "title": "설정",
+      "subtitle": "앱 설정 및 알림"
+    },
+    "avatarModal": {
+      "title": "프로필 사진 변경",
+      "takePhoto": "사진 촬영",
+      "chooseFromLibrary": "라이브러리에서 선택"
+    },
+    "logout": {
+      "title": "로그아웃",
+      "confirm": "정말 로그아웃하시겠습니까?",
+      "button": "로그아웃"
     },
     "permissions": {
-        "title": "권한"
+      "camera": "카메라 접근 권한이 필요합니다"
     },
-    "auth": {
-        "signup": {
-            "title": "계정 만들기",
-            "create": "계정 만들기",
-            "creating": "계정을 만드는 중...",
-            "success": {
-                "title": "🎉 계정이 생성되었습니다",
-                "message": "계정이 준비되었습니다. 이제 로그인할 수 있습니다."
-            },
-            "verifyEmail": {
-                "title": "이메일을 확인해 주세요!",
-                "message": "이메일로 확인 메일을 보냈습니다. 확인 후 로그인해 주세요."
-            },
-            "error": "회원가입에 실패했습니다"
-        },
-        "login": {
-            "title": "로그인",
-            "signIn": "로그인",
-            "loggingIn": "로그인 중...",
-            "error": "로그인에 실패했습니다",
-            "continueWithGoogle": "Google로 계속하기",
-            "connectingToGoogle": "Google에 연결하는 중...",
-            "continueWithApple": "Apple로 계속하기",
-            "connectingToApple": "Apple에 연결하는 중...",
-            "orContinueWithEmail": "또는 이메일로 계속하기",
-            "socialError": "로그인에 실패했습니다",
-            "useInviteCode": "초대 코드가 있나요?"
-        },
-        "email": "이메일",
-        "displayName": "이름",
-        "password": {
-            "placeholder": "비밀번호(최소 6자)",
-            "minimumLength": "Use at least 8 characters."
-        },
-        "confirmPassword": "비밀번호 확인",
-        "passwordsMatch": "✔ 비밀번호가 일치합니다",
-        "passwordsNoMatch": "✖ 비밀번호가 일치하지 않습니다",
-        "alreadyHaveAccount": "이미 계정이 있나요? 로그인",
-        "noAccount": "계정이 없나요? 회원가입",
-        "unknownError": "알 수 없는 오류",
-        "forgotPassword": {
-            "title": "비밀번호를 잊으셨나요",
-            "instructions": "이메일 주소를 입력하세요",
-            "send": "재설정 이메일 보내기",
-            "sending": "보내는 중...",
-            "sentTitle": "이메일을 확인하세요",
-            "sentMessage": "비밀번호 재설정 링크를 이메일로 보냈습니다.",
-            "login": "로그인으로 이동",
-            "error": "재설정 이메일 전송 오류"
-        },
-        "resetPassword": {
-            "title": "비밀번호 재설정",
-            "instructions": "아래에 새 비밀번호를 입력하세요.",
-            "save": "새 비밀번호 저장",
-            "saving": "저장 중...",
-            "successTitle": "비밀번호가 재설정되었습니다!",
-            "successMessage": "이제 새 비밀번호로 로그인할 수 있습니다.",
-            "login": "로그인으로 이동",
-            "error": "비밀번호 재설정 오류",
-            "passwordPlaceholder": "새 비밀번호"
-        },
-        "invite": {
-            "enterCodeStandaloneHint": "초대를 받은 뒤 앱을 설치했다면 6자리 코드를 입력해 계속하세요.",
-            "invalidLink": "Invite link is invalid.",
-            "notFound": "Invite not found.",
-            "alreadyUsed": "This invite has already been used.",
-            "expired": "This invite has expired.",
-            "unavailable": "This invite is not available anymore.",
-            "unavailableTitle": "Invite unavailable",
-            "couldNotOpen": "This invite could not be opened.",
-            "backToLogin": "Back to login",
-            "recoveryTitle": "Reset your Tryggd password",
-            "invitedTitle": "You're invited to Tryggd",
-            "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
-            "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
-            "yourAccount": "your Tryggd account",
-            "you": "you",
-            "installTitle": "Install or open the app",
-            "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
-            "openInApp": "Open in Tryggd",
-            "downloadAppStore": "Download on App Store",
-            "downloadGooglePlay": "Get it on Google Play",
-            "keepLink": "Keep this invite link:",
-            "enterCodeTitle": "Enter your invite code",
-            "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
-            "codePlaceholder": "6-digit invite code",
-            "checkingCode": "Checking code…",
-            "setPasswordTitle": "Set a new password",
-            "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "Resetting password…",
-            "resetPassword": "Reset password",
-            "createAccountTitle": "Create your account",
-            "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
-            "mobilePlaceholder": "Mobile number (optional)",
-            "creatingAccount": "Creating account…",
-            "createAccountButton": "Create account",
-            "errors": {
-                "incorrectCode": "The code is incorrect.",
-                "verifyCode": "Failed to verify invite code.",
-                "createAccount": "Failed to create account.",
-                "completeSignup": "Failed to complete invited signup.",
-                "missingAccount": "Could not determine the account to sign in.",
-                "completeRecovery": "Failed to complete password recovery.",
-                "phoneAlreadyInUse": "This phone number is already in use.",
-                "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-            }
-        }
+    "notices": {
+      "title": "알림",
+      "emailConfirmation": "프로필은 저장되었지만 이메일 변경에는 확인이 필요합니다"
     },
-    "completeProfile": {
-        "kicker": "한 단계만 더",
-        "title": "프로필을 완성하세요",
-        "description": "다른 사람이 보게 될 이름과 연락처 검색용 Tryggd ID를 추가하세요.",
-        "nameLabel": "이름",
-        "namePlaceholder": "예: Emily Cooper",
-        "nameHelperEmpty": "연락처에 이 이름이 표시됩니다.",
-        "nameHelper": "연락처에 이 이름이 표시됩니다.",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "예: emilycooper",
-        "tryggdIdHelper": "사람들이 Tryggd에서 회원님을 찾고 추가할 때 사용합니다.",
-        "continue": "계속",
-        "saving": "저장 중...",
-        "saveErrorTitle": "프로필을 저장할 수 없습니다",
-        "saveErrorBody": "다시 시도해 주세요.",
-        "duplicateTitle": "다른 Tryggd ID를 사용해 보세요",
-        "duplicateBody": "이미 사용 중인 Tryggd ID입니다.",
-        "validation": {
-            "required": "사람들이 Tryggd에서 회원님을 찾고 추가할 때 사용합니다.",
-            "min": "Tryggd ID는 3자 이상이어야 합니다.",
-            "max": "Tryggd ID는 24자 이하여야 합니다.",
-            "chars": "소문자, 숫자, 마침표, 밑줄만 사용할 수 있습니다."
-        }
+    "success": {
+      "title": "저장됨",
+      "saved": "프로필이 업데이트되었습니다."
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "Additional features for richer daily check-ins",
-        "badge": "Plus",
-        "heading": "Unlock more context",
-        "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
-        "comingSoon": {
-            "title": "Plus Preview",
-            "message": "파일럿 기간 동안 Plus Preview를 무료로 사용할 수 있습니다. 결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
-            "button": "Plus plan 무료 미리보기",
-            "note": "언제든지 Basic plan으로 돌아갈 수 있습니다."
-        },
-        "features": {
-            "wellness": {
-                "title": "Wellness sharing",
-                "description": "Share how you feel as part of your daily check-in."
-            },
-            "location": {
-                "title": "Location sharing",
-                "description": "Let trusted contacts see your shared location in Activity."
-            },
-            "notifications": {
-                "title": "Notification controls",
-                "description": "Control which contacts receive your check-in notifications."
-            },
-            "contacts": {
-                "title": "Unlimited contacts",
-                "description": "Add more than the free-plan contact limit."
-            },
-            "welfare": {
-                "title": "Welfare greeting",
-                "description": "Use additional welfare follow-up features for your contacts."
-            },
-            "tripMode": {
-                "title": "Trip Mode",
-                "description": "Share travel progress and trip-specific updates."
-            },
-            "mood": {
-                "title": "Mood updates",
-                "description": "Add emotional context to your check-ins."
-            },
-            "controls": {
-                "title": "More sharing control",
-                "description": "Decide which trusted contacts receive which updates."
-            },
-            "activity": {
-                "title": "Richer activity updates",
-                "description": "Show more detail in shared check-in and status history."
-            }
-        }
+    "errors": {
+      "loadProfile": "프로필을 불러오지 못했습니다",
+      "notLoggedIn": "로그인되어 있지 않습니다",
+      "updateProfile": "프로필을 업데이트할 수 없습니다",
+      "saveProfile": "프로필을 저장할 수 없습니다",
+      "deleteAccount": "계정을 삭제할 수 없습니다"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ Plus plan 무료 미리보기",
-        "dialogIntro": "지금 Tryggd Plus plan을 무료로 사용해 보세요.\n결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
-        "dialogFreeSectionTitle": "Basic plan 포함:",
-        "dialogFreeFeature1": "✓ 체크인   🔔 연락처 업데이트 알림   👥 최대 5명 연락처",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan은 Basic plan의 모든 기능에 추가로:",
-        "dialogFeature1": "🌿 일상 모드   ✈️ 여행 모드   ✋ 도움 신호",
-        "dialogFeature2": "🙂 기분 업데이트   📍 위치 공유   👥 더 많은 연락처",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogPricingTitle": "Plus plan 가격",
-        "dialogPricingNote": "{{deadline}} 이후 Plus plan을 계속 사용하기로 선택하면:",
-        "dialogPricingMonthly": "US$2.99 / 월",
-        "dialogPricingYearly": "US$19.99 / 년",
-        "dialogSupportNote": "Plus plan은 Tryggd의 지속적인 운영과 개선을 지원하는 방법입니다.\nTryggd를 유용하고 안정적이며 신뢰할 수 있고 광고 없는 서비스로 유지하고 싶습니다.",
-        "dialogPreviewNote": "Plus Preview는 {{deadline}}까지 열려 있습니다.\nPreview가 끝나면 계정은 자동으로 Basic plan으로 돌아갑니다.",
-        "activate": "Plus plan 무료 미리보기",
-        "notNow": "Basic plan 사용",
-        "activatedMessage": "Plus가 활성화되었습니다. 홈이 강화됨으로 전환되었습니다. 설정에서 언제든지 간단으로 전환할 수 있습니다.",
-        "expiredTitle": "Plus 프리뷰가 종료되었습니다",
-        "expiredBody": "Tryggd Basic plan을 계속 사용할 수 있으며 체크인, 신뢰할 수 있는 연락처, 기본 업데이트가 포함됩니다.\n\n이전 체크인과 활동은 삭제되지 않습니다.",
-        "expiredButton": "알겠습니다",
-        "settingsRowTitle": "Plus 프리뷰",
-        "settingsRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 무료로 체험하세요.",
-        "settingsRowAction": "프리뷰 시작",
-        "activeRowTitle": "Plus 프리뷰 진행 중",
-        "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다.",
-        "dialogFeature5": "",
-        "dialogFeature6": ""
+    "deleteAccount": {
+      "title": "계정 삭제",
+      "confirm": "이 작업은 계정과 데이터를 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다.",
+      "finalTitle": "계정을 영구적으로 삭제할까요?",
+      "finalConfirm": "계정, 연락처, 체크인, 설정이 영구적으로 삭제됩니다.",
+      "button": "계정 삭제",
+      "deleting": "삭제 중...",
+      "successTitle": "계정 삭제 완료",
+      "successMessage": "계정이 영구적으로 삭제되었습니다."
     },
-    "onboarding": {
-        "skip": "건너뛰기",
-        "next": "다음",
-        "getStarted": "시작하기",
-        "slides": {
-            "checkin": {
-                "eyebrow": "매일의 리듬",
-                "title": "빠른 일일 체크인",
-                "body": "💚 한 번 탭으로 체크인하고 신뢰하는 연락처에게 괜찮다는 것을 알려보세요.",
-                "points": {
-                    "one": "✓ 한 번 탭으로 체크인",
-                    "two": "✓ 간단한 '나는 안전해요' 업데이트"
-                }
-            },
-            "contacts": {
-                "eyebrow": "나의 서클",
-                "title": "신뢰하는 연락처",
-                "body": "👥 체크인, 도움 신호, 공유 업데이트를 받을 수 있는 가족이나 친한 친구를 추가하세요.",
-                "points": {
-                    "one": "✓ 업데이트를 볼 사람을 선택하세요",
-                    "two": "✓ 도움 신호는 올바른 사람에게 전달됩니다"
-                }
-            },
-            "sharing": {
-                "eyebrow": "선택적 정보",
-                "title": "상태 및 위치",
-                "body": "📍 선택한 연락처와 현재 상태, 집에 있는지 외출 중인지, 여행 상태 또는 위치를 공유하세요.",
-                "points": {
-                    "one": "✓ 🙂 기분, 🏠 집/외출, 또는 ✈️ 여행 상태",
-                    "two": "✓ 📍 공유를 선택할 때만 위치 공유"
-                }
-            },
-            "free": {
-                "eyebrow": "기본적으로 단순하게",
-                "title": "Plus Preview",
-                "body": "Tryggd Free는 기본을 단순하게 유지합니다. 파일럿 기간 동안 Plus 기능을 미리 볼 수 있습니다:",
-                "freeSummary": "Free: 체크인, 신뢰하는 연락처, 기본 상태",
-                "bodyFreeSuffix": "는 기본을 단순하게 유지합니다.",
-                "bodyPilotPrefix": "파일럿 기간 동안, 미리 보기 ",
-                "bodyPilotSuffix": ":",
-                "points": {
-                    "one": "✈️ 여행 모드",
-                    "two": "📍 위치 공유 옵션",
-                    "three": "🙂 기분 업데이트",
-                    "four": "⚙️ 더 많은 공유 제어"
-                },
-                "footer": "Plus Preview는 선택 사항입니다."
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "알아두면 좋은 것",
-            "title": "몇 가지 중요한 사항",
-            "productName": "Tryggd ",
-            "paragraph1": "는 신뢰하는 연락처와 수동 체크인, 도움 신호, 선택한 업데이트를 공유하는 데 도움을 줍니다.",
-            "paragraph2": "연락처는 공유하기로 선택한 상태 업데이트를 볼 수 있습니다. 위치는 위치 공유를 켤 때만 공유됩니다.",
-            "paragraph3": "알림은 네트워크 연결, 배터리 수준, 기기 설정 또는 타사 푸시 서비스로 인해 지연될 수 있습니다.",
-            "paragraph4": "Tryggd는 긴급 서비스가 아니며 긴급하거나 생명을 위협하는 상황에서 의존해서는 안 됩니다.",
-            "acceptLabel": "이해했습니다",
-            "saving": "저장 중...",
-            "decline": "거부 / 뒤로"
-        },
-        "errors": {
-            "saveTitle": "계속할 수 없습니다",
-            "saveBody": "다시 시도해 주세요."
-        }
-    },
-    "watchOver": {
-        "toggle": "지켜보기",
-        "toggleHint": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다.",
-        "limitReached": "무료 플랜에서 {{max}}명을 지켜볼 수 있습니다. Plus로 업그레이드하면 무제한.",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "부재 상태",
-        "setAway": "부재 중으로 설정",
-        "clearAway": "부재 상태 해제",
-        "label": "메시지 (선택)",
-        "labelPlaceholder": "예: 휴가 중",
-        "until": "부재 중 종료일",
-        "active": "{{date}}까지 부재 중",
-        "activeNoDate": "부재 중 (종료일 없음)",
-        "hint": "부재 중에는 연락처에 부재 알림이 전송되지 않습니다.",
-        "saving": "저장 중...",
-        "error": "부재 상태를 업데이트할 수 없습니다."
+    "qr": {
+      "title": "내 QR 코드",
+      "hint": "이 코드를 스캔하면 즉시 연락처로 추가됩니다.",
+      "errorGenerating": "QR 코드를 생성할 수 없습니다. 다시 시도해 주세요."
     }
+  },
+  "settings": {
+    "title": "설정",
+    "account": "계정",
+    "information": "정보",
+    "language": "언어",
+    "theme": "테마",
+    "homeStyle": {
+      "title": "홈 화면 선택",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "심플",
+        "description": "한 번 탭으로 체크인, 방해 요소 없음."
+      },
+      "enhanced": {
+        "title": "확장",
+        "description": "기분, 외출 상태, 위치를 공유하세요."
+      }
+    },
+    "notifications": {
+      "title": "알림",
+      "preferences": "알림 설정",
+      "summary": {
+        "reminders": "리마인더",
+        "activity": "활동",
+        "allOff": "모든 알림 꺼짐"
+      },
+      "stayOnTrack": {
+        "title": "계속 진행하기",
+        "description": "개인 안전 일일 체크인을 완료하도록 알려줍니다"
+      },
+      "contactActivity": {
+        "title": "연락처 활동",
+        "description": "연락처가 체크인을 완료하면 알려줍니다"
+      }
+    },
+    "about": "앱 정보",
+    "privacy": "개인정보 처리방침",
+    "terms": "서비스 약관",
+    "feedback": "피드백 보내기",
+    "logout": "로그아웃",
+    "resetData": "데이터 초기화",
+    "light": "라이트",
+    "dark": "다크",
+    "systemDefault": "시스템 설정 사용",
+    "english": "영어",
+    "swedish": "스웨덴어",
+    "norwegian": "노르웨이어",
+    "danish": "덴마크어",
+    "finnish": "핀란드어",
+    "chineseSimplified": "중국어(간체)",
+    "chineseTraditional": "중국어(번체)",
+    "tripMode": {
+      "title": "체크인 모드",
+      "home": "일반",
+      "trip": "여행",
+      "homeDescription": "일반 매일 체크인",
+      "tripDescription": "연락처와 여행 상태 공유"
+    },
+    "resetWarning": "정말 진행하시겠습니까? 모든 데이터가 삭제됩니다.",
+    "logoutConfirm": "정말 로그아웃하시겠습니까?",
+    "confirmReset": "초기화",
+    "cancel": "취소",
+    "ok": "확인"
+  },
+  "common": {
+    "ok": "확인",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "loading": "불러오는 중...",
+    "refreshing": "새로 고치는 중...",
+    "back": "뒤로",
+    "next": "다음",
+    "submit": "제출",
+    "yes": "예",
+    "no": "아니요",
+    "done": "Done"
+  },
+  "time": {
+    "justNow": "방금 전",
+    "minutesAgo": "{{count}}분 전",
+    "hoursAgo_one": "{{count}}시간 전",
+    "hoursAgo_other": "{{count}}시간 전",
+    "daysAgo_one": "{{count}}일 전",
+    "daysAgo_other": "{{count}}일 전"
+  },
+  "errors": {
+    "title": "오류",
+    "notAuthenticated": "인증되지 않았습니다"
+  },
+  "permissions": {
+    "title": "권한"
+  },
+  "auth": {
+    "signup": {
+      "title": "계정 만들기",
+      "create": "계정 만들기",
+      "creating": "계정을 만드는 중...",
+      "success": {
+        "title": "🎉 계정이 생성되었습니다",
+        "message": "계정이 준비되었습니다. 이제 로그인할 수 있습니다."
+      },
+      "verifyEmail": {
+        "title": "이메일을 확인해 주세요!",
+        "message": "이메일로 확인 메일을 보냈습니다. 확인 후 로그인해 주세요."
+      },
+      "error": "회원가입에 실패했습니다"
+    },
+    "login": {
+      "title": "로그인",
+      "signIn": "로그인",
+      "loggingIn": "로그인 중...",
+      "error": "로그인에 실패했습니다",
+      "continueWithGoogle": "Google로 계속하기",
+      "connectingToGoogle": "Google에 연결하는 중...",
+      "continueWithApple": "Apple로 계속하기",
+      "connectingToApple": "Apple에 연결하는 중...",
+      "orContinueWithEmail": "또는 이메일로 계속하기",
+      "socialError": "로그인에 실패했습니다",
+      "useInviteCode": "초대 코드가 있나요?"
+    },
+    "email": "이메일",
+    "displayName": "이름",
+    "password": {
+      "placeholder": "비밀번호(최소 6자)",
+      "minimumLength": "Use at least 8 characters."
+    },
+    "confirmPassword": "비밀번호 확인",
+    "passwordsMatch": "✔ 비밀번호가 일치합니다",
+    "passwordsNoMatch": "✖ 비밀번호가 일치하지 않습니다",
+    "alreadyHaveAccount": "이미 계정이 있나요? 로그인",
+    "noAccount": "계정이 없나요? 회원가입",
+    "unknownError": "알 수 없는 오류",
+    "forgotPassword": {
+      "title": "비밀번호를 잊으셨나요",
+      "instructions": "이메일 주소를 입력하세요",
+      "send": "재설정 이메일 보내기",
+      "sending": "보내는 중...",
+      "sentTitle": "이메일을 확인하세요",
+      "sentMessage": "비밀번호 재설정 링크를 이메일로 보냈습니다.",
+      "login": "로그인으로 이동",
+      "error": "재설정 이메일 전송 오류"
+    },
+    "resetPassword": {
+      "title": "비밀번호 재설정",
+      "instructions": "아래에 새 비밀번호를 입력하세요.",
+      "save": "새 비밀번호 저장",
+      "saving": "저장 중...",
+      "successTitle": "비밀번호가 재설정되었습니다!",
+      "successMessage": "이제 새 비밀번호로 로그인할 수 있습니다.",
+      "login": "로그인으로 이동",
+      "error": "비밀번호 재설정 오류",
+      "passwordPlaceholder": "새 비밀번호"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "초대를 받은 뒤 앱을 설치했다면 6자리 코드를 입력해 계속하세요.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
+    }
+  },
+  "completeProfile": {
+    "kicker": "한 단계만 더",
+    "title": "프로필을 완성하세요",
+    "description": "다른 사람이 보게 될 이름과 연락처 검색용 Tryggd ID를 추가하세요.",
+    "nameLabel": "이름",
+    "namePlaceholder": "예: Emily Cooper",
+    "nameHelperEmpty": "연락처에 이 이름이 표시됩니다.",
+    "nameHelper": "연락처에 이 이름이 표시됩니다.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "예: emilycooper",
+    "tryggdIdHelper": "사람들이 Tryggd에서 회원님을 찾고 추가할 때 사용합니다.",
+    "continue": "계속",
+    "saving": "저장 중...",
+    "saveErrorTitle": "프로필을 저장할 수 없습니다",
+    "saveErrorBody": "다시 시도해 주세요.",
+    "duplicateTitle": "다른 Tryggd ID를 사용해 보세요",
+    "duplicateBody": "이미 사용 중인 Tryggd ID입니다.",
+    "validation": {
+      "required": "사람들이 Tryggd에서 회원님을 찾고 추가할 때 사용합니다.",
+      "min": "Tryggd ID는 3자 이상이어야 합니다.",
+      "max": "Tryggd ID는 24자 이하여야 합니다.",
+      "chars": "소문자, 숫자, 마침표, 밑줄만 사용할 수 있습니다."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Plus Preview",
+      "message": "파일럿 기간 동안 Plus Preview를 무료로 사용할 수 있습니다. 결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
+      "button": "Plus plan 무료 미리보기",
+      "note": "언제든지 Basic plan으로 돌아갈 수 있습니다."
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
+      }
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Plus plan 무료 미리보기",
+    "dialogIntro": "지금 Tryggd Plus plan을 무료로 사용해 보세요.\n결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
+    "dialogFreeSectionTitle": "Basic plan 포함:",
+    "dialogFreeFeature1": "✓ 체크인   🔔 연락처 업데이트 알림   👥 최대 5명 연락처",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan은 Basic plan의 모든 기능에 추가로:",
+    "dialogFeature1": "🌿 일상 모드   ✈️ 여행 모드   ✋ 도움 신호",
+    "dialogFeature2": "🙂 기분 업데이트   📍 위치 공유   👥 더 많은 연락처",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan 가격",
+    "dialogPricingNote": "{{deadline}} 이후 Plus plan을 계속 사용하기로 선택하면:",
+    "dialogPricingMonthly": "US$2.99 / 월",
+    "dialogPricingYearly": "US$19.99 / 년",
+    "dialogSupportNote": "Plus plan은 Tryggd의 지속적인 운영과 개선을 지원하는 방법입니다.\nTryggd를 유용하고 안정적이며 신뢰할 수 있고 광고 없는 서비스로 유지하고 싶습니다.",
+    "dialogPreviewNote": "Plus Preview는 {{deadline}}까지 열려 있습니다.\nPreview가 끝나면 계정은 자동으로 Basic plan으로 돌아갑니다.",
+    "activate": "Plus plan 무료 미리보기",
+    "notNow": "Basic plan 사용",
+    "activatedMessage": "Plus가 활성화되었습니다. 홈이 강화됨으로 전환되었습니다. 설정에서 언제든지 간단으로 전환할 수 있습니다.",
+    "expiredTitle": "Plus 프리뷰가 종료되었습니다",
+    "expiredBody": "Tryggd Basic plan을 계속 사용할 수 있으며 체크인, 신뢰할 수 있는 연락처, 기본 업데이트가 포함됩니다.\n\n이전 체크인과 활동은 삭제되지 않습니다.",
+    "expiredButton": "알겠습니다",
+    "settingsRowTitle": "Plus 프리뷰",
+    "settingsRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 무료로 체험하세요.",
+    "settingsRowAction": "프리뷰 시작",
+    "activeRowTitle": "Plus 프리뷰 진행 중",
+    "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
+  },
+  "onboarding": {
+    "skip": "건너뛰기",
+    "next": "다음",
+    "getStarted": "시작하기",
+    "slides": {
+      "checkin": {
+        "eyebrow": "매일의 리듬",
+        "title": "빠른 일일 체크인",
+        "body": "💚 한 번 탭으로 체크인하고 신뢰하는 연락처에게 괜찮다는 것을 알려보세요.",
+        "points": {
+          "one": "✓ 한 번 탭으로 체크인",
+          "two": "✓ 간단한 '나는 안전해요' 업데이트"
+        }
+      },
+      "contacts": {
+        "eyebrow": "나의 서클",
+        "title": "신뢰하는 연락처",
+        "body": "👥 체크인, 도움 신호, 공유 업데이트를 받을 수 있는 가족이나 친한 친구를 추가하세요.",
+        "points": {
+          "one": "✓ 업데이트를 볼 사람을 선택하세요",
+          "two": "✓ 도움 신호는 올바른 사람에게 전달됩니다"
+        }
+      },
+      "sharing": {
+        "eyebrow": "선택적 정보",
+        "title": "상태 및 위치",
+        "body": "📍 선택한 연락처와 현재 상태, 집에 있는지 외출 중인지, 여행 상태 또는 위치를 공유하세요.",
+        "points": {
+          "one": "✓ 🙂 기분, 🏠 집/외출, 또는 ✈️ 여행 상태",
+          "two": "✓ 📍 공유를 선택할 때만 위치 공유"
+        }
+      },
+      "free": {
+        "eyebrow": "기본적으로 단순하게",
+        "title": "Plus Preview",
+        "body": "Tryggd Free는 기본을 단순하게 유지합니다. 파일럿 기간 동안 Plus 기능을 미리 볼 수 있습니다:",
+        "freeSummary": "Free: 체크인, 신뢰하는 연락처, 기본 상태",
+        "bodyFreeSuffix": "는 기본을 단순하게 유지합니다.",
+        "bodyPilotPrefix": "파일럿 기간 동안, 미리 보기 ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ 여행 모드",
+          "two": "📍 위치 공유 옵션",
+          "three": "🙂 기분 업데이트",
+          "four": "⚙️ 더 많은 공유 제어"
+        },
+        "footer": "Plus Preview는 선택 사항입니다."
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "알아두면 좋은 것",
+      "title": "몇 가지 중요한 사항",
+      "productName": "Tryggd ",
+      "paragraph1": "는 신뢰하는 연락처와 수동 체크인, 도움 신호, 선택한 업데이트를 공유하는 데 도움을 줍니다.",
+      "paragraph2": "연락처는 공유하기로 선택한 상태 업데이트를 볼 수 있습니다. 위치는 위치 공유를 켤 때만 공유됩니다.",
+      "paragraph3": "알림은 네트워크 연결, 배터리 수준, 기기 설정 또는 타사 푸시 서비스로 인해 지연될 수 있습니다.",
+      "paragraph4": "Tryggd는 긴급 서비스가 아니며 긴급하거나 생명을 위협하는 상황에서 의존해서는 안 됩니다.",
+      "acceptLabel": "이해했습니다",
+      "saving": "저장 중...",
+      "decline": "거부 / 뒤로"
+    },
+    "errors": {
+      "saveTitle": "계속할 수 없습니다",
+      "saveBody": "다시 시도해 주세요."
+    }
+  },
+  "watchOver": {
+    "toggle": "지켜보기",
+    "toggleHint": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다.",
+    "limitReached": "무료 플랜에서 {{max}}명을 지켜볼 수 있습니다. Plus로 업그레이드하면 무제한.",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "부재 상태",
+    "setAway": "부재 중으로 설정",
+    "clearAway": "부재 상태 해제",
+    "label": "메시지 (선택)",
+    "labelPlaceholder": "예: 휴가 중",
+    "until": "부재 중 종료일",
+    "active": "{{date}}까지 부재 중",
+    "activeNoDate": "부재 중 (종료일 없음)",
+    "hint": "부재 중에는 연락처에 부재 알림이 전송되지 않습니다.",
+    "saving": "저장 중...",
+    "error": "부재 상태를 업데이트할 수 없습니다."
+  }
 }

@@ -1,877 +1,879 @@
 {
-    "home": {
-        "title": "Hjem",
-        "welcome": "Velkommen",
-        "greetings": {
-            "morning": "God morgen",
-            "afternoon": "God ettermiddag",
-            "evening": "God kveld",
-            "night": "God natt"
-        },
-        "everythingIsFine": "Alt er bra",
-        "dontForget": "Ikke glem å sjekke inn i dag!",
-        "youCheckedInTodayAt": "Du sjekket inn i dag kl {{time}}",
-        "pressMeToCheckIn": "SJEKK INN HER",
-        "reset": "Tilbakestill",
-        "timer": "Tidtakere",
-        "timeLeftToday": "Tid igjen i dag",
-        "reachOut": {
-            "pressToSendHelp": "Send hjelp",
-            "lastSentLabel": "Sist sendt hjelp:"
-        },
-        "activity": "Aktivitet",
-        "contacts_one": "{{count}} kontakt",
-        "contacts_other": "{{count}} kontakter",
-        "streak": "Streak",
-        "days_one": "{{count}} dag",
-        "days_other": "{{count}} dager",
-        "dateFormats": {
-            "weekdays": [
-                "Søndag",
-                "Mandag",
-                "Tirsdag",
-                "Onsdag",
-                "Torsdag",
-                "Fredag",
-                "Lørdag"
-            ],
-            "months": [
-                "Januar",
-                "Februar",
-                "Mars",
-                "April",
-                "Mai",
-                "Juni",
-                "Juli",
-                "August",
-                "September",
-                "Oktober",
-                "November",
-                "Desember"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "Kunne ikke hente siste innsjekk",
-            "noUser": "Ingen bruker funnet",
-            "checkin": "Innsjekking mislyktes",
-            "loadState": "Kunne ikke laste tilstand"
-        },
-        "status": {
-            "contactCheckedIn": "{{name}} sjekket inn",
-            "sentWave": "{{name}} sendte deg en vink",
-            "respondedToYou": "{{name}} svarte på innsjekkingen din",
-            "emergencyMessage": "🚨 {{name}}: {{message}}",
-            "messageFrom": "Melding fra {{name}}",
-            "justNow": "Akkurat nå",
-            "minutesAgo_one": "{{count}} minutt siden",
-            "minutesAgo_other": "{{count}} minutter siden",
-            "hoursAgo_one": "{{count}} time siden",
-            "hoursAgo_other": "{{count}} timer siden",
-            "hoursAgoDecimal": "{{value}} timer siden",
-            "daysAgo_one": "{{count}} dag siden",
-            "daysAgo_other": "{{count}} dager siden",
-            "lastCheckinAgo": "Siste innsjekking {{timeAgo}}",
-            "lastCheckinLabel": "Siste innsjekking:"
-        },
-        "wellnessPrompt": "How are you feeling today?",
-        "context": {
-            "title": "Dagens kontekst",
-            "home": "Hjemme",
-            "trip": "På reise",
-            "homeTab": "🌿 Daglig",
-            "tripTab": "✈️ Reise",
-            "reachOutTab": "✋ Hjelp",
-            "reachOutStatuses": {
-                "call_now": "✋ Jeg trenger hjelp",
-                "call_available": "📞 Ring meg"
-            },
-            "statusTitle": "Status",
-            "tripStatusPrompt": "Velg en reisestatus",
-            "homeStatuses": {
-                "chilling": "🛋️ Chiller",
-                "home": "🏠 Hjemme",
-                "outside": "🚶 Ute",
-                "at_school": "🏫 På skolen",
-                "working": "💼 På jobb",
-                "busy": "💼 Opptatt",
-                "relaxing": "☕ Tepause",
-                "gathering": "🥳 Med venner",
-                "on_call": "📞 I samtale",
-                "eating": "🍽️ Spiser",
-                "exhausted": "😩 Utmattet",
-                "sleepy": "😪 Søvnig",
-                "daydreaming": "💭 Drømmer",
-                "playing_sport": "🏃 Sport",
-                "having_fun": "🎉 Har det gøy",
-                "watching_movie": "🎬 Ser på film",
-                "resting": "😌 Hviler",
-                "goodmorning": "🌅 God morgen",
-                "goodafternoon": "🌞 Ettermiddag",
-                "goodnight": "🌙 God natt"
-            },
-            "summaryHome": "Normal innsjekking",
-            "summaryTrip": "Legg til en reisestatus",
-            "summaryWithStatus": "På reise · {{status}}"
-        },
-        "plusWellness": {
-            "title": "Plus feature",
-            "message": "Upgrade to Plus to share how you feel with your check-in."
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 Drar på tur",
-                "boarding": "🛫 Ombordstigning / 🚅 Kjører",
-                "layover": "🛑 Mellomlanding / tilkobling",
-                "landed": "🛬 Ankommet trygt",
-                "on_the_move": "🚕 På farten",
-                "at_hotel": "🏨 Ankommet hotellet",
-                "on_trip": "🗺️ På reisen",
-                "heading_home": "🏠 På vei hjem",
-                "trip_ended": "✅ Turen er over — trygt hjemme"
-            }
-        }
+  "home": {
+    "title": "Hjem",
+    "welcome": "Velkommen",
+    "greetings": {
+      "morning": "God morgen",
+      "afternoon": "God ettermiddag",
+      "evening": "God kveld",
+      "night": "God natt"
     },
-    "activity": {
-        "title": "Aktivitet",
-        "subtitle": "Siste innsjekk for deg og dine kontakter",
-        "you": "Du",
-        "yourActivity": "Din aktivitet",
-        "contacts": "Kontakter",
-        "loading": "Laster aktivitet...",
-        "noCheckIn": "Ingen innsjekking ennå",
-        "staleCheckinMessage_one": "{{name}} har ikke sjekket inn på {{count}} dag",
-        "staleCheckinMessage_other": "{{name}} har ikke sjekket inn på {{count}} dager",
-        "emptyState": {
-            "title": "Ingen kontakter",
-            "message": "Legg til kontakter for å se aktivitet"
-        },
-        "priority": {
-            "failed": "Mislyktes",
-            "ongoing": "Pågående",
-            "successful": "Lyktes"
-        },
-        "time": {
-            "locale": "nb-NO"
-        },
-        "errors": {
-            "loadActivities": "Kunne ikke laste aktivitet",
-            "fetchContacts": "Kunne ikke hente kontakter",
-            "fetchOwnerActivity": "Kunne ikke hente brukeraktivitet",
-            "openSharedLocation": "Failed to open shared location.",
-            "locationPermission": "Plasseringstillatelse er nødvendig for å dele posisjonen din."
-        },
-        "day": {
-            "today": "I dag",
-            "yesterday": "I går",
-            "other": "{{date, date, d. MMMM yyyy}}"
-        },
-        "responseButton": {
-            "sendResponse": "👏 Gi en high five?",
-            "sent": "Like sendt ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ Du fikk {{count}} svar på innsjekkingen din i dag:",
-            "todayLikes_other": "⭐️ Du fikk {{count}} svar på innsjekkingen din i dag:",
-            "prefix": "reagerte på innsjekkingen din",
-            "defaultMessage": "liker 👍 innsjekkingen din!"
-        },
-        "welfareButton": {
-            "send": "🍀 Går det bra?",
-            "sent": "Hilsen sendt ✓",
-            "sentOffline": "Sendt ✓ — {{name}} ser meldingen din når de er tilbake på nett"
-        },
-        "sharedLocation": {
-            "view": "View shared location"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "China",
-            "hongKong": "Hong Kong",
-            "taiwan": "Taiwan",
-            "sweden": "Sweden",
-            "norway": "Norway",
-            "denmark": "Denmark",
-            "finland": "Finland"
-        },
-        "wellness": {
-            "veryLow": "Føler meg ikke bra\n😔",
-            "low": "Litt nedfor\n😕",
-            "neutral": "Alt er bra\n🙂",
-            "good": "Føler meg bra\n☺️",
-            "great": "Veldig glad i dag\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 Hvordan har du det i dag?",
-            "sent": "Hilsen sendt ✓"
-        },
-        "checkedInAt": "Sjekket inn @ {{time}} {{date}}",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 Du fikk {{count}} hilsen i dag:",
-            "todayGreetings_other": "💛 Du fikk {{count}} hilsener i dag:"
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 Du fikk {{count}} nødmelding i dag:",
-            "todayMessages_other": "🚨 Du fikk {{count}} nødmeldinger i dag:"
-        },
-        "supportButton": {
-            "send": "💪 Send støtte",
-            "sent": "Støtte sendt ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "Forstått",
-            "sent": "Besvart ✓"
-        },
-        "openInMaps": "Åpne i kart",
-        "watchOver": {
-            "resolvedBy": "Håndtert av {{name}}",
-            "markResolved": "Jeg har vært i kontakt — alt er bra",
-            "resolving": "Håndterer...",
-            "resolveError": "Kunne ikke markere som håndtert. Prøv igjen."
-        }
+    "everythingIsFine": "Alt er bra",
+    "dontForget": "Ikke glem å sjekke inn i dag!",
+    "youCheckedInTodayAt": "Du sjekket inn i dag kl {{time}}",
+    "pressMeToCheckIn": "SJEKK INN HER",
+    "reset": "Tilbakestill",
+    "timer": "Tidtakere",
+    "timeLeftToday": "Tid igjen i dag",
+    "reachOut": {
+      "pressToSendHelp": "Send hjelp",
+      "lastSentLabel": "Sist sendt hjelp:"
     },
-    "contacts": {
-        "title": "Kontakter",
-        "contact": "Kontakt",
-        "newContact": "Ny kontakt",
-        "displayingAs": "Vises som",
-        "loading": "Laster kontakter...",
-        "subtitle": {
-            "withContacts": "Du har {{count}}/{{max}} kontakter",
-            "noContacts": "Legg til kontakter for deling",
-            "withContactsUnlimited": "{{count}} contacts"
-        },
-        "emptyState": {
-            "title": "Ingen kontakter",
-            "message": "Trykk + for å legge til første kontakt"
-        },
-        "tabs": {
-            "contacts": "Kontakter",
-            "requests": "Forespørsler"
-        },
-        "requests": {
-            "received": "Mottatte forespørsler",
-            "sent": "Sendte forespørsler",
-            "waiting": "Venter på svar",
-            "loading": "Laster forespørsler...",
-            "emptyState": {
-                "title": "Ingen forespørsler",
-                "message": "Når noen sender en kontaktforespørsel vises den her"
-            }
-        },
-        "placeholders": {
-            "email": "Skriv inn e-postadresse",
-            "identifier": "Enter Tryggd ID or email",
-            "suggestedUsername": "Foreslått Tryggd ID (valgfritt)"
-        },
-        "buttons": {
-            "accept": "Godta",
-            "reject": "Avvis",
-            "delete": "Slett",
-            "cancelRequest": "Avbryt forespørsel",
-            "sending": "Sender...",
-            "sendRequests": "Send forespørsel{{count, plural, =1 {} other {er}}}",
-            "sendRequests_one": "Send request",
-            "sendRequests_other": "Send requests"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "Grense nådd",
-                "message": "Du kan legge til maks 3 kontakter."
-            },
-            "senderLimitReached": {
-                "title": "Kan ikke godta forespørselen",
-                "message": "Denne personens kontaktliste er full."
-            },
-            "delete": {
-                "title": "Slett kontakt",
-                "message": "Er du sikker på at du vil slette {{name}}?"
-            },
-            "contactExists": {
-                "title": "Kontakt finnes allerede",
-                "message": "{{name}} er allerede blant dine kontakter"
-            },
-            "requestExists": {
-                "title": "Forespørsel allerede sendt",
-                "message": "Du har allerede sendt forespørsel til denne brukeren"
-            },
-            "requestReceived": {
-                "title": "Forespørsel mottatt",
-                "message": "Du har allerede en forespørsel fra {{email}}. Sjekk 'Forespørsler'"
-            },
-            "invalidEmail": {
-                "title": "Ugyldig e-post",
-                "message": "{{email}} er ikke registrert eller verifisert"
-            },
-            "selfContact": {
-                "title": "Ugyldig kontakt",
-                "message": "Du kan ikke legge til deg selv som kontakt"
-            },
-            "noChanges": {
-                "title": "Ingen endringer",
-                "message": "Ingen nye kontakter å lagre"
-            },
-            "alreadyInContacts": "Denne brukeren er allerede blant dine kontakter",
-            "requestHandled": {
-                "title": "Forespørsel håndtert",
-                "message": "Denne forespørselen er allerede håndtert"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "Forespørsel sendt",
-                "message": "Kontaktforespørsel sendt til {{name}}"
-            },
-            "contactAdded": {
-                "title": "Kontakt lagt til",
-                "message": "{{name}} er lagt til blant dine kontakter"
-            },
-            "deleted": {
-                "title": "Kontakt slettet",
-                "message": "{{name}} er slettet. Alle relasjoner er fjernet"
-            },
-            "requestRejected": {
-                "title": "Forespørsel avvist",
-                "message": "Kontaktforespørsel avvist"
-            },
-            "requestCancelled": {
-                "title": "Forespørsel avbrutt",
-                "message": "Kontaktforespørsel avbrutt"
-            }
-        },
-        "errors": {
-            "createInvite": "Kunne ikke opprette invitasjonen.",
-            "shareInvite": "Kunne ikke dele invitasjonslenken.",
-            "recoveryUnavailable": "Denne kontakten kan ikke motta en gjenopprettingsinvitasjon ennå.",
-            "createRecoveryInvite": "Kunne ikke opprette gjenopprettingsinvitasjonen.",
-            "updateCheckinNotifications": "Failed to update check-in notifications.",
-            "updateLocationSharing": "Failed to update location sharing.",
-            "noContactUpdated": "No contact row was updated.",
-            "loadData": "Failed to load data",
-            "save": "Failed to save contacts",
-            "delete": "Failed to delete contact",
-            "sendRequest": "Failed to send contact request",
-            "search": "Could not search for user",
-            "requestNotFound": "Could not find contact request or it was already handled",
-            "accept": "Failed to accept contact request",
-            "reject": "Failed to reject request",
-            "cancel": "Failed to cancel request"
-        },
-        "qr": {
-            "permissionTitle": "Kameratilgang kreves",
-            "permissionMessage": "Vennligst tillat kameratilgang for å skanne QR-koder.",
-            "scanHint": "Pek mot en Tryggd QR-kode for å legge til en kontakt",
-            "successTitle": "Kontakt lagt til",
-            "successMessage": "{{name}} er lagt til i kontaktene dine",
-            "newContact": "Ny kontakt",
-            "ownerLimitReached": "Denne personens kontaktliste er full. De kan ikke ta imot nye kontakter nå."
-        },
-        "messages": {
-            "contactDefault": "This contact"
-        },
-        "emergencyMessage": {
-            "modalTitle": "Send en nødmelding til {{name}}",
-            "modalDescription": "Dette sender et push-varsel umiddelbart og vises i aktivitetsfeeden deres.",
-            "placeholder": "Hva skjer?",
-            "send": "Send",
-            "sending": "Sender…",
-            "sendError": "Kunne ikke sende nødmeldingen."
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} will receive your check-ins",
-            "checkinsDisabled": "{{name}} will not receive your check-ins",
-            "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity",
-            "watchOverEnabled": "Du varsles hvis {{name}} ikke sjekker inn på en dag",
-            "watchOverDisabled": "Overvåking av {{name}} deaktivert"
-        },
-        "invite": {
-            "ready": "Invitasjonen er klar",
-            "recoveryReady": "Gjenopprettingslenken er klar",
-            "instructions": "Send lenken først. Oppgi deretter denne koden:",
-            "recoveryInstructions": "Send gjenopprettingslenken først. Oppgi deretter denne koden:",
-            "expiresOn": "Denne invitasjonen utløper {{date}}.",
-            "resettingTryggdId": "Tilbakestiller Tryggd-ID: {{id}}",
-            "suggestedTryggdId": "Foreslått Tryggd-ID: {{id}}",
-            "shareMessage": "Bli med meg på Tryggd:",
-            "recoveryShareMessage": "Bruk denne lenken for å tilbakestille Tryggd-passordet ditt:",
-            "modalTitle": "Inviter noen til Tryggd",
-            "modalDescription": "Vi oppretter en privat invitasjonslenke og en 6-sifret kode. Foreslå en Tryggd-ID nå, så slipper mottakeren å velge en senere.",
-            "suggestedUsernameHelp": "Bruk små bokstaver, tall, punktum eller understrek. Vi sjekker tilgjengeligheten før invitasjonen opprettes.",
-            "createButton": "Opprett invitasjon",
-            "creating": "Oppretter…",
-            "shareButton": "Del lenke"
-        },
-        "plusFeature": {
-            "title": "Plus feature",
-            "notifications": "Upgrade to Plus to control contact check-in notifications.",
-            "location": "Upgrade to Plus to enable location sharing for a contact."
-        }
-    },
-    "profile": {
-        "title": "Profil",
-        "defaultName": "Bruker",
-        "loading": "Laster profil...",
-        "buttons": {
-            "edit": "Rediger",
-            "save": "Lagre",
-            "saving": "Lagrer...",
-            "logout": "Logg ut"
-        },
-        "fields": {
-            "name": "Navn",
-            "email": "E-post",
-            "phone": "Telefon",
-            "notSpecified": "Ikke spesifisert"
-        },
-        "settings": {
-            "title": "Innstillinger",
-            "subtitle": "App-innstillinger og varsler"
-        },
-        "avatarModal": {
-            "title": "Bytt profilbilde",
-            "takePhoto": "Ta bilde",
-            "chooseFromLibrary": "Velg fra bibliotek"
-        },
-        "logout": {
-            "title": "Logg ut",
-            "confirm": "Er du sikker?",
-            "button": "Logg ut"
-        },
-        "permissions": {
-            "camera": "Kameratilgang kreves"
-        },
-        "notices": {
-            "title": "Varsel",
-            "emailConfirmation": "Profil lagret, men endring av e-post krever bekreftelse"
-        },
-        "success": {
-            "title": "Lagret",
-            "saved": "Din profil er oppdatert"
-        },
-        "errors": {
-            "loadProfile": "Kunne ikke laste profil",
-            "notLoggedIn": "Du er ikke logget inn",
-            "updateProfile": "Kunne ikke oppdatere profil",
-            "saveProfile": "Kunne ikke lagre profil",
-            "deleteAccount": "Kunne ikke slette konto"
-        },
-        "deleteAccount": {
-            "title": "Slett konto",
-            "confirm": "Dette sletter kontoen og dataene dine permanent. Handlingen kan ikke angres.",
-            "finalTitle": "Slette kontoen permanent?",
-            "finalConfirm": "Kontoen, kontaktene, innsjekkingene og innstillingene dine blir permanent fjernet.",
-            "button": "Slett konto",
-            "deleting": "Sletter...",
-            "successTitle": "Konto slettet",
-            "successMessage": "Kontoen din er slettet permanent."
-        },
-        "qr": {
-            "title": "Min QR-kode",
-            "hint": "La noen skanne dette for å legge deg til som kontakt umiddelbart.",
-            "errorGenerating": "Kunne ikke generere QR-kode. Prøv igjen."
-        }
-    },
-    "settings": {
-        "title": "Innstillinger",
-        "account": "Konto",
-        "information": "Informasjon",
-        "language": "Språk",
-        "theme": "Tema",
-        "homeStyle": {
-            "title": "Velg hjemmevisning",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "Enkel",
-                "description": "Et trykk for innsjekking, uten distraksjoner."
-            },
-            "enhanced": {
-                "title": "Utvidet",
-                "description": "Del humør, reisestatus og posisjon."
-            }
-        },
-        "notifications": {
-            "title": "Varsler",
-            "preferences": "Varselinnstillinger",
-            "summary": {
-                "reminders": "Påminnelser",
-                "activity": "Aktivitet",
-                "allOff": "Alle varsler av"
-            },
-            "stayOnTrack": {
-                "title": "Hold deg på sporet",
-                "description": "Minn meg på daglig sikkerhetssjekk"
-            },
-            "contactActivity": {
-                "title": "Kontaktaktivitet",
-                "description": "Gi beskjed når kontaktene mine sjekker inn"
-            }
-        },
-        "about": "Om",
-        "privacy": "Personvern",
-        "terms": "Vilkår",
-        "feedback": "Send tilbakemelding",
-        "logout": "Logg ut",
-        "resetData": "Tilbakestill data",
-        "light": "Lys",
-        "dark": "Mørk",
-        "systemDefault": "Følg systeminnstilling",
-        "english": "Engelsk",
-        "swedish": "Svensk",
-        "norwegian": "Norsk",
-        "danish": "Dansk",
-        "finnish": "Finsk",
-        "resetWarning": "Er du sikker? All data vil slettes",
-        "logoutConfirm": "Vil du virkelig logge ut?",
-        "confirmReset": "Tilbakestill",
-        "cancel": "Avbryt",
-        "ok": "OK",
-        "chineseSimplified": "Chinese (Simplified)",
-        "chineseTraditional": "Chinese (Traditional)",
-        "tripMode": {
-            "title": "Innsjekkmodus",
-            "home": "Hjem",
-            "trip": "Reise",
-            "homeDescription": "Standard daglig innsjekk",
-            "tripDescription": "Del reisestatus med kontaktene dine"
-        }
-    },
-    "common": {
-        "ok": "OK",
-        "cancel": "Avbryt",
-        "save": "Lagre",
-        "delete": "Slett",
-        "edit": "Rediger",
-        "loading": "Laster...",
-        "back": "Tilbake",
-        "next": "Neste",
-        "submit": "Send",
-        "yes": "Ja",
-        "no": "Nei",
-        "done": "Done",
-        "refreshing": "Refreshing..."
-    },
-    "time": {
-        "justNow": "Akkurat nå",
-        "minutesAgo": "{{count}} min siden",
-        "hoursAgo": "{{count}} time{{count, plural, =1 {} other {r}}} siden",
-        "daysAgo": "{{count}} dag{{count, plural, =1 {} other {er}}} siden",
-        "hoursAgo_one": "{{count}} hour ago",
-        "hoursAgo_other": "{{count}} hours ago",
-        "daysAgo_one": "{{count}} day ago",
-        "daysAgo_other": "{{count}} days ago"
+    "activity": "Aktivitet",
+    "contacts_one": "{{count}} kontakt",
+    "contacts_other": "{{count}} kontakter",
+    "streak": "Streak",
+    "days_one": "{{count}} dag",
+    "days_other": "{{count}} dager",
+    "dateFormats": {
+      "weekdays": [
+        "Søndag",
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag"
+      ],
+      "months": [
+        "Januar",
+        "Februar",
+        "Mars",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Desember"
+      ]
     },
     "errors": {
-        "title": "Feil",
-        "notAuthenticated": "Ikke autentisert"
+      "fetchLastCheckin": "Kunne ikke hente siste innsjekk",
+      "noUser": "Ingen bruker funnet",
+      "checkin": "Innsjekking mislyktes",
+      "loadState": "Kunne ikke laste tilstand"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} sjekket inn",
+      "sentWave": "{{name}} sendte deg en vink",
+      "respondedToYou": "{{name}} svarte på innsjekkingen din",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
+      "messageFrom": "Melding fra {{name}}",
+      "justNow": "Akkurat nå",
+      "minutesAgo_one": "{{count}} minutt siden",
+      "minutesAgo_other": "{{count}} minutter siden",
+      "hoursAgo_one": "{{count}} time siden",
+      "hoursAgo_other": "{{count}} timer siden",
+      "hoursAgoDecimal": "{{value}} timer siden",
+      "daysAgo_one": "{{count}} dag siden",
+      "daysAgo_other": "{{count}} dager siden",
+      "lastCheckinAgo": "Siste innsjekking {{timeAgo}}",
+      "lastCheckinLabel": "Siste innsjekking:"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Dagens kontekst",
+      "home": "Hjemme",
+      "trip": "På reise",
+      "homeTab": "🌿 Daglig",
+      "tripTab": "✈️ Reise",
+      "reachOutTab": "✋ Hjelp",
+      "reachOutStatuses": {
+        "call_now": "✋ Jeg trenger hjelp",
+        "call_available": "📞 Ring meg"
+      },
+      "statusTitle": "Status",
+      "tripStatusPrompt": "Velg en reisestatus",
+      "homeStatuses": {
+        "chilling": "🛋️ Chiller",
+        "home": "🏠 Hjemme",
+        "outside": "🚶 Ute",
+        "at_school": "🏫 På skolen",
+        "working": "💼 På jobb",
+        "busy": "💼 Opptatt",
+        "relaxing": "☕ Tepause",
+        "gathering": "🥳 Med venner",
+        "on_call": "📞 I samtale",
+        "eating": "🍽️ Spiser",
+        "exhausted": "😩 Utmattet",
+        "sleepy": "😪 Søvnig",
+        "daydreaming": "💭 Drømmer",
+        "playing_sport": "🏃 Sport",
+        "having_fun": "🎉 Har det gøy",
+        "watching_movie": "🎬 Ser på film",
+        "resting": "😌 Hviler",
+        "goodmorning": "🌅 God morgen",
+        "goodafternoon": "🌞 Ettermiddag",
+        "goodnight": "🌙 God natt",
+        "heading_home_alone": "🚶 På vei hjem alene",
+        "hiking_alone": "🥾 På fottur alene"
+      },
+      "summaryHome": "Normal innsjekking",
+      "summaryTrip": "Legg til en reisestatus",
+      "summaryWithStatus": "På reise · {{status}}"
+    },
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Drar på tur",
+        "boarding": "🛫 Ombordstigning / 🚅 Kjører",
+        "layover": "🛑 Mellomlanding / tilkobling",
+        "landed": "🛬 Ankommet trygt",
+        "on_the_move": "🚕 På farten",
+        "at_hotel": "🏨 Ankommet hotellet",
+        "on_trip": "🗺️ På reisen",
+        "heading_home": "🏠 På vei hjem",
+        "trip_ended": "✅ Turen er over — trygt hjemme"
+      }
+    }
+  },
+  "activity": {
+    "title": "Aktivitet",
+    "subtitle": "Siste innsjekk for deg og dine kontakter",
+    "you": "Du",
+    "yourActivity": "Din aktivitet",
+    "contacts": "Kontakter",
+    "loading": "Laster aktivitet...",
+    "noCheckIn": "Ingen innsjekking ennå",
+    "staleCheckinMessage_one": "{{name}} har ikke sjekket inn på {{count}} dag",
+    "staleCheckinMessage_other": "{{name}} har ikke sjekket inn på {{count}} dager",
+    "emptyState": {
+      "title": "Ingen kontakter",
+      "message": "Legg til kontakter for å se aktivitet"
+    },
+    "priority": {
+      "failed": "Mislyktes",
+      "ongoing": "Pågående",
+      "successful": "Lyktes"
+    },
+    "time": {
+      "locale": "nb-NO"
+    },
+    "errors": {
+      "loadActivities": "Kunne ikke laste aktivitet",
+      "fetchContacts": "Kunne ikke hente kontakter",
+      "fetchOwnerActivity": "Kunne ikke hente brukeraktivitet",
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Plasseringstillatelse er nødvendig for å dele posisjonen din."
+    },
+    "day": {
+      "today": "I dag",
+      "yesterday": "I går",
+      "other": "{{date, date, d. MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👏 Gi en high five?",
+      "sent": "Like sendt ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ Du fikk {{count}} svar på innsjekkingen din i dag:",
+      "todayLikes_other": "⭐️ Du fikk {{count}} svar på innsjekkingen din i dag:",
+      "prefix": "reagerte på innsjekkingen din",
+      "defaultMessage": "liker 👍 innsjekkingen din!"
+    },
+    "welfareButton": {
+      "send": "🍀 Går det bra?",
+      "sent": "Hilsen sendt ✓",
+      "sentOffline": "Sendt ✓ — {{name}} ser meldingen din når de er tilbake på nett"
+    },
+    "sharedLocation": {
+      "view": "View shared location"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "China",
+      "hongKong": "Hong Kong",
+      "taiwan": "Taiwan",
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "Føler meg ikke bra\n😔",
+      "low": "Litt nedfor\n😕",
+      "neutral": "Alt er bra\n🙂",
+      "good": "Føler meg bra\n☺️",
+      "great": "Veldig glad i dag\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 Hvordan har du det i dag?",
+      "sent": "Hilsen sendt ✓"
+    },
+    "checkedInAt": "Sjekket inn @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 Du fikk {{count}} hilsen i dag:",
+      "todayGreetings_other": "💛 Du fikk {{count}} hilsener i dag:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Du fikk {{count}} nødmelding i dag:",
+      "todayMessages_other": "🚨 Du fikk {{count}} nødmeldinger i dag:"
+    },
+    "supportButton": {
+      "send": "💪 Send støtte",
+      "sent": "Støtte sendt ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Forstått",
+      "sent": "Besvart ✓"
+    },
+    "openInMaps": "Åpne i kart",
+    "watchOver": {
+      "resolvedBy": "Håndtert av {{name}}",
+      "markResolved": "Jeg har vært i kontakt — alt er bra",
+      "resolving": "Håndterer...",
+      "resolveError": "Kunne ikke markere som håndtert. Prøv igjen."
+    }
+  },
+  "contacts": {
+    "title": "Kontakter",
+    "contact": "Kontakt",
+    "newContact": "Ny kontakt",
+    "displayingAs": "Vises som",
+    "loading": "Laster kontakter...",
+    "subtitle": {
+      "withContacts": "Du har {{count}}/{{max}} kontakter",
+      "noContacts": "Legg til kontakter for deling",
+      "withContactsUnlimited": "{{count}} contacts"
+    },
+    "emptyState": {
+      "title": "Ingen kontakter",
+      "message": "Trykk + for å legge til første kontakt"
+    },
+    "tabs": {
+      "contacts": "Kontakter",
+      "requests": "Forespørsler"
+    },
+    "requests": {
+      "received": "Mottatte forespørsler",
+      "sent": "Sendte forespørsler",
+      "waiting": "Venter på svar",
+      "loading": "Laster forespørsler...",
+      "emptyState": {
+        "title": "Ingen forespørsler",
+        "message": "Når noen sender en kontaktforespørsel vises den her"
+      }
+    },
+    "placeholders": {
+      "email": "Skriv inn e-postadresse",
+      "identifier": "Enter Tryggd ID or email",
+      "suggestedUsername": "Foreslått Tryggd ID (valgfritt)"
+    },
+    "buttons": {
+      "accept": "Godta",
+      "reject": "Avvis",
+      "delete": "Slett",
+      "cancelRequest": "Avbryt forespørsel",
+      "sending": "Sender...",
+      "sendRequests": "Send forespørsel{{count, plural, =1 {} other {er}}}",
+      "sendRequests_one": "Send request",
+      "sendRequests_other": "Send requests"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Grense nådd",
+        "message": "Du kan legge til maks 3 kontakter."
+      },
+      "senderLimitReached": {
+        "title": "Kan ikke godta forespørselen",
+        "message": "Denne personens kontaktliste er full."
+      },
+      "delete": {
+        "title": "Slett kontakt",
+        "message": "Er du sikker på at du vil slette {{name}}?"
+      },
+      "contactExists": {
+        "title": "Kontakt finnes allerede",
+        "message": "{{name}} er allerede blant dine kontakter"
+      },
+      "requestExists": {
+        "title": "Forespørsel allerede sendt",
+        "message": "Du har allerede sendt forespørsel til denne brukeren"
+      },
+      "requestReceived": {
+        "title": "Forespørsel mottatt",
+        "message": "Du har allerede en forespørsel fra {{email}}. Sjekk 'Forespørsler'"
+      },
+      "invalidEmail": {
+        "title": "Ugyldig e-post",
+        "message": "{{email}} er ikke registrert eller verifisert"
+      },
+      "selfContact": {
+        "title": "Ugyldig kontakt",
+        "message": "Du kan ikke legge til deg selv som kontakt"
+      },
+      "noChanges": {
+        "title": "Ingen endringer",
+        "message": "Ingen nye kontakter å lagre"
+      },
+      "alreadyInContacts": "Denne brukeren er allerede blant dine kontakter",
+      "requestHandled": {
+        "title": "Forespørsel håndtert",
+        "message": "Denne forespørselen er allerede håndtert"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Forespørsel sendt",
+        "message": "Kontaktforespørsel sendt til {{name}}"
+      },
+      "contactAdded": {
+        "title": "Kontakt lagt til",
+        "message": "{{name}} er lagt til blant dine kontakter"
+      },
+      "deleted": {
+        "title": "Kontakt slettet",
+        "message": "{{name}} er slettet. Alle relasjoner er fjernet"
+      },
+      "requestRejected": {
+        "title": "Forespørsel avvist",
+        "message": "Kontaktforespørsel avvist"
+      },
+      "requestCancelled": {
+        "title": "Forespørsel avbrutt",
+        "message": "Kontaktforespørsel avbrutt"
+      }
+    },
+    "errors": {
+      "createInvite": "Kunne ikke opprette invitasjonen.",
+      "shareInvite": "Kunne ikke dele invitasjonslenken.",
+      "recoveryUnavailable": "Denne kontakten kan ikke motta en gjenopprettingsinvitasjon ennå.",
+      "createRecoveryInvite": "Kunne ikke opprette gjenopprettingsinvitasjonen.",
+      "updateCheckinNotifications": "Failed to update check-in notifications.",
+      "updateLocationSharing": "Failed to update location sharing.",
+      "noContactUpdated": "No contact row was updated.",
+      "loadData": "Failed to load data",
+      "save": "Failed to save contacts",
+      "delete": "Failed to delete contact",
+      "sendRequest": "Failed to send contact request",
+      "search": "Could not search for user",
+      "requestNotFound": "Could not find contact request or it was already handled",
+      "accept": "Failed to accept contact request",
+      "reject": "Failed to reject request",
+      "cancel": "Failed to cancel request"
+    },
+    "qr": {
+      "permissionTitle": "Kameratilgang kreves",
+      "permissionMessage": "Vennligst tillat kameratilgang for å skanne QR-koder.",
+      "scanHint": "Pek mot en Tryggd QR-kode for å legge til en kontakt",
+      "successTitle": "Kontakt lagt til",
+      "successMessage": "{{name}} er lagt til i kontaktene dine",
+      "newContact": "Ny kontakt",
+      "ownerLimitReached": "Denne personens kontaktliste er full. De kan ikke ta imot nye kontakter nå."
+    },
+    "messages": {
+      "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Send en nødmelding til {{name}}",
+      "modalDescription": "Dette sender et push-varsel umiddelbart og vises i aktivitetsfeeden deres.",
+      "placeholder": "Hva skjer?",
+      "send": "Send",
+      "sending": "Sender…",
+      "sendError": "Kunne ikke sende nødmeldingen."
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} will receive your check-ins",
+      "checkinsDisabled": "{{name}} will not receive your check-ins",
+      "locationEnabled": "{{name}} will see your location in Activity",
+      "locationDisabled": "{{name}} will not see your location in Activity",
+      "watchOverEnabled": "Du varsles hvis {{name}} ikke sjekker inn på en dag",
+      "watchOverDisabled": "Overvåking av {{name}} deaktivert"
+    },
+    "invite": {
+      "ready": "Invitasjonen er klar",
+      "recoveryReady": "Gjenopprettingslenken er klar",
+      "instructions": "Send lenken først. Oppgi deretter denne koden:",
+      "recoveryInstructions": "Send gjenopprettingslenken først. Oppgi deretter denne koden:",
+      "expiresOn": "Denne invitasjonen utløper {{date}}.",
+      "resettingTryggdId": "Tilbakestiller Tryggd-ID: {{id}}",
+      "suggestedTryggdId": "Foreslått Tryggd-ID: {{id}}",
+      "shareMessage": "Bli med meg på Tryggd:",
+      "recoveryShareMessage": "Bruk denne lenken for å tilbakestille Tryggd-passordet ditt:",
+      "modalTitle": "Inviter noen til Tryggd",
+      "modalDescription": "Vi oppretter en privat invitasjonslenke og en 6-sifret kode. Foreslå en Tryggd-ID nå, så slipper mottakeren å velge en senere.",
+      "suggestedUsernameHelp": "Bruk små bokstaver, tall, punktum eller understrek. Vi sjekker tilgjengeligheten før invitasjonen opprettes.",
+      "createButton": "Opprett invitasjon",
+      "creating": "Oppretter…",
+      "shareButton": "Del lenke"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "defaultName": "Bruker",
+    "loading": "Laster profil...",
+    "buttons": {
+      "edit": "Rediger",
+      "save": "Lagre",
+      "saving": "Lagrer...",
+      "logout": "Logg ut"
+    },
+    "fields": {
+      "name": "Navn",
+      "email": "E-post",
+      "phone": "Telefon",
+      "notSpecified": "Ikke spesifisert"
+    },
+    "settings": {
+      "title": "Innstillinger",
+      "subtitle": "App-innstillinger og varsler"
+    },
+    "avatarModal": {
+      "title": "Bytt profilbilde",
+      "takePhoto": "Ta bilde",
+      "chooseFromLibrary": "Velg fra bibliotek"
+    },
+    "logout": {
+      "title": "Logg ut",
+      "confirm": "Er du sikker?",
+      "button": "Logg ut"
     },
     "permissions": {
-        "title": "Tillatelse"
+      "camera": "Kameratilgang kreves"
     },
-    "auth": {
-        "signup": {
-            "title": "Opprett konto",
-            "create": "Opprett konto",
-            "creating": "Oppretter konto...",
-            "success": {
-                "title": "🎉 Konto opprettet",
-                "message": "Din konto er klar. Du kan nå logge inn."
-            },
-            "verifyEmail": {
-                "title": "Bekreft e-post!",
-                "message": "Vi har sendt en bekreftelsesmail. Bekreft og logg inn"
-            },
-            "error": "Registrering mislyktes"
-        },
-        "login": {
-            "title": "Logg inn",
-            "signIn": "Logg inn",
-            "loggingIn": "Logger inn...",
-            "error": "Innlogging mislyktes",
-            "continueWithGoogle": "Fortsett med Google",
-            "connectingToGoogle": "Kobler til Google...",
-            "continueWithApple": "Fortsett med Apple",
-            "connectingToApple": "Kobler til Apple...",
-            "orContinueWithEmail": "eller fortsett med e-post",
-            "socialError": "Innlogging mislyktes",
-            "useInviteCode": "Har du en invitasjonskode?"
-        },
-        "email": "E-post",
-        "displayName": "Navn",
-        "password": {
-            "placeholder": "Passord (minst 6 tegn)",
-            "minimumLength": "Use at least 8 characters."
-        },
-        "confirmPassword": "Bekreft passord",
-        "passwordsMatch": "✔ Passordene stemmer",
-        "passwordsNoMatch": "✖ Passordene stemmer ikke",
-        "alreadyHaveAccount": "Har du allerede en konto? Logg inn",
-        "noAccount": "Har du ingen konto? Registrer",
-        "unknownError": "Ukjent feil",
-        "forgotPassword": {
-            "title": "Glemt passord",
-            "instructions": "Skriv inn e-postadressen din",
-            "send": "Send nullstillingsmail",
-            "sending": "Sender...",
-            "sentTitle": "Sjekk e-posten din",
-            "sentMessage": "Vi har sendt en nullstillingslink til e-posten din",
-            "login": "Gå til innlogging",
-            "error": "Feil ved sending av nullstillingsmail"
-        },
-        "resetPassword": {
-            "title": "Nullstill passord",
-            "instructions": "Skriv inn ditt nye passord nedenfor",
-            "save": "Lagre nytt passord",
-            "saving": "Lagrer...",
-            "successTitle": "Passord nullstilt!",
-            "successMessage": "Du kan nå logge inn med nytt passord",
-            "login": "Gå til innlogging",
-            "error": "Feil ved nullstilling",
-            "passwordPlaceholder": "Nytt passord"
-        },
-        "invite": {
-            "enterCodeStandaloneHint": "Hvis du installerte appen etter at du mottok invitasjonen, skriv inn den 6-sifrede koden for å fortsette.",
-            "invalidLink": "Invite link is invalid.",
-            "notFound": "Invite not found.",
-            "alreadyUsed": "This invite has already been used.",
-            "expired": "This invite has expired.",
-            "unavailable": "This invite is not available anymore.",
-            "unavailableTitle": "Invite unavailable",
-            "couldNotOpen": "This invite could not be opened.",
-            "backToLogin": "Back to login",
-            "recoveryTitle": "Reset your Tryggd password",
-            "invitedTitle": "You're invited to Tryggd",
-            "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
-            "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
-            "yourAccount": "your Tryggd account",
-            "you": "you",
-            "installTitle": "Install or open the app",
-            "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
-            "openInApp": "Open in Tryggd",
-            "downloadAppStore": "Download on App Store",
-            "downloadGooglePlay": "Get it on Google Play",
-            "keepLink": "Keep this invite link:",
-            "enterCodeTitle": "Enter your invite code",
-            "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
-            "codePlaceholder": "6-digit invite code",
-            "checkingCode": "Checking code…",
-            "setPasswordTitle": "Set a new password",
-            "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "Resetting password…",
-            "resetPassword": "Reset password",
-            "createAccountTitle": "Create your account",
-            "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
-            "mobilePlaceholder": "Mobile number (optional)",
-            "creatingAccount": "Creating account…",
-            "createAccountButton": "Create account",
-            "errors": {
-                "incorrectCode": "The code is incorrect.",
-                "verifyCode": "Failed to verify invite code.",
-                "createAccount": "Failed to create account.",
-                "completeSignup": "Failed to complete invited signup.",
-                "missingAccount": "Could not determine the account to sign in.",
-                "completeRecovery": "Failed to complete password recovery.",
-                "phoneAlreadyInUse": "This phone number is already in use.",
-                "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-            }
-        }
+    "notices": {
+      "title": "Varsel",
+      "emailConfirmation": "Profil lagret, men endring av e-post krever bekreftelse"
     },
-    "completeProfile": {
-        "kicker": "Ett steg til",
-        "title": "Fullfør profilen din",
-        "description": "Legg til navnet folk skal se og Tryggd ID-en din for kontaktsøk.",
-        "nameLabel": "Navn",
-        "namePlaceholder": "f.eks. Emily Cooper",
-        "nameHelperEmpty": "Dette er navnet kontaktene dine vil se.",
-        "nameHelper": "Dette er navnet kontaktene dine vil se.",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "f.eks. emilycooper",
-        "tryggdIdHelper": "Folk bruker dette for å finne og legge deg til i Tryggd.",
-        "continue": "Fortsett",
-        "saving": "Lagrer...",
-        "saveErrorTitle": "Kunne ikke lagre profil",
-        "saveErrorBody": "Prøv igjen.",
-        "duplicateTitle": "Prøv en annen Tryggd ID",
-        "duplicateBody": "Denne Tryggd ID-en er allerede tatt.",
-        "validation": {
-            "required": "Folk bruker dette for å finne og legge deg til i Tryggd.",
-            "min": "Tryggd ID må være minst 3 tegn.",
-            "max": "Tryggd ID må være 24 tegn eller færre.",
-            "chars": "Bruk bare små bokstaver, tall, punktum eller understrek."
-        }
+    "success": {
+      "title": "Lagret",
+      "saved": "Din profil er oppdatert"
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "Additional features for richer daily check-ins",
-        "badge": "Plus",
-        "heading": "Unlock more context",
-        "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
-        "comingSoon": {
-            "title": "Plus Preview",
-            "message": "Plus Preview er gratis under piloten. Ingen betalingsopplysninger kreves, ingen automatisk belastning.",
-            "button": "Prøv Plus plan gratis",
-            "note": "Du kan når som helst gå tilbake til Basic plan."
-        },
-        "features": {
-            "wellness": {
-                "title": "Wellness sharing",
-                "description": "Share how you feel as part of your daily check-in."
-            },
-            "location": {
-                "title": "Location sharing",
-                "description": "Let trusted contacts see your shared location in Activity."
-            },
-            "notifications": {
-                "title": "Notification controls",
-                "description": "Control which contacts receive your check-in notifications."
-            },
-            "contacts": {
-                "title": "Unlimited contacts",
-                "description": "Add more than the free-plan contact limit."
-            },
-            "welfare": {
-                "title": "Welfare greeting",
-                "description": "Use additional welfare follow-up features for your contacts."
-            },
-            "tripMode": {
-                "title": "Trip Mode",
-                "description": "Share travel progress and trip-specific updates."
-            },
-            "mood": {
-                "title": "Mood updates",
-                "description": "Add emotional context to your check-ins."
-            },
-            "controls": {
-                "title": "More sharing control",
-                "description": "Decide which trusted contacts receive which updates."
-            },
-            "activity": {
-                "title": "Richer activity updates",
-                "description": "Show more detail in shared check-in and status history."
-            }
-        }
+    "errors": {
+      "loadProfile": "Kunne ikke laste profil",
+      "notLoggedIn": "Du er ikke logget inn",
+      "updateProfile": "Kunne ikke oppdatere profil",
+      "saveProfile": "Kunne ikke lagre profil",
+      "deleteAccount": "Kunne ikke slette konto"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ Prøv Plus plan gratis",
-        "dialogIntro": "Prøv Tryggd Plus plan gratis nå.\nIngen betalingsopplysninger kreves, ingen automatisk belastning.",
-        "dialogFreeSectionTitle": "Basic plan inkluderer:",
-        "dialogFreeFeature1": "✓ Innsjekk   🔔 kontaktoppdateringsvarsler   👥 opptil 5 kontakter",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan inkluderer alt i Basic plan pluss:",
-        "dialogFeature1": "🌿 Daglig modus   ✈️ Reisemodus   ✋ Hjelpesignal",
-        "dialogFeature2": "🙂 Stemningsoppdateringer   📍 Deling av plassering   👥 Flere kontakter",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogPricingTitle": "Plus plan-pris",
-        "dialogPricingNote": "Etter {{deadline}}, hvis du velger å fortsette med Plus plan:",
-        "dialogPricingMonthly": "US$2.99 / måned",
-        "dialogPricingYearly": "US$19.99 / år",
-        "dialogSupportNote": "Plus plan er en måte å støtte Tryggds videre drift og forbedring på.\nVi ønsker å holde Tryggd nyttig, stabil, pålitelig og reklamefri.",
-        "dialogPreviewNote": "Plus Preview er åpen til {{deadline}}.\nNår preview-perioden er over, går kontoen din automatisk tilbake til Basic plan.",
-        "activate": "Prøv Plus plan gratis",
-        "notNow": "Bruk Basic plan",
-        "activatedMessage": "Plus er nå aktivt. Hjem er satt til Utvidet. Du kan når som helst bytte tilbake til Enkel i Innstillinger.",
-        "expiredTitle": "Plus-forhåndsvisning er avsluttet",
-        "expiredBody": "Du kan fortsette å bruke Tryggd Basic plan, inkludert innsjekk, betrodde kontakter og grunnleggende oppdateringer.\n\nDine tidligere innsjekker og aktiviteter blir ikke fjernet.",
-        "expiredButton": "Forstått",
-        "settingsRowTitle": "Plus-forhåndsvisning",
-        "settingsRowSubtitle": "Prøv nåværende Plus-funksjoner gratis i pilotperioden.",
-        "settingsRowAction": "Start forhåndsvisning",
-        "activeRowTitle": "Plus-forhåndsvisning aktiv",
-        "activeRowSubtitle": "Nåværende Plus-funksjoner er tilgjengelige i pilotperioden.",
-        "dialogFeature5": "",
-        "dialogFeature6": ""
+    "deleteAccount": {
+      "title": "Slett konto",
+      "confirm": "Dette sletter kontoen og dataene dine permanent. Handlingen kan ikke angres.",
+      "finalTitle": "Slette kontoen permanent?",
+      "finalConfirm": "Kontoen, kontaktene, innsjekkingene og innstillingene dine blir permanent fjernet.",
+      "button": "Slett konto",
+      "deleting": "Sletter...",
+      "successTitle": "Konto slettet",
+      "successMessage": "Kontoen din er slettet permanent."
     },
-    "onboarding": {
-        "skip": "Hopp over",
-        "next": "Neste",
-        "getStarted": "Kom i gang",
-        "slides": {
-            "checkin": {
-                "eyebrow": "Daglig rytme",
-                "title": "Raske daglige sjekk-inn",
-                "body": "💚 Sjekk inn med ett trykk og la betrodde kontakter vite at du har det bra.",
-                "points": {
-                    "one": "✓ Ett trykk for å sjekke inn",
-                    "two": "✓ En enkel «Jeg er trygg» oppdatering"
-                }
-            },
-            "contacts": {
-                "eyebrow": "Din krets",
-                "title": "Betrodde kontakter",
-                "body": "👥 Legg til familie eller nære venner som kan motta dine sjekk-inn, hjelpe-signaler og delte oppdateringer.",
-                "points": {
-                    "one": "✓ Velg hvem som ser dine oppdateringer",
-                    "two": "✓ Hjelpe-signaler går til de rette personene"
-                }
-            },
-            "sharing": {
-                "eyebrow": "Valgfri kontekst",
-                "title": "Status og plassering",
-                "body": "📍 Del hvordan du har det, om du er hjemme eller ute, reisestatus eller plassering med utvalgte kontakter.",
-                "points": {
-                    "one": "✓ 🙂 Humør, 🏠 hjemme/ute, eller ✈️ reisestatus",
-                    "two": "✓ 📍 Plassering kun når du velger å dele den"
-                }
-            },
-            "free": {
-                "eyebrow": "Enkelt som standard",
-                "title": "Plus Preview",
-                "body": "Tryggd Free holder det enkelt. Under pilotprosjektet kan du forhåndsvise Plus-funksjoner:",
-                "freeSummary": "Free: sjekk-inn, betrodde kontakter, grunnleggende status",
-                "bodyFreeSuffix": " holder det enkelt.",
-                "bodyPilotPrefix": "Under pilotprosjektet, forhåndsvis ",
-                "bodyPilotSuffix": ":",
-                "points": {
-                    "one": "✈️ Reisemodus",
-                    "two": "📍 Alternativ for deling av plassering",
-                    "three": "🙂 Humøroppdateringer",
-                    "four": "⚙️ Mer delingskontroll"
-                },
-                "footer": "Plus Preview er valgfritt."
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "Godt å vite",
-            "title": "Noen viktige merknader",
-            "productName": "Tryggd ",
-            "paragraph1": "hjelper deg med å dele manuelle sjekk-inn, hjelpe-signaler og valgte oppdateringer med betrodde kontakter.",
-            "paragraph2": "Kontaktene dine kan se statusoppdateringene du velger å dele. Plassering deles bare når du slår på plasseringsdeling.",
-            "paragraph3": "Varsler kan bli forsinket på grunn av nettverkstilkobling, batterinivå, enhetsinnstillinger eller tredjeparters push-tjenester.",
-            "paragraph4": "Tryggd er ikke en nødtjeneste og bør ikke brukes i presserende eller livstruende situasjoner.",
-            "acceptLabel": "Jeg forstår",
-            "saving": "Lagrer...",
-            "decline": "Avvis / Tilbake"
-        },
-        "errors": {
-            "saveTitle": "Kan ikke fortsette",
-            "saveBody": "Prøv igjen."
-        }
-    },
-    "watchOver": {
-        "toggle": "Hold øye med",
-        "toggleHint": "Få varsling hvis {{name}} ikke har sjekket inn på en dag.",
-        "limitReached": "Du kan holde øye med {{max}} person på gratisplanen. Oppgrader til Plus for ubegrenset.",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "Borte-status",
-        "setAway": "Sett som borte",
-        "clearAway": "Fjern borte-status",
-        "label": "Melding (valgfri)",
-        "labelPlaceholder": "f.eks. På ferie",
-        "until": "Borte til",
-        "active": "Borte til {{date}}",
-        "activeNoDate": "Borte (ingen sluttdato)",
-        "hint": "Mens du er borte vil ikke kontaktene dine motta fraværsvarsler.",
-        "saving": "Lagrer...",
-        "error": "Kunne ikke oppdatere borte-status."
+    "qr": {
+      "title": "Min QR-kode",
+      "hint": "La noen skanne dette for å legge deg til som kontakt umiddelbart.",
+      "errorGenerating": "Kunne ikke generere QR-kode. Prøv igjen."
     }
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "account": "Konto",
+    "information": "Informasjon",
+    "language": "Språk",
+    "theme": "Tema",
+    "homeStyle": {
+      "title": "Velg hjemmevisning",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Enkel",
+        "description": "Et trykk for innsjekking, uten distraksjoner."
+      },
+      "enhanced": {
+        "title": "Utvidet",
+        "description": "Del humør, reisestatus og posisjon."
+      }
+    },
+    "notifications": {
+      "title": "Varsler",
+      "preferences": "Varselinnstillinger",
+      "summary": {
+        "reminders": "Påminnelser",
+        "activity": "Aktivitet",
+        "allOff": "Alle varsler av"
+      },
+      "stayOnTrack": {
+        "title": "Hold deg på sporet",
+        "description": "Minn meg på daglig sikkerhetssjekk"
+      },
+      "contactActivity": {
+        "title": "Kontaktaktivitet",
+        "description": "Gi beskjed når kontaktene mine sjekker inn"
+      }
+    },
+    "about": "Om",
+    "privacy": "Personvern",
+    "terms": "Vilkår",
+    "feedback": "Send tilbakemelding",
+    "logout": "Logg ut",
+    "resetData": "Tilbakestill data",
+    "light": "Lys",
+    "dark": "Mørk",
+    "systemDefault": "Følg systeminnstilling",
+    "english": "Engelsk",
+    "swedish": "Svensk",
+    "norwegian": "Norsk",
+    "danish": "Dansk",
+    "finnish": "Finsk",
+    "resetWarning": "Er du sikker? All data vil slettes",
+    "logoutConfirm": "Vil du virkelig logge ut?",
+    "confirmReset": "Tilbakestill",
+    "cancel": "Avbryt",
+    "ok": "OK",
+    "chineseSimplified": "Chinese (Simplified)",
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Innsjekkmodus",
+      "home": "Hjem",
+      "trip": "Reise",
+      "homeDescription": "Standard daglig innsjekk",
+      "tripDescription": "Del reisestatus med kontaktene dine"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "delete": "Slett",
+    "edit": "Rediger",
+    "loading": "Laster...",
+    "back": "Tilbake",
+    "next": "Neste",
+    "submit": "Send",
+    "yes": "Ja",
+    "no": "Nei",
+    "done": "Done",
+    "refreshing": "Refreshing..."
+  },
+  "time": {
+    "justNow": "Akkurat nå",
+    "minutesAgo": "{{count}} min siden",
+    "hoursAgo": "{{count}} time{{count, plural, =1 {} other {r}}} siden",
+    "daysAgo": "{{count}} dag{{count, plural, =1 {} other {er}}} siden",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
+  },
+  "errors": {
+    "title": "Feil",
+    "notAuthenticated": "Ikke autentisert"
+  },
+  "permissions": {
+    "title": "Tillatelse"
+  },
+  "auth": {
+    "signup": {
+      "title": "Opprett konto",
+      "create": "Opprett konto",
+      "creating": "Oppretter konto...",
+      "success": {
+        "title": "🎉 Konto opprettet",
+        "message": "Din konto er klar. Du kan nå logge inn."
+      },
+      "verifyEmail": {
+        "title": "Bekreft e-post!",
+        "message": "Vi har sendt en bekreftelsesmail. Bekreft og logg inn"
+      },
+      "error": "Registrering mislyktes"
+    },
+    "login": {
+      "title": "Logg inn",
+      "signIn": "Logg inn",
+      "loggingIn": "Logger inn...",
+      "error": "Innlogging mislyktes",
+      "continueWithGoogle": "Fortsett med Google",
+      "connectingToGoogle": "Kobler til Google...",
+      "continueWithApple": "Fortsett med Apple",
+      "connectingToApple": "Kobler til Apple...",
+      "orContinueWithEmail": "eller fortsett med e-post",
+      "socialError": "Innlogging mislyktes",
+      "useInviteCode": "Har du en invitasjonskode?"
+    },
+    "email": "E-post",
+    "displayName": "Navn",
+    "password": {
+      "placeholder": "Passord (minst 6 tegn)",
+      "minimumLength": "Use at least 8 characters."
+    },
+    "confirmPassword": "Bekreft passord",
+    "passwordsMatch": "✔ Passordene stemmer",
+    "passwordsNoMatch": "✖ Passordene stemmer ikke",
+    "alreadyHaveAccount": "Har du allerede en konto? Logg inn",
+    "noAccount": "Har du ingen konto? Registrer",
+    "unknownError": "Ukjent feil",
+    "forgotPassword": {
+      "title": "Glemt passord",
+      "instructions": "Skriv inn e-postadressen din",
+      "send": "Send nullstillingsmail",
+      "sending": "Sender...",
+      "sentTitle": "Sjekk e-posten din",
+      "sentMessage": "Vi har sendt en nullstillingslink til e-posten din",
+      "login": "Gå til innlogging",
+      "error": "Feil ved sending av nullstillingsmail"
+    },
+    "resetPassword": {
+      "title": "Nullstill passord",
+      "instructions": "Skriv inn ditt nye passord nedenfor",
+      "save": "Lagre nytt passord",
+      "saving": "Lagrer...",
+      "successTitle": "Passord nullstilt!",
+      "successMessage": "Du kan nå logge inn med nytt passord",
+      "login": "Gå til innlogging",
+      "error": "Feil ved nullstilling",
+      "passwordPlaceholder": "Nytt passord"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "Hvis du installerte appen etter at du mottok invitasjonen, skriv inn den 6-sifrede koden for å fortsette.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
+    }
+  },
+  "completeProfile": {
+    "kicker": "Ett steg til",
+    "title": "Fullfør profilen din",
+    "description": "Legg til navnet folk skal se og Tryggd ID-en din for kontaktsøk.",
+    "nameLabel": "Navn",
+    "namePlaceholder": "f.eks. Emily Cooper",
+    "nameHelperEmpty": "Dette er navnet kontaktene dine vil se.",
+    "nameHelper": "Dette er navnet kontaktene dine vil se.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "f.eks. emilycooper",
+    "tryggdIdHelper": "Folk bruker dette for å finne og legge deg til i Tryggd.",
+    "continue": "Fortsett",
+    "saving": "Lagrer...",
+    "saveErrorTitle": "Kunne ikke lagre profil",
+    "saveErrorBody": "Prøv igjen.",
+    "duplicateTitle": "Prøv en annen Tryggd ID",
+    "duplicateBody": "Denne Tryggd ID-en er allerede tatt.",
+    "validation": {
+      "required": "Folk bruker dette for å finne og legge deg til i Tryggd.",
+      "min": "Tryggd ID må være minst 3 tegn.",
+      "max": "Tryggd ID må være 24 tegn eller færre.",
+      "chars": "Bruk bare små bokstaver, tall, punktum eller understrek."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Plus Preview",
+      "message": "Plus Preview er gratis under piloten. Ingen betalingsopplysninger kreves, ingen automatisk belastning.",
+      "button": "Prøv Plus plan gratis",
+      "note": "Du kan når som helst gå tilbake til Basic plan."
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
+      }
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Prøv Plus plan gratis",
+    "dialogIntro": "Prøv Tryggd Plus plan gratis nå.\nIngen betalingsopplysninger kreves, ingen automatisk belastning.",
+    "dialogFreeSectionTitle": "Basic plan inkluderer:",
+    "dialogFreeFeature1": "✓ Innsjekk   🔔 kontaktoppdateringsvarsler   👥 opptil 5 kontakter",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan inkluderer alt i Basic plan pluss:",
+    "dialogFeature1": "🌿 Daglig modus   ✈️ Reisemodus   ✋ Hjelpesignal",
+    "dialogFeature2": "🙂 Stemningsoppdateringer   📍 Deling av plassering   👥 Flere kontakter",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan-pris",
+    "dialogPricingNote": "Etter {{deadline}}, hvis du velger å fortsette med Plus plan:",
+    "dialogPricingMonthly": "US$2.99 / måned",
+    "dialogPricingYearly": "US$19.99 / år",
+    "dialogSupportNote": "Plus plan er en måte å støtte Tryggds videre drift og forbedring på.\nVi ønsker å holde Tryggd nyttig, stabil, pålitelig og reklamefri.",
+    "dialogPreviewNote": "Plus Preview er åpen til {{deadline}}.\nNår preview-perioden er over, går kontoen din automatisk tilbake til Basic plan.",
+    "activate": "Prøv Plus plan gratis",
+    "notNow": "Bruk Basic plan",
+    "activatedMessage": "Plus er nå aktivt. Hjem er satt til Utvidet. Du kan når som helst bytte tilbake til Enkel i Innstillinger.",
+    "expiredTitle": "Plus-forhåndsvisning er avsluttet",
+    "expiredBody": "Du kan fortsette å bruke Tryggd Basic plan, inkludert innsjekk, betrodde kontakter og grunnleggende oppdateringer.\n\nDine tidligere innsjekker og aktiviteter blir ikke fjernet.",
+    "expiredButton": "Forstått",
+    "settingsRowTitle": "Plus-forhåndsvisning",
+    "settingsRowSubtitle": "Prøv nåværende Plus-funksjoner gratis i pilotperioden.",
+    "settingsRowAction": "Start forhåndsvisning",
+    "activeRowTitle": "Plus-forhåndsvisning aktiv",
+    "activeRowSubtitle": "Nåværende Plus-funksjoner er tilgjengelige i pilotperioden.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
+  },
+  "onboarding": {
+    "skip": "Hopp over",
+    "next": "Neste",
+    "getStarted": "Kom i gang",
+    "slides": {
+      "checkin": {
+        "eyebrow": "Daglig rytme",
+        "title": "Raske daglige sjekk-inn",
+        "body": "💚 Sjekk inn med ett trykk og la betrodde kontakter vite at du har det bra.",
+        "points": {
+          "one": "✓ Ett trykk for å sjekke inn",
+          "two": "✓ En enkel «Jeg er trygg» oppdatering"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Din krets",
+        "title": "Betrodde kontakter",
+        "body": "👥 Legg til familie eller nære venner som kan motta dine sjekk-inn, hjelpe-signaler og delte oppdateringer.",
+        "points": {
+          "one": "✓ Velg hvem som ser dine oppdateringer",
+          "two": "✓ Hjelpe-signaler går til de rette personene"
+        }
+      },
+      "sharing": {
+        "eyebrow": "Valgfri kontekst",
+        "title": "Status og plassering",
+        "body": "📍 Del hvordan du har det, om du er hjemme eller ute, reisestatus eller plassering med utvalgte kontakter.",
+        "points": {
+          "one": "✓ 🙂 Humør, 🏠 hjemme/ute, eller ✈️ reisestatus",
+          "two": "✓ 📍 Plassering kun når du velger å dele den"
+        }
+      },
+      "free": {
+        "eyebrow": "Enkelt som standard",
+        "title": "Plus Preview",
+        "body": "Tryggd Free holder det enkelt. Under pilotprosjektet kan du forhåndsvise Plus-funksjoner:",
+        "freeSummary": "Free: sjekk-inn, betrodde kontakter, grunnleggende status",
+        "bodyFreeSuffix": " holder det enkelt.",
+        "bodyPilotPrefix": "Under pilotprosjektet, forhåndsvis ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ Reisemodus",
+          "two": "📍 Alternativ for deling av plassering",
+          "three": "🙂 Humøroppdateringer",
+          "four": "⚙️ Mer delingskontroll"
+        },
+        "footer": "Plus Preview er valgfritt."
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "Godt å vite",
+      "title": "Noen viktige merknader",
+      "productName": "Tryggd ",
+      "paragraph1": "hjelper deg med å dele manuelle sjekk-inn, hjelpe-signaler og valgte oppdateringer med betrodde kontakter.",
+      "paragraph2": "Kontaktene dine kan se statusoppdateringene du velger å dele. Plassering deles bare når du slår på plasseringsdeling.",
+      "paragraph3": "Varsler kan bli forsinket på grunn av nettverkstilkobling, batterinivå, enhetsinnstillinger eller tredjeparters push-tjenester.",
+      "paragraph4": "Tryggd er ikke en nødtjeneste og bør ikke brukes i presserende eller livstruende situasjoner.",
+      "acceptLabel": "Jeg forstår",
+      "saving": "Lagrer...",
+      "decline": "Avvis / Tilbake"
+    },
+    "errors": {
+      "saveTitle": "Kan ikke fortsette",
+      "saveBody": "Prøv igjen."
+    }
+  },
+  "watchOver": {
+    "toggle": "Hold øye med",
+    "toggleHint": "Få varsling hvis {{name}} ikke har sjekket inn på en dag.",
+    "limitReached": "Du kan holde øye med {{max}} person på gratisplanen. Oppgrader til Plus for ubegrenset.",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "Borte-status",
+    "setAway": "Sett som borte",
+    "clearAway": "Fjern borte-status",
+    "label": "Melding (valgfri)",
+    "labelPlaceholder": "f.eks. På ferie",
+    "until": "Borte til",
+    "active": "Borte til {{date}}",
+    "activeNoDate": "Borte (ingen sluttdato)",
+    "hint": "Mens du er borte vil ikke kontaktene dine motta fraværsvarsler.",
+    "saving": "Lagrer...",
+    "error": "Kunne ikke oppdatere borte-status."
+  }
 }

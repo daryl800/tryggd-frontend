@@ -67,7 +67,7 @@ const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = 40;
 const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
-type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'resting' | 'goodmorning' | 'goodafternoon' | 'goodnight';
+type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'resting' | 'goodmorning' | 'goodafternoon' | 'goodnight' | 'heading_home_alone' | 'hiking_alone';
 type ReachOutStatus = 'call_now' | 'call_available';
 
 type HomeStatusNotification = {
@@ -429,6 +429,8 @@ const HOME_PRESENCE_OPTIONS: readonly HomePresence[] = [
   'daydreaming',
   'gathering',
   'playing_sport',
+  'heading_home_alone',
+  'hiking_alone',
   'having_fun',
   'watching_movie',
   'resting',

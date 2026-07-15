@@ -71,7 +71,9 @@
         "resting": "😌 Resting",
         "goodmorning": "🌅 Good morning",
         "goodafternoon": "🌞 Afternoon",
-        "goodnight": "🌙 Good night"
+        "goodnight": "🌙 Good night",
+        "heading_home_alone": "🚶 Heading home alone",
+        "hiking_alone": "🥾 Hiking alone"
       },
       "summaryHome": "Normal check-in",
       "summaryTrip": "Add a travel status",

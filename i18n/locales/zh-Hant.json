@@ -1,927 +1,929 @@
 {
-    "home": {
-        "title": "首頁",
-        "welcome": "歡迎",
-        "greetings": {
-            "morning": "早上好",
-            "afternoon": "下午好",
-            "evening": "晚上好",
-            "night": "晚安"
-        },
-        "everythingIsFine": "一切安好",
-        "checkedInToday": "今日打卡！",
-        "dontForget": "別忘了今天打卡！",
-        "youCheckedInTodayAt": "您今天已於 {{time}} 完成打卡",
-        "checkIn": "打卡",
-        "pressMeToCheckIn": "按此打卡",
-        "simple": {
-            "cta": "我很好",
-            "tapHint": "點擊打卡",
-            "checkedIn": "我很好",
-            "statusReady": "今天已準備好",
-            "statusChecked": "今天已打卡",
-            "statusQuiet": "一切正常"
-        },
-        "status": {
-            "contactCheckedIn": "{{name}} 打卡了",
-            "sentWave": "{{name}} 向你揮手",
-            "respondedToYou": "{{name}} 回應了你的打卡",
-            "emergencyMessage": "🚨 {{name}}：{{message}}",
-            "messageFrom": "來自 {{name}} 的訊息",
-            "justNow": "剛剛",
-            "minutesAgo_one": "{{count}} 分鐘 前",
-            "minutesAgo_other": "{{count}} 分鐘 前",
-            "hoursAgo_one": "{{count}} 小時 前",
-            "hoursAgo_other": "{{count}} 小時 前",
-            "hoursAgoDecimal": "{{value}} 小時 前",
-            "daysAgo_one": "{{count}} 天 前",
-            "daysAgo_other": "{{count}} 天 前",
-            "lastCheckinAgo": "你上次打卡：{{timeAgo}}",
-            "lastCheckinLabel": "你上次打卡："
-        },
-        "wellnessPrompt": "您今天感覺如何？",
-        "context": {
-            "title": "今天的狀態",
-            "home": "在家",
-            "trip": "旅行中",
-            "homeTab": "🌿 日常",
-            "tripTab": "✈️ 出行",
-            "reachOutTab": "✋ 求助",
-            "reachOutStatuses": {
-                "call_now": "✋ 我需要幫忙",
-                "call_available": "📞 請call我"
-            },
-            "statusTitle": "狀態",
-            "tripStatusPrompt": "選擇出行狀態",
-            "homeStatuses": {
-                "chilling": "🛋️ 悠閒中",
-                "home": "🏠 在家",
-                "outside": "🚶 在外",
-                "at_school": "🏫 在學校",
-                "working": "💼 工作中",
-                "busy": "💼 忙碌中",
-                "relaxing": "☕ Tea time",
-                "gathering": "🥳 聚會中",
-                "on_call": "📞 電話中",
-                "eating": "🍽️ 食緊飯",
-                "exhausted": "😩 好攰",
-                "sleepy": "😪 眼瞓",
-                "daydreaming": "💭 發呆中",
-                "playing_sport": "🏃 運動中",
-                "having_fun": "🎉 開心中",
-                "watching_movie": "🎬 看電影",
-                "resting": "😌 休息中",
-                "goodmorning": "🌅 早晨",
-                "goodafternoon": "🌞 午安",
-                "goodnight": "🌙 晚安"
-            },
-            "summaryHome": "普通打卡",
-            "summaryTrip": "新增旅行狀態",
-            "summaryWithStatus": "旅行中 · {{status}}"
-        },
-        "plusWellness": {
-            "title": "Plus 功能",
-            "message": "升級到 Plus，讓您在打卡時分享今天的感受。"
-        },
-        "reset": "重置",
-        "timer": "計時器",
-        "timeLeftToday": "距今日打卡截止剩",
-        "reachOut": {
-            "pressToSendHelp": "發出求助",
-            "lastSentLabel": "你上次發出求助："
-        },
-        "activity": "活動",
-        "contacts_one": "{{count}} 個聯絡人",
-        "contacts_other": "{{count}} 個聯絡人",
-        "history": "歷史記錄",
-        "streak": "連續打卡",
-        "days_one": "{{count}} 天",
-        "days_other": "{{count}} 天",
-        "dateFormats": {
-            "weekdays": [
-                "星期日",
-                "星期一",
-                "星期二",
-                "星期三",
-                "星期四",
-                "星期五",
-                "星期六"
-            ],
-            "months": [
-                "一月",
-                "二月",
-                "三月",
-                "四月",
-                "五月",
-                "六月",
-                "七月",
-                "八月",
-                "九月",
-                "十月",
-                "十一月",
-                "十二月"
-            ],
-            "daySuffixes": {
-                "1": "一号",
-                "2": "二号",
-                "3": "三号",
-                "4": "四号",
-                "5": "五号",
-                "6": "六号",
-                "7": "七号",
-                "8": "八号",
-                "9": "九号",
-                "10": "十号",
-                "11": "十一号",
-                "12": "十二号",
-                "13": "十三号",
-                "14": "十四号",
-                "15": "十五号",
-                "16": "十六号",
-                "17": "十七号",
-                "18": "十八号",
-                "19": "十九号",
-                "20": "二十号",
-                "21": "二十一号",
-                "22": "二十二号",
-                "23": "二十三号",
-                "24": "二十四号",
-                "25": "二十五号",
-                "26": "二十六号",
-                "27": "二十七号",
-                "28": "二十八号",
-                "29": "二十九号",
-                "30": "三十号",
-                "31": "三十一号"
-            }
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 出發了",
-                "boarding": "🛫 登機／🚅 啟程",
-                "layover": "🛑 中途停留／轉機",
-                "landed": "🛬 已安全抵達",
-                "on_the_move": "🚕 在移動中",
-                "at_hotel": "🏨 已抵達酒店",
-                "on_trip": "🗺️ 旅程中",
-                "heading_home": "🏠 正在回家途中",
-                "trip_ended": "✅ 旅程結束 — 已安全到家"
-            }
-        },
-        "errors": {
-            "fetchLastCheckin": "無法取得最後打卡記錄",
-            "noUser": "找不到使用者",
-            "checkin": "打卡失敗",
-            "loadState": "無法載入狀態"
-        }
+  "home": {
+    "title": "首頁",
+    "welcome": "歡迎",
+    "greetings": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好",
+      "night": "晚安"
     },
-    "activity": {
-        "title": "活動",
-        "subtitle": "您和聯絡人的最新打卡記錄",
-        "you": "您",
-        "yourActivity": "您的活動",
-        "contacts": "聯絡人",
-        "loading": "載入活動中...",
-        "noCheckIn": "暫無打卡",
-        "staleCheckinMessage_one": "{{name}} 已有 {{count}} 天未打卡",
-        "staleCheckinMessage_other": "{{name}} 已有 {{count}} 天未打卡",
-        "emptyState": {
-            "title": "暫無聯絡人",
-            "message": "新增聯絡人以查看他們的活動"
-        },
-        "priority": {
-            "failed": "失敗",
-            "ongoing": "進行中",
-            "successful": "成功"
-        },
-        "time": {
-            "locale": "zh-TW"
-        },
-        "errors": {
-            "loadActivities": "無法載入活動",
-            "fetchContacts": "無法取得聯絡人",
-            "fetchOwnerActivity": "無法取得擁有者活動",
-            "openSharedLocation": "無法開啟分享位置。",
-            "locationPermission": "需要位置權限才能分享您的位置。"
-        },
-        "day": {
-            "today": "今天",
-            "yesterday": "昨天",
-            "other": "{{date}}"
-        },
-        "responseButton": {
-            "sendResponse": "👍 點讚",
-            "sent": "已點讚 ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
-            "todayLikes_other": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
-            "prefix": "回應了你的打卡",
-            "defaultMessage": "為您的打卡按讚 👍！"
-        },
-        "welfareButton": {
-            "send": "🍀 你最近還好嗎？",
-            "sent": "已發送問候 ✓",
-            "sentRecently": "剛剛已發送問候",
-            "followUpAgain": "再次問候",
-            "followUpAvailable": "現在可以再次問候",
-            "followUpIn_one": "{{count}} 小時後可再次問候",
-            "followUpIn_other": "{{count}} 小時後可再次問候",
-            "sentRecentlyMetaMinutes_one": "{{count}} 分鐘前已發送上次問候",
-            "sentRecentlyMetaMinutes_other": "{{count}} 分鐘前已發送上次問候",
-            "sentRecentlyMeta_one": "{{count}} 小時前已發送上次問候",
-            "sentRecentlyMeta_other": "{{count}} 小時前已發送上次問候",
-            "sentOffline": "已發送 ✓ — {{name}} 上線後即可看到您的訊息"
-        },
-        "sharedLocation": {
-            "view": "查看分享位置"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "中國",
-            "hongKong": "香港",
-            "taiwan": "台灣",
-            "sweden": "瑞典",
-            "norway": "挪威",
-            "denmark": "丹麥",
-            "finland": "芬蘭"
-        },
-        "wellness": {
-            "veryLow": "太不舒服\n😔",
-            "low": "有點低落\n😕",
-            "neutral": "一切安好\n🙂",
-            "good": "感覺不錯\n☺️",
-            "great": "今天很開心\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 你今天怎麼樣？",
-            "sent": "已發送問候 ✓"
-        },
-        "checkedInAt": "打卡 @ {{time}} {{date}}",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 你今天收到 {{count}} 個問候：",
-            "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 你今天收到 {{count}} 條緊急訊息：",
-            "todayMessages_other": "🚨 你今天收到 {{count}} 條緊急訊息："
-        },
-        "supportButton": {
-            "send": "💪 發送支持",
-            "sent": "已發送支持 ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "知道了",
-            "sent": "已回應 ✓"
-        },
-        "openInMaps": "在地圖中開啟",
-        "watchOver": {
-            "resolvedBy": "由 {{name}} 處理",
-            "markResolved": "我已聯繫上 — 一切安好",
-            "resolving": "處理中...",
-            "resolveError": "無法標記為已處理，請重試。"
-        }
+    "everythingIsFine": "一切安好",
+    "checkedInToday": "今日打卡！",
+    "dontForget": "別忘了今天打卡！",
+    "youCheckedInTodayAt": "您今天已於 {{time}} 完成打卡",
+    "checkIn": "打卡",
+    "pressMeToCheckIn": "按此打卡",
+    "simple": {
+      "cta": "我很好",
+      "tapHint": "點擊打卡",
+      "checkedIn": "我很好",
+      "statusReady": "今天已準備好",
+      "statusChecked": "今天已打卡",
+      "statusQuiet": "一切正常"
     },
-    "contacts": {
-        "title": "聯絡人",
-        "contact": "聯絡人",
-        "newContact": "新增聯絡人",
-        "displayingAs": "顯示為",
-        "loading": "載入聯絡人...",
-        "subtitle": {
-            "withContacts": "{{count}} / {{max}} 位聯絡人",
-            "noContacts": "新增聯絡人以共享（最多3個）",
-            "withContactsUnlimited": "{{count}} 位聯絡人"
-        },
-        "emptyState": {
-            "title": "暫無聯絡人",
-            "message": "點擊 + 按鈕新增第一個聯絡人"
-        },
-        "tabs": {
-            "contacts": "聯絡人",
-            "requests": "請求"
-        },
-        "requests": {
-            "received": "收到的請求",
-            "sent": "已發送的請求",
-            "waiting": "等待回覆",
-            "loading": "載入請求...",
-            "emptyState": {
-                "title": "暫無請求",
-                "message": "當有人發送聯絡人請求時，將顯示在此處"
-            }
-        },
-        "placeholders": {
-            "email": "輸入 Tryggd ID",
-            "identifier": "輸入 Tryggd ID 或電子郵件",
-            "suggestedUsername": "建議的 Tryggd ID（可選）"
-        },
-        "buttons": {
-            "accept": "接受",
-            "reject": "拒絕",
-            "delete": "刪除",
-            "cancelRequest": "取消請求",
-            "sending": "發送中...",
-            "sendRequests_one": "發送請求",
-            "sendRequests_other": "發送請求"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "已達上限",
-                "message": "最多只能新增3個聯絡人。"
-            },
-            "senderLimitReached": {
-                "title": "無法接受請求",
-                "message": "對方的聯絡人名單已滿。"
-            },
-            "delete": {
-                "title": "刪除聯絡人",
-                "message": "確定要刪除 {{name}} 嗎？"
-            },
-            "contactExists": {
-                "title": "聯絡人已存在",
-                "message": "{{name}} 已在您的聯絡人中"
-            },
-            "requestExists": {
-                "title": "請求已發送",
-                "message": "您已向該使用者發送過請求。"
-            },
-            "requestReceived": {
-                "title": "收到請求",
-                "message": "您已收到來自 {{email}} 的請求。請在「請求」中查看。"
-            },
-            "invalidEmail": {
-                "title": "無效郵件",
-                "message": "{{email}} 未註冊或未驗證"
-            },
-            "selfContact": {
-                "title": "無效聯絡人",
-                "message": "不能新增自己為聯絡人"
-            },
-            "noChanges": {
-                "title": "無變更",
-                "message": "沒有新聯絡人可保存。"
-            },
-            "alreadyInContacts": "該使用者已在您的聯絡人中",
-            "requestHandled": {
-                "title": "請求已處理",
-                "message": "此請求已被處理"
-            }
-        },
-        "plusFeature": {
-            "title": "Plus 功能",
-            "notifications": "升級到 Plus，才能控制聯絡人打卡通知。",
-            "location": "升級到 Plus，才能為聯絡人啟用位置分享。"
-        },
-        "success": {
-            "requestSent": {
-                "title": "請求已發送",
-                "message": "聯絡人請求已發送至 {{name}}"
-            },
-            "contactAdded": {
-                "title": "聯絡人已新增",
-                "message": "{{name}} 已新增到您的聯絡人"
-            },
-            "deleted": {
-                "title": "聯絡人已移除",
-                "message": "{{name}} 已被移除。所有關聯已刪除。"
-            },
-            "requestRejected": {
-                "title": "請求已拒絕",
-                "message": "聯絡人請求已被拒絕"
-            },
-            "requestCancelled": {
-                "title": "請求已取消",
-                "message": "聯絡人請求已被取消"
-            }
-        },
-        "errors": {
-            "loadData": "無法載入資料",
-            "save": "無法保存聯絡人",
-            "delete": "無法刪除聯絡人",
-            "sendRequest": "無法發送聯絡人請求",
-            "search": "無法搜尋使用者",
-            "requestNotFound": "找不到聯絡人請求或已被處理",
-            "accept": "無法接受聯絡人請求",
-            "reject": "無法拒絕請求",
-            "cancel": "無法取消請求",
-            "createInvite": "建立邀請失敗。",
-            "shareInvite": "分享邀請連結失敗。",
-            "recoveryUnavailable": "此聯絡人目前無法接收找回邀請。",
-            "createRecoveryInvite": "建立找回邀請失敗。",
-            "updateCheckinNotifications": "更新打卡通知失敗。",
-            "updateLocationSharing": "更新位置分享失敗。",
-            "noContactUpdated": "沒有更新任何聯絡人資料。"
-        },
-        "qr": {
-            "permissionTitle": "需要相機權限",
-            "permissionMessage": "請允許使用相機以掃描 QR 碼。",
-            "scanHint": "將鏡頭對準 Tryggd QR 碼即可新增聯絡人",
-            "successTitle": "已新增聯絡人",
-            "successMessage": "{{name}} 已加入你的聯絡人",
-            "newContact": "新聯絡人",
-            "ownerLimitReached": "對方的聯絡人名單已滿，目前無法接受新聯絡人。"
-        },
-        "messages": {
-            "contactDefault": "此聯絡人"
-        },
-        "emergencyMessage": {
-            "modalTitle": "向{{name}}發送緊急訊息",
-            "modalDescription": "這將立即發送推播通知，並顯示在對方的動態中。",
-            "placeholder": "發生了什麼事？",
-            "send": "發送",
-            "sending": "發送中…",
-            "sendError": "緊急訊息發送失敗。"
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} 會收到您的打卡",
-            "checkinsDisabled": "{{name}} 不會收到您的打卡",
-            "locationEnabled": "{{name}} 會在活動中看到您的位置",
-            "locationDisabled": "{{name}} 不會在活動中看到您的位置",
-            "watchOverEnabled": "若 {{name}} 超過一天未打卡，您將收到通知",
-            "watchOverDisabled": "已關閉對 {{name}} 的關注"
-        },
-        "invite": {
-            "ready": "邀請連結已準備好",
-            "recoveryReady": "找回連結已準備好",
-            "instructions": "請先傳送連結，再把這組代碼告訴對方：",
-            "recoveryInstructions": "請先傳送找回連結，再把這組代碼告訴對方：",
-            "expiresOn": "此邀請將於 {{date}} 到期。",
-            "resettingTryggdId": "正在重設的 Tryggd ID：{{id}}",
-            "suggestedTryggdId": "建議的 Tryggd ID：{{id}}",
-            "shareMessage": "加入我的 Tryggd：",
-            "recoveryShareMessage": "使用此連結重設您的 Tryggd 密碼：",
-            "modalTitle": "邀請某人加入 Tryggd",
-            "modalDescription": "我們會建立一個私人邀請連結和 6 位數代碼。現在先建議一個 Tryggd ID，讓對方之後不用自己再選。",
-            "suggestedUsernameHelp": "請使用小寫字母、數字、句點或底線。我們會在建立邀請前檢查是否可用。",
-            "createButton": "建立邀請",
-            "creating": "建立中…",
-            "shareButton": "分享連結"
-        }
+    "status": {
+      "contactCheckedIn": "{{name}} 打卡了",
+      "sentWave": "{{name}} 向你揮手",
+      "respondedToYou": "{{name}} 回應了你的打卡",
+      "emergencyMessage": "🚨 {{name}}：{{message}}",
+      "messageFrom": "來自 {{name}} 的訊息",
+      "justNow": "剛剛",
+      "minutesAgo_one": "{{count}} 分鐘 前",
+      "minutesAgo_other": "{{count}} 分鐘 前",
+      "hoursAgo_one": "{{count}} 小時 前",
+      "hoursAgo_other": "{{count}} 小時 前",
+      "hoursAgoDecimal": "{{value}} 小時 前",
+      "daysAgo_one": "{{count}} 天 前",
+      "daysAgo_other": "{{count}} 天 前",
+      "lastCheckinAgo": "你上次打卡：{{timeAgo}}",
+      "lastCheckinLabel": "你上次打卡："
     },
-    "profile": {
-        "title": "個人資料",
-        "defaultName": "使用者",
-        "loading": "載入個人資料...",
-        "buttons": {
-            "edit": "編輯",
-            "save": "保存",
-            "saving": "保存中...",
-            "logout": "登出"
-        },
-        "fields": {
-            "name": "姓名",
-            "email": "電子郵件",
-            "phone": "電話號碼",
-            "notSpecified": "未指定"
-        },
-        "settings": {
-            "title": "設定",
-            "subtitle": "應用程式設定和通知"
-        },
-        "avatarModal": {
-            "title": "更改個人資料圖片",
-            "takePhoto": "拍照",
-            "chooseFromLibrary": "從相簿選擇"
-        },
-        "logout": {
-            "title": "登出",
-            "confirm": "確定嗎？",
-            "button": "登出"
-        },
-        "permissions": {
-            "camera": "需要相機權限"
-        },
-        "notices": {
-            "title": "注意",
-            "emailConfirmation": "個人資料已保存，但電子郵件更改需要確認"
-        },
-        "success": {
-            "title": "已保存",
-            "saved": "您的個人資料已更新。"
-        },
-        "errors": {
-            "loadProfile": "無法載入個人資料",
-            "notLoggedIn": "您未登入",
-            "updateProfile": "無法更新個人資料",
-            "saveProfile": "無法保存個人資料",
-            "deleteAccount": "無法刪除帳戶"
-        },
-        "deleteAccount": {
-            "title": "刪除帳戶",
-            "confirm": "這將永久刪除你的帳戶和資料，此操作無法復原。",
-            "finalTitle": "永久刪除帳戶？",
-            "finalConfirm": "你的帳戶、聯絡人、check-in 和設定都將被永久刪除。",
-            "button": "刪除帳戶",
-            "deleting": "正在刪除...",
-            "successTitle": "帳戶已刪除",
-            "successMessage": "你的帳戶已被永久刪除。"
-        },
-        "qr": {
-            "title": "我的 QR 碼",
-            "hint": "讓對方掃描此碼即可立即將你加為聯絡人。",
-            "errorGenerating": "無法產生 QR 碼，請再試一次。"
-        }
+    "wellnessPrompt": "您今天感覺如何？",
+    "context": {
+      "title": "今天的狀態",
+      "home": "在家",
+      "trip": "旅行中",
+      "homeTab": "🌿 日常",
+      "tripTab": "✈️ 出行",
+      "reachOutTab": "✋ 求助",
+      "reachOutStatuses": {
+        "call_now": "✋ 我需要幫忙",
+        "call_available": "📞 請call我"
+      },
+      "statusTitle": "狀態",
+      "tripStatusPrompt": "選擇出行狀態",
+      "homeStatuses": {
+        "chilling": "🛋️ 悠閒中",
+        "home": "🏠 在家",
+        "outside": "🚶 在外",
+        "at_school": "🏫 在學校",
+        "working": "💼 工作中",
+        "busy": "💼 忙碌中",
+        "relaxing": "☕ Tea time",
+        "gathering": "🥳 聚會中",
+        "on_call": "📞 電話中",
+        "eating": "🍽️ 食緊飯",
+        "exhausted": "😩 好攰",
+        "sleepy": "😪 眼瞓",
+        "daydreaming": "💭 發呆中",
+        "playing_sport": "🏃 運動中",
+        "having_fun": "🎉 開心中",
+        "watching_movie": "🎬 看電影",
+        "resting": "😌 休息中",
+        "goodmorning": "🌅 早晨",
+        "goodafternoon": "🌞 午安",
+        "goodnight": "🌙 晚安",
+        "heading_home_alone": "🚶 獨自回家路上",
+        "hiking_alone": "🥾 獨自行山"
+      },
+      "summaryHome": "普通打卡",
+      "summaryTrip": "新增旅行狀態",
+      "summaryWithStatus": "旅行中 · {{status}}"
     },
-    "settings": {
-        "title": "設定",
-        "account": "帳戶",
-        "information": "資訊",
-        "language": "語言",
-        "theme": "主題",
-        "homeStyle": {
-            "title": "選擇主頁顯示",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "簡易",
-                "description": "一鍵打卡，沒有多餘干擾。"
-            },
-            "enhanced": {
-                "title": "加強",
-                "description": "分享心情、出行狀態和位置。"
-            }
-        },
-        "notifications": {
-            "title": "通知",
-            "preferences": "通知偏好",
-            "summary": {
-                "reminders": "提醒",
-                "activity": "動態",
-                "allOff": "所有通知已關閉"
-            },
-            "stayOnTrack": {
-                "title": "保持進度",
-                "description": "提醒我完成個人安全每日打卡"
-            },
-            "contactActivity": {
-                "title": "聯絡人動態",
-                "description": "當我的聯絡人完成打卡時通知我"
-            }
-        },
-        "about": "關於",
-        "privacy": "隱私權政策",
-        "terms": "服務條款",
-        "feedback": "意見與建議",
-        "logout": "登出",
-        "resetData": "重置資料",
-        "light": "淺色",
-        "dark": "深色",
-        "systemDefault": "使用系統設定",
-        "english": "英語",
-        "swedish": "瑞典語",
-        "norwegian": "挪威語",
-        "danish": "丹麥語",
-        "finnish": "芬蘭語",
-        "chineseSimplified": "簡體中文",
-        "chineseTraditional": "繁體中文",
-        "tripMode": {
-            "title": "打卡模式",
-            "home": "日常",
-            "trip": "旅程",
-            "homeDescription": "標準每日打卡",
-            "tripDescription": "與聯絡人分享旅行狀態"
-        },
-        "resetWarning": "確定嗎？所有資料將被刪除。",
-        "logoutConfirm": "確定要登出嗎？",
-        "confirmReset": "重置",
-        "cancel": "取消",
-        "ok": "確定"
+    "plusWellness": {
+      "title": "Plus 功能",
+      "message": "升級到 Plus，讓您在打卡時分享今天的感受。"
     },
-    "common": {
-        "ok": "確定",
-        "cancel": "取消",
-        "save": "保存",
-        "delete": "刪除",
-        "edit": "編輯",
-        "loading": "載入中...",
-        "refreshing": "重新整理中...",
-        "back": "返回",
-        "next": "下一步",
-        "submit": "提交",
-        "yes": "是",
-        "no": "否",
-        "done": "完成"
+    "reset": "重置",
+    "timer": "計時器",
+    "timeLeftToday": "距今日打卡截止剩",
+    "reachOut": {
+      "pressToSendHelp": "發出求助",
+      "lastSentLabel": "你上次發出求助："
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "Basic plan 保持實用且不加入廣告。Plus plan 提供更多連繫方式，並支持 Tryggd 持續改善。",
-        "badge": "Plus",
-        "heading": "免費預覽 Plus plan",
-        "description": "試用更多分享功能，同時保留原本簡單的打卡流程。",
-        "comingSoon": {
-            "title": "Plus 預覽",
-            "message": "試用期間可免費使用 Plus Preview。不需要付款資料，也不會自動收費。",
-            "button": "免費預覽 Plus plan",
-            "note": "你可以隨時回到 Basic plan。"
-        },
-        "features": {
-            "wellness": {
-                "title": "心情狀態分享",
-                "description": "在每日打卡時同步分享今天的感受。"
-            },
-            "location": {
-                "title": "位置分享",
-                "description": "由你選擇何時向指定聯繫人分享位置。"
-            },
-            "notifications": {
-                "title": "通知控制",
-                "description": "控制哪些聯絡人可以收到您的打卡通知。"
-            },
-            "contacts": {
-                "title": "更多聯繫人",
-                "description": "把更多親友加入你的 Tryggd 圈子。"
-            },
-            "welfare": {
-                "title": "關懷問候",
-                "description": "為聯絡人使用額外的關懷追蹤功能。"
-            },
-            "tripMode": {
-                "title": "出行模式",
-                "description": "分享出行進度和旅程相關更新。"
-            },
-            "mood": {
-                "title": "心情更新",
-                "description": "在打卡中加入更多心情背景。"
-            },
-            "controls": {
-                "title": "更多分享控制",
-                "description": "決定哪些信任聯繫人接收哪些更新。"
-            },
-            "activity": {
-                "title": "更完整的活動更新",
-                "description": "在打卡和狀態記錄中顯示更多細節。"
-            }
-        }
+    "activity": "活動",
+    "contacts_one": "{{count}} 個聯絡人",
+    "contacts_other": "{{count}} 個聯絡人",
+    "history": "歷史記錄",
+    "streak": "連續打卡",
+    "days_one": "{{count}} 天",
+    "days_other": "{{count}} 天",
+    "dateFormats": {
+      "weekdays": [
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六"
+      ],
+      "months": [
+        "一月",
+        "二月",
+        "三月",
+        "四月",
+        "五月",
+        "六月",
+        "七月",
+        "八月",
+        "九月",
+        "十月",
+        "十一月",
+        "十二月"
+      ],
+      "daySuffixes": {
+        "1": "一号",
+        "2": "二号",
+        "3": "三号",
+        "4": "四号",
+        "5": "五号",
+        "6": "六号",
+        "7": "七号",
+        "8": "八号",
+        "9": "九号",
+        "10": "十号",
+        "11": "十一号",
+        "12": "十二号",
+        "13": "十三号",
+        "14": "十四号",
+        "15": "十五号",
+        "16": "十六号",
+        "17": "十七号",
+        "18": "十八号",
+        "19": "十九号",
+        "20": "二十号",
+        "21": "二十一号",
+        "22": "二十二号",
+        "23": "二十三号",
+        "24": "二十四号",
+        "25": "二十五号",
+        "26": "二十六号",
+        "27": "二十七号",
+        "28": "二十八号",
+        "29": "二十九号",
+        "30": "三十号",
+        "31": "三十一号"
+      }
     },
-    "time": {
-        "justNow": "剛剛",
-        "minutesAgo": "{{count}} 分鐘前",
-        "hoursAgo_one": "{{count}} 小時前",
-        "hoursAgo_other": "{{count}} 小時前",
-        "daysAgo_one": "{{count}} 天前",
-        "daysAgo_other": "{{count}} 天前"
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 出發了",
+        "boarding": "🛫 登機／🚅 啟程",
+        "layover": "🛑 中途停留／轉機",
+        "landed": "🛬 已安全抵達",
+        "on_the_move": "🚕 在移動中",
+        "at_hotel": "🏨 已抵達酒店",
+        "on_trip": "🗺️ 旅程中",
+        "heading_home": "🏠 正在回家途中",
+        "trip_ended": "✅ 旅程結束 — 已安全到家"
+      }
     },
     "errors": {
-        "title": "錯誤",
-        "notAuthenticated": "未認證"
+      "fetchLastCheckin": "無法取得最後打卡記錄",
+      "noUser": "找不到使用者",
+      "checkin": "打卡失敗",
+      "loadState": "無法載入狀態"
+    }
+  },
+  "activity": {
+    "title": "活動",
+    "subtitle": "您和聯絡人的最新打卡記錄",
+    "you": "您",
+    "yourActivity": "您的活動",
+    "contacts": "聯絡人",
+    "loading": "載入活動中...",
+    "noCheckIn": "暫無打卡",
+    "staleCheckinMessage_one": "{{name}} 已有 {{count}} 天未打卡",
+    "staleCheckinMessage_other": "{{name}} 已有 {{count}} 天未打卡",
+    "emptyState": {
+      "title": "暫無聯絡人",
+      "message": "新增聯絡人以查看他們的活動"
+    },
+    "priority": {
+      "failed": "失敗",
+      "ongoing": "進行中",
+      "successful": "成功"
+    },
+    "time": {
+      "locale": "zh-TW"
+    },
+    "errors": {
+      "loadActivities": "無法載入活動",
+      "fetchContacts": "無法取得聯絡人",
+      "fetchOwnerActivity": "無法取得擁有者活動",
+      "openSharedLocation": "無法開啟分享位置。",
+      "locationPermission": "需要位置權限才能分享您的位置。"
+    },
+    "day": {
+      "today": "今天",
+      "yesterday": "昨天",
+      "other": "{{date}}"
+    },
+    "responseButton": {
+      "sendResponse": "👍 點讚",
+      "sent": "已點讚 ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
+      "todayLikes_other": "⭐️ 你今天收到 {{count}} 個 check-in 的回應：",
+      "prefix": "回應了你的打卡",
+      "defaultMessage": "為您的打卡按讚 👍！"
+    },
+    "welfareButton": {
+      "send": "🍀 你最近還好嗎？",
+      "sent": "已發送問候 ✓",
+      "sentRecently": "剛剛已發送問候",
+      "followUpAgain": "再次問候",
+      "followUpAvailable": "現在可以再次問候",
+      "followUpIn_one": "{{count}} 小時後可再次問候",
+      "followUpIn_other": "{{count}} 小時後可再次問候",
+      "sentRecentlyMetaMinutes_one": "{{count}} 分鐘前已發送上次問候",
+      "sentRecentlyMetaMinutes_other": "{{count}} 分鐘前已發送上次問候",
+      "sentRecentlyMeta_one": "{{count}} 小時前已發送上次問候",
+      "sentRecentlyMeta_other": "{{count}} 小時前已發送上次問候",
+      "sentOffline": "已發送 ✓ — {{name}} 上線後即可看到您的訊息"
+    },
+    "sharedLocation": {
+      "view": "查看分享位置"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "中國",
+      "hongKong": "香港",
+      "taiwan": "台灣",
+      "sweden": "瑞典",
+      "norway": "挪威",
+      "denmark": "丹麥",
+      "finland": "芬蘭"
+    },
+    "wellness": {
+      "veryLow": "太不舒服\n😔",
+      "low": "有點低落\n😕",
+      "neutral": "一切安好\n🙂",
+      "good": "感覺不錯\n☺️",
+      "great": "今天很開心\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 你今天怎麼樣？",
+      "sent": "已發送問候 ✓"
+    },
+    "checkedInAt": "打卡 @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 你今天收到 {{count}} 個問候：",
+      "todayGreetings_other": "💛 你今天收到 {{count}} 個問候："
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 你今天收到 {{count}} 條緊急訊息：",
+      "todayMessages_other": "🚨 你今天收到 {{count}} 條緊急訊息："
+    },
+    "supportButton": {
+      "send": "💪 發送支持",
+      "sent": "已發送支持 ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "知道了",
+      "sent": "已回應 ✓"
+    },
+    "openInMaps": "在地圖中開啟",
+    "watchOver": {
+      "resolvedBy": "由 {{name}} 處理",
+      "markResolved": "我已聯繫上 — 一切安好",
+      "resolving": "處理中...",
+      "resolveError": "無法標記為已處理，請重試。"
+    }
+  },
+  "contacts": {
+    "title": "聯絡人",
+    "contact": "聯絡人",
+    "newContact": "新增聯絡人",
+    "displayingAs": "顯示為",
+    "loading": "載入聯絡人...",
+    "subtitle": {
+      "withContacts": "{{count}} / {{max}} 位聯絡人",
+      "noContacts": "新增聯絡人以共享（最多3個）",
+      "withContactsUnlimited": "{{count}} 位聯絡人"
+    },
+    "emptyState": {
+      "title": "暫無聯絡人",
+      "message": "點擊 + 按鈕新增第一個聯絡人"
+    },
+    "tabs": {
+      "contacts": "聯絡人",
+      "requests": "請求"
+    },
+    "requests": {
+      "received": "收到的請求",
+      "sent": "已發送的請求",
+      "waiting": "等待回覆",
+      "loading": "載入請求...",
+      "emptyState": {
+        "title": "暫無請求",
+        "message": "當有人發送聯絡人請求時，將顯示在此處"
+      }
+    },
+    "placeholders": {
+      "email": "輸入 Tryggd ID",
+      "identifier": "輸入 Tryggd ID 或電子郵件",
+      "suggestedUsername": "建議的 Tryggd ID（可選）"
+    },
+    "buttons": {
+      "accept": "接受",
+      "reject": "拒絕",
+      "delete": "刪除",
+      "cancelRequest": "取消請求",
+      "sending": "發送中...",
+      "sendRequests_one": "發送請求",
+      "sendRequests_other": "發送請求"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "已達上限",
+        "message": "最多只能新增3個聯絡人。"
+      },
+      "senderLimitReached": {
+        "title": "無法接受請求",
+        "message": "對方的聯絡人名單已滿。"
+      },
+      "delete": {
+        "title": "刪除聯絡人",
+        "message": "確定要刪除 {{name}} 嗎？"
+      },
+      "contactExists": {
+        "title": "聯絡人已存在",
+        "message": "{{name}} 已在您的聯絡人中"
+      },
+      "requestExists": {
+        "title": "請求已發送",
+        "message": "您已向該使用者發送過請求。"
+      },
+      "requestReceived": {
+        "title": "收到請求",
+        "message": "您已收到來自 {{email}} 的請求。請在「請求」中查看。"
+      },
+      "invalidEmail": {
+        "title": "無效郵件",
+        "message": "{{email}} 未註冊或未驗證"
+      },
+      "selfContact": {
+        "title": "無效聯絡人",
+        "message": "不能新增自己為聯絡人"
+      },
+      "noChanges": {
+        "title": "無變更",
+        "message": "沒有新聯絡人可保存。"
+      },
+      "alreadyInContacts": "該使用者已在您的聯絡人中",
+      "requestHandled": {
+        "title": "請求已處理",
+        "message": "此請求已被處理"
+      }
+    },
+    "plusFeature": {
+      "title": "Plus 功能",
+      "notifications": "升級到 Plus，才能控制聯絡人打卡通知。",
+      "location": "升級到 Plus，才能為聯絡人啟用位置分享。"
+    },
+    "success": {
+      "requestSent": {
+        "title": "請求已發送",
+        "message": "聯絡人請求已發送至 {{name}}"
+      },
+      "contactAdded": {
+        "title": "聯絡人已新增",
+        "message": "{{name}} 已新增到您的聯絡人"
+      },
+      "deleted": {
+        "title": "聯絡人已移除",
+        "message": "{{name}} 已被移除。所有關聯已刪除。"
+      },
+      "requestRejected": {
+        "title": "請求已拒絕",
+        "message": "聯絡人請求已被拒絕"
+      },
+      "requestCancelled": {
+        "title": "請求已取消",
+        "message": "聯絡人請求已被取消"
+      }
+    },
+    "errors": {
+      "loadData": "無法載入資料",
+      "save": "無法保存聯絡人",
+      "delete": "無法刪除聯絡人",
+      "sendRequest": "無法發送聯絡人請求",
+      "search": "無法搜尋使用者",
+      "requestNotFound": "找不到聯絡人請求或已被處理",
+      "accept": "無法接受聯絡人請求",
+      "reject": "無法拒絕請求",
+      "cancel": "無法取消請求",
+      "createInvite": "建立邀請失敗。",
+      "shareInvite": "分享邀請連結失敗。",
+      "recoveryUnavailable": "此聯絡人目前無法接收找回邀請。",
+      "createRecoveryInvite": "建立找回邀請失敗。",
+      "updateCheckinNotifications": "更新打卡通知失敗。",
+      "updateLocationSharing": "更新位置分享失敗。",
+      "noContactUpdated": "沒有更新任何聯絡人資料。"
+    },
+    "qr": {
+      "permissionTitle": "需要相機權限",
+      "permissionMessage": "請允許使用相機以掃描 QR 碼。",
+      "scanHint": "將鏡頭對準 Tryggd QR 碼即可新增聯絡人",
+      "successTitle": "已新增聯絡人",
+      "successMessage": "{{name}} 已加入你的聯絡人",
+      "newContact": "新聯絡人",
+      "ownerLimitReached": "對方的聯絡人名單已滿，目前無法接受新聯絡人。"
+    },
+    "messages": {
+      "contactDefault": "此聯絡人"
+    },
+    "emergencyMessage": {
+      "modalTitle": "向{{name}}發送緊急訊息",
+      "modalDescription": "這將立即發送推播通知，並顯示在對方的動態中。",
+      "placeholder": "發生了什麼事？",
+      "send": "發送",
+      "sending": "發送中…",
+      "sendError": "緊急訊息發送失敗。"
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} 會收到您的打卡",
+      "checkinsDisabled": "{{name}} 不會收到您的打卡",
+      "locationEnabled": "{{name}} 會在活動中看到您的位置",
+      "locationDisabled": "{{name}} 不會在活動中看到您的位置",
+      "watchOverEnabled": "若 {{name}} 超過一天未打卡，您將收到通知",
+      "watchOverDisabled": "已關閉對 {{name}} 的關注"
+    },
+    "invite": {
+      "ready": "邀請連結已準備好",
+      "recoveryReady": "找回連結已準備好",
+      "instructions": "請先傳送連結，再把這組代碼告訴對方：",
+      "recoveryInstructions": "請先傳送找回連結，再把這組代碼告訴對方：",
+      "expiresOn": "此邀請將於 {{date}} 到期。",
+      "resettingTryggdId": "正在重設的 Tryggd ID：{{id}}",
+      "suggestedTryggdId": "建議的 Tryggd ID：{{id}}",
+      "shareMessage": "加入我的 Tryggd：",
+      "recoveryShareMessage": "使用此連結重設您的 Tryggd 密碼：",
+      "modalTitle": "邀請某人加入 Tryggd",
+      "modalDescription": "我們會建立一個私人邀請連結和 6 位數代碼。現在先建議一個 Tryggd ID，讓對方之後不用自己再選。",
+      "suggestedUsernameHelp": "請使用小寫字母、數字、句點或底線。我們會在建立邀請前檢查是否可用。",
+      "createButton": "建立邀請",
+      "creating": "建立中…",
+      "shareButton": "分享連結"
+    }
+  },
+  "profile": {
+    "title": "個人資料",
+    "defaultName": "使用者",
+    "loading": "載入個人資料...",
+    "buttons": {
+      "edit": "編輯",
+      "save": "保存",
+      "saving": "保存中...",
+      "logout": "登出"
+    },
+    "fields": {
+      "name": "姓名",
+      "email": "電子郵件",
+      "phone": "電話號碼",
+      "notSpecified": "未指定"
+    },
+    "settings": {
+      "title": "設定",
+      "subtitle": "應用程式設定和通知"
+    },
+    "avatarModal": {
+      "title": "更改個人資料圖片",
+      "takePhoto": "拍照",
+      "chooseFromLibrary": "從相簿選擇"
+    },
+    "logout": {
+      "title": "登出",
+      "confirm": "確定嗎？",
+      "button": "登出"
     },
     "permissions": {
-        "title": "權限"
+      "camera": "需要相機權限"
     },
-    "auth": {
-        "signup": {
-            "title": "建立帳戶",
-            "create": "建立帳戶",
-            "creating": "建立帳戶中...",
-            "success": {
-                "title": "🎉 帳戶建立成功",
-                "message": "您的帳戶已準備好。現在可以登入了。"
-            },
-            "verifyEmail": {
-                "title": "請驗證您的電子郵件！",
-                "message": "我們已向您的信箱發送確認郵件。確認後請登入。"
-            },
-            "error": "註冊失敗"
-        },
-        "login": {
-            "title": "登入",
-            "signIn": "登入",
-            "loggingIn": "登入中...",
-            "error": "登入失敗",
-            "continueWithGoogle": "使用 Google 繼續",
-            "connectingToGoogle": "正在連接 Google...",
-            "continueWithApple": "使用 Apple 繼續",
-            "connectingToApple": "正在連接 Apple...",
-            "orContinueWithEmail": "或使用電子郵件繼續",
-            "socialError": "登入失敗",
-            "useInviteCode": "有邀請代碼嗎？"
-        },
-        "email": "電子郵件",
-        "displayName": "姓名",
-        "password": {
-            "placeholder": "密碼 (至少8個字元)",
-            "minimumLength": "請至少使用 8 個字元。"
-        },
-        "confirmPassword": "確認密碼",
-        "passwordsMatch": "✔ 密碼匹配",
-        "passwordsNoMatch": "✖ 密碼不匹配",
-        "alreadyHaveAccount": "已有帳戶？登入",
-        "noAccount": "沒有帳戶？註冊",
-        "unknownError": "未知錯誤",
-        "forgotPassword": {
-            "title": "忘記密碼",
-            "instructions": "請輸入您的電子郵件地址",
-            "send": "發送重設郵件",
-            "sending": "發送中...",
-            "sentTitle": "請檢查您的電子郵件",
-            "sentMessage": "我們已向您的電子郵件發送密碼重設連結。",
-            "login": "前往登入",
-            "error": "發送重設郵件時出錯"
-        },
-        "resetPassword": {
-            "title": "重設密碼",
-            "instructions": "請在下方輸入您的新密碼。",
-            "save": "保存新密碼",
-            "saving": "保存中...",
-            "successTitle": "密碼已重設！",
-            "successMessage": "您現在可以使用新密碼登入。",
-            "login": "前往登入",
-            "error": "重設密碼時出錯",
-            "passwordPlaceholder": "新密碼"
-        },
-        "invite": {
-            "invalidLink": "邀請連結無效。",
-            "notFound": "找不到邀請。",
-            "alreadyUsed": "此邀請已被使用。",
-            "expired": "此邀請已過期。",
-            "unavailable": "此邀請目前無法使用。",
-            "unavailableTitle": "邀請無法使用",
-            "couldNotOpen": "無法開啟此邀請。",
-            "backToLogin": "返回登入",
-            "recoveryTitle": "重設您的 Tryggd 密碼",
-            "invitedTitle": "您已受邀加入 Tryggd",
-            "recoverySubtitle": "{{inviter}} 傳送了 {{account}} 的安全找回連結給您。",
-            "signupSubtitle": "{{inviter}} 邀請 {{invitee}} 加入他的 Tryggd 圈。",
-            "yourAccount": "您的 Tryggd 帳戶",
-            "you": "您",
-            "installTitle": "安裝或開啟應用程式",
-            "installHint": "請在 Tryggd App 中開啟這個邀請。如果您還沒有 App，請先安裝，再回到同一個連結。",
-            "openInApp": "在 Tryggd 中開啟",
-            "downloadAppStore": "前往 App Store 下載",
-            "downloadGooglePlay": "前往 Google Play 下載",
-            "keepLink": "請保留這個邀請連結：",
-            "enterCodeTitle": "輸入邀請代碼",
-            "enterCodeHint": "請向 {{inviter}} 索取這組邀請專屬的 6 位數代碼。",
-            "codePlaceholder": "6 位數邀請代碼",
-            "checkingCode": "驗證代碼中…",
-            "setPasswordTitle": "設定新密碼",
-            "setPasswordHint": "這會重設 Tryggd ID {{id}} 的密碼。",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "重設密碼中…",
-            "resetPassword": "重設密碼",
-            "createAccountTitle": "建立您的帳戶",
-            "createAccountHint": "之後您將使用 Tryggd ID 和密碼登入。您可以保留建議的 Tryggd ID，或現在直接修改。",
-            "mobilePlaceholder": "手機號碼（選填）",
-            "creatingAccount": "建立帳戶中…",
-            "createAccountButton": "建立帳戶",
-            "errors": {
-                "incorrectCode": "代碼不正確。",
-                "verifyCode": "無法驗證邀請代碼。",
-                "createAccount": "無法建立帳戶。",
-                "completeSignup": "無法完成受邀註冊。",
-                "missingAccount": "無法判斷要登入的帳戶。",
-                "completeRecovery": "無法完成密碼找回。",
-                "phoneAlreadyInUse": "該手機號碼已被使用。",
-                "tooManyAttempts": "嘗試次數過多，請稍後再試。"
-            },
-            "enterCodeStandaloneHint": "如果您是在收到邀請後才安裝 App，請輸入 6 位數代碼繼續。"
-        }
+    "notices": {
+      "title": "注意",
+      "emailConfirmation": "個人資料已保存，但電子郵件更改需要確認"
     },
-    "completeProfile": {
-        "kicker": "還差一步",
-        "title": "完成你的資料",
-        "description": "新增別人會看到的姓名，以及用於聯絡人搜尋的 Tryggd ID。",
-        "nameLabel": "姓名",
-        "namePlaceholder": "例如 Emily Cooper",
-        "nameHelperEmpty": "這是聯絡人會看到的姓名。",
-        "nameHelper": "這是聯絡人會看到的姓名。",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "例如 emilycooper",
-        "tryggdIdHelper": "別人會用它在 Tryggd 中找到並新增你。",
-        "continue": "繼續",
-        "saving": "儲存中...",
-        "saveErrorTitle": "無法儲存資料",
-        "saveErrorBody": "請再試一次。",
-        "duplicateTitle": "請換一個 Tryggd ID",
-        "duplicateBody": "這個 Tryggd ID 已被使用。",
-        "validation": {
-            "required": "別人會用它在 Tryggd 中找到並新增你。",
-            "min": "Tryggd ID 至少需要 3 個字元。",
-            "max": "Tryggd ID 不能超過 24 個字元。",
-            "chars": "只能使用小寫字母、數字、點或底線。"
-        }
+    "success": {
+      "title": "已保存",
+      "saved": "您的個人資料已更新。"
     },
-    "onboarding": {
-        "skip": "跳過",
-        "next": "下一步",
-        "getStarted": "開始使用",
-        "slides": {
-            "checkin": {
-                "eyebrow": "每日節奏",
-                "title": "快速每日打卡",
-                "body": "💚 一鍵打卡，讓信任聯絡人知道你一切安好。",
-                "points": {
-                    "one": "✓ 一鍵完成打卡",
-                    "two": "✓ 簡單傳送「我沒事」更新"
-                }
-            },
-            "contacts": {
-                "eyebrow": "你的安全圈",
-                "title": "信任聯絡人",
-                "body": "👥 新增家人或親近朋友，接收你的打卡、求助訊號和分享更新。",
-                "points": {
-                    "one": "✓ 由你選擇誰可看到更新",
-                    "two": "✓ 求助訊號會傳給正確的人"
-                }
-            },
-            "sharing": {
-                "eyebrow": "可選資訊",
-                "title": "狀態和位置",
-                "body": "📍 你可以與指定聯絡人分享心情、在家或外出、出行狀態或位置。",
-                "points": {
-                    "one": "✓ 🙂 心情、🏠 在家/外出，或 ✈️ 出行狀態",
-                    "two": "✓ 📍 只有在你選擇分享時才會分享位置"
-                }
-            },
-            "free": {
-                "eyebrow": "預設保持簡單",
-                "title": "Plus 預覽",
-                "body": "Tryggd Free 保留簡單基本功能。試用期間，你可以預覽 Plus 功能：",
-                "freeSummary": "Free：打卡、信任聯絡人、基本狀態",
-                "bodyFreeSuffix": " 保留簡單基本功能。",
-                "bodyPilotPrefix": "試用期間，預覽 ",
-                "bodyPilotSuffix": "：",
-                "points": {
-                    "one": "✈️ 出行模式",
-                    "two": "📍 位置分享選項",
-                    "three": "🙂 心情更新",
-                    "four": "⚙️ 更多分享控制"
-                },
-                "footer": "Plus 預覽可自由選擇。"
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "請先了解",
-            "title": "幾點重要說明",
-            "productName": "Tryggd ",
-            "paragraph1": "可協助你向信任聯絡人分享手動打卡、求助訊號和你選擇的更新。",
-            "paragraph2": "你的聯絡人可能會看到你選擇分享的狀態更新。位置只會在你開啟位置分享時才會分享。",
-            "paragraph3": "通知可能會因網絡連線、電量、裝置設定或第三方推送服務而延遲。",
-            "paragraph4": "Tryggd 不是緊急服務，緊急或危及生命的情況下不應依賴它。",
-            "acceptLabel": "我明白",
-            "saving": "儲存中...",
-            "decline": "拒絕 / 返回"
-        },
-        "errors": {
-            "saveTitle": "無法繼續",
-            "saveBody": "請再試一次。"
-        }
+    "errors": {
+      "loadProfile": "無法載入個人資料",
+      "notLoggedIn": "您未登入",
+      "updateProfile": "無法更新個人資料",
+      "saveProfile": "無法保存個人資料",
+      "deleteAccount": "無法刪除帳戶"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ 免費預覽 Plus plan",
-        "dialogIntro": "現在可以免費試用 Tryggd Plus plan。\n不需要付款資料，也不會自動收費。",
-        "dialogFreeSectionTitle": "Basic plan 包括：",
-        "dialogFreeFeature1": "✓ 打卡   🔔 親友即時收到打卡通知   👥 5位聯繫人",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan 包括 Basic plan 全部功能，並加入：",
-        "dialogFeature1": "🌿 日常模式   ✈️ 出行模式   ✋ 求助功能",
-        "dialogFeature2": "🙂 心情更新   📍 位置分享   👥 更多聯繫人",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogFeature5": "",
-        "dialogFeature6": "",
-        "dialogPricingTitle": "Plus plan 價格",
-        "dialogPricingNote": "{{deadline}} 後，如選擇繼續使用 Plus plan：",
-        "dialogPricingMonthly": "US$2.99 / 月",
-        "dialogPricingYearly": "US$19.99 / 年",
-        "dialogSupportNote": "Plus plan 是支持 Tryggd 持續運作和改善的一種方式。\n我們希望保持 Tryggd 實用、穩定、可靠，並且不加入廣告。",
-        "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n預覽結束後，帳戶會自動回到 Basic plan。",
-        "activate": "免費預覽 Plus plan",
-        "notNow": "使用 Basic plan",
-        "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
-        "expiredTitle": "Plus 預覽已結束",
-        "expiredBody": "你可以繼續使用 Tryggd Basic plan，包括一鍵打卡、信任聯絡人和基本動態。\n\n之前的打卡和動態記錄不會被移除。",
-        "expiredButton": "知道了",
-        "settingsRowTitle": "Plus 預覽",
-        "settingsRowSubtitle": "試用期間可免費體驗目前的 Plus 功能。",
-        "settingsRowAction": "開始預覽",
-        "activeRowTitle": "Plus 預覽進行中",
-        "activeRowSubtitle": "試用期間可使用目前的 Plus 功能。"
+    "deleteAccount": {
+      "title": "刪除帳戶",
+      "confirm": "這將永久刪除你的帳戶和資料，此操作無法復原。",
+      "finalTitle": "永久刪除帳戶？",
+      "finalConfirm": "你的帳戶、聯絡人、check-in 和設定都將被永久刪除。",
+      "button": "刪除帳戶",
+      "deleting": "正在刪除...",
+      "successTitle": "帳戶已刪除",
+      "successMessage": "你的帳戶已被永久刪除。"
     },
-    "watchOver": {
-        "toggle": "關注",
-        "toggleHint": "若 {{name}} 超過一天未打卡，您將收到通知。",
-        "limitReached": "免費方案可關注 {{max}} 位聯絡人。升級至 Plus 可無限關注。",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "外出狀態",
-        "setAway": "設為外出",
-        "clearAway": "取消外出狀態",
-        "label": "訊息（選填）",
-        "labelPlaceholder": "例：度假中",
-        "until": "外出至",
-        "active": "外出至 {{date}}",
-        "activeNoDate": "外出中（無結束日期）",
-        "hint": "外出期間，您的聯絡人不會收到缺席通知。",
-        "saving": "儲存中...",
-        "error": "無法更新外出狀態。"
+    "qr": {
+      "title": "我的 QR 碼",
+      "hint": "讓對方掃描此碼即可立即將你加為聯絡人。",
+      "errorGenerating": "無法產生 QR 碼，請再試一次。"
     }
+  },
+  "settings": {
+    "title": "設定",
+    "account": "帳戶",
+    "information": "資訊",
+    "language": "語言",
+    "theme": "主題",
+    "homeStyle": {
+      "title": "選擇主頁顯示",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "簡易",
+        "description": "一鍵打卡，沒有多餘干擾。"
+      },
+      "enhanced": {
+        "title": "加強",
+        "description": "分享心情、出行狀態和位置。"
+      }
+    },
+    "notifications": {
+      "title": "通知",
+      "preferences": "通知偏好",
+      "summary": {
+        "reminders": "提醒",
+        "activity": "動態",
+        "allOff": "所有通知已關閉"
+      },
+      "stayOnTrack": {
+        "title": "保持進度",
+        "description": "提醒我完成個人安全每日打卡"
+      },
+      "contactActivity": {
+        "title": "聯絡人動態",
+        "description": "當我的聯絡人完成打卡時通知我"
+      }
+    },
+    "about": "關於",
+    "privacy": "隱私權政策",
+    "terms": "服務條款",
+    "feedback": "意見與建議",
+    "logout": "登出",
+    "resetData": "重置資料",
+    "light": "淺色",
+    "dark": "深色",
+    "systemDefault": "使用系統設定",
+    "english": "英語",
+    "swedish": "瑞典語",
+    "norwegian": "挪威語",
+    "danish": "丹麥語",
+    "finnish": "芬蘭語",
+    "chineseSimplified": "簡體中文",
+    "chineseTraditional": "繁體中文",
+    "tripMode": {
+      "title": "打卡模式",
+      "home": "日常",
+      "trip": "旅程",
+      "homeDescription": "標準每日打卡",
+      "tripDescription": "與聯絡人分享旅行狀態"
+    },
+    "resetWarning": "確定嗎？所有資料將被刪除。",
+    "logoutConfirm": "確定要登出嗎？",
+    "confirmReset": "重置",
+    "cancel": "取消",
+    "ok": "確定"
+  },
+  "common": {
+    "ok": "確定",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "刪除",
+    "edit": "編輯",
+    "loading": "載入中...",
+    "refreshing": "重新整理中...",
+    "back": "返回",
+    "next": "下一步",
+    "submit": "提交",
+    "yes": "是",
+    "no": "否",
+    "done": "完成"
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Basic plan 保持實用且不加入廣告。Plus plan 提供更多連繫方式，並支持 Tryggd 持續改善。",
+    "badge": "Plus",
+    "heading": "免費預覽 Plus plan",
+    "description": "試用更多分享功能，同時保留原本簡單的打卡流程。",
+    "comingSoon": {
+      "title": "Plus 預覽",
+      "message": "試用期間可免費使用 Plus Preview。不需要付款資料，也不會自動收費。",
+      "button": "免費預覽 Plus plan",
+      "note": "你可以隨時回到 Basic plan。"
+    },
+    "features": {
+      "wellness": {
+        "title": "心情狀態分享",
+        "description": "在每日打卡時同步分享今天的感受。"
+      },
+      "location": {
+        "title": "位置分享",
+        "description": "由你選擇何時向指定聯繫人分享位置。"
+      },
+      "notifications": {
+        "title": "通知控制",
+        "description": "控制哪些聯絡人可以收到您的打卡通知。"
+      },
+      "contacts": {
+        "title": "更多聯繫人",
+        "description": "把更多親友加入你的 Tryggd 圈子。"
+      },
+      "welfare": {
+        "title": "關懷問候",
+        "description": "為聯絡人使用額外的關懷追蹤功能。"
+      },
+      "tripMode": {
+        "title": "出行模式",
+        "description": "分享出行進度和旅程相關更新。"
+      },
+      "mood": {
+        "title": "心情更新",
+        "description": "在打卡中加入更多心情背景。"
+      },
+      "controls": {
+        "title": "更多分享控制",
+        "description": "決定哪些信任聯繫人接收哪些更新。"
+      },
+      "activity": {
+        "title": "更完整的活動更新",
+        "description": "在打卡和狀態記錄中顯示更多細節。"
+      }
+    }
+  },
+  "time": {
+    "justNow": "剛剛",
+    "minutesAgo": "{{count}} 分鐘前",
+    "hoursAgo_one": "{{count}} 小時前",
+    "hoursAgo_other": "{{count}} 小時前",
+    "daysAgo_one": "{{count}} 天前",
+    "daysAgo_other": "{{count}} 天前"
+  },
+  "errors": {
+    "title": "錯誤",
+    "notAuthenticated": "未認證"
+  },
+  "permissions": {
+    "title": "權限"
+  },
+  "auth": {
+    "signup": {
+      "title": "建立帳戶",
+      "create": "建立帳戶",
+      "creating": "建立帳戶中...",
+      "success": {
+        "title": "🎉 帳戶建立成功",
+        "message": "您的帳戶已準備好。現在可以登入了。"
+      },
+      "verifyEmail": {
+        "title": "請驗證您的電子郵件！",
+        "message": "我們已向您的信箱發送確認郵件。確認後請登入。"
+      },
+      "error": "註冊失敗"
+    },
+    "login": {
+      "title": "登入",
+      "signIn": "登入",
+      "loggingIn": "登入中...",
+      "error": "登入失敗",
+      "continueWithGoogle": "使用 Google 繼續",
+      "connectingToGoogle": "正在連接 Google...",
+      "continueWithApple": "使用 Apple 繼續",
+      "connectingToApple": "正在連接 Apple...",
+      "orContinueWithEmail": "或使用電子郵件繼續",
+      "socialError": "登入失敗",
+      "useInviteCode": "有邀請代碼嗎？"
+    },
+    "email": "電子郵件",
+    "displayName": "姓名",
+    "password": {
+      "placeholder": "密碼 (至少8個字元)",
+      "minimumLength": "請至少使用 8 個字元。"
+    },
+    "confirmPassword": "確認密碼",
+    "passwordsMatch": "✔ 密碼匹配",
+    "passwordsNoMatch": "✖ 密碼不匹配",
+    "alreadyHaveAccount": "已有帳戶？登入",
+    "noAccount": "沒有帳戶？註冊",
+    "unknownError": "未知錯誤",
+    "forgotPassword": {
+      "title": "忘記密碼",
+      "instructions": "請輸入您的電子郵件地址",
+      "send": "發送重設郵件",
+      "sending": "發送中...",
+      "sentTitle": "請檢查您的電子郵件",
+      "sentMessage": "我們已向您的電子郵件發送密碼重設連結。",
+      "login": "前往登入",
+      "error": "發送重設郵件時出錯"
+    },
+    "resetPassword": {
+      "title": "重設密碼",
+      "instructions": "請在下方輸入您的新密碼。",
+      "save": "保存新密碼",
+      "saving": "保存中...",
+      "successTitle": "密碼已重設！",
+      "successMessage": "您現在可以使用新密碼登入。",
+      "login": "前往登入",
+      "error": "重設密碼時出錯",
+      "passwordPlaceholder": "新密碼"
+    },
+    "invite": {
+      "invalidLink": "邀請連結無效。",
+      "notFound": "找不到邀請。",
+      "alreadyUsed": "此邀請已被使用。",
+      "expired": "此邀請已過期。",
+      "unavailable": "此邀請目前無法使用。",
+      "unavailableTitle": "邀請無法使用",
+      "couldNotOpen": "無法開啟此邀請。",
+      "backToLogin": "返回登入",
+      "recoveryTitle": "重設您的 Tryggd 密碼",
+      "invitedTitle": "您已受邀加入 Tryggd",
+      "recoverySubtitle": "{{inviter}} 傳送了 {{account}} 的安全找回連結給您。",
+      "signupSubtitle": "{{inviter}} 邀請 {{invitee}} 加入他的 Tryggd 圈。",
+      "yourAccount": "您的 Tryggd 帳戶",
+      "you": "您",
+      "installTitle": "安裝或開啟應用程式",
+      "installHint": "請在 Tryggd App 中開啟這個邀請。如果您還沒有 App，請先安裝，再回到同一個連結。",
+      "openInApp": "在 Tryggd 中開啟",
+      "downloadAppStore": "前往 App Store 下載",
+      "downloadGooglePlay": "前往 Google Play 下載",
+      "keepLink": "請保留這個邀請連結：",
+      "enterCodeTitle": "輸入邀請代碼",
+      "enterCodeHint": "請向 {{inviter}} 索取這組邀請專屬的 6 位數代碼。",
+      "codePlaceholder": "6 位數邀請代碼",
+      "checkingCode": "驗證代碼中…",
+      "setPasswordTitle": "設定新密碼",
+      "setPasswordHint": "這會重設 Tryggd ID {{id}} 的密碼。",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "重設密碼中…",
+      "resetPassword": "重設密碼",
+      "createAccountTitle": "建立您的帳戶",
+      "createAccountHint": "之後您將使用 Tryggd ID 和密碼登入。您可以保留建議的 Tryggd ID，或現在直接修改。",
+      "mobilePlaceholder": "手機號碼（選填）",
+      "creatingAccount": "建立帳戶中…",
+      "createAccountButton": "建立帳戶",
+      "errors": {
+        "incorrectCode": "代碼不正確。",
+        "verifyCode": "無法驗證邀請代碼。",
+        "createAccount": "無法建立帳戶。",
+        "completeSignup": "無法完成受邀註冊。",
+        "missingAccount": "無法判斷要登入的帳戶。",
+        "completeRecovery": "無法完成密碼找回。",
+        "phoneAlreadyInUse": "該手機號碼已被使用。",
+        "tooManyAttempts": "嘗試次數過多，請稍後再試。"
+      },
+      "enterCodeStandaloneHint": "如果您是在收到邀請後才安裝 App，請輸入 6 位數代碼繼續。"
+    }
+  },
+  "completeProfile": {
+    "kicker": "還差一步",
+    "title": "完成你的資料",
+    "description": "新增別人會看到的姓名，以及用於聯絡人搜尋的 Tryggd ID。",
+    "nameLabel": "姓名",
+    "namePlaceholder": "例如 Emily Cooper",
+    "nameHelperEmpty": "這是聯絡人會看到的姓名。",
+    "nameHelper": "這是聯絡人會看到的姓名。",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "例如 emilycooper",
+    "tryggdIdHelper": "別人會用它在 Tryggd 中找到並新增你。",
+    "continue": "繼續",
+    "saving": "儲存中...",
+    "saveErrorTitle": "無法儲存資料",
+    "saveErrorBody": "請再試一次。",
+    "duplicateTitle": "請換一個 Tryggd ID",
+    "duplicateBody": "這個 Tryggd ID 已被使用。",
+    "validation": {
+      "required": "別人會用它在 Tryggd 中找到並新增你。",
+      "min": "Tryggd ID 至少需要 3 個字元。",
+      "max": "Tryggd ID 不能超過 24 個字元。",
+      "chars": "只能使用小寫字母、數字、點或底線。"
+    }
+  },
+  "onboarding": {
+    "skip": "跳過",
+    "next": "下一步",
+    "getStarted": "開始使用",
+    "slides": {
+      "checkin": {
+        "eyebrow": "每日節奏",
+        "title": "快速每日打卡",
+        "body": "💚 一鍵打卡，讓信任聯絡人知道你一切安好。",
+        "points": {
+          "one": "✓ 一鍵完成打卡",
+          "two": "✓ 簡單傳送「我沒事」更新"
+        }
+      },
+      "contacts": {
+        "eyebrow": "你的安全圈",
+        "title": "信任聯絡人",
+        "body": "👥 新增家人或親近朋友，接收你的打卡、求助訊號和分享更新。",
+        "points": {
+          "one": "✓ 由你選擇誰可看到更新",
+          "two": "✓ 求助訊號會傳給正確的人"
+        }
+      },
+      "sharing": {
+        "eyebrow": "可選資訊",
+        "title": "狀態和位置",
+        "body": "📍 你可以與指定聯絡人分享心情、在家或外出、出行狀態或位置。",
+        "points": {
+          "one": "✓ 🙂 心情、🏠 在家/外出，或 ✈️ 出行狀態",
+          "two": "✓ 📍 只有在你選擇分享時才會分享位置"
+        }
+      },
+      "free": {
+        "eyebrow": "預設保持簡單",
+        "title": "Plus 預覽",
+        "body": "Tryggd Free 保留簡單基本功能。試用期間，你可以預覽 Plus 功能：",
+        "freeSummary": "Free：打卡、信任聯絡人、基本狀態",
+        "bodyFreeSuffix": " 保留簡單基本功能。",
+        "bodyPilotPrefix": "試用期間，預覽 ",
+        "bodyPilotSuffix": "：",
+        "points": {
+          "one": "✈️ 出行模式",
+          "two": "📍 位置分享選項",
+          "three": "🙂 心情更新",
+          "four": "⚙️ 更多分享控制"
+        },
+        "footer": "Plus 預覽可自由選擇。"
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "請先了解",
+      "title": "幾點重要說明",
+      "productName": "Tryggd ",
+      "paragraph1": "可協助你向信任聯絡人分享手動打卡、求助訊號和你選擇的更新。",
+      "paragraph2": "你的聯絡人可能會看到你選擇分享的狀態更新。位置只會在你開啟位置分享時才會分享。",
+      "paragraph3": "通知可能會因網絡連線、電量、裝置設定或第三方推送服務而延遲。",
+      "paragraph4": "Tryggd 不是緊急服務，緊急或危及生命的情況下不應依賴它。",
+      "acceptLabel": "我明白",
+      "saving": "儲存中...",
+      "decline": "拒絕 / 返回"
+    },
+    "errors": {
+      "saveTitle": "無法繼續",
+      "saveBody": "請再試一次。"
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ 免費預覽 Plus plan",
+    "dialogIntro": "現在可以免費試用 Tryggd Plus plan。\n不需要付款資料，也不會自動收費。",
+    "dialogFreeSectionTitle": "Basic plan 包括：",
+    "dialogFreeFeature1": "✓ 打卡   🔔 親友即時收到打卡通知   👥 5位聯繫人",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan 包括 Basic plan 全部功能，並加入：",
+    "dialogFeature1": "🌿 日常模式   ✈️ 出行模式   ✋ 求助功能",
+    "dialogFeature2": "🙂 心情更新   📍 位置分享   👥 更多聯繫人",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogFeature5": "",
+    "dialogFeature6": "",
+    "dialogPricingTitle": "Plus plan 價格",
+    "dialogPricingNote": "{{deadline}} 後，如選擇繼續使用 Plus plan：",
+    "dialogPricingMonthly": "US$2.99 / 月",
+    "dialogPricingYearly": "US$19.99 / 年",
+    "dialogSupportNote": "Plus plan 是支持 Tryggd 持續運作和改善的一種方式。\n我們希望保持 Tryggd 實用、穩定、可靠，並且不加入廣告。",
+    "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n預覽結束後，帳戶會自動回到 Basic plan。",
+    "activate": "免費預覽 Plus plan",
+    "notNow": "使用 Basic plan",
+    "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
+    "expiredTitle": "Plus 預覽已結束",
+    "expiredBody": "你可以繼續使用 Tryggd Basic plan，包括一鍵打卡、信任聯絡人和基本動態。\n\n之前的打卡和動態記錄不會被移除。",
+    "expiredButton": "知道了",
+    "settingsRowTitle": "Plus 預覽",
+    "settingsRowSubtitle": "試用期間可免費體驗目前的 Plus 功能。",
+    "settingsRowAction": "開始預覽",
+    "activeRowTitle": "Plus 預覽進行中",
+    "activeRowSubtitle": "試用期間可使用目前的 Plus 功能。"
+  },
+  "watchOver": {
+    "toggle": "關注",
+    "toggleHint": "若 {{name}} 超過一天未打卡，您將收到通知。",
+    "limitReached": "免費方案可關注 {{max}} 位聯絡人。升級至 Plus 可無限關注。",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "外出狀態",
+    "setAway": "設為外出",
+    "clearAway": "取消外出狀態",
+    "label": "訊息（選填）",
+    "labelPlaceholder": "例：度假中",
+    "until": "外出至",
+    "active": "外出至 {{date}}",
+    "activeNoDate": "外出中（無結束日期）",
+    "hint": "外出期間，您的聯絡人不會收到缺席通知。",
+    "saving": "儲存中...",
+    "error": "無法更新外出狀態。"
+  }
 }

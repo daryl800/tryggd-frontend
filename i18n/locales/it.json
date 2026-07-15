@@ -1,874 +1,876 @@
 {
-    "home": {
-        "title": "Home",
-        "welcome": "Benvenuto",
-        "greetings": {
-            "morning": "Buongiorno",
-            "afternoon": "Buon pomeriggio",
-            "evening": "Buonasera",
-            "night": "Buonanotte"
-        },
-        "everythingIsFine": "Va tutto bene",
-        "dontForget": "Non dimenticare di fare il check-in oggi!",
-        "youCheckedInTodayAt": "Hai fatto il check-in oggi alle {{time}}",
-        "pressMeToCheckIn": "FAI CHECK-IN QUI",
-        "reset": "Reimposta",
-        "timer": "Timer",
-        "timeLeftToday": "Tempo rimanente oggi",
-        "reachOut": {
-            "pressToSendHelp": "Invia segnale di aiuto",
-            "lastSentLabel": "Ultimo aiuto inviato:"
-        },
-        "activity": "Attività",
-        "contacts_one": "{{count}} contatto",
-        "contacts_other": "{{count}} contatti",
-        "streak": "Serie",
-        "days_one": "{{count}} giorno",
-        "days_other": "{{count}} giorni",
-        "dateFormats": {
-            "weekdays": [
-                "domenica",
-                "lunedì",
-                "martedì",
-                "mercoledì",
-                "giovedì",
-                "venerdì",
-                "sabato"
-            ],
-            "months": [
-                "gennaio",
-                "febbraio",
-                "marzo",
-                "aprile",
-                "maggio",
-                "giugno",
-                "luglio",
-                "agosto",
-                "settembre",
-                "ottobre",
-                "novembre",
-                "dicembre"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "Impossibile recuperare l'ultimo check-in",
-            "noUser": "Nessun utente trovato",
-            "checkin": "Check-in non riuscito",
-            "loadState": "Impossibile caricare lo stato"
-        },
-        "status": {
-            "contactCheckedIn": "{{name}} ha fatto il check-in",
-            "sentWave": "{{name}} ti ha salutato",
-            "respondedToYou": "{{name}} ha risposto al tuo check-in",
-            "emergencyMessage": "🚨 {{name}}: {{message}}",
-            "messageFrom": "Messaggio da {{name}}",
-            "justNow": "Proprio ora",
-            "minutesAgo_one": "{{count}} minuto fa",
-            "minutesAgo_other": "{{count}} minuti fa",
-            "hoursAgo_one": "{{count}} ora fa",
-            "hoursAgo_other": "{{count}} ore fa",
-            "hoursAgoDecimal": "{{value}} ore fa",
-            "daysAgo_one": "{{count}} giorno fa",
-            "daysAgo_other": "{{count}} giorni fa",
-            "lastCheckinAgo": "Ultimo check-in {{timeAgo}}",
-            "lastCheckinLabel": "Ultimo check-in:"
-        },
-        "wellnessPrompt": "How are you feeling today?",
-        "context": {
-            "title": "Contesto di oggi",
-            "home": "A casa",
-            "trip": "In viaggio",
-            "homeTab": "🌿 Quotidiano",
-            "tripTab": "✈️ Viaggio",
-            "reachOutTab": "✋ Aiuto",
-            "reachOutStatuses": {
-                "call_now": "✋ Ho bisogno di aiuto",
-                "call_available": "📞 Chiamami"
-            },
-            "statusTitle": "Stato",
-            "tripStatusPrompt": "Scegli uno stato di viaggio",
-            "homeStatuses": {
-                "chilling": "🛋️ Relax",
-                "home": "🏠 A casa",
-                "outside": "🚶 Fuori",
-                "at_school": "🏫 A scuola",
-                "working": "💼 Al lavoro",
-                "busy": "💼 Occupato",
-                "relaxing": "☕ Pausa tè",
-                "gathering": "🥳 In compagnia",
-                "on_call": "📞 Al telefono",
-                "eating": "🍽️ Sto mangiando",
-                "exhausted": "😩 Esausto",
-                "sleepy": "😪 Assonnato",
-                "daydreaming": "💭 Sognando",
-                "playing_sport": "🏃 Sport",
-                "having_fun": "🎉 Mi diverto",
-                "watching_movie": "🎬 Film",
-                "resting": "😌 Riposo",
-                "goodmorning": "🌅 Buongiorno",
-                "goodafternoon": "🌞 Pomeriggio",
-                "goodnight": "🌙 Buona notte"
-            },
-            "summaryHome": "Check-in normale",
-            "summaryTrip": "Aggiungi uno stato di viaggio",
-            "summaryWithStatus": "In viaggio · {{status}}"
-        },
-        "plusWellness": {
-            "title": "Plus feature",
-            "message": "Upgrade to Plus to share how you feel with your check-in."
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 Parto per il viaggio",
-                "boarding": "🛫 Imbarco / 🚅 In auto",
-                "layover": "🛑 Scalo / coincidenza",
-                "landed": "🛬 Arrivato in sicurezza",
-                "on_the_move": "🚕 In movimento",
-                "at_hotel": "🏨 Arrivato in hotel",
-                "on_trip": "🗺️ In viaggio",
-                "heading_home": "🏠 Tornando a casa",
-                "trip_ended": "✅ Viaggio concluso — a casa sano/a"
-            }
-        }
+  "home": {
+    "title": "Home",
+    "welcome": "Benvenuto",
+    "greetings": {
+      "morning": "Buongiorno",
+      "afternoon": "Buon pomeriggio",
+      "evening": "Buonasera",
+      "night": "Buonanotte"
     },
-    "activity": {
-        "title": "Attività",
-        "subtitle": "I tuoi ultimi check-in e quelli dei tuoi contatti",
-        "you": "Tu",
-        "yourActivity": "Tu stesso",
-        "contacts": "Contatti",
-        "loading": "Caricamento attività...",
-        "noCheckIn": "Nessun check-in ancora",
-        "staleCheckinMessage_one": "{{name}} non ha fatto il check-in da {{count}} giorno",
-        "staleCheckinMessage_other": "{{name}} non ha fatto il check-in da {{count}} giorni",
-        "emptyState": {
-            "title": "Nessun contatto",
-            "message": "Aggiungi contatti per vedere le loro attività"
-        },
-        "priority": {
-            "failed": "Fallito",
-            "ongoing": "In corso",
-            "successful": "Riuscito"
-        },
-        "time": {
-            "locale": "it-IT"
-        },
-        "errors": {
-            "loadActivities": "Impossibile caricare le attività",
-            "fetchContacts": "Impossibile recuperare i contatti",
-            "fetchOwnerActivity": "Impossibile recuperare la tua attività",
-            "openSharedLocation": "Failed to open shared location.",
-            "locationPermission": "È necessaria l'autorizzazione alla posizione per condividere la tua posizione."
-        },
-        "day": {
-            "today": "Oggi",
-            "yesterday": "Ieri",
-            "other": "{{date, date, d MMMM yyyy}}"
-        },
-        "responseButton": {
-            "sendResponse": "👍 Invia un like",
-            "sent": "Like inviato ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ Hai ricevuto {{count}} risposta al tuo check-in oggi:",
-            "todayLikes_other": "⭐️ Hai ricevuto {{count}} risposte al tuo check-in oggi:",
-            "prefix": "ha reagito al tuo check-in",
-            "defaultMessage": "mette 👍 al tuo check-in!"
-        },
-        "welfareButton": {
-            "send": "🍀 Stai bene?",
-            "sent": "Saluto inviato ✓",
-            "sentOffline": "Inviato ✓ — {{name}} vedrà il tuo messaggio quando sarà di nuovo online"
-        },
-        "sharedLocation": {
-            "view": "View shared location"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "China",
-            "hongKong": "Hong Kong",
-            "taiwan": "Taiwan",
-            "sweden": "Sweden",
-            "norway": "Norway",
-            "denmark": "Denmark",
-            "finland": "Finland"
-        },
-        "wellness": {
-            "veryLow": "Non mi sento bene\n😔",
-            "low": "Un po’ giù\n😕",
-            "neutral": "Va tutto bene\n🙂",
-            "good": "Mi sento bene\n☺️",
-            "great": "Molto felice oggi\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 Come stai oggi?",
-            "sent": "Saluto inviato ✓"
-        },
-        "checkedInAt": "Check-in alle {{time}} {{date}}",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 Hai ricevuto {{count}} saluto oggi:",
-            "todayGreetings_other": "💛 Hai ricevuto {{count}} saluti oggi:"
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 Hai ricevuto {{count}} messaggio di emergenza oggi:",
-            "todayMessages_other": "🚨 Hai ricevuto {{count}} messaggi di emergenza oggi:"
-        },
-        "supportButton": {
-            "send": "💪 Invia supporto",
-            "sent": "Supporto inviato ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "Capito",
-            "sent": "Risposto ✓"
-        },
-        "openInMaps": "Apri in Mappe",
-        "watchOver": {
-            "resolvedBy": "Risolto da {{name}}",
-            "markResolved": "Sono stato in contatto — va tutto bene",
-            "resolving": "Risolvendo...",
-            "resolveError": "Impossibile contrassegnare come risolto. Riprova."
-        }
+    "everythingIsFine": "Va tutto bene",
+    "dontForget": "Non dimenticare di fare il check-in oggi!",
+    "youCheckedInTodayAt": "Hai fatto il check-in oggi alle {{time}}",
+    "pressMeToCheckIn": "FAI CHECK-IN QUI",
+    "reset": "Reimposta",
+    "timer": "Timer",
+    "timeLeftToday": "Tempo rimanente oggi",
+    "reachOut": {
+      "pressToSendHelp": "Invia segnale di aiuto",
+      "lastSentLabel": "Ultimo aiuto inviato:"
     },
-    "contacts": {
-        "title": "Contatti",
-        "contact": "Contatto",
-        "newContact": "Nuovo contatto",
-        "displayingAs": "Mostrato come",
-        "loading": "Caricamento contatti...",
-        "subtitle": {
-            "withContacts": "Hai {{count}}/{{max}} contatti",
-            "noContacts": "Aggiungi contatti per condividere",
-            "withContactsUnlimited": "{{count}} contacts"
-        },
-        "emptyState": {
-            "title": "Nessun contatto",
-            "message": "Premi il pulsante + per aggiungere il tuo primo contatto"
-        },
-        "tabs": {
-            "contacts": "Contatti",
-            "requests": "Richieste"
-        },
-        "requests": {
-            "received": "Richieste ricevute",
-            "sent": "Richieste inviate",
-            "waiting": "In attesa di risposta",
-            "loading": "Caricamento richieste...",
-            "emptyState": {
-                "title": "Nessuna richiesta",
-                "message": "Quando qualcuno ti invia una richiesta di contatto, apparirà qui"
-            }
-        },
-        "placeholders": {
-            "email": "Inserisci un Tryggd ID",
-            "identifier": "Enter Tryggd ID or email",
-            "suggestedUsername": "Tryggd ID suggerito (facoltativo)"
-        },
-        "buttons": {
-            "accept": "Accetta",
-            "reject": "Rifiuta",
-            "delete": "Elimina",
-            "cancelRequest": "Annulla richiesta",
-            "sending": "Invio...",
-            "sendRequests_one": "Invia richiesta",
-            "sendRequests_other": "Invia richieste"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "Limite raggiunto",
-                "message": "Puoi aggiungere al massimo 3 contatti."
-            },
-            "senderLimitReached": {
-                "title": "Impossibile accettare la richiesta",
-                "message": "L'elenco contatti di questa persona è pieno."
-            },
-            "delete": {
-                "title": "Elimina contatto",
-                "message": "Vuoi davvero eliminare {{name}}?"
-            },
-            "contactExists": {
-                "title": "Contatto già esistente",
-                "message": "{{name}} è già tra i tuoi contatti"
-            },
-            "requestExists": {
-                "title": "Richiesta già inviata",
-                "message": "Hai già inviato una richiesta a questo utente."
-            },
-            "requestReceived": {
-                "title": "Richiesta ricevuta",
-                "message": "Hai già una richiesta da {{email}}. Controlla nella scheda \"Richieste\"."
-            },
-            "invalidEmail": {
-                "title": "Tryggd ID non valido",
-                "message": "{{email}} non è registrato o non è verificato"
-            },
-            "selfContact": {
-                "title": "Contatto non valido",
-                "message": "Non puoi aggiungere te stesso come contatto"
-            },
-            "noChanges": {
-                "title": "Nessuna modifica",
-                "message": "Nessun nuovo contatto da salvare."
-            },
-            "alreadyInContacts": "Questo utente è già nei tuoi contatti",
-            "requestHandled": {
-                "title": "Richiesta già gestita",
-                "message": "Questa richiesta è già stata gestita"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "Richiesta inviata",
-                "message": "Richiesta di contatto inviata a {{name}}"
-            },
-            "contactAdded": {
-                "title": "Contatto aggiunto",
-                "message": "{{name}} è stato aggiunto ai tuoi contatti"
-            },
-            "deleted": {
-                "title": "Contatto rimosso",
-                "message": "{{name}} è stato rimosso. Tutte le relazioni sono state eliminate."
-            },
-            "requestRejected": {
-                "title": "Richiesta rifiutata",
-                "message": "La richiesta di contatto è stata rifiutata"
-            },
-            "requestCancelled": {
-                "title": "Richiesta annullata",
-                "message": "La richiesta di contatto è stata annullata"
-            }
-        },
-        "errors": {
-            "loadData": "Impossibile caricare i dati",
-            "save": "Impossibile salvare i contatti",
-            "delete": "Impossibile eliminare il contatto",
-            "sendRequest": "Impossibile inviare la richiesta di contatto",
-            "search": "Impossibile cercare l'utente",
-            "requestNotFound": "Impossibile trovare la richiesta di contatto o è già stata gestita",
-            "accept": "Impossibile accettare la richiesta di contatto",
-            "reject": "Impossibile rifiutare la richiesta",
-            "cancel": "Impossibile annullare la richiesta",
-            "createInvite": "Impossibile creare l’invito.",
-            "shareInvite": "Impossibile condividere il link di invito.",
-            "recoveryUnavailable": "Questo contatto non può ancora ricevere un invito di recupero.",
-            "createRecoveryInvite": "Impossibile creare l’invito di recupero.",
-            "updateCheckinNotifications": "Failed to update check-in notifications.",
-            "updateLocationSharing": "Failed to update location sharing.",
-            "noContactUpdated": "No contact row was updated."
-        },
-        "qr": {
-            "permissionTitle": "Accesso alla fotocamera richiesto",
-            "permissionMessage": "Consenti l'accesso alla fotocamera per scansionare i codici QR.",
-            "scanHint": "Punta su un codice QR Tryggd per aggiungere un contatto",
-            "successTitle": "Contatto aggiunto",
-            "successMessage": "{{name}} è stato aggiunto ai tuoi contatti",
-            "newContact": "Nuovo contatto",
-            "ownerLimitReached": "La lista contatti di questa persona è piena. Non può accettare nuovi contatti al momento."
-        },
-        "messages": {
-            "contactDefault": "This contact"
-        },
-        "emergencyMessage": {
-            "modalTitle": "Invia un messaggio di emergenza a {{name}}",
-            "modalDescription": "Questo invia una notifica push immediata e appare nel loro feed Attività.",
-            "placeholder": "Cosa sta succedendo?",
-            "send": "Invia",
-            "sending": "Invio…",
-            "sendError": "Impossibile inviare il messaggio di emergenza."
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} will receive your check-ins",
-            "checkinsDisabled": "{{name}} will not receive your check-ins",
-            "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity",
-            "watchOverEnabled": "Riceverai una notifica se {{name}} non effettua il check-in per un giorno",
-            "watchOverDisabled": "Sorveglianza di {{name}} disattivata"
-        },
-        "invite": {
-            "ready": "Invito pronto",
-            "recoveryReady": "Link di recupero pronto",
-            "instructions": "Invia prima il link. Poi comunica questo codice:",
-            "recoveryInstructions": "Invia prima il link di recupero. Poi comunica questo codice:",
-            "expiresOn": "Questo invito scade il {{date}}.",
-            "resettingTryggdId": "Reimpostazione Tryggd ID: {{id}}",
-            "suggestedTryggdId": "Tryggd ID suggerito: {{id}}",
-            "shareMessage": "Unisciti a me su Tryggd:",
-            "recoveryShareMessage": "Usa questo link per reimpostare la tua password Tryggd:",
-            "modalTitle": "Invita qualcuno su Tryggd",
-            "modalDescription": "Creeremo un link di invito privato e un codice di 6 cifre. Suggerisci ora un Tryggd ID così l’invitato non dovrà sceglierne uno più tardi.",
-            "suggestedUsernameHelp": "Usa lettere minuscole, numeri, punti o trattini bassi. Verificheremo la disponibilità prima di creare l’invito.",
-            "createButton": "Crea invito",
-            "creating": "Creazione…",
-            "shareButton": "Condividi link"
-        },
-        "plusFeature": {
-            "title": "Plus feature",
-            "notifications": "Upgrade to Plus to control contact check-in notifications.",
-            "location": "Upgrade to Plus to enable location sharing for a contact."
-        }
-    },
-    "profile": {
-        "title": "Profilo",
-        "defaultName": "Utente",
-        "loading": "Caricamento profilo...",
-        "buttons": {
-            "edit": "Modifica",
-            "save": "Salva",
-            "saving": "Salvataggio...",
-            "logout": "Esci"
-        },
-        "fields": {
-            "name": "Nome",
-            "email": "Email",
-            "phone": "Numero di telefono",
-            "notSpecified": "Non specificato"
-        },
-        "settings": {
-            "title": "Impostazioni",
-            "subtitle": "Impostazioni app e notifiche"
-        },
-        "avatarModal": {
-            "title": "Cambia immagine profilo",
-            "takePhoto": "Scatta foto",
-            "chooseFromLibrary": "Scegli dalla libreria"
-        },
-        "logout": {
-            "title": "Esci",
-            "confirm": "Sei sicuro?",
-            "button": "Esci"
-        },
-        "permissions": {
-            "camera": "È richiesto l'accesso alla fotocamera"
-        },
-        "notices": {
-            "title": "Avviso",
-            "emailConfirmation": "Profilo salvato, ma il cambio email richiede conferma"
-        },
-        "success": {
-            "title": "Salvato",
-            "saved": "Il tuo profilo è stato aggiornato."
-        },
-        "errors": {
-            "loadProfile": "Impossibile caricare il profilo",
-            "notLoggedIn": "Non hai effettuato l'accesso",
-            "updateProfile": "Impossibile aggiornare il profilo",
-            "saveProfile": "Impossibile salvare il profilo",
-            "deleteAccount": "Impossibile eliminare l’account"
-        },
-        "deleteAccount": {
-            "title": "Elimina account",
-            "confirm": "Questo eliminerà definitivamente il tuo account e i tuoi dati. L’azione non può essere annullata.",
-            "finalTitle": "Eliminare definitivamente l’account?",
-            "finalConfirm": "Il tuo account, i contatti, i check-in e le impostazioni verranno rimossi definitivamente.",
-            "button": "Elimina account",
-            "deleting": "Eliminazione...",
-            "successTitle": "Account eliminato",
-            "successMessage": "Il tuo account è stato eliminato definitivamente."
-        },
-        "qr": {
-            "title": "Il mio codice QR",
-            "hint": "Fai scansionare questo codice a qualcuno per aggiungerti istantaneamente come contatto.",
-            "errorGenerating": "Impossibile generare il codice QR. Riprova."
-        }
-    },
-    "settings": {
-        "title": "Impostazioni",
-        "account": "Account",
-        "information": "Informazioni",
-        "language": "Lingua",
-        "theme": "Tema",
-        "homeStyle": {
-            "title": "Scegli la vista home",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "Semplice",
-                "description": "Check-in con un tocco, senza distrazioni."
-            },
-            "enhanced": {
-                "title": "Avanzata",
-                "description": "Condividi umore, stato del viaggio e posizione."
-            }
-        },
-        "notifications": {
-            "title": "Notifiche",
-            "preferences": "Preferenze di notifica",
-            "summary": {
-                "reminders": "Promemoria",
-                "activity": "Attività",
-                "allOff": "Tutte le notifiche disattivate"
-            },
-            "stayOnTrack": {
-                "title": "Resta sul pezzo",
-                "description": "Ricordami di completare i miei check-in giornalieri di sicurezza"
-            },
-            "contactActivity": {
-                "title": "Attività dei contatti",
-                "description": "Avvisami quando i miei contatti completano i loro check-in"
-            }
-        },
-        "about": "Informazioni",
-        "privacy": "Informativa sulla privacy",
-        "terms": "Termini di servizio",
-        "feedback": "Invia feedback",
-        "logout": "Esci",
-        "resetData": "Reimposta dati",
-        "light": "Chiaro",
-        "dark": "Scuro",
-        "systemDefault": "Usa impostazione di sistema",
-        "english": "Inglese",
-        "swedish": "Svedese",
-        "norwegian": "Norvegese",
-        "danish": "Danese",
-        "finnish": "Finlandese",
-        "chineseSimplified": "Cinese (semplificato)",
-        "chineseTraditional": "Cinese (tradizionale)",
-        "tripMode": {
-            "title": "Modalità check-in",
-            "home": "Standard",
-            "trip": "Viaggio",
-            "homeDescription": "Check-in giornaliero standard",
-            "tripDescription": "Condividi il tuo stato di viaggio"
-        },
-        "resetWarning": "Sei sicuro? Tutti i tuoi dati saranno eliminati.",
-        "logoutConfirm": "Vuoi davvero uscire?",
-        "confirmReset": "Reimposta",
-        "cancel": "Annulla",
-        "ok": "OK"
-    },
-    "common": {
-        "ok": "OK",
-        "cancel": "Annulla",
-        "save": "Salva",
-        "delete": "Elimina",
-        "edit": "Modifica",
-        "loading": "Caricamento...",
-        "refreshing": "Aggiornamento...",
-        "back": "Indietro",
-        "next": "Avanti",
-        "submit": "Invia",
-        "yes": "Sì",
-        "no": "No",
-        "done": "Done"
-    },
-    "time": {
-        "justNow": "Proprio adesso",
-        "minutesAgo": "{{count}} min fa",
-        "hoursAgo_one": "{{count}} ora fa",
-        "hoursAgo_other": "{{count}} ore fa",
-        "daysAgo_one": "{{count}} giorno fa",
-        "daysAgo_other": "{{count}} giorni fa"
+    "activity": "Attività",
+    "contacts_one": "{{count}} contatto",
+    "contacts_other": "{{count}} contatti",
+    "streak": "Serie",
+    "days_one": "{{count}} giorno",
+    "days_other": "{{count}} giorni",
+    "dateFormats": {
+      "weekdays": [
+        "domenica",
+        "lunedì",
+        "martedì",
+        "mercoledì",
+        "giovedì",
+        "venerdì",
+        "sabato"
+      ],
+      "months": [
+        "gennaio",
+        "febbraio",
+        "marzo",
+        "aprile",
+        "maggio",
+        "giugno",
+        "luglio",
+        "agosto",
+        "settembre",
+        "ottobre",
+        "novembre",
+        "dicembre"
+      ]
     },
     "errors": {
-        "title": "Errore",
-        "notAuthenticated": "Non autenticato"
+      "fetchLastCheckin": "Impossibile recuperare l'ultimo check-in",
+      "noUser": "Nessun utente trovato",
+      "checkin": "Check-in non riuscito",
+      "loadState": "Impossibile caricare lo stato"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} ha fatto il check-in",
+      "sentWave": "{{name}} ti ha salutato",
+      "respondedToYou": "{{name}} ha risposto al tuo check-in",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
+      "messageFrom": "Messaggio da {{name}}",
+      "justNow": "Proprio ora",
+      "minutesAgo_one": "{{count}} minuto fa",
+      "minutesAgo_other": "{{count}} minuti fa",
+      "hoursAgo_one": "{{count}} ora fa",
+      "hoursAgo_other": "{{count}} ore fa",
+      "hoursAgoDecimal": "{{value}} ore fa",
+      "daysAgo_one": "{{count}} giorno fa",
+      "daysAgo_other": "{{count}} giorni fa",
+      "lastCheckinAgo": "Ultimo check-in {{timeAgo}}",
+      "lastCheckinLabel": "Ultimo check-in:"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Contesto di oggi",
+      "home": "A casa",
+      "trip": "In viaggio",
+      "homeTab": "🌿 Quotidiano",
+      "tripTab": "✈️ Viaggio",
+      "reachOutTab": "✋ Aiuto",
+      "reachOutStatuses": {
+        "call_now": "✋ Ho bisogno di aiuto",
+        "call_available": "📞 Chiamami"
+      },
+      "statusTitle": "Stato",
+      "tripStatusPrompt": "Scegli uno stato di viaggio",
+      "homeStatuses": {
+        "chilling": "🛋️ Relax",
+        "home": "🏠 A casa",
+        "outside": "🚶 Fuori",
+        "at_school": "🏫 A scuola",
+        "working": "💼 Al lavoro",
+        "busy": "💼 Occupato",
+        "relaxing": "☕ Pausa tè",
+        "gathering": "🥳 In compagnia",
+        "on_call": "📞 Al telefono",
+        "eating": "🍽️ Sto mangiando",
+        "exhausted": "😩 Esausto",
+        "sleepy": "😪 Assonnato",
+        "daydreaming": "💭 Sognando",
+        "playing_sport": "🏃 Sport",
+        "having_fun": "🎉 Mi diverto",
+        "watching_movie": "🎬 Film",
+        "resting": "😌 Riposo",
+        "goodmorning": "🌅 Buongiorno",
+        "goodafternoon": "🌞 Pomeriggio",
+        "goodnight": "🌙 Buona notte",
+        "heading_home_alone": "🚶 Verso casa da solo",
+        "hiking_alone": "🥾 In escursione in solitario"
+      },
+      "summaryHome": "Check-in normale",
+      "summaryTrip": "Aggiungi uno stato di viaggio",
+      "summaryWithStatus": "In viaggio · {{status}}"
+    },
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Parto per il viaggio",
+        "boarding": "🛫 Imbarco / 🚅 In auto",
+        "layover": "🛑 Scalo / coincidenza",
+        "landed": "🛬 Arrivato in sicurezza",
+        "on_the_move": "🚕 In movimento",
+        "at_hotel": "🏨 Arrivato in hotel",
+        "on_trip": "🗺️ In viaggio",
+        "heading_home": "🏠 Tornando a casa",
+        "trip_ended": "✅ Viaggio concluso — a casa sano/a"
+      }
+    }
+  },
+  "activity": {
+    "title": "Attività",
+    "subtitle": "I tuoi ultimi check-in e quelli dei tuoi contatti",
+    "you": "Tu",
+    "yourActivity": "Tu stesso",
+    "contacts": "Contatti",
+    "loading": "Caricamento attività...",
+    "noCheckIn": "Nessun check-in ancora",
+    "staleCheckinMessage_one": "{{name}} non ha fatto il check-in da {{count}} giorno",
+    "staleCheckinMessage_other": "{{name}} non ha fatto il check-in da {{count}} giorni",
+    "emptyState": {
+      "title": "Nessun contatto",
+      "message": "Aggiungi contatti per vedere le loro attività"
+    },
+    "priority": {
+      "failed": "Fallito",
+      "ongoing": "In corso",
+      "successful": "Riuscito"
+    },
+    "time": {
+      "locale": "it-IT"
+    },
+    "errors": {
+      "loadActivities": "Impossibile caricare le attività",
+      "fetchContacts": "Impossibile recuperare i contatti",
+      "fetchOwnerActivity": "Impossibile recuperare la tua attività",
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "È necessaria l'autorizzazione alla posizione per condividere la tua posizione."
+    },
+    "day": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "other": "{{date, date, d MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👍 Invia un like",
+      "sent": "Like inviato ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ Hai ricevuto {{count}} risposta al tuo check-in oggi:",
+      "todayLikes_other": "⭐️ Hai ricevuto {{count}} risposte al tuo check-in oggi:",
+      "prefix": "ha reagito al tuo check-in",
+      "defaultMessage": "mette 👍 al tuo check-in!"
+    },
+    "welfareButton": {
+      "send": "🍀 Stai bene?",
+      "sent": "Saluto inviato ✓",
+      "sentOffline": "Inviato ✓ — {{name}} vedrà il tuo messaggio quando sarà di nuovo online"
+    },
+    "sharedLocation": {
+      "view": "View shared location"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "China",
+      "hongKong": "Hong Kong",
+      "taiwan": "Taiwan",
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "Non mi sento bene\n😔",
+      "low": "Un po’ giù\n😕",
+      "neutral": "Va tutto bene\n🙂",
+      "good": "Mi sento bene\n☺️",
+      "great": "Molto felice oggi\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 Come stai oggi?",
+      "sent": "Saluto inviato ✓"
+    },
+    "checkedInAt": "Check-in alle {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 Hai ricevuto {{count}} saluto oggi:",
+      "todayGreetings_other": "💛 Hai ricevuto {{count}} saluti oggi:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Hai ricevuto {{count}} messaggio di emergenza oggi:",
+      "todayMessages_other": "🚨 Hai ricevuto {{count}} messaggi di emergenza oggi:"
+    },
+    "supportButton": {
+      "send": "💪 Invia supporto",
+      "sent": "Supporto inviato ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Capito",
+      "sent": "Risposto ✓"
+    },
+    "openInMaps": "Apri in Mappe",
+    "watchOver": {
+      "resolvedBy": "Risolto da {{name}}",
+      "markResolved": "Sono stato in contatto — va tutto bene",
+      "resolving": "Risolvendo...",
+      "resolveError": "Impossibile contrassegnare come risolto. Riprova."
+    }
+  },
+  "contacts": {
+    "title": "Contatti",
+    "contact": "Contatto",
+    "newContact": "Nuovo contatto",
+    "displayingAs": "Mostrato come",
+    "loading": "Caricamento contatti...",
+    "subtitle": {
+      "withContacts": "Hai {{count}}/{{max}} contatti",
+      "noContacts": "Aggiungi contatti per condividere",
+      "withContactsUnlimited": "{{count}} contacts"
+    },
+    "emptyState": {
+      "title": "Nessun contatto",
+      "message": "Premi il pulsante + per aggiungere il tuo primo contatto"
+    },
+    "tabs": {
+      "contacts": "Contatti",
+      "requests": "Richieste"
+    },
+    "requests": {
+      "received": "Richieste ricevute",
+      "sent": "Richieste inviate",
+      "waiting": "In attesa di risposta",
+      "loading": "Caricamento richieste...",
+      "emptyState": {
+        "title": "Nessuna richiesta",
+        "message": "Quando qualcuno ti invia una richiesta di contatto, apparirà qui"
+      }
+    },
+    "placeholders": {
+      "email": "Inserisci un Tryggd ID",
+      "identifier": "Enter Tryggd ID or email",
+      "suggestedUsername": "Tryggd ID suggerito (facoltativo)"
+    },
+    "buttons": {
+      "accept": "Accetta",
+      "reject": "Rifiuta",
+      "delete": "Elimina",
+      "cancelRequest": "Annulla richiesta",
+      "sending": "Invio...",
+      "sendRequests_one": "Invia richiesta",
+      "sendRequests_other": "Invia richieste"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Limite raggiunto",
+        "message": "Puoi aggiungere al massimo 3 contatti."
+      },
+      "senderLimitReached": {
+        "title": "Impossibile accettare la richiesta",
+        "message": "L'elenco contatti di questa persona è pieno."
+      },
+      "delete": {
+        "title": "Elimina contatto",
+        "message": "Vuoi davvero eliminare {{name}}?"
+      },
+      "contactExists": {
+        "title": "Contatto già esistente",
+        "message": "{{name}} è già tra i tuoi contatti"
+      },
+      "requestExists": {
+        "title": "Richiesta già inviata",
+        "message": "Hai già inviato una richiesta a questo utente."
+      },
+      "requestReceived": {
+        "title": "Richiesta ricevuta",
+        "message": "Hai già una richiesta da {{email}}. Controlla nella scheda \"Richieste\"."
+      },
+      "invalidEmail": {
+        "title": "Tryggd ID non valido",
+        "message": "{{email}} non è registrato o non è verificato"
+      },
+      "selfContact": {
+        "title": "Contatto non valido",
+        "message": "Non puoi aggiungere te stesso come contatto"
+      },
+      "noChanges": {
+        "title": "Nessuna modifica",
+        "message": "Nessun nuovo contatto da salvare."
+      },
+      "alreadyInContacts": "Questo utente è già nei tuoi contatti",
+      "requestHandled": {
+        "title": "Richiesta già gestita",
+        "message": "Questa richiesta è già stata gestita"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Richiesta inviata",
+        "message": "Richiesta di contatto inviata a {{name}}"
+      },
+      "contactAdded": {
+        "title": "Contatto aggiunto",
+        "message": "{{name}} è stato aggiunto ai tuoi contatti"
+      },
+      "deleted": {
+        "title": "Contatto rimosso",
+        "message": "{{name}} è stato rimosso. Tutte le relazioni sono state eliminate."
+      },
+      "requestRejected": {
+        "title": "Richiesta rifiutata",
+        "message": "La richiesta di contatto è stata rifiutata"
+      },
+      "requestCancelled": {
+        "title": "Richiesta annullata",
+        "message": "La richiesta di contatto è stata annullata"
+      }
+    },
+    "errors": {
+      "loadData": "Impossibile caricare i dati",
+      "save": "Impossibile salvare i contatti",
+      "delete": "Impossibile eliminare il contatto",
+      "sendRequest": "Impossibile inviare la richiesta di contatto",
+      "search": "Impossibile cercare l'utente",
+      "requestNotFound": "Impossibile trovare la richiesta di contatto o è già stata gestita",
+      "accept": "Impossibile accettare la richiesta di contatto",
+      "reject": "Impossibile rifiutare la richiesta",
+      "cancel": "Impossibile annullare la richiesta",
+      "createInvite": "Impossibile creare l’invito.",
+      "shareInvite": "Impossibile condividere il link di invito.",
+      "recoveryUnavailable": "Questo contatto non può ancora ricevere un invito di recupero.",
+      "createRecoveryInvite": "Impossibile creare l’invito di recupero.",
+      "updateCheckinNotifications": "Failed to update check-in notifications.",
+      "updateLocationSharing": "Failed to update location sharing.",
+      "noContactUpdated": "No contact row was updated."
+    },
+    "qr": {
+      "permissionTitle": "Accesso alla fotocamera richiesto",
+      "permissionMessage": "Consenti l'accesso alla fotocamera per scansionare i codici QR.",
+      "scanHint": "Punta su un codice QR Tryggd per aggiungere un contatto",
+      "successTitle": "Contatto aggiunto",
+      "successMessage": "{{name}} è stato aggiunto ai tuoi contatti",
+      "newContact": "Nuovo contatto",
+      "ownerLimitReached": "La lista contatti di questa persona è piena. Non può accettare nuovi contatti al momento."
+    },
+    "messages": {
+      "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Invia un messaggio di emergenza a {{name}}",
+      "modalDescription": "Questo invia una notifica push immediata e appare nel loro feed Attività.",
+      "placeholder": "Cosa sta succedendo?",
+      "send": "Invia",
+      "sending": "Invio…",
+      "sendError": "Impossibile inviare il messaggio di emergenza."
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} will receive your check-ins",
+      "checkinsDisabled": "{{name}} will not receive your check-ins",
+      "locationEnabled": "{{name}} will see your location in Activity",
+      "locationDisabled": "{{name}} will not see your location in Activity",
+      "watchOverEnabled": "Riceverai una notifica se {{name}} non effettua il check-in per un giorno",
+      "watchOverDisabled": "Sorveglianza di {{name}} disattivata"
+    },
+    "invite": {
+      "ready": "Invito pronto",
+      "recoveryReady": "Link di recupero pronto",
+      "instructions": "Invia prima il link. Poi comunica questo codice:",
+      "recoveryInstructions": "Invia prima il link di recupero. Poi comunica questo codice:",
+      "expiresOn": "Questo invito scade il {{date}}.",
+      "resettingTryggdId": "Reimpostazione Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Tryggd ID suggerito: {{id}}",
+      "shareMessage": "Unisciti a me su Tryggd:",
+      "recoveryShareMessage": "Usa questo link per reimpostare la tua password Tryggd:",
+      "modalTitle": "Invita qualcuno su Tryggd",
+      "modalDescription": "Creeremo un link di invito privato e un codice di 6 cifre. Suggerisci ora un Tryggd ID così l’invitato non dovrà sceglierne uno più tardi.",
+      "suggestedUsernameHelp": "Usa lettere minuscole, numeri, punti o trattini bassi. Verificheremo la disponibilità prima di creare l’invito.",
+      "createButton": "Crea invito",
+      "creating": "Creazione…",
+      "shareButton": "Condividi link"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
+    }
+  },
+  "profile": {
+    "title": "Profilo",
+    "defaultName": "Utente",
+    "loading": "Caricamento profilo...",
+    "buttons": {
+      "edit": "Modifica",
+      "save": "Salva",
+      "saving": "Salvataggio...",
+      "logout": "Esci"
+    },
+    "fields": {
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Numero di telefono",
+      "notSpecified": "Non specificato"
+    },
+    "settings": {
+      "title": "Impostazioni",
+      "subtitle": "Impostazioni app e notifiche"
+    },
+    "avatarModal": {
+      "title": "Cambia immagine profilo",
+      "takePhoto": "Scatta foto",
+      "chooseFromLibrary": "Scegli dalla libreria"
+    },
+    "logout": {
+      "title": "Esci",
+      "confirm": "Sei sicuro?",
+      "button": "Esci"
     },
     "permissions": {
-        "title": "Autorizzazione"
+      "camera": "È richiesto l'accesso alla fotocamera"
     },
-    "auth": {
-        "signup": {
-            "title": "Crea account",
-            "create": "Crea account",
-            "creating": "Creazione account...",
-            "success": {
-                "title": "🎉 Account creato",
-                "message": "Il tuo account è pronto. Ora puoi accedere."
-            },
-            "verifyEmail": {
-                "title": "Verifica la tua email!",
-                "message": "Abbiamo inviato un'email di conferma. Dopo la conferma, effettua l'accesso."
-            },
-            "error": "Registrazione non riuscita"
-        },
-        "login": {
-            "title": "Accedi",
-            "signIn": "Accedi",
-            "loggingIn": "Accesso in corso...",
-            "error": "Accesso non riuscito",
-            "continueWithGoogle": "Continua con Google",
-            "connectingToGoogle": "Connessione a Google...",
-            "continueWithApple": "Continua con Apple",
-            "connectingToApple": "Connessione a Apple...",
-            "orContinueWithEmail": "oppure continua con e-mail",
-            "socialError": "Accesso non riuscito",
-            "useInviteCode": "Hai un codice di invito?"
-        },
-        "email": "Email",
-        "displayName": "Nome",
-        "password": {
-            "placeholder": "Password (almeno 6 caratteri)",
-            "minimumLength": "Use at least 8 characters."
-        },
-        "confirmPassword": "Conferma password",
-        "passwordsMatch": "✔ Le password coincidono",
-        "passwordsNoMatch": "✖ Le password non coincidono",
-        "alreadyHaveAccount": "Hai già un account? Accedi",
-        "noAccount": "Non hai un account? Registrati",
-        "unknownError": "Errore sconosciuto",
-        "forgotPassword": {
-            "title": "Password dimenticata",
-            "instructions": "Inserisci il tuo indirizzo email",
-            "send": "Invia email di reset",
-            "sending": "Invio...",
-            "sentTitle": "Controlla la tua email",
-            "sentMessage": "Ti abbiamo inviato un link per reimpostare la password.",
-            "login": "Vai al login",
-            "error": "Errore nell'invio dell'email di reset"
-        },
-        "resetPassword": {
-            "title": "Reimposta password",
-            "instructions": "Inserisci qui sotto la tua nuova password.",
-            "save": "Salva nuova password",
-            "saving": "Salvataggio...",
-            "successTitle": "Password reimpostata!",
-            "successMessage": "Ora puoi accedere con la tua nuova password.",
-            "login": "Vai al login",
-            "error": "Errore nella reimpostazione della password",
-            "passwordPlaceholder": "Nuova password"
-        },
-        "invite": {
-            "enterCodeStandaloneHint": "Se hai installato l’app dopo aver ricevuto l’invito, inserisci il codice a 6 cifre per continuare.",
-            "invalidLink": "Invite link is invalid.",
-            "notFound": "Invite not found.",
-            "alreadyUsed": "This invite has already been used.",
-            "expired": "This invite has expired.",
-            "unavailable": "This invite is not available anymore.",
-            "unavailableTitle": "Invite unavailable",
-            "couldNotOpen": "This invite could not be opened.",
-            "backToLogin": "Back to login",
-            "recoveryTitle": "Reset your Tryggd password",
-            "invitedTitle": "You're invited to Tryggd",
-            "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
-            "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
-            "yourAccount": "your Tryggd account",
-            "you": "you",
-            "installTitle": "Install or open the app",
-            "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
-            "openInApp": "Open in Tryggd",
-            "downloadAppStore": "Download on App Store",
-            "downloadGooglePlay": "Get it on Google Play",
-            "keepLink": "Keep this invite link:",
-            "enterCodeTitle": "Enter your invite code",
-            "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
-            "codePlaceholder": "6-digit invite code",
-            "checkingCode": "Checking code…",
-            "setPasswordTitle": "Set a new password",
-            "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "Resetting password…",
-            "resetPassword": "Reset password",
-            "createAccountTitle": "Create your account",
-            "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
-            "mobilePlaceholder": "Mobile number (optional)",
-            "creatingAccount": "Creating account…",
-            "createAccountButton": "Create account",
-            "errors": {
-                "incorrectCode": "The code is incorrect.",
-                "verifyCode": "Failed to verify invite code.",
-                "createAccount": "Failed to create account.",
-                "completeSignup": "Failed to complete invited signup.",
-                "missingAccount": "Could not determine the account to sign in.",
-                "completeRecovery": "Failed to complete password recovery.",
-                "phoneAlreadyInUse": "This phone number is already in use.",
-                "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-            }
-        }
+    "notices": {
+      "title": "Avviso",
+      "emailConfirmation": "Profilo salvato, ma il cambio email richiede conferma"
     },
-    "completeProfile": {
-        "kicker": "Ancora un passaggio",
-        "title": "Completa il tuo profilo",
-        "description": "Aggiungi il nome che vedranno gli altri e il tuo Tryggd ID per la ricerca contatti.",
-        "nameLabel": "Nome",
-        "namePlaceholder": "es. Emily Cooper",
-        "nameHelperEmpty": "Questo è il nome che vedranno i tuoi contatti.",
-        "nameHelper": "Questo è il nome che vedranno i tuoi contatti.",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "es. emilycooper",
-        "tryggdIdHelper": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
-        "continue": "Continua",
-        "saving": "Salvataggio...",
-        "saveErrorTitle": "Impossibile salvare il profilo",
-        "saveErrorBody": "Riprova.",
-        "duplicateTitle": "Prova un altro Tryggd ID",
-        "duplicateBody": "Questo Tryggd ID è già in uso.",
-        "validation": {
-            "required": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
-            "min": "Il Tryggd ID deve contenere almeno 3 caratteri.",
-            "max": "Il Tryggd ID deve contenere al massimo 24 caratteri.",
-            "chars": "Usa solo lettere minuscole, numeri, punti o trattini bassi."
-        }
+    "success": {
+      "title": "Salvato",
+      "saved": "Il tuo profilo è stato aggiornato."
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "Additional features for richer daily check-ins",
-        "badge": "Plus",
-        "heading": "Unlock more context",
-        "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
-        "comingSoon": {
-            "title": "Plus Preview",
-            "message": "Plus Preview è gratis durante il pilot. Nessun dato di pagamento richiesto e nessun addebito automatico.",
-            "button": "Prova Plus plan gratis",
-            "note": "Puoi tornare al Basic plan in qualsiasi momento."
-        },
-        "features": {
-            "wellness": {
-                "title": "Wellness sharing",
-                "description": "Share how you feel as part of your daily check-in."
-            },
-            "location": {
-                "title": "Location sharing",
-                "description": "Let trusted contacts see your shared location in Activity."
-            },
-            "notifications": {
-                "title": "Notification controls",
-                "description": "Control which contacts receive your check-in notifications."
-            },
-            "contacts": {
-                "title": "Unlimited contacts",
-                "description": "Add more than the free-plan contact limit."
-            },
-            "welfare": {
-                "title": "Welfare greeting",
-                "description": "Use additional welfare follow-up features for your contacts."
-            },
-            "tripMode": {
-                "title": "Trip Mode",
-                "description": "Share travel progress and trip-specific updates."
-            },
-            "mood": {
-                "title": "Mood updates",
-                "description": "Add emotional context to your check-ins."
-            },
-            "controls": {
-                "title": "More sharing control",
-                "description": "Decide which trusted contacts receive which updates."
-            },
-            "activity": {
-                "title": "Richer activity updates",
-                "description": "Show more detail in shared check-in and status history."
-            }
-        }
+    "errors": {
+      "loadProfile": "Impossibile caricare il profilo",
+      "notLoggedIn": "Non hai effettuato l'accesso",
+      "updateProfile": "Impossibile aggiornare il profilo",
+      "saveProfile": "Impossibile salvare il profilo",
+      "deleteAccount": "Impossibile eliminare l’account"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ Prova Plus plan gratis",
-        "dialogIntro": "Prova Tryggd Plus plan gratis ora.\nNessun dato di pagamento richiesto e nessun addebito automatico.",
-        "dialogFreeSectionTitle": "Basic plan include:",
-        "dialogFreeFeature1": "✓ Check-in   🔔 notifiche aggiornamenti contatti   👥 fino a 5 contatti",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan include tutto di Basic plan, più:",
-        "dialogFeature1": "🌿 Modalità quotidiana   ✈️ Modalità viaggio   ✋ Segnale di aiuto",
-        "dialogFeature2": "🙂 Aggiornamenti sull’umore   📍 Condivisione posizione   👥 Più contatti",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogPricingTitle": "Prezzo di Plus plan",
-        "dialogPricingNote": "Dopo il {{deadline}}, se scegli di continuare con Plus plan:",
-        "dialogPricingMonthly": "US$2.99 / mese",
-        "dialogPricingYearly": "US$19.99 / anno",
-        "dialogSupportNote": "Plus plan è un modo per supportare il funzionamento continuo e il miglioramento di Tryggd.\nVogliamo mantenere Tryggd utile, stabile, affidabile e senza pubblicità.",
-        "dialogPreviewNote": "Plus Preview è aperto fino al {{deadline}}.\nAl termine della preview, il tuo account tornerà automaticamente al Basic plan.",
-        "activate": "Prova Plus plan gratis",
-        "notNow": "Usa Basic plan",
-        "activatedMessage": "Plus è ora attivo. La schermata Home è stata impostata su Avanzata. Puoi tornare a Semplice in qualsiasi momento nelle Impostazioni.",
-        "expiredTitle": "L'anteprima Plus è terminata",
-        "expiredBody": "Puoi continuare a usare Tryggd Basic plan, inclusi check-in, contatti fidati e aggiornamenti di base.\n\nI tuoi check-in e le attività precedenti non vengono rimossi.",
-        "expiredButton": "Capito",
-        "settingsRowTitle": "Anteprima Plus",
-        "settingsRowSubtitle": "Prova le funzionalità Plus attuali gratuitamente durante il pilota.",
-        "settingsRowAction": "Inizia anteprima",
-        "activeRowTitle": "Anteprima Plus attiva",
-        "activeRowSubtitle": "Le funzionalità Plus attuali sono disponibili durante il pilota.",
-        "dialogFeature5": "",
-        "dialogFeature6": ""
+    "deleteAccount": {
+      "title": "Elimina account",
+      "confirm": "Questo eliminerà definitivamente il tuo account e i tuoi dati. L’azione non può essere annullata.",
+      "finalTitle": "Eliminare definitivamente l’account?",
+      "finalConfirm": "Il tuo account, i contatti, i check-in e le impostazioni verranno rimossi definitivamente.",
+      "button": "Elimina account",
+      "deleting": "Eliminazione...",
+      "successTitle": "Account eliminato",
+      "successMessage": "Il tuo account è stato eliminato definitivamente."
     },
-    "onboarding": {
-        "skip": "Salta",
-        "next": "Avanti",
-        "getStarted": "Inizia",
-        "slides": {
-            "checkin": {
-                "eyebrow": "Ritmo quotidiano",
-                "title": "Check-in quotidiani rapidi",
-                "body": "💚 Fai il check-in con un tocco e fai sapere ai tuoi contatti fidati che stai bene.",
-                "points": {
-                    "one": "✓ Un tocco per fare il check-in",
-                    "two": "✓ Un semplice aggiornamento «Sono al sicuro»"
-                }
-            },
-            "contacts": {
-                "eyebrow": "Il tuo cerchio",
-                "title": "Contatti fidati",
-                "body": "👥 Aggiungi familiari o amici stretti che possono ricevere i tuoi check-in, segnali di aiuto e aggiornamenti condivisi.",
-                "points": {
-                    "one": "✓ Scegli chi vede i tuoi aggiornamenti",
-                    "two": "✓ I segnali di aiuto vanno alle persone giuste"
-                }
-            },
-            "sharing": {
-                "eyebrow": "Contesto opzionale",
-                "title": "Stato e posizione",
-                "body": "📍 Condividi come stai, se sei a casa o fuori, lo stato del viaggio o la posizione con i contatti selezionati.",
-                "points": {
-                    "one": "✓ 🙂 Umore, 🏠 a casa/fuori, o ✈️ stato del viaggio",
-                    "two": "✓ 📍 Posizione solo quando scegli di condividerla"
-                }
-            },
-            "free": {
-                "eyebrow": "Semplice per impostazione predefinita",
-                "title": "Plus Preview",
-                "body": "Tryggd Free mantiene le basi semplici. Durante il progetto pilota, puoi visualizzare in anteprima le funzionalità Plus:",
-                "freeSummary": "Free: check-in, contatti fidati, stato di base",
-                "bodyFreeSuffix": " mantiene le basi semplici.",
-                "bodyPilotPrefix": "Durante il progetto pilota, visualizza in anteprima ",
-                "bodyPilotSuffix": ":",
-                "points": {
-                    "one": "✈️ Modalità Viaggio",
-                    "two": "📍 Opzioni di condivisione della posizione",
-                    "three": "🙂 Aggiornamenti dell'umore",
-                    "four": "⚙️ Più controllo sulla condivisione"
-                },
-                "footer": "Plus Preview è opzionale."
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "Bene sapere",
-            "title": "Alcune note importanti",
-            "productName": "Tryggd ",
-            "paragraph1": "ti aiuta a condividere check-in manuali, segnali di aiuto e aggiornamenti selezionati con contatti fidati.",
-            "paragraph2": "I tuoi contatti potrebbero vedere gli aggiornamenti di stato che scegli di condividere. La posizione viene condivisa solo quando attivi la condivisione della posizione.",
-            "paragraph3": "Le notifiche potrebbero essere ritardate a causa della connessione di rete, del livello della batteria, delle impostazioni del dispositivo o dei servizi push di terze parti.",
-            "paragraph4": "Tryggd non è un servizio di emergenza e non deve essere utilizzato in situazioni urgenti o che mettono a rischio la vita.",
-            "acceptLabel": "Ho capito",
-            "saving": "Salvataggio...",
-            "decline": "Rifiuta / Indietro"
-        },
-        "errors": {
-            "saveTitle": "Impossibile continuare",
-            "saveBody": "Per favore riprova."
-        }
-    },
-    "watchOver": {
-        "toggle": "Sorvegliare",
-        "toggleHint": "Ricevi una notifica se {{name}} non ha effettuato il check-in per un giorno.",
-        "limitReached": "Puoi sorvegliare {{max}} persona con il piano gratuito. Passa a Plus per illimitato.",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "Stato di assenza",
-        "setAway": "Imposta come assente",
-        "clearAway": "Rimuovi stato d'assenza",
-        "label": "Messaggio (opzionale)",
-        "labelPlaceholder": "es. In vacanza",
-        "until": "Assente fino al",
-        "active": "Assente fino al {{date}}",
-        "activeNoDate": "Assente (nessuna data di fine)",
-        "hint": "Mentre sei assente, i tuoi contatti non riceveranno notifiche di assenza.",
-        "saving": "Salvataggio...",
-        "error": "Impossibile aggiornare lo stato d'assenza."
+    "qr": {
+      "title": "Il mio codice QR",
+      "hint": "Fai scansionare questo codice a qualcuno per aggiungerti istantaneamente come contatto.",
+      "errorGenerating": "Impossibile generare il codice QR. Riprova."
     }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "account": "Account",
+    "information": "Informazioni",
+    "language": "Lingua",
+    "theme": "Tema",
+    "homeStyle": {
+      "title": "Scegli la vista home",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Semplice",
+        "description": "Check-in con un tocco, senza distrazioni."
+      },
+      "enhanced": {
+        "title": "Avanzata",
+        "description": "Condividi umore, stato del viaggio e posizione."
+      }
+    },
+    "notifications": {
+      "title": "Notifiche",
+      "preferences": "Preferenze di notifica",
+      "summary": {
+        "reminders": "Promemoria",
+        "activity": "Attività",
+        "allOff": "Tutte le notifiche disattivate"
+      },
+      "stayOnTrack": {
+        "title": "Resta sul pezzo",
+        "description": "Ricordami di completare i miei check-in giornalieri di sicurezza"
+      },
+      "contactActivity": {
+        "title": "Attività dei contatti",
+        "description": "Avvisami quando i miei contatti completano i loro check-in"
+      }
+    },
+    "about": "Informazioni",
+    "privacy": "Informativa sulla privacy",
+    "terms": "Termini di servizio",
+    "feedback": "Invia feedback",
+    "logout": "Esci",
+    "resetData": "Reimposta dati",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "systemDefault": "Usa impostazione di sistema",
+    "english": "Inglese",
+    "swedish": "Svedese",
+    "norwegian": "Norvegese",
+    "danish": "Danese",
+    "finnish": "Finlandese",
+    "chineseSimplified": "Cinese (semplificato)",
+    "chineseTraditional": "Cinese (tradizionale)",
+    "tripMode": {
+      "title": "Modalità check-in",
+      "home": "Standard",
+      "trip": "Viaggio",
+      "homeDescription": "Check-in giornaliero standard",
+      "tripDescription": "Condividi il tuo stato di viaggio"
+    },
+    "resetWarning": "Sei sicuro? Tutti i tuoi dati saranno eliminati.",
+    "logoutConfirm": "Vuoi davvero uscire?",
+    "confirmReset": "Reimposta",
+    "cancel": "Annulla",
+    "ok": "OK"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "loading": "Caricamento...",
+    "refreshing": "Aggiornamento...",
+    "back": "Indietro",
+    "next": "Avanti",
+    "submit": "Invia",
+    "yes": "Sì",
+    "no": "No",
+    "done": "Done"
+  },
+  "time": {
+    "justNow": "Proprio adesso",
+    "minutesAgo": "{{count}} min fa",
+    "hoursAgo_one": "{{count}} ora fa",
+    "hoursAgo_other": "{{count}} ore fa",
+    "daysAgo_one": "{{count}} giorno fa",
+    "daysAgo_other": "{{count}} giorni fa"
+  },
+  "errors": {
+    "title": "Errore",
+    "notAuthenticated": "Non autenticato"
+  },
+  "permissions": {
+    "title": "Autorizzazione"
+  },
+  "auth": {
+    "signup": {
+      "title": "Crea account",
+      "create": "Crea account",
+      "creating": "Creazione account...",
+      "success": {
+        "title": "🎉 Account creato",
+        "message": "Il tuo account è pronto. Ora puoi accedere."
+      },
+      "verifyEmail": {
+        "title": "Verifica la tua email!",
+        "message": "Abbiamo inviato un'email di conferma. Dopo la conferma, effettua l'accesso."
+      },
+      "error": "Registrazione non riuscita"
+    },
+    "login": {
+      "title": "Accedi",
+      "signIn": "Accedi",
+      "loggingIn": "Accesso in corso...",
+      "error": "Accesso non riuscito",
+      "continueWithGoogle": "Continua con Google",
+      "connectingToGoogle": "Connessione a Google...",
+      "continueWithApple": "Continua con Apple",
+      "connectingToApple": "Connessione a Apple...",
+      "orContinueWithEmail": "oppure continua con e-mail",
+      "socialError": "Accesso non riuscito",
+      "useInviteCode": "Hai un codice di invito?"
+    },
+    "email": "Email",
+    "displayName": "Nome",
+    "password": {
+      "placeholder": "Password (almeno 6 caratteri)",
+      "minimumLength": "Use at least 8 characters."
+    },
+    "confirmPassword": "Conferma password",
+    "passwordsMatch": "✔ Le password coincidono",
+    "passwordsNoMatch": "✖ Le password non coincidono",
+    "alreadyHaveAccount": "Hai già un account? Accedi",
+    "noAccount": "Non hai un account? Registrati",
+    "unknownError": "Errore sconosciuto",
+    "forgotPassword": {
+      "title": "Password dimenticata",
+      "instructions": "Inserisci il tuo indirizzo email",
+      "send": "Invia email di reset",
+      "sending": "Invio...",
+      "sentTitle": "Controlla la tua email",
+      "sentMessage": "Ti abbiamo inviato un link per reimpostare la password.",
+      "login": "Vai al login",
+      "error": "Errore nell'invio dell'email di reset"
+    },
+    "resetPassword": {
+      "title": "Reimposta password",
+      "instructions": "Inserisci qui sotto la tua nuova password.",
+      "save": "Salva nuova password",
+      "saving": "Salvataggio...",
+      "successTitle": "Password reimpostata!",
+      "successMessage": "Ora puoi accedere con la tua nuova password.",
+      "login": "Vai al login",
+      "error": "Errore nella reimpostazione della password",
+      "passwordPlaceholder": "Nuova password"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "Se hai installato l’app dopo aver ricevuto l’invito, inserisci il codice a 6 cifre per continuare.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
+    }
+  },
+  "completeProfile": {
+    "kicker": "Ancora un passaggio",
+    "title": "Completa il tuo profilo",
+    "description": "Aggiungi il nome che vedranno gli altri e il tuo Tryggd ID per la ricerca contatti.",
+    "nameLabel": "Nome",
+    "namePlaceholder": "es. Emily Cooper",
+    "nameHelperEmpty": "Questo è il nome che vedranno i tuoi contatti.",
+    "nameHelper": "Questo è il nome che vedranno i tuoi contatti.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "es. emilycooper",
+    "tryggdIdHelper": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
+    "continue": "Continua",
+    "saving": "Salvataggio...",
+    "saveErrorTitle": "Impossibile salvare il profilo",
+    "saveErrorBody": "Riprova.",
+    "duplicateTitle": "Prova un altro Tryggd ID",
+    "duplicateBody": "Questo Tryggd ID è già in uso.",
+    "validation": {
+      "required": "Le persone lo usano per trovarti e aggiungerti in Tryggd.",
+      "min": "Il Tryggd ID deve contenere almeno 3 caratteri.",
+      "max": "Il Tryggd ID deve contenere al massimo 24 caratteri.",
+      "chars": "Usa solo lettere minuscole, numeri, punti o trattini bassi."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Plus Preview",
+      "message": "Plus Preview è gratis durante il pilot. Nessun dato di pagamento richiesto e nessun addebito automatico.",
+      "button": "Prova Plus plan gratis",
+      "note": "Puoi tornare al Basic plan in qualsiasi momento."
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
+      }
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Prova Plus plan gratis",
+    "dialogIntro": "Prova Tryggd Plus plan gratis ora.\nNessun dato di pagamento richiesto e nessun addebito automatico.",
+    "dialogFreeSectionTitle": "Basic plan include:",
+    "dialogFreeFeature1": "✓ Check-in   🔔 notifiche aggiornamenti contatti   👥 fino a 5 contatti",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan include tutto di Basic plan, più:",
+    "dialogFeature1": "🌿 Modalità quotidiana   ✈️ Modalità viaggio   ✋ Segnale di aiuto",
+    "dialogFeature2": "🙂 Aggiornamenti sull’umore   📍 Condivisione posizione   👥 Più contatti",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Prezzo di Plus plan",
+    "dialogPricingNote": "Dopo il {{deadline}}, se scegli di continuare con Plus plan:",
+    "dialogPricingMonthly": "US$2.99 / mese",
+    "dialogPricingYearly": "US$19.99 / anno",
+    "dialogSupportNote": "Plus plan è un modo per supportare il funzionamento continuo e il miglioramento di Tryggd.\nVogliamo mantenere Tryggd utile, stabile, affidabile e senza pubblicità.",
+    "dialogPreviewNote": "Plus Preview è aperto fino al {{deadline}}.\nAl termine della preview, il tuo account tornerà automaticamente al Basic plan.",
+    "activate": "Prova Plus plan gratis",
+    "notNow": "Usa Basic plan",
+    "activatedMessage": "Plus è ora attivo. La schermata Home è stata impostata su Avanzata. Puoi tornare a Semplice in qualsiasi momento nelle Impostazioni.",
+    "expiredTitle": "L'anteprima Plus è terminata",
+    "expiredBody": "Puoi continuare a usare Tryggd Basic plan, inclusi check-in, contatti fidati e aggiornamenti di base.\n\nI tuoi check-in e le attività precedenti non vengono rimossi.",
+    "expiredButton": "Capito",
+    "settingsRowTitle": "Anteprima Plus",
+    "settingsRowSubtitle": "Prova le funzionalità Plus attuali gratuitamente durante il pilota.",
+    "settingsRowAction": "Inizia anteprima",
+    "activeRowTitle": "Anteprima Plus attiva",
+    "activeRowSubtitle": "Le funzionalità Plus attuali sono disponibili durante il pilota.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
+  },
+  "onboarding": {
+    "skip": "Salta",
+    "next": "Avanti",
+    "getStarted": "Inizia",
+    "slides": {
+      "checkin": {
+        "eyebrow": "Ritmo quotidiano",
+        "title": "Check-in quotidiani rapidi",
+        "body": "💚 Fai il check-in con un tocco e fai sapere ai tuoi contatti fidati che stai bene.",
+        "points": {
+          "one": "✓ Un tocco per fare il check-in",
+          "two": "✓ Un semplice aggiornamento «Sono al sicuro»"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Il tuo cerchio",
+        "title": "Contatti fidati",
+        "body": "👥 Aggiungi familiari o amici stretti che possono ricevere i tuoi check-in, segnali di aiuto e aggiornamenti condivisi.",
+        "points": {
+          "one": "✓ Scegli chi vede i tuoi aggiornamenti",
+          "two": "✓ I segnali di aiuto vanno alle persone giuste"
+        }
+      },
+      "sharing": {
+        "eyebrow": "Contesto opzionale",
+        "title": "Stato e posizione",
+        "body": "📍 Condividi come stai, se sei a casa o fuori, lo stato del viaggio o la posizione con i contatti selezionati.",
+        "points": {
+          "one": "✓ 🙂 Umore, 🏠 a casa/fuori, o ✈️ stato del viaggio",
+          "two": "✓ 📍 Posizione solo quando scegli di condividerla"
+        }
+      },
+      "free": {
+        "eyebrow": "Semplice per impostazione predefinita",
+        "title": "Plus Preview",
+        "body": "Tryggd Free mantiene le basi semplici. Durante il progetto pilota, puoi visualizzare in anteprima le funzionalità Plus:",
+        "freeSummary": "Free: check-in, contatti fidati, stato di base",
+        "bodyFreeSuffix": " mantiene le basi semplici.",
+        "bodyPilotPrefix": "Durante il progetto pilota, visualizza in anteprima ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ Modalità Viaggio",
+          "two": "📍 Opzioni di condivisione della posizione",
+          "three": "🙂 Aggiornamenti dell'umore",
+          "four": "⚙️ Più controllo sulla condivisione"
+        },
+        "footer": "Plus Preview è opzionale."
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "Bene sapere",
+      "title": "Alcune note importanti",
+      "productName": "Tryggd ",
+      "paragraph1": "ti aiuta a condividere check-in manuali, segnali di aiuto e aggiornamenti selezionati con contatti fidati.",
+      "paragraph2": "I tuoi contatti potrebbero vedere gli aggiornamenti di stato che scegli di condividere. La posizione viene condivisa solo quando attivi la condivisione della posizione.",
+      "paragraph3": "Le notifiche potrebbero essere ritardate a causa della connessione di rete, del livello della batteria, delle impostazioni del dispositivo o dei servizi push di terze parti.",
+      "paragraph4": "Tryggd non è un servizio di emergenza e non deve essere utilizzato in situazioni urgenti o che mettono a rischio la vita.",
+      "acceptLabel": "Ho capito",
+      "saving": "Salvataggio...",
+      "decline": "Rifiuta / Indietro"
+    },
+    "errors": {
+      "saveTitle": "Impossibile continuare",
+      "saveBody": "Per favore riprova."
+    }
+  },
+  "watchOver": {
+    "toggle": "Sorvegliare",
+    "toggleHint": "Ricevi una notifica se {{name}} non ha effettuato il check-in per un giorno.",
+    "limitReached": "Puoi sorvegliare {{max}} persona con il piano gratuito. Passa a Plus per illimitato.",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "Stato di assenza",
+    "setAway": "Imposta come assente",
+    "clearAway": "Rimuovi stato d'assenza",
+    "label": "Messaggio (opzionale)",
+    "labelPlaceholder": "es. In vacanza",
+    "until": "Assente fino al",
+    "active": "Assente fino al {{date}}",
+    "activeNoDate": "Assente (nessuna data di fine)",
+    "hint": "Mentre sei assente, i tuoi contatti non riceveranno notifiche di assenza.",
+    "saving": "Salvataggio...",
+    "error": "Impossibile aggiornare lo stato d'assenza."
+  }
 }

@@ -1,877 +1,879 @@
 {
-    "home": {
-        "title": "Koti",
-        "welcome": "Tervetuloa",
-        "greetings": {
-            "morning": "Hyvää huomenta",
-            "afternoon": "Hyvää päivää",
-            "evening": "Hyvää iltaa",
-            "night": "Hyvää yötä"
-        },
-        "everythingIsFine": "Kaikki on hyvin",
-        "dontForget": "Älä unohda kirjautua sisään tänään!",
-        "youCheckedInTodayAt": "Kirjauduit sisään tänään klo {{time}}",
-        "pressMeToCheckIn": "KIRJAUDU TÄÄLLÄ",
-        "reset": "Nollaa",
-        "timer": "Ajastin",
-        "timeLeftToday": "Aikaa jäljellä tänään",
-        "reachOut": {
-            "pressToSendHelp": "Lähetä apupyyntö",
-            "lastSentLabel": "Viimeksi lähetetty:"
-        },
-        "activity": "Toiminta",
-        "contacts_one": "{{count}} yhteystieto",
-        "contacts_other": "{{count}} yhteystietoa",
-        "streak": "Putki",
-        "days_one": "{{count}} päivä",
-        "days_other": "{{count}} päivää",
-        "dateFormats": {
-            "weekdays": [
-                "Sunnuntai",
-                "Maanantai",
-                "Tiistai",
-                "Keskiviikko",
-                "Torstai",
-                "Perjantai",
-                "Lauantai"
-            ],
-            "months": [
-                "Tammikuu",
-                "Helmikuu",
-                "Maaliskuu",
-                "Huhtikuu",
-                "Toukokuu",
-                "Kesäkuu",
-                "Heinäkuu",
-                "Elokuu",
-                "Syyskuu",
-                "Lokakuu",
-                "Marraskuu",
-                "Joulukuu"
-            ]
-        },
-        "errors": {
-            "fetchLastCheckin": "Viimeistä sisäänkirjautumista ei voitu hakea",
-            "noUser": "Käyttäjää ei löytynyt",
-            "checkin": "Sisäänkirjautuminen epäonnistui",
-            "loadState": "Tilaa ei voitu ladata"
-        },
-        "status": {
-            "contactCheckedIn": "{{name}} kirjautui sisään",
-            "sentWave": "{{name}} lähetti sinulle vilkutuksen",
-            "respondedToYou": "{{name}} vastasi kirjautumiseesi",
-            "emergencyMessage": "🚨 {{name}}: {{message}}",
-            "messageFrom": "Viesti käyttäjältä {{name}}",
-            "justNow": "Juuri nyt",
-            "minutesAgo_one": "{{count}} minuutti sitten",
-            "minutesAgo_other": "{{count}} minuuttia sitten",
-            "hoursAgo_one": "{{count}} tunti sitten",
-            "hoursAgo_other": "{{count}} tuntia sitten",
-            "hoursAgoDecimal": "{{value}} tuntia sitten",
-            "daysAgo_one": "{{count}} päivä sitten",
-            "daysAgo_other": "{{count}} päivää sitten",
-            "lastCheckinAgo": "Viimeisin kirjautuminen {{timeAgo}}",
-            "lastCheckinLabel": "Viimeisin kirjautuminen:"
-        },
-        "wellnessPrompt": "How are you feeling today?",
-        "context": {
-            "title": "Päivän tilanne",
-            "home": "Kotona",
-            "trip": "Matkalla",
-            "homeTab": "🌿 Arki",
-            "tripTab": "✈️ Matka",
-            "reachOutTab": "✋ Apua",
-            "reachOutStatuses": {
-                "call_now": "✋ Tarvitsen apua",
-                "call_available": "📞 Soita minulle"
-            },
-            "statusTitle": "Tila",
-            "tripStatusPrompt": "Valitse matkan tila",
-            "homeStatuses": {
-                "chilling": "🛋️ Chillailen",
-                "home": "🏠 Kotona",
-                "outside": "🚶 Ulkona",
-                "at_school": "🏫 Koulussa",
-                "working": "💼 Töissä",
-                "busy": "💼 Kiireinen",
-                "relaxing": "☕ Teehetki",
-                "gathering": "🥳 Seurassa",
-                "on_call": "📞 Puhelimessa",
-                "eating": "🍽️ Syömässä",
-                "exhausted": "😩 Uupunut",
-                "sleepy": "😪 Uninen",
-                "daydreaming": "💭 Haaveissa",
-                "playing_sport": "🏃 Liikkuu",
-                "having_fun": "🎉 Hauskaa",
-                "watching_movie": "🎬 Elokuva",
-                "resting": "😌 Lepää",
-                "goodmorning": "🌅 Hyvää huomenta",
-                "goodafternoon": "🌞 Iltapäivä",
-                "goodnight": "🌙 Hyvää yötä"
-            },
-            "summaryHome": "Normaali kirjautuminen",
-            "summaryTrip": "Lisää matkan tila",
-            "summaryWithStatus": "Matkalla · {{status}}"
-        },
-        "plusWellness": {
-            "title": "Plus feature",
-            "message": "Upgrade to Plus to share how you feel with your check-in."
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 Lähden matkalle",
-                "boarding": "🛫 Boarding / 🚅 Ajaa",
-                "layover": "🛑 Välilaskeutuminen / vaihto",
-                "landed": "🛬 Saapunut turvallisesti",
-                "on_the_move": "🚕 Liikkeellä",
-                "at_hotel": "🏨 Saapunut hotelliin",
-                "on_trip": "🗺️ Matkalla",
-                "heading_home": "🏠 Matkalla kotiin",
-                "trip_ended": "✅ Matka päättyi — kotona turvassa"
-            }
-        }
+  "home": {
+    "title": "Koti",
+    "welcome": "Tervetuloa",
+    "greetings": {
+      "morning": "Hyvää huomenta",
+      "afternoon": "Hyvää päivää",
+      "evening": "Hyvää iltaa",
+      "night": "Hyvää yötä"
     },
-    "activity": {
-        "title": "Toiminta",
-        "subtitle": "Sinun ja yhteystietojesi viimeisimmät sisäänkirjautumiset",
-        "you": "Sinä",
-        "yourActivity": "Sinä itse",
-        "contacts": "Yhteystiedot",
-        "loading": "Ladataan toimintoja...",
-        "noCheckIn": "Ei sisäänkirjautumista vielä",
-        "staleCheckinMessage_one": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
-        "staleCheckinMessage_other": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
-        "emptyState": {
-            "title": "Ei yhteystietoja",
-            "message": "Lisää yhteystietoja nähdäksesi niiden toiminnot"
-        },
-        "priority": {
-            "failed": "Epäonnistui",
-            "ongoing": "Käynnissä",
-            "successful": "Onnistui"
-        },
-        "time": {
-            "locale": "fi-FI"
-        },
-        "errors": {
-            "loadActivities": "Toimintoja ei voitu ladata",
-            "fetchContacts": "Yhteystietoja ei voitu hakea",
-            "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea",
-            "openSharedLocation": "Failed to open shared location.",
-            "locationPermission": "Sijaintilupa tarvitaan sijaintisi jakamiseen."
-        },
-        "day": {
-            "today": "Tänään",
-            "yesterday": "Eilen",
-            "other": "{{date, date, d. MMMM yyyy}}"
-        },
-        "responseButton": {
-            "sendResponse": "👏 Taputa tälle?",
-            "sent": "Tykkäys lähetetty ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ Sait tänään {{count}} vastauksen check-iniisi:",
-            "todayLikes_other": "⭐️ Sait tänään {{count}} vastausta check-iniisi:",
-            "prefix": "vastasi check-iniisi",
-            "defaultMessage": "tykkää 👍 kirjautumisestasi!"
-        },
-        "welfareButton": {
-            "send": "🍀 Oletko kunnossa?",
-            "sent": "Tervehdys lähetetty ✓",
-            "sentOffline": "Lähetetty ✓ — {{name}} näkee viestisi, kun hän on taas verkossa"
-        },
-        "sharedLocation": {
-            "view": "View shared location"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "China",
-            "hongKong": "Hong Kong",
-            "taiwan": "Taiwan",
-            "sweden": "Sweden",
-            "norway": "Norway",
-            "denmark": "Denmark",
-            "finland": "Finland"
-        },
-        "wellness": {
-            "veryLow": "En voi hyvin\n😔",
-            "low": "Hieman alamaissa\n😕",
-            "neutral": "Kaikki on hyvin\n🙂",
-            "good": "Voin hyvin\n☺️",
-            "great": "Todella iloinen tänään\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 Mitä kuuluu tänään?",
-            "sent": "Tervehdys lähetetty ✓"
-        },
-        "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 Sait tänään {{count}} tervehdyksen:",
-            "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 Sait tänään {{count}} hätäviestin:",
-            "todayMessages_other": "🚨 Sait tänään {{count}} hätäviestiä:"
-        },
-        "supportButton": {
-            "send": "💪 Lähetä tukea",
-            "sent": "Tuki lähetetty ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "Ymmärsin",
-            "sent": "Vastattu ✓"
-        },
-        "openInMaps": "Avaa kartassa",
-        "watchOver": {
-            "resolvedBy": "{{name}} käsitteli",
-            "markResolved": "Olen ollut yhteydessä — kaikki hyvin",
-            "resolving": "Käsitellään...",
-            "resolveError": "Merkitseminen epäonnistui. Yritä uudelleen."
-        }
+    "everythingIsFine": "Kaikki on hyvin",
+    "dontForget": "Älä unohda kirjautua sisään tänään!",
+    "youCheckedInTodayAt": "Kirjauduit sisään tänään klo {{time}}",
+    "pressMeToCheckIn": "KIRJAUDU TÄÄLLÄ",
+    "reset": "Nollaa",
+    "timer": "Ajastin",
+    "timeLeftToday": "Aikaa jäljellä tänään",
+    "reachOut": {
+      "pressToSendHelp": "Lähetä apupyyntö",
+      "lastSentLabel": "Viimeksi lähetetty:"
     },
-    "contacts": {
-        "title": "Yhteystiedot",
-        "contact": "Yhteystieto",
-        "newContact": "Uusi yhteystieto",
-        "displayingAs": "Näytetään nimellä",
-        "loading": "Ladataan yhteystietoja...",
-        "subtitle": {
-            "withContacts": "Sinulla on {{count}}/{{max}} yhteystietoa",
-            "noContacts": "Lisää yhteystietoja jakamiseen",
-            "withContactsUnlimited": "{{count}} contacts"
-        },
-        "emptyState": {
-            "title": "Ei yhteystietoja",
-            "message": "Paina + lisätäksesi ensimmäinen yhteystietosi"
-        },
-        "tabs": {
-            "contacts": "Yhteystiedot",
-            "requests": "Pyynnöt"
-        },
-        "requests": {
-            "received": "Vastaanotetut pyynnöt",
-            "sent": "Lähetetyt pyynnöt",
-            "waiting": "Odotetaan vastausta",
-            "loading": "Ladataan pyyntöjä...",
-            "emptyState": {
-                "title": "Ei pyyntöjä",
-                "message": "Kun joku lähettää yhteystietopyynnön, se näkyy täällä"
-            }
-        },
-        "placeholders": {
-            "email": "Syötä sähköpostiosoite",
-            "identifier": "Enter Tryggd ID or email",
-            "suggestedUsername": "Ehdotettu Tryggd ID (valinnainen)"
-        },
-        "buttons": {
-            "accept": "Hyväksy",
-            "reject": "Hylkää",
-            "delete": "Poista",
-            "cancelRequest": "Peruuta pyyntö",
-            "sending": "Lähetetään...",
-            "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}",
-            "sendRequests_one": "Send request",
-            "sendRequests_other": "Send requests"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "Raja saavutettu",
-                "message": "Voit lisätä vain enintään 3 yhteystietoa."
-            },
-            "senderLimitReached": {
-                "title": "Pyyntöä ei voi hyväksyä",
-                "message": "Tämän henkilön yhteystietoluettelo on täynnä."
-            },
-            "delete": {
-                "title": "Poista yhteystieto",
-                "message": "Haluatko varmasti poistaa {{name}}?"
-            },
-            "contactExists": {
-                "title": "Yhteystieto on jo olemassa",
-                "message": "{{name}} on jo yhteystiedoissasi"
-            },
-            "requestExists": {
-                "title": "Pyyntö on jo lähetetty",
-                "message": "Olet jo lähettänyt pyynnön tälle käyttäjälle."
-            },
-            "requestReceived": {
-                "title": "Pyyntö vastaanotettu",
-                "message": "Sinulla on jo pyyntö käyttäjältä {{email}}. Tarkista \"Pyynnöt\"-kohdasta."
-            },
-            "invalidEmail": {
-                "title": "Virheellinen sähköposti",
-                "message": "{{email}} ei ole rekisteröity tai vahvistettu"
-            },
-            "selfContact": {
-                "title": "Virheellinen yhteystieto",
-                "message": "Et voi lisätä itseäsi yhteystietona"
-            },
-            "noChanges": {
-                "title": "Ei muutoksia",
-                "message": "Ei uusia yhteystietoja tallennettavaksi."
-            },
-            "alreadyInContacts": "Tämä käyttäjä on jo yhteystiedoissasi",
-            "requestHandled": {
-                "title": "Pyyntö on jo käsitelty",
-                "message": "Tämä pyyntö on jo käsitelty"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "Pyyntö lähetetty",
-                "message": "Yhteystietopyyntö lähetetty käyttäjälle {{name}}"
-            },
-            "contactAdded": {
-                "title": "Yhteystieto lisätty",
-                "message": "{{name}} on lisätty yhteystietoihisi"
-            },
-            "deleted": {
-                "title": "Yhteystieto poistettu",
-                "message": "{{name}} on poistettu. Kaikki suhteet on poistettu."
-            },
-            "requestRejected": {
-                "title": "Pyyntö hylätty",
-                "message": "Yhteystietopyyntö on hylätty"
-            },
-            "requestCancelled": {
-                "title": "Pyyntö peruutettu",
-                "message": "Yhteystietopyyntö on peruutettu"
-            }
-        },
-        "errors": {
-            "createInvite": "Kutsun luominen epäonnistui.",
-            "shareInvite": "Kutsulinkin jakaminen epäonnistui.",
-            "recoveryUnavailable": "Tämä yhteyshenkilö ei voi vielä vastaanottaa palautuskutsua.",
-            "createRecoveryInvite": "Palautuskutsun luominen epäonnistui.",
-            "updateCheckinNotifications": "Failed to update check-in notifications.",
-            "updateLocationSharing": "Failed to update location sharing.",
-            "noContactUpdated": "No contact row was updated.",
-            "loadData": "Failed to load data",
-            "save": "Failed to save contacts",
-            "delete": "Failed to delete contact",
-            "sendRequest": "Failed to send contact request",
-            "search": "Could not search for user",
-            "requestNotFound": "Could not find contact request or it was already handled",
-            "accept": "Failed to accept contact request",
-            "reject": "Failed to reject request",
-            "cancel": "Failed to cancel request"
-        },
-        "qr": {
-            "permissionTitle": "Kameran käyttöoikeus vaaditaan",
-            "permissionMessage": "Salli kameran käyttö QR-koodien skannaamiseen.",
-            "scanHint": "Osoita Tryggd QR-koodiin lisätäksesi yhteystiedon",
-            "successTitle": "Yhteystieto lisätty",
-            "successMessage": "{{name}} on lisätty yhteystietoihisi",
-            "newContact": "Uusi yhteystieto",
-            "ownerLimitReached": "Tämän henkilön yhteystietoluettelo on täynnä. He eivät voi hyväksyä uusia yhteystietoja juuri nyt."
-        },
-        "messages": {
-            "contactDefault": "This contact"
-        },
-        "emergencyMessage": {
-            "modalTitle": "Lähetä hätäviesti käyttäjälle {{name}}",
-            "modalDescription": "Tämä lähettää välittömän push-ilmoituksen ja näkyy heidän Aktiviteetti-syötteessään.",
-            "placeholder": "Mitä on tekeillä?",
-            "send": "Lähetä",
-            "sending": "Lähetetään…",
-            "sendError": "Hätäviestin lähettäminen epäonnistui."
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} will receive your check-ins",
-            "checkinsDisabled": "{{name}} will not receive your check-ins",
-            "locationEnabled": "{{name}} will see your location in Activity",
-            "locationDisabled": "{{name}} will not see your location in Activity",
-            "watchOverEnabled": "Saat ilmoituksen, jos {{name}} ei kirjaudu päivään",
-            "watchOverDisabled": "Seuranta poistettu käytöstä: {{name}}"
-        },
-        "invite": {
-            "ready": "Kutsu on valmis",
-            "recoveryReady": "Palautuslinkki on valmis",
-            "instructions": "Lähetä linkki ensin. Kerro sitten tämä koodi:",
-            "recoveryInstructions": "Lähetä palautuslinkki ensin. Kerro sitten tämä koodi:",
-            "expiresOn": "Tämä kutsu vanhenee {{date}}.",
-            "resettingTryggdId": "Nollataan Tryggd ID: {{id}}",
-            "suggestedTryggdId": "Ehdotettu Tryggd ID: {{id}}",
-            "shareMessage": "Liity kanssani Tryggdiin:",
-            "recoveryShareMessage": "Käytä tätä linkkiä Tryggd-salasanasi nollaamiseen:",
-            "modalTitle": "Kutsu joku Tryggdiin",
-            "modalDescription": "Luomme yksityisen kutsulinkin ja 6-numeroisen koodin. Ehdota Tryggd ID nyt, jotta kutsutun ei tarvitse valita sitä myöhemmin.",
-            "suggestedUsernameHelp": "Käytä pieniä kirjaimia, numeroita, pisteitä tai alaviivoja. Tarkistamme saatavuuden ennen kutsun luomista.",
-            "createButton": "Luo kutsu",
-            "creating": "Luodaan…",
-            "shareButton": "Jaa linkki"
-        },
-        "plusFeature": {
-            "title": "Plus feature",
-            "notifications": "Upgrade to Plus to control contact check-in notifications.",
-            "location": "Upgrade to Plus to enable location sharing for a contact."
-        }
-    },
-    "profile": {
-        "title": "Profiili",
-        "defaultName": "Käyttäjä",
-        "loading": "Ladataan profiilia...",
-        "buttons": {
-            "edit": "Muokkaa",
-            "save": "Tallenna",
-            "saving": "Tallennetaan...",
-            "logout": "Kirjaudu ulos"
-        },
-        "fields": {
-            "name": "Nimi",
-            "email": "Sähköposti",
-            "phone": "Puhelinnumero",
-            "notSpecified": "Ei määritetty"
-        },
-        "settings": {
-            "title": "Asetukset",
-            "subtitle": "Sovelluksen asetukset ja ilmoitukset"
-        },
-        "avatarModal": {
-            "title": "Vaihda profiilikuvaa",
-            "takePhoto": "Ota kuva",
-            "chooseFromLibrary": "Valitse kirjastosta"
-        },
-        "logout": {
-            "title": "Kirjaudu ulos",
-            "confirm": "Oletko varma?",
-            "button": "Kirjaudu ulos"
-        },
-        "permissions": {
-            "camera": "Kameran käyttöoikeus vaaditaan"
-        },
-        "notices": {
-            "title": "Huomio",
-            "emailConfirmation": "Profiili tallennettu, mutta sähköpostin muutos vaatii vahvistuksen"
-        },
-        "success": {
-            "title": "Tallennettu",
-            "saved": "Profiilisi on päivitetty."
-        },
-        "errors": {
-            "loadProfile": "Profiilia ei voitu ladata",
-            "notLoggedIn": "Et ole kirjautunut sisään",
-            "updateProfile": "Profiilia ei voitu päivittää",
-            "saveProfile": "Profiilia ei voitu tallentaa",
-            "deleteAccount": "Tilin poistaminen epäonnistui"
-        },
-        "deleteAccount": {
-            "title": "Poista tili",
-            "confirm": "Tämä poistaa tilisi ja tietosi pysyvästi. Toimintoa ei voi perua.",
-            "finalTitle": "Poistetaanko tili pysyvästi?",
-            "finalConfirm": "Tilisi, yhteystietosi, check-init ja asetuksesi poistetaan pysyvästi.",
-            "button": "Poista tili",
-            "deleting": "Poistetaan...",
-            "successTitle": "Tili poistettu",
-            "successMessage": "Tilisi on poistettu pysyvästi."
-        },
-        "qr": {
-            "title": "Oma QR-koodini",
-            "hint": "Anna jonkun skannata tämä lisätäkseen sinut yhteystiedoksi heti.",
-            "errorGenerating": "QR-koodia ei voitu luoda. Yritä uudelleen."
-        }
-    },
-    "settings": {
-        "title": "Asetukset",
-        "account": "Tili",
-        "information": "Tiedot",
-        "language": "Kieli",
-        "theme": "Teema",
-        "homeStyle": {
-            "title": "Valitse kotinäkymä",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "Yksinkertainen",
-                "description": "Yhden napautuksen kuittaus, ei häiriötekijöitä."
-            },
-            "enhanced": {
-                "title": "Laajennettu",
-                "description": "Jaa mielialasi, matkatilasi ja sijaintisi."
-            }
-        },
-        "notifications": {
-            "title": "Ilmoitukset",
-            "preferences": "Ilmoitusasetukset",
-            "summary": {
-                "reminders": "Muistutukset",
-                "activity": "Aktiviteetti",
-                "allOff": "Kaikki ilmoitukset pois päältä"
-            },
-            "stayOnTrack": {
-                "title": "Pysy aikataulussa",
-                "description": "Muistuta minua tekemään päivittäinen turvallisuustarkistus"
-            },
-            "contactActivity": {
-                "title": "Kontaktien aktiivisuus",
-                "description": "Ilmoita minulle kun kontaktini tekevät sisäänkirjautumisen"
-            }
-        },
-        "about": "Tietoja",
-        "privacy": "Tietosuojakäytäntö",
-        "terms": "Käyttöehdot",
-        "feedback": "Lähetä palautetta",
-        "logout": "Kirjaudu ulos",
-        "resetData": "Nollaa tiedot",
-        "light": "Vaalea",
-        "dark": "Tumma",
-        "systemDefault": "Käytä järjestelmän asetusta",
-        "english": "Englanti",
-        "swedish": "Ruotsi",
-        "norwegian": "Norja",
-        "danish": "Tanska",
-        "finnish": "Suomi",
-        "resetWarning": "Oletko varma? Kaikki tietosi poistetaan.",
-        "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
-        "confirmReset": "Nollaa",
-        "cancel": "Peruuta",
-        "ok": "OK",
-        "chineseSimplified": "Chinese (Simplified)",
-        "chineseTraditional": "Chinese (Traditional)",
-        "tripMode": {
-            "title": "Kirjautumistila",
-            "home": "Koti",
-            "trip": "Matka",
-            "homeDescription": "Tavallinen päivittäinen kirjautuminen",
-            "tripDescription": "Jaa matkastatus yhteystiedoille"
-        }
-    },
-    "common": {
-        "ok": "OK",
-        "cancel": "Peruuta",
-        "save": "Tallenna",
-        "delete": "Poista",
-        "edit": "Muokkaa",
-        "loading": "Ladataan...",
-        "back": "Takaisin",
-        "next": "Seuraava",
-        "submit": "Lähetä",
-        "yes": "Kyllä",
-        "no": "Ei",
-        "done": "Done",
-        "refreshing": "Refreshing..."
-    },
-    "time": {
-        "justNow": "Juuri nyt",
-        "minutesAgo": "{{count}} min sitten",
-        "hoursAgo": "{{count}} tunti{{count, plural, =1 {} other {a}}} sitten",
-        "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten",
-        "hoursAgo_one": "{{count}} hour ago",
-        "hoursAgo_other": "{{count}} hours ago",
-        "daysAgo_one": "{{count}} day ago",
-        "daysAgo_other": "{{count}} days ago"
+    "activity": "Toiminta",
+    "contacts_one": "{{count}} yhteystieto",
+    "contacts_other": "{{count}} yhteystietoa",
+    "streak": "Putki",
+    "days_one": "{{count}} päivä",
+    "days_other": "{{count}} päivää",
+    "dateFormats": {
+      "weekdays": [
+        "Sunnuntai",
+        "Maanantai",
+        "Tiistai",
+        "Keskiviikko",
+        "Torstai",
+        "Perjantai",
+        "Lauantai"
+      ],
+      "months": [
+        "Tammikuu",
+        "Helmikuu",
+        "Maaliskuu",
+        "Huhtikuu",
+        "Toukokuu",
+        "Kesäkuu",
+        "Heinäkuu",
+        "Elokuu",
+        "Syyskuu",
+        "Lokakuu",
+        "Marraskuu",
+        "Joulukuu"
+      ]
     },
     "errors": {
-        "title": "Virhe",
-        "notAuthenticated": "Ei todennettu"
+      "fetchLastCheckin": "Viimeistä sisäänkirjautumista ei voitu hakea",
+      "noUser": "Käyttäjää ei löytynyt",
+      "checkin": "Sisäänkirjautuminen epäonnistui",
+      "loadState": "Tilaa ei voitu ladata"
+    },
+    "status": {
+      "contactCheckedIn": "{{name}} kirjautui sisään",
+      "sentWave": "{{name}} lähetti sinulle vilkutuksen",
+      "respondedToYou": "{{name}} vastasi kirjautumiseesi",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
+      "messageFrom": "Viesti käyttäjältä {{name}}",
+      "justNow": "Juuri nyt",
+      "minutesAgo_one": "{{count}} minuutti sitten",
+      "minutesAgo_other": "{{count}} minuuttia sitten",
+      "hoursAgo_one": "{{count}} tunti sitten",
+      "hoursAgo_other": "{{count}} tuntia sitten",
+      "hoursAgoDecimal": "{{value}} tuntia sitten",
+      "daysAgo_one": "{{count}} päivä sitten",
+      "daysAgo_other": "{{count}} päivää sitten",
+      "lastCheckinAgo": "Viimeisin kirjautuminen {{timeAgo}}",
+      "lastCheckinLabel": "Viimeisin kirjautuminen:"
+    },
+    "wellnessPrompt": "How are you feeling today?",
+    "context": {
+      "title": "Päivän tilanne",
+      "home": "Kotona",
+      "trip": "Matkalla",
+      "homeTab": "🌿 Arki",
+      "tripTab": "✈️ Matka",
+      "reachOutTab": "✋ Apua",
+      "reachOutStatuses": {
+        "call_now": "✋ Tarvitsen apua",
+        "call_available": "📞 Soita minulle"
+      },
+      "statusTitle": "Tila",
+      "tripStatusPrompt": "Valitse matkan tila",
+      "homeStatuses": {
+        "chilling": "🛋️ Chillailen",
+        "home": "🏠 Kotona",
+        "outside": "🚶 Ulkona",
+        "at_school": "🏫 Koulussa",
+        "working": "💼 Töissä",
+        "busy": "💼 Kiireinen",
+        "relaxing": "☕ Teehetki",
+        "gathering": "🥳 Seurassa",
+        "on_call": "📞 Puhelimessa",
+        "eating": "🍽️ Syömässä",
+        "exhausted": "😩 Uupunut",
+        "sleepy": "😪 Uninen",
+        "daydreaming": "💭 Haaveissa",
+        "playing_sport": "🏃 Liikkuu",
+        "having_fun": "🎉 Hauskaa",
+        "watching_movie": "🎬 Elokuva",
+        "resting": "😌 Lepää",
+        "goodmorning": "🌅 Hyvää huomenta",
+        "goodafternoon": "🌞 Iltapäivä",
+        "goodnight": "🌙 Hyvää yötä",
+        "heading_home_alone": "🚶 Matkalla kotiin yksin",
+        "hiking_alone": "🥾 Vaeltamassa yksin"
+      },
+      "summaryHome": "Normaali kirjautuminen",
+      "summaryTrip": "Lisää matkan tila",
+      "summaryWithStatus": "Matkalla · {{status}}"
+    },
+    "plusWellness": {
+      "title": "Plus feature",
+      "message": "Upgrade to Plus to share how you feel with your check-in."
+    },
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 Lähden matkalle",
+        "boarding": "🛫 Boarding / 🚅 Ajaa",
+        "layover": "🛑 Välilaskeutuminen / vaihto",
+        "landed": "🛬 Saapunut turvallisesti",
+        "on_the_move": "🚕 Liikkeellä",
+        "at_hotel": "🏨 Saapunut hotelliin",
+        "on_trip": "🗺️ Matkalla",
+        "heading_home": "🏠 Matkalla kotiin",
+        "trip_ended": "✅ Matka päättyi — kotona turvassa"
+      }
+    }
+  },
+  "activity": {
+    "title": "Toiminta",
+    "subtitle": "Sinun ja yhteystietojesi viimeisimmät sisäänkirjautumiset",
+    "you": "Sinä",
+    "yourActivity": "Sinä itse",
+    "contacts": "Yhteystiedot",
+    "loading": "Ladataan toimintoja...",
+    "noCheckIn": "Ei sisäänkirjautumista vielä",
+    "staleCheckinMessage_one": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
+    "staleCheckinMessage_other": "{{name}} ei ole kirjautunut sisään {{count}} päivään",
+    "emptyState": {
+      "title": "Ei yhteystietoja",
+      "message": "Lisää yhteystietoja nähdäksesi niiden toiminnot"
+    },
+    "priority": {
+      "failed": "Epäonnistui",
+      "ongoing": "Käynnissä",
+      "successful": "Onnistui"
+    },
+    "time": {
+      "locale": "fi-FI"
+    },
+    "errors": {
+      "loadActivities": "Toimintoja ei voitu ladata",
+      "fetchContacts": "Yhteystietoja ei voitu hakea",
+      "fetchOwnerActivity": "Omistajan toimintaa ei voitu hakea",
+      "openSharedLocation": "Failed to open shared location.",
+      "locationPermission": "Sijaintilupa tarvitaan sijaintisi jakamiseen."
+    },
+    "day": {
+      "today": "Tänään",
+      "yesterday": "Eilen",
+      "other": "{{date, date, d. MMMM yyyy}}"
+    },
+    "responseButton": {
+      "sendResponse": "👏 Taputa tälle?",
+      "sent": "Tykkäys lähetetty ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ Sait tänään {{count}} vastauksen check-iniisi:",
+      "todayLikes_other": "⭐️ Sait tänään {{count}} vastausta check-iniisi:",
+      "prefix": "vastasi check-iniisi",
+      "defaultMessage": "tykkää 👍 kirjautumisestasi!"
+    },
+    "welfareButton": {
+      "send": "🍀 Oletko kunnossa?",
+      "sent": "Tervehdys lähetetty ✓",
+      "sentOffline": "Lähetetty ✓ — {{name}} näkee viestisi, kun hän on taas verkossa"
+    },
+    "sharedLocation": {
+      "view": "View shared location"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "China",
+      "hongKong": "Hong Kong",
+      "taiwan": "Taiwan",
+      "sweden": "Sweden",
+      "norway": "Norway",
+      "denmark": "Denmark",
+      "finland": "Finland"
+    },
+    "wellness": {
+      "veryLow": "En voi hyvin\n😔",
+      "low": "Hieman alamaissa\n😕",
+      "neutral": "Kaikki on hyvin\n🙂",
+      "good": "Voin hyvin\n☺️",
+      "great": "Todella iloinen tänään\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 Mitä kuuluu tänään?",
+      "sent": "Tervehdys lähetetty ✓"
+    },
+    "checkedInAt": "Kirjautui sisään @ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 Sait tänään {{count}} tervehdyksen:",
+      "todayGreetings_other": "💛 Sait tänään {{count}} tervehdystä:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 Sait tänään {{count}} hätäviestin:",
+      "todayMessages_other": "🚨 Sait tänään {{count}} hätäviestiä:"
+    },
+    "supportButton": {
+      "send": "💪 Lähetä tukea",
+      "sent": "Tuki lähetetty ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "Ymmärsin",
+      "sent": "Vastattu ✓"
+    },
+    "openInMaps": "Avaa kartassa",
+    "watchOver": {
+      "resolvedBy": "{{name}} käsitteli",
+      "markResolved": "Olen ollut yhteydessä — kaikki hyvin",
+      "resolving": "Käsitellään...",
+      "resolveError": "Merkitseminen epäonnistui. Yritä uudelleen."
+    }
+  },
+  "contacts": {
+    "title": "Yhteystiedot",
+    "contact": "Yhteystieto",
+    "newContact": "Uusi yhteystieto",
+    "displayingAs": "Näytetään nimellä",
+    "loading": "Ladataan yhteystietoja...",
+    "subtitle": {
+      "withContacts": "Sinulla on {{count}}/{{max}} yhteystietoa",
+      "noContacts": "Lisää yhteystietoja jakamiseen",
+      "withContactsUnlimited": "{{count}} contacts"
+    },
+    "emptyState": {
+      "title": "Ei yhteystietoja",
+      "message": "Paina + lisätäksesi ensimmäinen yhteystietosi"
+    },
+    "tabs": {
+      "contacts": "Yhteystiedot",
+      "requests": "Pyynnöt"
+    },
+    "requests": {
+      "received": "Vastaanotetut pyynnöt",
+      "sent": "Lähetetyt pyynnöt",
+      "waiting": "Odotetaan vastausta",
+      "loading": "Ladataan pyyntöjä...",
+      "emptyState": {
+        "title": "Ei pyyntöjä",
+        "message": "Kun joku lähettää yhteystietopyynnön, se näkyy täällä"
+      }
+    },
+    "placeholders": {
+      "email": "Syötä sähköpostiosoite",
+      "identifier": "Enter Tryggd ID or email",
+      "suggestedUsername": "Ehdotettu Tryggd ID (valinnainen)"
+    },
+    "buttons": {
+      "accept": "Hyväksy",
+      "reject": "Hylkää",
+      "delete": "Poista",
+      "cancelRequest": "Peruuta pyyntö",
+      "sending": "Lähetetään...",
+      "sendRequests": "Lähetä pyyntö{{count, plural, =1 {} other {jä}}}",
+      "sendRequests_one": "Send request",
+      "sendRequests_other": "Send requests"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "Raja saavutettu",
+        "message": "Voit lisätä vain enintään 3 yhteystietoa."
+      },
+      "senderLimitReached": {
+        "title": "Pyyntöä ei voi hyväksyä",
+        "message": "Tämän henkilön yhteystietoluettelo on täynnä."
+      },
+      "delete": {
+        "title": "Poista yhteystieto",
+        "message": "Haluatko varmasti poistaa {{name}}?"
+      },
+      "contactExists": {
+        "title": "Yhteystieto on jo olemassa",
+        "message": "{{name}} on jo yhteystiedoissasi"
+      },
+      "requestExists": {
+        "title": "Pyyntö on jo lähetetty",
+        "message": "Olet jo lähettänyt pyynnön tälle käyttäjälle."
+      },
+      "requestReceived": {
+        "title": "Pyyntö vastaanotettu",
+        "message": "Sinulla on jo pyyntö käyttäjältä {{email}}. Tarkista \"Pyynnöt\"-kohdasta."
+      },
+      "invalidEmail": {
+        "title": "Virheellinen sähköposti",
+        "message": "{{email}} ei ole rekisteröity tai vahvistettu"
+      },
+      "selfContact": {
+        "title": "Virheellinen yhteystieto",
+        "message": "Et voi lisätä itseäsi yhteystietona"
+      },
+      "noChanges": {
+        "title": "Ei muutoksia",
+        "message": "Ei uusia yhteystietoja tallennettavaksi."
+      },
+      "alreadyInContacts": "Tämä käyttäjä on jo yhteystiedoissasi",
+      "requestHandled": {
+        "title": "Pyyntö on jo käsitelty",
+        "message": "Tämä pyyntö on jo käsitelty"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "Pyyntö lähetetty",
+        "message": "Yhteystietopyyntö lähetetty käyttäjälle {{name}}"
+      },
+      "contactAdded": {
+        "title": "Yhteystieto lisätty",
+        "message": "{{name}} on lisätty yhteystietoihisi"
+      },
+      "deleted": {
+        "title": "Yhteystieto poistettu",
+        "message": "{{name}} on poistettu. Kaikki suhteet on poistettu."
+      },
+      "requestRejected": {
+        "title": "Pyyntö hylätty",
+        "message": "Yhteystietopyyntö on hylätty"
+      },
+      "requestCancelled": {
+        "title": "Pyyntö peruutettu",
+        "message": "Yhteystietopyyntö on peruutettu"
+      }
+    },
+    "errors": {
+      "createInvite": "Kutsun luominen epäonnistui.",
+      "shareInvite": "Kutsulinkin jakaminen epäonnistui.",
+      "recoveryUnavailable": "Tämä yhteyshenkilö ei voi vielä vastaanottaa palautuskutsua.",
+      "createRecoveryInvite": "Palautuskutsun luominen epäonnistui.",
+      "updateCheckinNotifications": "Failed to update check-in notifications.",
+      "updateLocationSharing": "Failed to update location sharing.",
+      "noContactUpdated": "No contact row was updated.",
+      "loadData": "Failed to load data",
+      "save": "Failed to save contacts",
+      "delete": "Failed to delete contact",
+      "sendRequest": "Failed to send contact request",
+      "search": "Could not search for user",
+      "requestNotFound": "Could not find contact request or it was already handled",
+      "accept": "Failed to accept contact request",
+      "reject": "Failed to reject request",
+      "cancel": "Failed to cancel request"
+    },
+    "qr": {
+      "permissionTitle": "Kameran käyttöoikeus vaaditaan",
+      "permissionMessage": "Salli kameran käyttö QR-koodien skannaamiseen.",
+      "scanHint": "Osoita Tryggd QR-koodiin lisätäksesi yhteystiedon",
+      "successTitle": "Yhteystieto lisätty",
+      "successMessage": "{{name}} on lisätty yhteystietoihisi",
+      "newContact": "Uusi yhteystieto",
+      "ownerLimitReached": "Tämän henkilön yhteystietoluettelo on täynnä. He eivät voi hyväksyä uusia yhteystietoja juuri nyt."
+    },
+    "messages": {
+      "contactDefault": "This contact"
+    },
+    "emergencyMessage": {
+      "modalTitle": "Lähetä hätäviesti käyttäjälle {{name}}",
+      "modalDescription": "Tämä lähettää välittömän push-ilmoituksen ja näkyy heidän Aktiviteetti-syötteessään.",
+      "placeholder": "Mitä on tekeillä?",
+      "send": "Lähetä",
+      "sending": "Lähetetään…",
+      "sendError": "Hätäviestin lähettäminen epäonnistui."
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} will receive your check-ins",
+      "checkinsDisabled": "{{name}} will not receive your check-ins",
+      "locationEnabled": "{{name}} will see your location in Activity",
+      "locationDisabled": "{{name}} will not see your location in Activity",
+      "watchOverEnabled": "Saat ilmoituksen, jos {{name}} ei kirjaudu päivään",
+      "watchOverDisabled": "Seuranta poistettu käytöstä: {{name}}"
+    },
+    "invite": {
+      "ready": "Kutsu on valmis",
+      "recoveryReady": "Palautuslinkki on valmis",
+      "instructions": "Lähetä linkki ensin. Kerro sitten tämä koodi:",
+      "recoveryInstructions": "Lähetä palautuslinkki ensin. Kerro sitten tämä koodi:",
+      "expiresOn": "Tämä kutsu vanhenee {{date}}.",
+      "resettingTryggdId": "Nollataan Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Ehdotettu Tryggd ID: {{id}}",
+      "shareMessage": "Liity kanssani Tryggdiin:",
+      "recoveryShareMessage": "Käytä tätä linkkiä Tryggd-salasanasi nollaamiseen:",
+      "modalTitle": "Kutsu joku Tryggdiin",
+      "modalDescription": "Luomme yksityisen kutsulinkin ja 6-numeroisen koodin. Ehdota Tryggd ID nyt, jotta kutsutun ei tarvitse valita sitä myöhemmin.",
+      "suggestedUsernameHelp": "Käytä pieniä kirjaimia, numeroita, pisteitä tai alaviivoja. Tarkistamme saatavuuden ennen kutsun luomista.",
+      "createButton": "Luo kutsu",
+      "creating": "Luodaan…",
+      "shareButton": "Jaa linkki"
+    },
+    "plusFeature": {
+      "title": "Plus feature",
+      "notifications": "Upgrade to Plus to control contact check-in notifications.",
+      "location": "Upgrade to Plus to enable location sharing for a contact."
+    }
+  },
+  "profile": {
+    "title": "Profiili",
+    "defaultName": "Käyttäjä",
+    "loading": "Ladataan profiilia...",
+    "buttons": {
+      "edit": "Muokkaa",
+      "save": "Tallenna",
+      "saving": "Tallennetaan...",
+      "logout": "Kirjaudu ulos"
+    },
+    "fields": {
+      "name": "Nimi",
+      "email": "Sähköposti",
+      "phone": "Puhelinnumero",
+      "notSpecified": "Ei määritetty"
+    },
+    "settings": {
+      "title": "Asetukset",
+      "subtitle": "Sovelluksen asetukset ja ilmoitukset"
+    },
+    "avatarModal": {
+      "title": "Vaihda profiilikuvaa",
+      "takePhoto": "Ota kuva",
+      "chooseFromLibrary": "Valitse kirjastosta"
+    },
+    "logout": {
+      "title": "Kirjaudu ulos",
+      "confirm": "Oletko varma?",
+      "button": "Kirjaudu ulos"
     },
     "permissions": {
-        "title": "Käyttöoikeus"
+      "camera": "Kameran käyttöoikeus vaaditaan"
     },
-    "auth": {
-        "signup": {
-            "title": "Luo tili",
-            "create": "Luo tili",
-            "creating": "Luodaan tiliä...",
-            "success": {
-                "title": "🎉 Tili luotu",
-                "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
-            },
-            "verifyEmail": {
-                "title": "Vahvista sähköpostiosoitteesi!",
-                "message": "Olemme lähettäneet vahvistussähköpostin sähköpostiisi. Vahvistamisen jälkeen kirjaudu sisään."
-            },
-            "error": "Rekisteröinti epäonnistui"
-        },
-        "login": {
-            "title": "Kirjaudu sisään",
-            "signIn": "Kirjaudu sisään",
-            "loggingIn": "Kirjaudutaan sisään...",
-            "error": "Kirjautuminen epäonnistui",
-            "continueWithGoogle": "Jatka Googlella",
-            "connectingToGoogle": "Yhdistetään Googleen...",
-            "continueWithApple": "Jatka Applella",
-            "connectingToApple": "Yhdistetään Appleen...",
-            "orContinueWithEmail": "tai jatka sähköpostilla",
-            "socialError": "Kirjautuminen epäonnistui",
-            "useInviteCode": "Onko sinulla kutsukoodi?"
-        },
-        "email": "Sähköposti",
-        "displayName": "Nimi",
-        "password": {
-            "placeholder": "Salasana (vähintään 6 merkkiä)",
-            "minimumLength": "Use at least 8 characters."
-        },
-        "confirmPassword": "Vahvista salasana",
-        "passwordsMatch": "✔ Salasanat täsmäävät",
-        "passwordsNoMatch": "✖ Salasanat eivät täsmää",
-        "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
-        "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
-        "unknownError": "Tuntematon virhe",
-        "forgotPassword": {
-            "title": "Unohditko salasanan",
-            "instructions": "Syötä sähköpostiosoitteesi",
-            "send": "Lähetä nollaussähköposti",
-            "sending": "Lähetetään...",
-            "sentTitle": "Tarkista sähköpostisi",
-            "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
-            "login": "Siirry kirjautumiseen",
-            "error": "Virhe lähetettäessä nollaussähköpostia"
-        },
-        "resetPassword": {
-            "title": "Nollaa salasana",
-            "instructions": "Syötä uusi salasanasi alla.",
-            "save": "Tallenna uusi salasana",
-            "saving": "Tallennetaan...",
-            "successTitle": "Salasana nollattu!",
-            "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
-            "login": "Siirry kirjautumiseen",
-            "error": "Virhe salasanan nollauksessa",
-            "passwordPlaceholder": "Uusi salasana"
-        },
-        "invite": {
-            "enterCodeStandaloneHint": "Jos asensit sovelluksen vasta kutsun saamisen jälkeen, jatka syöttämällä 6-numeroinen koodi.",
-            "invalidLink": "Invite link is invalid.",
-            "notFound": "Invite not found.",
-            "alreadyUsed": "This invite has already been used.",
-            "expired": "This invite has expired.",
-            "unavailable": "This invite is not available anymore.",
-            "unavailableTitle": "Invite unavailable",
-            "couldNotOpen": "This invite could not be opened.",
-            "backToLogin": "Back to login",
-            "recoveryTitle": "Reset your Tryggd password",
-            "invitedTitle": "You're invited to Tryggd",
-            "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
-            "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
-            "yourAccount": "your Tryggd account",
-            "you": "you",
-            "installTitle": "Install or open the app",
-            "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
-            "openInApp": "Open in Tryggd",
-            "downloadAppStore": "Download on App Store",
-            "downloadGooglePlay": "Get it on Google Play",
-            "keepLink": "Keep this invite link:",
-            "enterCodeTitle": "Enter your invite code",
-            "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
-            "codePlaceholder": "6-digit invite code",
-            "checkingCode": "Checking code…",
-            "setPasswordTitle": "Set a new password",
-            "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "Resetting password…",
-            "resetPassword": "Reset password",
-            "createAccountTitle": "Create your account",
-            "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
-            "mobilePlaceholder": "Mobile number (optional)",
-            "creatingAccount": "Creating account…",
-            "createAccountButton": "Create account",
-            "errors": {
-                "incorrectCode": "The code is incorrect.",
-                "verifyCode": "Failed to verify invite code.",
-                "createAccount": "Failed to create account.",
-                "completeSignup": "Failed to complete invited signup.",
-                "missingAccount": "Could not determine the account to sign in.",
-                "completeRecovery": "Failed to complete password recovery.",
-                "phoneAlreadyInUse": "This phone number is already in use.",
-                "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
-            }
-        }
+    "notices": {
+      "title": "Huomio",
+      "emailConfirmation": "Profiili tallennettu, mutta sähköpostin muutos vaatii vahvistuksen"
     },
-    "completeProfile": {
-        "kicker": "Vielä yksi vaihe",
-        "title": "Viimeistele profiilisi",
-        "description": "Lisää nimi, jonka muut näkevät, sekä Tryggd ID yhteystietohakua varten.",
-        "nameLabel": "Nimi",
-        "namePlaceholder": "esim. Emily Cooper",
-        "nameHelperEmpty": "Yhteystietosi näkevät tämän nimen.",
-        "nameHelper": "Yhteystietosi näkevät tämän nimen.",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "esim. emilycooper",
-        "tryggdIdHelper": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
-        "continue": "Jatka",
-        "saving": "Tallennetaan...",
-        "saveErrorTitle": "Profiilia ei voitu tallentaa",
-        "saveErrorBody": "Yritä uudelleen.",
-        "duplicateTitle": "Kokeile toista Tryggd ID:tä",
-        "duplicateBody": "Tämä Tryggd ID on jo varattu.",
-        "validation": {
-            "required": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
-            "min": "Tryggd ID:n on oltava vähintään 3 merkkiä.",
-            "max": "Tryggd ID saa olla enintään 24 merkkiä.",
-            "chars": "Käytä vain pieniä kirjaimia, numeroita, pisteitä tai alaviivoja."
-        }
+    "success": {
+      "title": "Tallennettu",
+      "saved": "Profiilisi on päivitetty."
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "Additional features for richer daily check-ins",
-        "badge": "Plus",
-        "heading": "Unlock more context",
-        "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
-        "comingSoon": {
-            "title": "Plus Preview",
-            "message": "Plus Preview on pilotin aikana ilmainen. Maksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
-            "button": "Kokeile Plus plania ilmaiseksi",
-            "note": "Voit palata Basic planiin milloin tahansa."
-        },
-        "features": {
-            "wellness": {
-                "title": "Wellness sharing",
-                "description": "Share how you feel as part of your daily check-in."
-            },
-            "location": {
-                "title": "Location sharing",
-                "description": "Let trusted contacts see your shared location in Activity."
-            },
-            "notifications": {
-                "title": "Notification controls",
-                "description": "Control which contacts receive your check-in notifications."
-            },
-            "contacts": {
-                "title": "Unlimited contacts",
-                "description": "Add more than the free-plan contact limit."
-            },
-            "welfare": {
-                "title": "Welfare greeting",
-                "description": "Use additional welfare follow-up features for your contacts."
-            },
-            "tripMode": {
-                "title": "Trip Mode",
-                "description": "Share travel progress and trip-specific updates."
-            },
-            "mood": {
-                "title": "Mood updates",
-                "description": "Add emotional context to your check-ins."
-            },
-            "controls": {
-                "title": "More sharing control",
-                "description": "Decide which trusted contacts receive which updates."
-            },
-            "activity": {
-                "title": "Richer activity updates",
-                "description": "Show more detail in shared check-in and status history."
-            }
-        }
+    "errors": {
+      "loadProfile": "Profiilia ei voitu ladata",
+      "notLoggedIn": "Et ole kirjautunut sisään",
+      "updateProfile": "Profiilia ei voitu päivittää",
+      "saveProfile": "Profiilia ei voitu tallentaa",
+      "deleteAccount": "Tilin poistaminen epäonnistui"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ Kokeile Plus plania ilmaiseksi",
-        "dialogIntro": "Kokeile Tryggd Plus plania ilmaiseksi nyt.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
-        "dialogFreeSectionTitle": "Basic plan sisältää:",
-        "dialogFreeFeature1": "✓ Kirjautuminen   🔔 kontaktien päivitysilmoitukset   👥 enintään 5 kontaktia",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan sisältää kaiken Basic planista sekä lisäksi:",
-        "dialogFeature1": "🌿 Päivittäinen tila   ✈️ Matkatila   ✋ Hätäsignaali",
-        "dialogFeature2": "🙂 Mielialan päivitykset   📍 Sijainnin jakaminen   👥 Lisää kontakteja",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogPricingTitle": "Plus plan -hinta",
-        "dialogPricingNote": "{{deadline}} jälkeen, jos valitset jatkaa Plus planilla:",
-        "dialogPricingMonthly": "US$2.99 / kuukausi",
-        "dialogPricingYearly": "US$19.99 / vuosi",
-        "dialogSupportNote": "Plus plan on tapa tukea Tryggdin jatkuvaa toimintaa ja kehittämistä.\nHaluamme pitää Tryggdin hyödyllisenä, vakaana, luotettavana ja mainoksettomana.",
-        "dialogPreviewNote": "Plus Preview on avoinna {{deadline}} asti.\nPreview-jakson päättyessä tilisi palaa automaattisesti Basic planiin.",
-        "activate": "Kokeile Plus plania ilmaiseksi",
-        "notNow": "Käytä Basic plania",
-        "activatedMessage": "Plus on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
-        "expiredTitle": "Plus-esikatselu on päättynyt",
-        "expiredBody": "Voit jatkaa Tryggd Basic planin käyttöä, mukaan lukien kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAiemmat kirjautumisesi ja toimintasi eivät poistu.",
-        "expiredButton": "Selvä",
-        "settingsRowTitle": "Plus-esikatselu",
-        "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
-        "settingsRowAction": "Aloita esikatselu",
-        "activeRowTitle": "Plus-esikatselu aktiivinen",
-        "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana.",
-        "dialogFeature5": "",
-        "dialogFeature6": ""
+    "deleteAccount": {
+      "title": "Poista tili",
+      "confirm": "Tämä poistaa tilisi ja tietosi pysyvästi. Toimintoa ei voi perua.",
+      "finalTitle": "Poistetaanko tili pysyvästi?",
+      "finalConfirm": "Tilisi, yhteystietosi, check-init ja asetuksesi poistetaan pysyvästi.",
+      "button": "Poista tili",
+      "deleting": "Poistetaan...",
+      "successTitle": "Tili poistettu",
+      "successMessage": "Tilisi on poistettu pysyvästi."
     },
-    "onboarding": {
-        "skip": "Ohita",
-        "next": "Seuraava",
-        "getStarted": "Aloita",
-        "slides": {
-            "checkin": {
-                "eyebrow": "Päivittäinen rytmi",
-                "title": "Nopeat päivittäiset kuittaukset",
-                "body": "💚 Kuittaa yhdellä napautuksella ja ilmoita luotetuille kontakteille, että voit hyvin.",
-                "points": {
-                    "one": "✓ Yksi napautus kuittaamiseen",
-                    "two": "✓ Yksinkertainen \"Olen turvassa\" -päivitys"
-                }
-            },
-            "contacts": {
-                "eyebrow": "Piirisi",
-                "title": "Luotetut kontaktit",
-                "body": "👥 Lisää perheenjäseniä tai läheisiä ystäviä, jotka voivat vastaanottaa kuittauksesi, apusignaalisi ja jaetut päivityksesi.",
-                "points": {
-                    "one": "✓ Valitse, kuka näkee päivityksesi",
-                    "two": "✓ Apusignaalit menevät oikeille ihmisille"
-                }
-            },
-            "sharing": {
-                "eyebrow": "Valinnainen konteksti",
-                "title": "Tila ja sijainti",
-                "body": "📍 Jaa valittujen kontaktien kanssa, miten voit, oletko kotona vai ulkona, matkustilasi tai sijaintisi.",
-                "points": {
-                    "one": "✓ 🙂 Mieliala, 🏠 kotona/poissa, tai ✈️ matkustila",
-                    "two": "✓ 📍 Sijainti vain kun valitset jakaa sen"
-                }
-            },
-            "free": {
-                "eyebrow": "Yksinkertainen oletuksena",
-                "title": "Plus Preview",
-                "body": "Tryggd Free pitää perusasiat yksinkertaisina. Pilottijakson aikana voit esikatsella Plus-ominaisuuksia:",
-                "freeSummary": "Free: kuittaus, luotetut kontaktit, perustila",
-                "bodyFreeSuffix": " pitää perusasiat yksinkertaisina.",
-                "bodyPilotPrefix": "Pilottijakson aikana, esikatsele ",
-                "bodyPilotSuffix": ":",
-                "points": {
-                    "one": "✈️ Matkatila",
-                    "two": "📍 Sijainninjakovaihtoehdot",
-                    "three": "🙂 Mieliala-päivitykset",
-                    "four": "⚙️ Enemmän jakamisen hallintaa"
-                },
-                "footer": "Plus Preview on valinnainen."
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "Hyvä tietää",
-            "title": "Muutama tärkeä huomio",
-            "productName": "Tryggd ",
-            "paragraph1": "auttaa sinua jakamaan manuaalisia kuittauksia, apusignaaleja ja valittuja päivityksiä luotetuille kontakteille.",
-            "paragraph2": "Kontaktisi saattavat nähdä jakamasi tilapäivitykset. Sijainti jaetaan vain, kun aktivoit sijainnin jakamisen.",
-            "paragraph3": "Ilmoitukset voivat viivästyä verkkoyhteyden, akun tason, laitteen asetusten tai kolmannen osapuolen push-palveluiden takia.",
-            "paragraph4": "Tryggd ei ole hätäpalvelu, eikä siihen tule luottaa kiireellisissä tai henkeä uhkaavissa tilanteissa.",
-            "acceptLabel": "Ymmärrän",
-            "saving": "Tallennetaan...",
-            "decline": "Hylkää / Takaisin"
-        },
-        "errors": {
-            "saveTitle": "Ei voi jatkaa",
-            "saveBody": "Yritä uudelleen."
-        }
-    },
-    "watchOver": {
-        "toggle": "Seuraa",
-        "toggleHint": "Saat ilmoituksen, jos {{name}} ei ole kirjautunut päivään.",
-        "limitReached": "Voit seurata {{max}} henkilöä ilmaisella suunnitelmalla. Päivitä Plus-versioon rajoittamattomasti.",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "Poissaolostatus",
-        "setAway": "Aseta poissa olevaksi",
-        "clearAway": "Poista poissaolostatus",
-        "label": "Viesti (valinnainen)",
-        "labelPlaceholder": "esim. Lomalla",
-        "until": "Poissa saakka",
-        "active": "Poissa {{date}} saakka",
-        "activeNoDate": "Poissa (ei loppupäivää)",
-        "hint": "Poissa ollessasi kontaktisi eivät saa poissaoloilmoituksia.",
-        "saving": "Tallennetaan...",
-        "error": "Poissaolostatuksen päivitys epäonnistui."
+    "qr": {
+      "title": "Oma QR-koodini",
+      "hint": "Anna jonkun skannata tämä lisätäkseen sinut yhteystiedoksi heti.",
+      "errorGenerating": "QR-koodia ei voitu luoda. Yritä uudelleen."
     }
+  },
+  "settings": {
+    "title": "Asetukset",
+    "account": "Tili",
+    "information": "Tiedot",
+    "language": "Kieli",
+    "theme": "Teema",
+    "homeStyle": {
+      "title": "Valitse kotinäkymä",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "Yksinkertainen",
+        "description": "Yhden napautuksen kuittaus, ei häiriötekijöitä."
+      },
+      "enhanced": {
+        "title": "Laajennettu",
+        "description": "Jaa mielialasi, matkatilasi ja sijaintisi."
+      }
+    },
+    "notifications": {
+      "title": "Ilmoitukset",
+      "preferences": "Ilmoitusasetukset",
+      "summary": {
+        "reminders": "Muistutukset",
+        "activity": "Aktiviteetti",
+        "allOff": "Kaikki ilmoitukset pois päältä"
+      },
+      "stayOnTrack": {
+        "title": "Pysy aikataulussa",
+        "description": "Muistuta minua tekemään päivittäinen turvallisuustarkistus"
+      },
+      "contactActivity": {
+        "title": "Kontaktien aktiivisuus",
+        "description": "Ilmoita minulle kun kontaktini tekevät sisäänkirjautumisen"
+      }
+    },
+    "about": "Tietoja",
+    "privacy": "Tietosuojakäytäntö",
+    "terms": "Käyttöehdot",
+    "feedback": "Lähetä palautetta",
+    "logout": "Kirjaudu ulos",
+    "resetData": "Nollaa tiedot",
+    "light": "Vaalea",
+    "dark": "Tumma",
+    "systemDefault": "Käytä järjestelmän asetusta",
+    "english": "Englanti",
+    "swedish": "Ruotsi",
+    "norwegian": "Norja",
+    "danish": "Tanska",
+    "finnish": "Suomi",
+    "resetWarning": "Oletko varma? Kaikki tietosi poistetaan.",
+    "logoutConfirm": "Haluatko varmasti kirjautua ulos?",
+    "confirmReset": "Nollaa",
+    "cancel": "Peruuta",
+    "ok": "OK",
+    "chineseSimplified": "Chinese (Simplified)",
+    "chineseTraditional": "Chinese (Traditional)",
+    "tripMode": {
+      "title": "Kirjautumistila",
+      "home": "Koti",
+      "trip": "Matka",
+      "homeDescription": "Tavallinen päivittäinen kirjautuminen",
+      "tripDescription": "Jaa matkastatus yhteystiedoille"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "delete": "Poista",
+    "edit": "Muokkaa",
+    "loading": "Ladataan...",
+    "back": "Takaisin",
+    "next": "Seuraava",
+    "submit": "Lähetä",
+    "yes": "Kyllä",
+    "no": "Ei",
+    "done": "Done",
+    "refreshing": "Refreshing..."
+  },
+  "time": {
+    "justNow": "Juuri nyt",
+    "minutesAgo": "{{count}} min sitten",
+    "hoursAgo": "{{count}} tunti{{count, plural, =1 {} other {a}}} sitten",
+    "daysAgo": "{{count}} päivä{{count, plural, =1 {} other {ä}}} sitten",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
+  },
+  "errors": {
+    "title": "Virhe",
+    "notAuthenticated": "Ei todennettu"
+  },
+  "permissions": {
+    "title": "Käyttöoikeus"
+  },
+  "auth": {
+    "signup": {
+      "title": "Luo tili",
+      "create": "Luo tili",
+      "creating": "Luodaan tiliä...",
+      "success": {
+        "title": "🎉 Tili luotu",
+        "message": "Tilisi on valmis. Voit nyt kirjautua sisään."
+      },
+      "verifyEmail": {
+        "title": "Vahvista sähköpostiosoitteesi!",
+        "message": "Olemme lähettäneet vahvistussähköpostin sähköpostiisi. Vahvistamisen jälkeen kirjaudu sisään."
+      },
+      "error": "Rekisteröinti epäonnistui"
+    },
+    "login": {
+      "title": "Kirjaudu sisään",
+      "signIn": "Kirjaudu sisään",
+      "loggingIn": "Kirjaudutaan sisään...",
+      "error": "Kirjautuminen epäonnistui",
+      "continueWithGoogle": "Jatka Googlella",
+      "connectingToGoogle": "Yhdistetään Googleen...",
+      "continueWithApple": "Jatka Applella",
+      "connectingToApple": "Yhdistetään Appleen...",
+      "orContinueWithEmail": "tai jatka sähköpostilla",
+      "socialError": "Kirjautuminen epäonnistui",
+      "useInviteCode": "Onko sinulla kutsukoodi?"
+    },
+    "email": "Sähköposti",
+    "displayName": "Nimi",
+    "password": {
+      "placeholder": "Salasana (vähintään 6 merkkiä)",
+      "minimumLength": "Use at least 8 characters."
+    },
+    "confirmPassword": "Vahvista salasana",
+    "passwordsMatch": "✔ Salasanat täsmäävät",
+    "passwordsNoMatch": "✖ Salasanat eivät täsmää",
+    "alreadyHaveAccount": "Onko sinulla jo tili? Kirjaudu sisään",
+    "noAccount": "Eikö sinulla ole tiliä? Rekisteröidy",
+    "unknownError": "Tuntematon virhe",
+    "forgotPassword": {
+      "title": "Unohditko salasanan",
+      "instructions": "Syötä sähköpostiosoitteesi",
+      "send": "Lähetä nollaussähköposti",
+      "sending": "Lähetetään...",
+      "sentTitle": "Tarkista sähköpostisi",
+      "sentMessage": "Lähetimme salasanan nollauslinkin sähköpostiisi.",
+      "login": "Siirry kirjautumiseen",
+      "error": "Virhe lähetettäessä nollaussähköpostia"
+    },
+    "resetPassword": {
+      "title": "Nollaa salasana",
+      "instructions": "Syötä uusi salasanasi alla.",
+      "save": "Tallenna uusi salasana",
+      "saving": "Tallennetaan...",
+      "successTitle": "Salasana nollattu!",
+      "successMessage": "Voit nyt kirjautua sisään uudella salasanallasi.",
+      "login": "Siirry kirjautumiseen",
+      "error": "Virhe salasanan nollauksessa",
+      "passwordPlaceholder": "Uusi salasana"
+    },
+    "invite": {
+      "enterCodeStandaloneHint": "Jos asensit sovelluksen vasta kutsun saamisen jälkeen, jatka syöttämällä 6-numeroinen koodi.",
+      "invalidLink": "Invite link is invalid.",
+      "notFound": "Invite not found.",
+      "alreadyUsed": "This invite has already been used.",
+      "expired": "This invite has expired.",
+      "unavailable": "This invite is not available anymore.",
+      "unavailableTitle": "Invite unavailable",
+      "couldNotOpen": "This invite could not be opened.",
+      "backToLogin": "Back to login",
+      "recoveryTitle": "Reset your Tryggd password",
+      "invitedTitle": "You're invited to Tryggd",
+      "recoverySubtitle": "{{inviter}} sent you a secure recovery link for {{account}}.",
+      "signupSubtitle": "{{inviter}} invited {{invitee}} to join their Tryggd circle.",
+      "yourAccount": "your Tryggd account",
+      "you": "you",
+      "installTitle": "Install or open the app",
+      "installHint": "Open this invite in the Tryggd app. If you do not have the app yet, install it first, then come back to this same link.",
+      "openInApp": "Open in Tryggd",
+      "downloadAppStore": "Download on App Store",
+      "downloadGooglePlay": "Get it on Google Play",
+      "keepLink": "Keep this invite link:",
+      "enterCodeTitle": "Enter your invite code",
+      "enterCodeHint": "Ask {{inviter}} for the 6-digit code that belongs to this invite.",
+      "codePlaceholder": "6-digit invite code",
+      "checkingCode": "Checking code…",
+      "setPasswordTitle": "Set a new password",
+      "setPasswordHint": "This will reset the password for Tryggd ID {{id}}.",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "Resetting password…",
+      "resetPassword": "Reset password",
+      "createAccountTitle": "Create your account",
+      "createAccountHint": "You will sign in later with your Tryggd ID and password. You can keep the suggested Tryggd ID or edit it now.",
+      "mobilePlaceholder": "Mobile number (optional)",
+      "creatingAccount": "Creating account…",
+      "createAccountButton": "Create account",
+      "errors": {
+        "incorrectCode": "The code is incorrect.",
+        "verifyCode": "Failed to verify invite code.",
+        "createAccount": "Failed to create account.",
+        "completeSignup": "Failed to complete invited signup.",
+        "missingAccount": "Could not determine the account to sign in.",
+        "completeRecovery": "Failed to complete password recovery.",
+        "phoneAlreadyInUse": "This phone number is already in use.",
+        "tooManyAttempts": "Too many incorrect attempts. Ask for a new invite."
+      }
+    }
+  },
+  "completeProfile": {
+    "kicker": "Vielä yksi vaihe",
+    "title": "Viimeistele profiilisi",
+    "description": "Lisää nimi, jonka muut näkevät, sekä Tryggd ID yhteystietohakua varten.",
+    "nameLabel": "Nimi",
+    "namePlaceholder": "esim. Emily Cooper",
+    "nameHelperEmpty": "Yhteystietosi näkevät tämän nimen.",
+    "nameHelper": "Yhteystietosi näkevät tämän nimen.",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "esim. emilycooper",
+    "tryggdIdHelper": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
+    "continue": "Jatka",
+    "saving": "Tallennetaan...",
+    "saveErrorTitle": "Profiilia ei voitu tallentaa",
+    "saveErrorBody": "Yritä uudelleen.",
+    "duplicateTitle": "Kokeile toista Tryggd ID:tä",
+    "duplicateBody": "Tämä Tryggd ID on jo varattu.",
+    "validation": {
+      "required": "Muut löytävät ja lisäävät sinut tällä Tryggdissä.",
+      "min": "Tryggd ID:n on oltava vähintään 3 merkkiä.",
+      "max": "Tryggd ID saa olla enintään 24 merkkiä.",
+      "chars": "Käytä vain pieniä kirjaimia, numeroita, pisteitä tai alaviivoja."
+    }
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "Additional features for richer daily check-ins",
+    "badge": "Plus",
+    "heading": "Unlock more context",
+    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "comingSoon": {
+      "title": "Plus Preview",
+      "message": "Plus Preview on pilotin aikana ilmainen. Maksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+      "button": "Kokeile Plus plania ilmaiseksi",
+      "note": "Voit palata Basic planiin milloin tahansa."
+    },
+    "features": {
+      "wellness": {
+        "title": "Wellness sharing",
+        "description": "Share how you feel as part of your daily check-in."
+      },
+      "location": {
+        "title": "Location sharing",
+        "description": "Let trusted contacts see your shared location in Activity."
+      },
+      "notifications": {
+        "title": "Notification controls",
+        "description": "Control which contacts receive your check-in notifications."
+      },
+      "contacts": {
+        "title": "Unlimited contacts",
+        "description": "Add more than the free-plan contact limit."
+      },
+      "welfare": {
+        "title": "Welfare greeting",
+        "description": "Use additional welfare follow-up features for your contacts."
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
+      }
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ Kokeile Plus plania ilmaiseksi",
+    "dialogIntro": "Kokeile Tryggd Plus plania ilmaiseksi nyt.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+    "dialogFreeSectionTitle": "Basic plan sisältää:",
+    "dialogFreeFeature1": "✓ Kirjautuminen   🔔 kontaktien päivitysilmoitukset   👥 enintään 5 kontaktia",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan sisältää kaiken Basic planista sekä lisäksi:",
+    "dialogFeature1": "🌿 Päivittäinen tila   ✈️ Matkatila   ✋ Hätäsignaali",
+    "dialogFeature2": "🙂 Mielialan päivitykset   📍 Sijainnin jakaminen   👥 Lisää kontakteja",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "Plus plan -hinta",
+    "dialogPricingNote": "{{deadline}} jälkeen, jos valitset jatkaa Plus planilla:",
+    "dialogPricingMonthly": "US$2.99 / kuukausi",
+    "dialogPricingYearly": "US$19.99 / vuosi",
+    "dialogSupportNote": "Plus plan on tapa tukea Tryggdin jatkuvaa toimintaa ja kehittämistä.\nHaluamme pitää Tryggdin hyödyllisenä, vakaana, luotettavana ja mainoksettomana.",
+    "dialogPreviewNote": "Plus Preview on avoinna {{deadline}} asti.\nPreview-jakson päättyessä tilisi palaa automaattisesti Basic planiin.",
+    "activate": "Kokeile Plus plania ilmaiseksi",
+    "notNow": "Käytä Basic plania",
+    "activatedMessage": "Plus on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
+    "expiredTitle": "Plus-esikatselu on päättynyt",
+    "expiredBody": "Voit jatkaa Tryggd Basic planin käyttöä, mukaan lukien kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAiemmat kirjautumisesi ja toimintasi eivät poistu.",
+    "expiredButton": "Selvä",
+    "settingsRowTitle": "Plus-esikatselu",
+    "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
+    "settingsRowAction": "Aloita esikatselu",
+    "activeRowTitle": "Plus-esikatselu aktiivinen",
+    "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana.",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
+  },
+  "onboarding": {
+    "skip": "Ohita",
+    "next": "Seuraava",
+    "getStarted": "Aloita",
+    "slides": {
+      "checkin": {
+        "eyebrow": "Päivittäinen rytmi",
+        "title": "Nopeat päivittäiset kuittaukset",
+        "body": "💚 Kuittaa yhdellä napautuksella ja ilmoita luotetuille kontakteille, että voit hyvin.",
+        "points": {
+          "one": "✓ Yksi napautus kuittaamiseen",
+          "two": "✓ Yksinkertainen \"Olen turvassa\" -päivitys"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Piirisi",
+        "title": "Luotetut kontaktit",
+        "body": "👥 Lisää perheenjäseniä tai läheisiä ystäviä, jotka voivat vastaanottaa kuittauksesi, apusignaalisi ja jaetut päivityksesi.",
+        "points": {
+          "one": "✓ Valitse, kuka näkee päivityksesi",
+          "two": "✓ Apusignaalit menevät oikeille ihmisille"
+        }
+      },
+      "sharing": {
+        "eyebrow": "Valinnainen konteksti",
+        "title": "Tila ja sijainti",
+        "body": "📍 Jaa valittujen kontaktien kanssa, miten voit, oletko kotona vai ulkona, matkustilasi tai sijaintisi.",
+        "points": {
+          "one": "✓ 🙂 Mieliala, 🏠 kotona/poissa, tai ✈️ matkustila",
+          "two": "✓ 📍 Sijainti vain kun valitset jakaa sen"
+        }
+      },
+      "free": {
+        "eyebrow": "Yksinkertainen oletuksena",
+        "title": "Plus Preview",
+        "body": "Tryggd Free pitää perusasiat yksinkertaisina. Pilottijakson aikana voit esikatsella Plus-ominaisuuksia:",
+        "freeSummary": "Free: kuittaus, luotetut kontaktit, perustila",
+        "bodyFreeSuffix": " pitää perusasiat yksinkertaisina.",
+        "bodyPilotPrefix": "Pilottijakson aikana, esikatsele ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ Matkatila",
+          "two": "📍 Sijainninjakovaihtoehdot",
+          "three": "🙂 Mieliala-päivitykset",
+          "four": "⚙️ Enemmän jakamisen hallintaa"
+        },
+        "footer": "Plus Preview on valinnainen."
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "Hyvä tietää",
+      "title": "Muutama tärkeä huomio",
+      "productName": "Tryggd ",
+      "paragraph1": "auttaa sinua jakamaan manuaalisia kuittauksia, apusignaaleja ja valittuja päivityksiä luotetuille kontakteille.",
+      "paragraph2": "Kontaktisi saattavat nähdä jakamasi tilapäivitykset. Sijainti jaetaan vain, kun aktivoit sijainnin jakamisen.",
+      "paragraph3": "Ilmoitukset voivat viivästyä verkkoyhteyden, akun tason, laitteen asetusten tai kolmannen osapuolen push-palveluiden takia.",
+      "paragraph4": "Tryggd ei ole hätäpalvelu, eikä siihen tule luottaa kiireellisissä tai henkeä uhkaavissa tilanteissa.",
+      "acceptLabel": "Ymmärrän",
+      "saving": "Tallennetaan...",
+      "decline": "Hylkää / Takaisin"
+    },
+    "errors": {
+      "saveTitle": "Ei voi jatkaa",
+      "saveBody": "Yritä uudelleen."
+    }
+  },
+  "watchOver": {
+    "toggle": "Seuraa",
+    "toggleHint": "Saat ilmoituksen, jos {{name}} ei ole kirjautunut päivään.",
+    "limitReached": "Voit seurata {{max}} henkilöä ilmaisella suunnitelmalla. Päivitä Plus-versioon rajoittamattomasti.",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "Poissaolostatus",
+    "setAway": "Aseta poissa olevaksi",
+    "clearAway": "Poista poissaolostatus",
+    "label": "Viesti (valinnainen)",
+    "labelPlaceholder": "esim. Lomalla",
+    "until": "Poissa saakka",
+    "active": "Poissa {{date}} saakka",
+    "activeNoDate": "Poissa (ei loppupäivää)",
+    "hint": "Poissa ollessasi kontaktisi eivät saa poissaoloilmoituksia.",
+    "saving": "Tallennetaan...",
+    "error": "Poissaolostatuksen päivitys epäonnistui."
+  }
 }

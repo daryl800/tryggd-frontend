@@ -1,874 +1,876 @@
 {
-    "home": {
-        "title": "หน้าแรก",
-        "welcome": "ยินดีต้อนรับ",
-        "greetings": {
-            "morning": "สวัสดีตอนเช้า",
-            "afternoon": "สวัสดีตอนบ่าย",
-            "evening": "สวัสดีตอนเย็น",
-            "night": "ราตรีสวัสดิ์"
-        },
-        "everythingIsFine": "ทุกอย่างเรียบร้อยดี",
-        "dontForget": "อย่าลืมเช็กอินวันนี้!",
-        "youCheckedInTodayAt": "คุณเช็กอินแล้ววันนี้ เวลา {{time}}",
-        "pressMeToCheckIn": "เช็กอินที่นี่",
-        "status": {
-            "contactCheckedIn": "{{name}} เช็กอินแล้ว",
-            "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
-            "respondedToYou": "{{name}} ตอบกลับการเช็คอินของคุณ",
-            "emergencyMessage": "🚨 {{name}}: {{message}}",
-            "messageFrom": "ข้อความจาก {{name}}",
-            "justNow": "เมื่อสักครู่",
-            "minutesAgo_one": "{{count}} นาทีที่แล้ว",
-            "minutesAgo_other": "{{count}} นาทีที่แล้ว",
-            "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
-            "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
-            "hoursAgoDecimal": "{{value}} ชั่วโมงที่แล้ว",
-            "daysAgo_one": "{{count}} วันที่แล้ว",
-            "daysAgo_other": "{{count}} วันที่แล้ว",
-            "lastCheckinAgo": "เช็กอินล่าสุด {{timeAgo}}",
-            "lastCheckinLabel": "เช็กอินล่าสุด:"
-        },
-        "wellnessPrompt": "วันนี้คุณรู้สึกอย่างไร?",
-        "context": {
-            "title": "สถานะวันนี้",
-            "home": "อยู่ที่บ้าน",
-            "trip": "กำลังเดินทาง",
-            "homeTab": "🌿 ประจำวัน",
-            "tripTab": "✈️ เดินทาง",
-            "reachOutTab": "✋ ช่วยด้วย",
-            "reachOutStatuses": {
-                "call_now": "✋ ฉันต้องการความช่วยเหลือ",
-                "call_available": "📞 โทรหาฉัน"
-            },
-            "statusTitle": "สถานะ",
-            "tripStatusPrompt": "เลือกสถานะการเดินทาง",
-            "homeStatuses": {
-                "chilling": "🛋️ พักสมอง",
-                "home": "🏠 อยู่ที่บ้าน",
-                "outside": "🚶 ข้างนอก",
-                "at_school": "🏫 ที่โรงเรียน",
-                "working": "💼 ทำงาน",
-                "busy": "💼 ไม่ว่าง",
-                "relaxing": "☕ เวลาน้ำชา",
-                "gathering": "🥳 สังสรรค์",
-                "on_call": "📞 คุยโทรศัพท์",
-                "eating": "🍽️ กินข้าว",
-                "exhausted": "😩 เหนื่อยมาก",
-                "sleepy": "😪 ง่วงนอน",
-                "daydreaming": "💭 ฝันกลางวัน",
-                "playing_sport": "🏃 เล่นกีฬา",
-                "having_fun": "🎉 สนุกมาก",
-                "watching_movie": "🎬 ดูหนัง",
-                "resting": "😌 พักผ่อน",
-                "goodmorning": "🌅 อรุณสวัสดิ์",
-                "goodafternoon": "🌞 ตอนบ่าย",
-                "goodnight": "🌙 ราตรีสวัสดิ์"
-            },
-            "summaryHome": "เช็กอินตามปกติ",
-            "summaryTrip": "เพิ่มสถานะการเดินทาง",
-            "summaryWithStatus": "กำลังเดินทาง · {{status}}"
-        },
-        "plusWellness": {
-            "title": "ฟีเจอร์ Plus",
-            "message": "อัปเกรดเป็น Plus เพื่อแชร์ความรู้สึกของคุณพร้อมการเช็กอิน"
-        },
-        "reset": "รีเซ็ต",
-        "timer": "ตัวจับเวลา",
-        "timeLeftToday": "เวลาที่เหลือวันนี้",
-        "reachOut": {
-            "pressToSendHelp": "ส่งสัญญาณขอความช่วยเหลือ",
-            "lastSentLabel": "ส่งครั้งล่าสุด:"
-        },
-        "activity": "กิจกรรม",
-        "contacts_one": "{{count}} ผู้ติดต่อ",
-        "contacts_other": "{{count}} ผู้ติดต่อ",
-        "streak": "สตรีก",
-        "days_one": "{{count}} วัน",
-        "days_other": "{{count}} วัน",
-        "dateFormats": {
-            "weekdays": [
-                "วันอาทิตย์",
-                "วันจันทร์",
-                "วันอังคาร",
-                "วันพุธ",
-                "วันพฤหัสบดี",
-                "วันศุกร์",
-                "วันเสาร์"
-            ],
-            "months": [
-                "มกราคม",
-                "กุมภาพันธ์",
-                "มีนาคม",
-                "เมษายน",
-                "พฤษภาคม",
-                "มิถุนายน",
-                "กรกฎาคม",
-                "สิงหาคม",
-                "กันยายน",
-                "ตุลาคม",
-                "พฤศจิกายน",
-                "ธันวาคม"
-            ]
-        },
-        "tripMode": {
-            "statuses": {
-                "leaving": "🧳 ออกเดินทางแล้ว",
-                "boarding": "🛫 กำลังขึ้นเครื่อง / 🚅 ขับรถ",
-                "layover": "🛑 แวะพัก / ต่อเที่ยวบิน",
-                "landed": "🛬 มาถึงอย่างปลอดภัย",
-                "on_the_move": "🚕 กำลังเดินทาง",
-                "at_hotel": "🏨 ถึงโรงแรมแล้ว",
-                "on_trip": "🗺️ อยู่ระหว่างการเดินทาง",
-                "heading_home": "🏠 กำลังกลับบ้าน",
-                "trip_ended": "✅ ทริปสิ้นสุด — กลับบ้านปลอดภัย"
-            }
-        },
-        "errors": {
-            "fetchLastCheckin": "ไม่สามารถดึงการเช็กอินล่าสุดได้",
-            "noUser": "ไม่พบผู้ใช้",
-            "checkin": "เช็กอินไม่สำเร็จ",
-            "loadState": "โหลดสถานะไม่สำเร็จ"
-        }
+  "home": {
+    "title": "หน้าแรก",
+    "welcome": "ยินดีต้อนรับ",
+    "greetings": {
+      "morning": "สวัสดีตอนเช้า",
+      "afternoon": "สวัสดีตอนบ่าย",
+      "evening": "สวัสดีตอนเย็น",
+      "night": "ราตรีสวัสดิ์"
     },
-    "activity": {
-        "title": "กิจกรรม",
-        "subtitle": "การเช็กอินล่าสุดของคุณและผู้ติดต่อ",
-        "you": "คุณ",
-        "yourActivity": "ตัวคุณเอง",
-        "contacts": "ผู้ติดต่อ",
-        "loading": "กำลังโหลดกิจกรรม...",
-        "noCheckIn": "ยังไม่มีการเช็กอิน",
-        "staleCheckinMessage_one": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
-        "staleCheckinMessage_other": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
-        "emptyState": {
-            "title": "ไม่มีผู้ติดต่อ",
-            "message": "เพิ่มผู้ติดต่อเพื่อดูความเคลื่อนไหวของพวกเขา"
-        },
-        "priority": {
-            "failed": "ไม่สำเร็จ",
-            "ongoing": "กำลังดำเนินการ",
-            "successful": "สำเร็จ"
-        },
-        "time": {
-            "locale": "th-TH"
-        },
-        "errors": {
-            "loadActivities": "ไม่สามารถโหลดกิจกรรมได้",
-            "fetchContacts": "ไม่สามารถดึงผู้ติดต่อได้",
-            "fetchOwnerActivity": "ไม่สามารถดึงกิจกรรมของเจ้าของบัญชีได้",
-            "openSharedLocation": "ไม่สามารถเปิดตำแหน่งที่แชร์ได้",
-            "locationPermission": "ต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อแชร์ตำแหน่งของคุณ"
-        },
-        "day": {
-            "today": "วันนี้",
-            "yesterday": "เมื่อวาน",
-            "other": "{{date}}"
-        },
-        "responseButton": {
-            "sendResponse": "👍 ส่งกำลังใจ",
-            "sent": "ส่งกำลังใจแล้ว ✓"
-        },
-        "checkinResponse": {
-            "todayLikes_one": "⭐️ วันนี้คุณได้รับ {{count}} การตอบกลับการเช็กอิน:",
-            "todayLikes_other": "⭐️ วันนี้คุณได้รับ {{count}} การตอบกลับการเช็กอิน:",
-            "prefix": "ตอบกลับการเช็กอินของคุณ",
-            "defaultMessage": "ส่งกำลังใจ 👍 ให้การเช็กอินของคุณ!"
-        },
-        "welfareButton": {
-            "send": "🍀 คุณโอเคไหม?",
-            "sent": "ส่งคำทักทายแล้ว ✓",
-            "sentOffline": "ส่งแล้ว ✓ — {{name}} จะเห็นข้อความของคุณเมื่อกลับมาออนไลน์"
-        },
-        "sharedLocation": {
-            "view": "ดูตำแหน่งที่แชร์"
-        },
-        "timezoneLabels": {
-            "utc": "UTC",
-            "china": "จีน",
-            "hongKong": "ฮ่องกง",
-            "taiwan": "ไต้หวัน",
-            "sweden": "สวีเดน",
-            "norway": "นอร์เวย์",
-            "denmark": "เดนมาร์ก",
-            "finland": "ฟินแลนด์"
-        },
-        "wellness": {
-            "veryLow": "รู้สึกไม่ค่อยสบาย\n😔",
-            "low": "รู้สึกแผ่ว ๆ\n😕",
-            "neutral": "ทุกอย่างเรียบร้อยดี\n🙂",
-            "good": "รู้สึกดี\n☺️",
-            "great": "วันนี้มีความสุขมาก\n😊"
-        },
-        "todayCheckButton": {
-            "send": "👋 วันนี้คุณเป็นอย่างไรบ้าง?",
-            "sent": "ส่งคำทักทายแล้ว ✓"
-        },
-        "checkedInAt": "เช็กอินเมื่อ {{time}} {{date}}",
-        "welfareCheck": {
-            "todayGreetings_one": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:",
-            "todayGreetings_other": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:"
-        },
-        "emergencyMessage": {
-            "todayMessages_one": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:",
-            "todayMessages_other": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:"
-        },
-        "supportButton": {
-            "send": "💪 ส่งกำลังใจ",
-            "sent": "ส่งแล้ว ✓"
-        },
-        "reachOutResponseButton": {
-            "send": "รับทราบ",
-            "sent": "ตอบแล้ว ✓"
-        },
-        "openInMaps": "เปิดในแผนที่",
-        "watchOver": {
-            "resolvedBy": "แก้ไขโดย {{name}}",
-            "markResolved": "ฉันได้ติดต่อแล้ว — ทุกอย่างเรียบร้อย",
-            "resolving": "กำลังแก้ไข...",
-            "resolveError": "ไม่สามารถทำเครื่องหมายว่าแก้ไขแล้ว กรุณาลองอีกครั้ง"
-        }
+    "everythingIsFine": "ทุกอย่างเรียบร้อยดี",
+    "dontForget": "อย่าลืมเช็กอินวันนี้!",
+    "youCheckedInTodayAt": "คุณเช็กอินแล้ววันนี้ เวลา {{time}}",
+    "pressMeToCheckIn": "เช็กอินที่นี่",
+    "status": {
+      "contactCheckedIn": "{{name}} เช็กอินแล้ว",
+      "sentWave": "{{name}} ส่งการโบกมือให้คุณ",
+      "respondedToYou": "{{name}} ตอบกลับการเช็คอินของคุณ",
+      "emergencyMessage": "🚨 {{name}}: {{message}}",
+      "messageFrom": "ข้อความจาก {{name}}",
+      "justNow": "เมื่อสักครู่",
+      "minutesAgo_one": "{{count}} นาทีที่แล้ว",
+      "minutesAgo_other": "{{count}} นาทีที่แล้ว",
+      "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
+      "hoursAgoDecimal": "{{value}} ชั่วโมงที่แล้ว",
+      "daysAgo_one": "{{count}} วันที่แล้ว",
+      "daysAgo_other": "{{count}} วันที่แล้ว",
+      "lastCheckinAgo": "เช็กอินล่าสุด {{timeAgo}}",
+      "lastCheckinLabel": "เช็กอินล่าสุด:"
     },
-    "contacts": {
-        "title": "ผู้ติดต่อ",
-        "contact": "ผู้ติดต่อ",
-        "newContact": "ผู้ติดต่อใหม่",
-        "displayingAs": "แสดงเป็น",
-        "loading": "กำลังโหลดผู้ติดต่อ...",
-        "subtitle": {
-            "withContacts": "{{count}} / {{max}} ผู้ติดต่อ",
-            "noContacts": "เพิ่มผู้ติดต่อเพื่อแชร์ด้วย",
-            "withContactsUnlimited": "{{count}} ผู้ติดต่อ"
-        },
-        "emptyState": {
-            "title": "ไม่มีผู้ติดต่อ",
-            "message": "กดปุ่ม + เพื่อเพิ่มผู้ติดต่อคนแรกของคุณ"
-        },
-        "tabs": {
-            "contacts": "ผู้ติดต่อ",
-            "requests": "คำขอ"
-        },
-        "requests": {
-            "received": "คำขอที่ได้รับ",
-            "sent": "คำขอที่ส่ง",
-            "waiting": "รอการตอบกลับ",
-            "loading": "กำลังโหลดคำขอ...",
-            "emptyState": {
-                "title": "ไม่มีคำขอ",
-                "message": "เมื่อมีคนส่งคำขอผู้ติดต่อมาให้คุณ จะปรากฏที่นี่"
-            }
-        },
-        "placeholders": {
-            "email": "กรอกอีเมล",
-            "identifier": "กรอก Tryggd ID หรืออีเมล",
-            "suggestedUsername": "Tryggd ID ที่แนะนำ (ไม่บังคับ)"
-        },
-        "buttons": {
-            "accept": "ยอมรับ",
-            "reject": "ปฏิเสธ",
-            "delete": "ลบ",
-            "cancelRequest": "ยกเลิกคำขอ",
-            "sending": "กำลังส่ง...",
-            "sendRequests_one": "ส่งคำขอ",
-            "sendRequests_other": "ส่งคำขอ"
-        },
-        "alerts": {
-            "limitReached": {
-                "title": "ถึงขีดจำกัดแล้ว",
-                "message": "คุณเพิ่มผู้ติดต่อได้สูงสุด 3 คนเท่านั้น"
-            },
-            "senderLimitReached": {
-                "title": "ไม่สามารถยอมรับคำขอได้",
-                "message": "รายชื่อผู้ติดต่อของบุคคลนี้เต็มแล้ว"
-            },
-            "delete": {
-                "title": "ลบผู้ติดต่อ",
-                "message": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{name}}?"
-            },
-            "contactExists": {
-                "title": "มีผู้ติดต่อนี้อยู่แล้ว",
-                "message": "{{name}} อยู่ในผู้ติดต่อของคุณแล้ว"
-            },
-            "requestExists": {
-                "title": "ส่งคำขอไปแล้ว",
-                "message": "คุณได้ส่งคำขอไปยังผู้ใช้นี้แล้ว"
-            },
-            "requestReceived": {
-                "title": "ได้รับคำขอแล้ว",
-                "message": "คุณมีคำขอจาก {{email}} อยู่แล้ว ตรวจดูที่ \"คำขอ\""
-            },
-            "invalidEmail": {
-                "title": "อีเมลไม่ถูกต้อง",
-                "message": "{{email}} ยังไม่ได้ลงทะเบียนหรือยังไม่ได้ยืนยัน"
-            },
-            "selfContact": {
-                "title": "ผู้ติดต่อไม่ถูกต้อง",
-                "message": "คุณไม่สามารถเพิ่มตัวเองเป็นผู้ติดต่อได้"
-            },
-            "noChanges": {
-                "title": "ไม่มีการเปลี่ยนแปลง",
-                "message": "ไม่มีผู้ติดต่อใหม่ให้บันทึก"
-            },
-            "alreadyInContacts": "ผู้ใช้นี้อยู่ในผู้ติดต่อของคุณแล้ว",
-            "requestHandled": {
-                "title": "จัดการคำขอแล้ว",
-                "message": "คำขอนี้ถูกจัดการไปแล้ว"
-            }
-        },
-        "success": {
-            "requestSent": {
-                "title": "ส่งคำขอแล้ว",
-                "message": "ส่งคำขอผู้ติดต่อไปยัง {{name}} แล้ว"
-            },
-            "contactAdded": {
-                "title": "เพิ่มผู้ติดต่อแล้ว",
-                "message": "เพิ่ม {{name}} เป็นผู้ติดต่อของคุณแล้ว"
-            },
-            "deleted": {
-                "title": "ลบผู้ติดต่อแล้ว",
-                "message": "ลบ {{name}} แล้ว ความสัมพันธ์ทั้งหมดถูกลบออกแล้ว"
-            },
-            "requestRejected": {
-                "title": "ปฏิเสธคำขอแล้ว",
-                "message": "ปฏิเสธคำขอผู้ติดต่อแล้ว"
-            },
-            "requestCancelled": {
-                "title": "ยกเลิกคำขอแล้ว",
-                "message": "ยกเลิกคำขอผู้ติดต่อแล้ว"
-            }
-        },
-        "errors": {
-            "loadData": "ไม่สามารถโหลดข้อมูลได้",
-            "save": "บันทึกผู้ติดต่อไม่สำเร็จ",
-            "delete": "ลบผู้ติดต่อไม่สำเร็จ",
-            "sendRequest": "ส่งคำขอผู้ติดต่อไม่สำเร็จ",
-            "search": "ไม่สามารถค้นหาผู้ใช้ได้",
-            "requestNotFound": "ไม่พบคำขอผู้ติดต่อหรือมีการจัดการไปแล้ว",
-            "accept": "ยอมรับคำขอไม่สำเร็จ",
-            "reject": "ปฏิเสธคำขอไม่สำเร็จ",
-            "cancel": "ยกเลิกคำขอไม่สำเร็จ",
-            "createInvite": "สร้างคำเชิญไม่สำเร็จ",
-            "shareInvite": "แชร์ลิงก์คำเชิญไม่สำเร็จ",
-            "recoveryUnavailable": "ผู้ติดต่อนี้ยังไม่สามารถรับคำเชิญกู้คืนได้",
-            "createRecoveryInvite": "สร้างคำเชิญกู้คืนไม่สำเร็จ",
-            "updateCheckinNotifications": "อัปเดตการแจ้งเตือนเช็กอินไม่สำเร็จ",
-            "updateLocationSharing": "อัปเดตการแชร์ตำแหน่งไม่สำเร็จ",
-            "noContactUpdated": "ไม่มีแถวผู้ติดต่อใดถูกอัปเดต"
-        },
-        "qr": {
-            "permissionTitle": "ต้องการสิทธิ์เข้าถึงกล้อง",
-            "permissionMessage": "กรุณาอนุญาตการเข้าถึงกล้องเพื่อสแกน QR code",
-            "scanHint": "ชี้กล้องไปที่ Tryggd QR code เพื่อเพิ่มผู้ติดต่อ",
-            "successTitle": "เพิ่มผู้ติดต่อแล้ว",
-            "successMessage": "{{name}} ถูกเพิ่มเข้าในรายชื่อผู้ติดต่อของคุณแล้ว",
-            "newContact": "ผู้ติดต่อใหม่",
-            "ownerLimitReached": "รายชื่อผู้ติดต่อของคนนี้เต็มแล้ว ขณะนี้ไม่สามารถรับผู้ติดต่อใหม่ได้"
-        },
-        "plusFeature": {
-            "title": "ฟีเจอร์ Plus",
-            "notifications": "อัปเกรดเป็น Plus เพื่อควบคุมการแจ้งเตือนเช็กอินของผู้ติดต่อ",
-            "location": "อัปเกรดเป็น Plus เพื่อเปิดการแชร์ตำแหน่งสำหรับผู้ติดต่อ"
-        },
-        "messages": {
-            "contactDefault": "ผู้ติดต่อนี้"
-        },
-        "emergencyMessage": {
-            "modalTitle": "ส่งข้อความฉุกเฉินถึง {{name}}",
-            "modalDescription": "การทำเช่นนี้จะส่งการแจ้งเตือนแบบพุชทันทีและแสดงในฟีดกิจกรรมของพวกเขา",
-            "placeholder": "เกิดอะไรขึ้น?",
-            "send": "ส่ง",
-            "sending": "กำลังส่ง…",
-            "sendError": "ไม่สามารถส่งข้อความฉุกเฉินได้"
-        },
-        "status": {
-            "checkinsEnabled": "{{name}} จะได้รับการเช็กอินของคุณ",
-            "checkinsDisabled": "{{name}} จะไม่ได้รับการเช็กอินของคุณ",
-            "locationEnabled": "{{name}} จะเห็นตำแหน่งของคุณในกิจกรรม",
-            "locationDisabled": "{{name}} จะไม่เห็นตำแหน่งของคุณในกิจกรรม",
-            "watchOverEnabled": "คุณจะได้รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
-            "watchOverDisabled": "ปิดการดูแล {{name}} แล้ว"
-        },
-        "invite": {
-            "ready": "คำเชิญพร้อมแล้ว",
-            "recoveryReady": "ลิงก์กู้คืนพร้อมแล้ว",
-            "instructions": "ส่งลิงก์ก่อน แล้วบอกรหัสนี้แก่เขา:",
-            "recoveryInstructions": "ส่งลิงก์กู้คืนก่อน แล้วบอกรหัสนี้แก่เขา:",
-            "expiresOn": "คำเชิญนี้หมดอายุในวันที่ {{date}}",
-            "resettingTryggdId": "กำลังกู้คืน Tryggd ID: {{id}}",
-            "suggestedTryggdId": "Tryggd ID ที่แนะนำ: {{id}}",
-            "shareMessage": "มาร่วมใช้ Tryggd กับฉัน:",
-            "recoveryShareMessage": "ใช้ลิงก์นี้เพื่อรีเซ็ตรหัสผ่าน Tryggd ของคุณ:",
-            "modalTitle": "เชิญคนใหม่เข้าร่วม Tryggd",
-            "modalDescription": "เราจะสร้างลิงก์คำเชิญส่วนตัวและรหัส 6 หลัก แนะนำ Tryggd ID ล่วงหน้าเพื่อให้ผู้รับไม่ต้องตั้งเองภายหลัง",
-            "suggestedUsernameHelp": "ใช้ตัวพิมพ์เล็ก ตัวเลข จุด หรือขีดล่าง เราจะตรวจสอบว่าชื่อนี้ว่างก่อนสร้างคำเชิญ",
-            "createButton": "สร้างคำเชิญ",
-            "creating": "กำลังสร้าง…",
-            "shareButton": "แชร์ลิงก์"
-        }
+    "wellnessPrompt": "วันนี้คุณรู้สึกอย่างไร?",
+    "context": {
+      "title": "สถานะวันนี้",
+      "home": "อยู่ที่บ้าน",
+      "trip": "กำลังเดินทาง",
+      "homeTab": "🌿 ประจำวัน",
+      "tripTab": "✈️ เดินทาง",
+      "reachOutTab": "✋ ช่วยด้วย",
+      "reachOutStatuses": {
+        "call_now": "✋ ฉันต้องการความช่วยเหลือ",
+        "call_available": "📞 โทรหาฉัน"
+      },
+      "statusTitle": "สถานะ",
+      "tripStatusPrompt": "เลือกสถานะการเดินทาง",
+      "homeStatuses": {
+        "chilling": "🛋️ พักสมอง",
+        "home": "🏠 อยู่ที่บ้าน",
+        "outside": "🚶 ข้างนอก",
+        "at_school": "🏫 ที่โรงเรียน",
+        "working": "💼 ทำงาน",
+        "busy": "💼 ไม่ว่าง",
+        "relaxing": "☕ เวลาน้ำชา",
+        "gathering": "🥳 สังสรรค์",
+        "on_call": "📞 คุยโทรศัพท์",
+        "eating": "🍽️ กินข้าว",
+        "exhausted": "😩 เหนื่อยมาก",
+        "sleepy": "😪 ง่วงนอน",
+        "daydreaming": "💭 ฝันกลางวัน",
+        "playing_sport": "🏃 เล่นกีฬา",
+        "having_fun": "🎉 สนุกมาก",
+        "watching_movie": "🎬 ดูหนัง",
+        "resting": "😌 พักผ่อน",
+        "goodmorning": "🌅 อรุณสวัสดิ์",
+        "goodafternoon": "🌞 ตอนบ่าย",
+        "goodnight": "🌙 ราตรีสวัสดิ์",
+        "heading_home_alone": "🚶 กำลังกลับบ้านคนเดียว",
+        "hiking_alone": "🥾 เดินป่าคนเดียว"
+      },
+      "summaryHome": "เช็กอินตามปกติ",
+      "summaryTrip": "เพิ่มสถานะการเดินทาง",
+      "summaryWithStatus": "กำลังเดินทาง · {{status}}"
     },
-    "profile": {
-        "title": "โปรไฟล์",
-        "defaultName": "ผู้ใช้",
-        "loading": "กำลังโหลดโปรไฟล์...",
-        "buttons": {
-            "edit": "แก้ไข",
-            "save": "บันทึก",
-            "saving": "กำลังบันทึก...",
-            "logout": "ออกจากระบบ"
-        },
-        "fields": {
-            "name": "ชื่อ",
-            "email": "อีเมล",
-            "phone": "หมายเลขโทรศัพท์",
-            "notSpecified": "ไม่ได้ระบุ"
-        },
-        "settings": {
-            "title": "การตั้งค่า",
-            "subtitle": "การตั้งค่าแอปและการแจ้งเตือน"
-        },
-        "avatarModal": {
-            "title": "เปลี่ยนรูปโปรไฟล์",
-            "takePhoto": "ถ่ายรูป",
-            "chooseFromLibrary": "เลือกจากคลังรูป"
-        },
-        "logout": {
-            "title": "ออกจากระบบ",
-            "confirm": "คุณแน่ใจหรือไม่?",
-            "button": "ออกจากระบบ"
-        },
-        "permissions": {
-            "camera": "ต้องอนุญาตการเข้าถึงกล้อง"
-        },
-        "notices": {
-            "title": "แจ้งเตือน",
-            "emailConfirmation": "บันทึกโปรไฟล์แล้ว แต่การเปลี่ยนอีเมลต้องยืนยันก่อน"
-        },
-        "success": {
-            "title": "บันทึกแล้ว",
-            "saved": "อัปเดตโปรไฟล์ของคุณแล้ว"
-        },
-        "errors": {
-            "loadProfile": "ไม่สามารถโหลดโปรไฟล์ได้",
-            "notLoggedIn": "คุณยังไม่ได้เข้าสู่ระบบ",
-            "updateProfile": "ไม่สามารถอัปเดตโปรไฟล์ได้",
-            "saveProfile": "ไม่สามารถบันทึกโปรไฟล์ได้",
-            "deleteAccount": "ไม่สามารถลบบัญชีได้"
-        },
-        "deleteAccount": {
-            "title": "ลบบัญชี",
-            "confirm": "การดำเนินการนี้จะลบบัญชีและข้อมูลของคุณอย่างถาวร และไม่สามารถย้อนกลับได้",
-            "finalTitle": "ลบบัญชีอย่างถาวร?",
-            "finalConfirm": "บัญชี ผู้ติดต่อ การเช็กอิน และการตั้งค่าของคุณจะถูกลบอย่างถาวร",
-            "button": "ลบบัญชี",
-            "deleting": "กำลังลบ...",
-            "successTitle": "ลบบัญชีแล้ว",
-            "successMessage": "บัญชีของคุณถูกลบอย่างถาวรแล้ว"
-        },
-        "qr": {
-            "title": "QR Code ของฉัน",
-            "hint": "ให้คนอื่นสแกน QR นี้เพื่อเพิ่มคุณเป็นผู้ติดต่อทันที",
-            "errorGenerating": "ไม่สามารถสร้าง QR code ได้ กรุณาลองใหม่อีกครั้ง"
-        }
+    "plusWellness": {
+      "title": "ฟีเจอร์ Plus",
+      "message": "อัปเกรดเป็น Plus เพื่อแชร์ความรู้สึกของคุณพร้อมการเช็กอิน"
     },
-    "settings": {
-        "title": "การตั้งค่า",
-        "account": "บัญชี",
-        "information": "ข้อมูล",
-        "language": "ภาษา",
-        "theme": "ธีม",
-        "homeStyle": {
-            "title": "เลือกมุมมองหน้าหลัก",
-            "plusBadge": "Plus",
-            "simple": {
-                "title": "เรียบง่าย",
-                "description": "เช็กอินด้วยแท็บเดียว ไม่มีสิ่งรบกวน"
-            },
-            "enhanced": {
-                "title": "ขั้นสูง",
-                "description": "แชร์อารมณ์ สถานะการเดินทาง และตำแหน่ง"
-            }
-        },
-        "notifications": {
-            "title": "การแจ้งเตือน",
-            "preferences": "การตั้งค่าการแจ้งเตือน",
-            "summary": {
-                "reminders": "การเตือน",
-                "activity": "กิจกรรม",
-                "allOff": "ปิดการแจ้งเตือนทั้งหมด"
-            },
-            "stayOnTrack": {
-                "title": "เตือนความจำ",
-                "description": "เตือนฉันให้เช็กอินความปลอดภัยประจำวันของตัวเอง"
-            },
-            "contactActivity": {
-                "title": "กิจกรรมของผู้ติดต่อ",
-                "description": "แจ้งเตือนเมื่อผู้ติดต่อของฉันเช็กอินเสร็จ"
-            }
-        },
-        "about": "เกี่ยวกับ",
-        "privacy": "นโยบายความเป็นส่วนตัว",
-        "terms": "ข้อกำหนดการใช้งาน",
-        "feedback": "ส่งความคิดเห็น",
-        "logout": "ออกจากระบบ",
-        "resetData": "รีเซ็ตข้อมูล",
-        "light": "สว่าง",
-        "dark": "มืด",
-        "systemDefault": "ใช้การตั้งค่าระบบ",
-        "english": "อังกฤษ",
-        "swedish": "สวีเดน",
-        "norwegian": "นอร์เวย์",
-        "danish": "เดนมาร์ก",
-        "finnish": "ฟินแลนด์",
-        "chineseSimplified": "จีน (ตัวย่อ)",
-        "chineseTraditional": "จีน (ตัวเต็ม)",
-        "tripMode": {
-            "title": "โหมดเช็คอิน",
-            "home": "บ้าน",
-            "trip": "การเดินทาง",
-            "homeDescription": "การเช็คอินประจำวันมาตรฐาน",
-            "tripDescription": "แชร์สถานะการเดินทางของคุณ"
-        },
-        "resetWarning": "แน่ใจหรือไม่? ข้อมูลทั้งหมดของคุณจะถูกลบ",
-        "logoutConfirm": "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?",
-        "confirmReset": "รีเซ็ต",
-        "cancel": "ยกเลิก",
-        "ok": "ตกลง"
+    "reset": "รีเซ็ต",
+    "timer": "ตัวจับเวลา",
+    "timeLeftToday": "เวลาที่เหลือวันนี้",
+    "reachOut": {
+      "pressToSendHelp": "ส่งสัญญาณขอความช่วยเหลือ",
+      "lastSentLabel": "ส่งครั้งล่าสุด:"
     },
-    "common": {
-        "ok": "ตกลง",
-        "cancel": "ยกเลิก",
-        "save": "บันทึก",
-        "delete": "ลบ",
-        "edit": "แก้ไข",
-        "loading": "กำลังโหลด...",
-        "refreshing": "กำลังรีเฟรช...",
-        "back": "กลับ",
-        "next": "ถัดไป",
-        "submit": "ส่ง",
-        "yes": "ใช่",
-        "no": "ไม่",
-        "done": "เสร็จ"
+    "activity": "กิจกรรม",
+    "contacts_one": "{{count}} ผู้ติดต่อ",
+    "contacts_other": "{{count}} ผู้ติดต่อ",
+    "streak": "สตรีก",
+    "days_one": "{{count}} วัน",
+    "days_other": "{{count}} วัน",
+    "dateFormats": {
+      "weekdays": [
+        "วันอาทิตย์",
+        "วันจันทร์",
+        "วันอังคาร",
+        "วันพุธ",
+        "วันพฤหัสบดี",
+        "วันศุกร์",
+        "วันเสาร์"
+      ],
+      "months": [
+        "มกราคม",
+        "กุมภาพันธ์",
+        "มีนาคม",
+        "เมษายน",
+        "พฤษภาคม",
+        "มิถุนายน",
+        "กรกฎาคม",
+        "สิงหาคม",
+        "กันยายน",
+        "ตุลาคม",
+        "พฤศจิกายน",
+        "ธันวาคม"
+      ]
     },
-    "plus": {
-        "title": "Tryggd Plus",
-        "subtitle": "ฟีเจอร์เพิ่มเติมสำหรับการเช็กอินประจำวันแบบละเอียดขึ้น",
-        "badge": "Plus",
-        "heading": "ปลดล็อกข้อมูลเพิ่มเติม",
-        "description": "Tryggd Plus เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
-        "comingSoon": {
-            "title": "Plus Preview",
-            "message": "Plus Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
-            "button": "ทดลอง Plus plan ฟรี",
-            "note": "คุณสามารถกลับไปใช้ Basic plan ได้ทุกเมื่อ"
-        },
-        "features": {
-            "wellness": {
-                "title": "แชร์ความรู้สึก",
-                "description": "แชร์ความรู้สึกของคุณเป็นส่วนหนึ่งของการเช็กอินประจำวัน"
-            },
-            "location": {
-                "title": "แชร์ตำแหน่ง",
-                "description": "ให้ผู้ติดต่อที่ไว้ใจเห็นตำแหน่งที่คุณแชร์ในหน้ากิจกรรม"
-            },
-            "notifications": {
-                "title": "ควบคุมการแจ้งเตือน",
-                "description": "กำหนดว่าผู้ติดต่อคนใดจะได้รับการแจ้งเตือนการเช็กอินของคุณ"
-            },
-            "contacts": {
-                "title": "ผู้ติดต่อไม่จำกัด",
-                "description": "เพิ่มผู้ติดต่อได้มากกว่าขีดจำกัดของแผนฟรี"
-            },
-            "welfare": {
-                "title": "คำทักทายห่วงใย",
-                "description": "ใช้ฟีเจอร์ติดตามความเป็นอยู่เพิ่มเติมสำหรับผู้ติดต่อของคุณ"
-            },
-            "tripMode": {
-                "title": "Trip Mode",
-                "description": "Share travel progress and trip-specific updates."
-            },
-            "mood": {
-                "title": "Mood updates",
-                "description": "Add emotional context to your check-ins."
-            },
-            "controls": {
-                "title": "More sharing control",
-                "description": "Decide which trusted contacts receive which updates."
-            },
-            "activity": {
-                "title": "Richer activity updates",
-                "description": "Show more detail in shared check-in and status history."
-            }
-        }
-    },
-    "time": {
-        "justNow": "เมื่อสักครู่",
-        "minutesAgo": "{{count}} นาทีที่แล้ว",
-        "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
-        "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
-        "daysAgo_one": "{{count}} วันที่แล้ว",
-        "daysAgo_other": "{{count}} วันที่แล้ว"
+    "tripMode": {
+      "statuses": {
+        "leaving": "🧳 ออกเดินทางแล้ว",
+        "boarding": "🛫 กำลังขึ้นเครื่อง / 🚅 ขับรถ",
+        "layover": "🛑 แวะพัก / ต่อเที่ยวบิน",
+        "landed": "🛬 มาถึงอย่างปลอดภัย",
+        "on_the_move": "🚕 กำลังเดินทาง",
+        "at_hotel": "🏨 ถึงโรงแรมแล้ว",
+        "on_trip": "🗺️ อยู่ระหว่างการเดินทาง",
+        "heading_home": "🏠 กำลังกลับบ้าน",
+        "trip_ended": "✅ ทริปสิ้นสุด — กลับบ้านปลอดภัย"
+      }
     },
     "errors": {
-        "title": "ข้อผิดพลาด",
-        "notAuthenticated": "ยังไม่ได้ยืนยันตัวตน"
+      "fetchLastCheckin": "ไม่สามารถดึงการเช็กอินล่าสุดได้",
+      "noUser": "ไม่พบผู้ใช้",
+      "checkin": "เช็กอินไม่สำเร็จ",
+      "loadState": "โหลดสถานะไม่สำเร็จ"
+    }
+  },
+  "activity": {
+    "title": "กิจกรรม",
+    "subtitle": "การเช็กอินล่าสุดของคุณและผู้ติดต่อ",
+    "you": "คุณ",
+    "yourActivity": "ตัวคุณเอง",
+    "contacts": "ผู้ติดต่อ",
+    "loading": "กำลังโหลดกิจกรรม...",
+    "noCheckIn": "ยังไม่มีการเช็กอิน",
+    "staleCheckinMessage_one": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
+    "staleCheckinMessage_other": "{{name}} ไม่ได้เช็กอินมา {{count}} วันแล้ว",
+    "emptyState": {
+      "title": "ไม่มีผู้ติดต่อ",
+      "message": "เพิ่มผู้ติดต่อเพื่อดูความเคลื่อนไหวของพวกเขา"
+    },
+    "priority": {
+      "failed": "ไม่สำเร็จ",
+      "ongoing": "กำลังดำเนินการ",
+      "successful": "สำเร็จ"
+    },
+    "time": {
+      "locale": "th-TH"
+    },
+    "errors": {
+      "loadActivities": "ไม่สามารถโหลดกิจกรรมได้",
+      "fetchContacts": "ไม่สามารถดึงผู้ติดต่อได้",
+      "fetchOwnerActivity": "ไม่สามารถดึงกิจกรรมของเจ้าของบัญชีได้",
+      "openSharedLocation": "ไม่สามารถเปิดตำแหน่งที่แชร์ได้",
+      "locationPermission": "ต้องการสิทธิ์เข้าถึงตำแหน่งเพื่อแชร์ตำแหน่งของคุณ"
+    },
+    "day": {
+      "today": "วันนี้",
+      "yesterday": "เมื่อวาน",
+      "other": "{{date}}"
+    },
+    "responseButton": {
+      "sendResponse": "👍 ส่งกำลังใจ",
+      "sent": "ส่งกำลังใจแล้ว ✓"
+    },
+    "checkinResponse": {
+      "todayLikes_one": "⭐️ วันนี้คุณได้รับ {{count}} การตอบกลับการเช็กอิน:",
+      "todayLikes_other": "⭐️ วันนี้คุณได้รับ {{count}} การตอบกลับการเช็กอิน:",
+      "prefix": "ตอบกลับการเช็กอินของคุณ",
+      "defaultMessage": "ส่งกำลังใจ 👍 ให้การเช็กอินของคุณ!"
+    },
+    "welfareButton": {
+      "send": "🍀 คุณโอเคไหม?",
+      "sent": "ส่งคำทักทายแล้ว ✓",
+      "sentOffline": "ส่งแล้ว ✓ — {{name}} จะเห็นข้อความของคุณเมื่อกลับมาออนไลน์"
+    },
+    "sharedLocation": {
+      "view": "ดูตำแหน่งที่แชร์"
+    },
+    "timezoneLabels": {
+      "utc": "UTC",
+      "china": "จีน",
+      "hongKong": "ฮ่องกง",
+      "taiwan": "ไต้หวัน",
+      "sweden": "สวีเดน",
+      "norway": "นอร์เวย์",
+      "denmark": "เดนมาร์ก",
+      "finland": "ฟินแลนด์"
+    },
+    "wellness": {
+      "veryLow": "รู้สึกไม่ค่อยสบาย\n😔",
+      "low": "รู้สึกแผ่ว ๆ\n😕",
+      "neutral": "ทุกอย่างเรียบร้อยดี\n🙂",
+      "good": "รู้สึกดี\n☺️",
+      "great": "วันนี้มีความสุขมาก\n😊"
+    },
+    "todayCheckButton": {
+      "send": "👋 วันนี้คุณเป็นอย่างไรบ้าง?",
+      "sent": "ส่งคำทักทายแล้ว ✓"
+    },
+    "checkedInAt": "เช็กอินเมื่อ {{time}} {{date}}",
+    "welfareCheck": {
+      "todayGreetings_one": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:",
+      "todayGreetings_other": "💛 วันนี้คุณได้รับ {{count}} คำทักทาย:"
+    },
+    "emergencyMessage": {
+      "todayMessages_one": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:",
+      "todayMessages_other": "🚨 วันนี้คุณได้รับข้อความฉุกเฉิน {{count}} ข้อความ:"
+    },
+    "supportButton": {
+      "send": "💪 ส่งกำลังใจ",
+      "sent": "ส่งแล้ว ✓"
+    },
+    "reachOutResponseButton": {
+      "send": "รับทราบ",
+      "sent": "ตอบแล้ว ✓"
+    },
+    "openInMaps": "เปิดในแผนที่",
+    "watchOver": {
+      "resolvedBy": "แก้ไขโดย {{name}}",
+      "markResolved": "ฉันได้ติดต่อแล้ว — ทุกอย่างเรียบร้อย",
+      "resolving": "กำลังแก้ไข...",
+      "resolveError": "ไม่สามารถทำเครื่องหมายว่าแก้ไขแล้ว กรุณาลองอีกครั้ง"
+    }
+  },
+  "contacts": {
+    "title": "ผู้ติดต่อ",
+    "contact": "ผู้ติดต่อ",
+    "newContact": "ผู้ติดต่อใหม่",
+    "displayingAs": "แสดงเป็น",
+    "loading": "กำลังโหลดผู้ติดต่อ...",
+    "subtitle": {
+      "withContacts": "{{count}} / {{max}} ผู้ติดต่อ",
+      "noContacts": "เพิ่มผู้ติดต่อเพื่อแชร์ด้วย",
+      "withContactsUnlimited": "{{count}} ผู้ติดต่อ"
+    },
+    "emptyState": {
+      "title": "ไม่มีผู้ติดต่อ",
+      "message": "กดปุ่ม + เพื่อเพิ่มผู้ติดต่อคนแรกของคุณ"
+    },
+    "tabs": {
+      "contacts": "ผู้ติดต่อ",
+      "requests": "คำขอ"
+    },
+    "requests": {
+      "received": "คำขอที่ได้รับ",
+      "sent": "คำขอที่ส่ง",
+      "waiting": "รอการตอบกลับ",
+      "loading": "กำลังโหลดคำขอ...",
+      "emptyState": {
+        "title": "ไม่มีคำขอ",
+        "message": "เมื่อมีคนส่งคำขอผู้ติดต่อมาให้คุณ จะปรากฏที่นี่"
+      }
+    },
+    "placeholders": {
+      "email": "กรอกอีเมล",
+      "identifier": "กรอก Tryggd ID หรืออีเมล",
+      "suggestedUsername": "Tryggd ID ที่แนะนำ (ไม่บังคับ)"
+    },
+    "buttons": {
+      "accept": "ยอมรับ",
+      "reject": "ปฏิเสธ",
+      "delete": "ลบ",
+      "cancelRequest": "ยกเลิกคำขอ",
+      "sending": "กำลังส่ง...",
+      "sendRequests_one": "ส่งคำขอ",
+      "sendRequests_other": "ส่งคำขอ"
+    },
+    "alerts": {
+      "limitReached": {
+        "title": "ถึงขีดจำกัดแล้ว",
+        "message": "คุณเพิ่มผู้ติดต่อได้สูงสุด 3 คนเท่านั้น"
+      },
+      "senderLimitReached": {
+        "title": "ไม่สามารถยอมรับคำขอได้",
+        "message": "รายชื่อผู้ติดต่อของบุคคลนี้เต็มแล้ว"
+      },
+      "delete": {
+        "title": "ลบผู้ติดต่อ",
+        "message": "คุณแน่ใจหรือไม่ว่าต้องการลบ {{name}}?"
+      },
+      "contactExists": {
+        "title": "มีผู้ติดต่อนี้อยู่แล้ว",
+        "message": "{{name}} อยู่ในผู้ติดต่อของคุณแล้ว"
+      },
+      "requestExists": {
+        "title": "ส่งคำขอไปแล้ว",
+        "message": "คุณได้ส่งคำขอไปยังผู้ใช้นี้แล้ว"
+      },
+      "requestReceived": {
+        "title": "ได้รับคำขอแล้ว",
+        "message": "คุณมีคำขอจาก {{email}} อยู่แล้ว ตรวจดูที่ \"คำขอ\""
+      },
+      "invalidEmail": {
+        "title": "อีเมลไม่ถูกต้อง",
+        "message": "{{email}} ยังไม่ได้ลงทะเบียนหรือยังไม่ได้ยืนยัน"
+      },
+      "selfContact": {
+        "title": "ผู้ติดต่อไม่ถูกต้อง",
+        "message": "คุณไม่สามารถเพิ่มตัวเองเป็นผู้ติดต่อได้"
+      },
+      "noChanges": {
+        "title": "ไม่มีการเปลี่ยนแปลง",
+        "message": "ไม่มีผู้ติดต่อใหม่ให้บันทึก"
+      },
+      "alreadyInContacts": "ผู้ใช้นี้อยู่ในผู้ติดต่อของคุณแล้ว",
+      "requestHandled": {
+        "title": "จัดการคำขอแล้ว",
+        "message": "คำขอนี้ถูกจัดการไปแล้ว"
+      }
+    },
+    "success": {
+      "requestSent": {
+        "title": "ส่งคำขอแล้ว",
+        "message": "ส่งคำขอผู้ติดต่อไปยัง {{name}} แล้ว"
+      },
+      "contactAdded": {
+        "title": "เพิ่มผู้ติดต่อแล้ว",
+        "message": "เพิ่ม {{name}} เป็นผู้ติดต่อของคุณแล้ว"
+      },
+      "deleted": {
+        "title": "ลบผู้ติดต่อแล้ว",
+        "message": "ลบ {{name}} แล้ว ความสัมพันธ์ทั้งหมดถูกลบออกแล้ว"
+      },
+      "requestRejected": {
+        "title": "ปฏิเสธคำขอแล้ว",
+        "message": "ปฏิเสธคำขอผู้ติดต่อแล้ว"
+      },
+      "requestCancelled": {
+        "title": "ยกเลิกคำขอแล้ว",
+        "message": "ยกเลิกคำขอผู้ติดต่อแล้ว"
+      }
+    },
+    "errors": {
+      "loadData": "ไม่สามารถโหลดข้อมูลได้",
+      "save": "บันทึกผู้ติดต่อไม่สำเร็จ",
+      "delete": "ลบผู้ติดต่อไม่สำเร็จ",
+      "sendRequest": "ส่งคำขอผู้ติดต่อไม่สำเร็จ",
+      "search": "ไม่สามารถค้นหาผู้ใช้ได้",
+      "requestNotFound": "ไม่พบคำขอผู้ติดต่อหรือมีการจัดการไปแล้ว",
+      "accept": "ยอมรับคำขอไม่สำเร็จ",
+      "reject": "ปฏิเสธคำขอไม่สำเร็จ",
+      "cancel": "ยกเลิกคำขอไม่สำเร็จ",
+      "createInvite": "สร้างคำเชิญไม่สำเร็จ",
+      "shareInvite": "แชร์ลิงก์คำเชิญไม่สำเร็จ",
+      "recoveryUnavailable": "ผู้ติดต่อนี้ยังไม่สามารถรับคำเชิญกู้คืนได้",
+      "createRecoveryInvite": "สร้างคำเชิญกู้คืนไม่สำเร็จ",
+      "updateCheckinNotifications": "อัปเดตการแจ้งเตือนเช็กอินไม่สำเร็จ",
+      "updateLocationSharing": "อัปเดตการแชร์ตำแหน่งไม่สำเร็จ",
+      "noContactUpdated": "ไม่มีแถวผู้ติดต่อใดถูกอัปเดต"
+    },
+    "qr": {
+      "permissionTitle": "ต้องการสิทธิ์เข้าถึงกล้อง",
+      "permissionMessage": "กรุณาอนุญาตการเข้าถึงกล้องเพื่อสแกน QR code",
+      "scanHint": "ชี้กล้องไปที่ Tryggd QR code เพื่อเพิ่มผู้ติดต่อ",
+      "successTitle": "เพิ่มผู้ติดต่อแล้ว",
+      "successMessage": "{{name}} ถูกเพิ่มเข้าในรายชื่อผู้ติดต่อของคุณแล้ว",
+      "newContact": "ผู้ติดต่อใหม่",
+      "ownerLimitReached": "รายชื่อผู้ติดต่อของคนนี้เต็มแล้ว ขณะนี้ไม่สามารถรับผู้ติดต่อใหม่ได้"
+    },
+    "plusFeature": {
+      "title": "ฟีเจอร์ Plus",
+      "notifications": "อัปเกรดเป็น Plus เพื่อควบคุมการแจ้งเตือนเช็กอินของผู้ติดต่อ",
+      "location": "อัปเกรดเป็น Plus เพื่อเปิดการแชร์ตำแหน่งสำหรับผู้ติดต่อ"
+    },
+    "messages": {
+      "contactDefault": "ผู้ติดต่อนี้"
+    },
+    "emergencyMessage": {
+      "modalTitle": "ส่งข้อความฉุกเฉินถึง {{name}}",
+      "modalDescription": "การทำเช่นนี้จะส่งการแจ้งเตือนแบบพุชทันทีและแสดงในฟีดกิจกรรมของพวกเขา",
+      "placeholder": "เกิดอะไรขึ้น?",
+      "send": "ส่ง",
+      "sending": "กำลังส่ง…",
+      "sendError": "ไม่สามารถส่งข้อความฉุกเฉินได้"
+    },
+    "status": {
+      "checkinsEnabled": "{{name}} จะได้รับการเช็กอินของคุณ",
+      "checkinsDisabled": "{{name}} จะไม่ได้รับการเช็กอินของคุณ",
+      "locationEnabled": "{{name}} จะเห็นตำแหน่งของคุณในกิจกรรม",
+      "locationDisabled": "{{name}} จะไม่เห็นตำแหน่งของคุณในกิจกรรม",
+      "watchOverEnabled": "คุณจะได้รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
+      "watchOverDisabled": "ปิดการดูแล {{name}} แล้ว"
+    },
+    "invite": {
+      "ready": "คำเชิญพร้อมแล้ว",
+      "recoveryReady": "ลิงก์กู้คืนพร้อมแล้ว",
+      "instructions": "ส่งลิงก์ก่อน แล้วบอกรหัสนี้แก่เขา:",
+      "recoveryInstructions": "ส่งลิงก์กู้คืนก่อน แล้วบอกรหัสนี้แก่เขา:",
+      "expiresOn": "คำเชิญนี้หมดอายุในวันที่ {{date}}",
+      "resettingTryggdId": "กำลังกู้คืน Tryggd ID: {{id}}",
+      "suggestedTryggdId": "Tryggd ID ที่แนะนำ: {{id}}",
+      "shareMessage": "มาร่วมใช้ Tryggd กับฉัน:",
+      "recoveryShareMessage": "ใช้ลิงก์นี้เพื่อรีเซ็ตรหัสผ่าน Tryggd ของคุณ:",
+      "modalTitle": "เชิญคนใหม่เข้าร่วม Tryggd",
+      "modalDescription": "เราจะสร้างลิงก์คำเชิญส่วนตัวและรหัส 6 หลัก แนะนำ Tryggd ID ล่วงหน้าเพื่อให้ผู้รับไม่ต้องตั้งเองภายหลัง",
+      "suggestedUsernameHelp": "ใช้ตัวพิมพ์เล็ก ตัวเลข จุด หรือขีดล่าง เราจะตรวจสอบว่าชื่อนี้ว่างก่อนสร้างคำเชิญ",
+      "createButton": "สร้างคำเชิญ",
+      "creating": "กำลังสร้าง…",
+      "shareButton": "แชร์ลิงก์"
+    }
+  },
+  "profile": {
+    "title": "โปรไฟล์",
+    "defaultName": "ผู้ใช้",
+    "loading": "กำลังโหลดโปรไฟล์...",
+    "buttons": {
+      "edit": "แก้ไข",
+      "save": "บันทึก",
+      "saving": "กำลังบันทึก...",
+      "logout": "ออกจากระบบ"
+    },
+    "fields": {
+      "name": "ชื่อ",
+      "email": "อีเมล",
+      "phone": "หมายเลขโทรศัพท์",
+      "notSpecified": "ไม่ได้ระบุ"
+    },
+    "settings": {
+      "title": "การตั้งค่า",
+      "subtitle": "การตั้งค่าแอปและการแจ้งเตือน"
+    },
+    "avatarModal": {
+      "title": "เปลี่ยนรูปโปรไฟล์",
+      "takePhoto": "ถ่ายรูป",
+      "chooseFromLibrary": "เลือกจากคลังรูป"
+    },
+    "logout": {
+      "title": "ออกจากระบบ",
+      "confirm": "คุณแน่ใจหรือไม่?",
+      "button": "ออกจากระบบ"
     },
     "permissions": {
-        "title": "สิทธิ์การเข้าถึง"
+      "camera": "ต้องอนุญาตการเข้าถึงกล้อง"
     },
-    "auth": {
-        "signup": {
-            "title": "สร้างบัญชี",
-            "create": "สร้างบัญชี",
-            "creating": "กำลังสร้างบัญชี...",
-            "success": {
-                "title": "🎉 สร้างบัญชีแล้ว",
-                "message": "บัญชีของคุณพร้อมแล้ว ตอนนี้คุณสามารถเข้าสู่ระบบได้"
-            },
-            "verifyEmail": {
-                "title": "กรุณายืนยันอีเมลของคุณ!",
-                "message": "เราได้ส่งอีเมลยืนยันไปยังกล่องจดหมายของคุณแล้ว หลังจากยืนยันแล้ว กรุณาเข้าสู่ระบบ"
-            },
-            "error": "สมัครสมาชิกไม่สำเร็จ"
-        },
-        "login": {
-            "title": "เข้าสู่ระบบ",
-            "signIn": "เข้าสู่ระบบ",
-            "loggingIn": "กำลังเข้าสู่ระบบ...",
-            "error": "เข้าสู่ระบบไม่สำเร็จ",
-            "continueWithGoogle": "ดำเนินการต่อด้วย Google",
-            "connectingToGoogle": "กำลังเชื่อมต่อกับ Google...",
-            "continueWithApple": "ดำเนินการต่อด้วย Apple",
-            "connectingToApple": "กำลังเชื่อมต่อกับ Apple...",
-            "orContinueWithEmail": "หรือดำเนินการต่อด้วยอีเมล",
-            "socialError": "เข้าสู่ระบบไม่สำเร็จ",
-            "useInviteCode": "มีรหัสคำเชิญหรือไม่?"
-        },
-        "email": "อีเมล",
-        "displayName": "ชื่อ",
-        "password": {
-            "placeholder": "รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)",
-            "minimumLength": "ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร"
-        },
-        "confirmPassword": "ยืนยันรหัสผ่าน",
-        "passwordsMatch": "✔ รหัสผ่านตรงกัน",
-        "passwordsNoMatch": "✖ รหัสผ่านไม่ตรงกัน",
-        "alreadyHaveAccount": "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
-        "noAccount": "ยังไม่มีบัญชี? สมัครสมาชิก",
-        "unknownError": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ",
-        "forgotPassword": {
-            "title": "ลืมรหัสผ่าน",
-            "instructions": "กรอกอีเมลของคุณ",
-            "send": "ส่งอีเมลรีเซ็ต",
-            "sending": "กำลังส่ง...",
-            "sentTitle": "ตรวจสอบอีเมลของคุณ",
-            "sentMessage": "เราได้ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว",
-            "login": "ไปที่หน้าเข้าสู่ระบบ",
-            "error": "ส่งอีเมลรีเซ็ตไม่สำเร็จ"
-        },
-        "resetPassword": {
-            "title": "รีเซ็ตรหัสผ่าน",
-            "instructions": "กรอกรหัสผ่านใหม่ของคุณด้านล่าง",
-            "save": "บันทึกรหัสผ่านใหม่",
-            "saving": "กำลังบันทึก...",
-            "successTitle": "รีเซ็ตรหัสผ่านแล้ว!",
-            "successMessage": "ตอนนี้คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้แล้ว",
-            "login": "ไปที่หน้าเข้าสู่ระบบ",
-            "error": "รีเซ็ตรหัสผ่านไม่สำเร็จ",
-            "passwordPlaceholder": "รหัสผ่านใหม่"
-        },
-        "invite": {
-            "invalidLink": "ลิงก์คำเชิญไม่ถูกต้อง",
-            "notFound": "ไม่พบคำเชิญ",
-            "alreadyUsed": "คำเชิญนี้ถูกใช้ไปแล้ว",
-            "expired": "คำเชิญนี้หมดอายุแล้ว",
-            "unavailable": "คำเชิญนี้ไม่สามารถใช้งานได้อีก",
-            "unavailableTitle": "ไม่สามารถใช้คำเชิญได้",
-            "couldNotOpen": "ไม่สามารถเปิดคำเชิญนี้ได้",
-            "backToLogin": "กลับไปเข้าสู่ระบบ",
-            "recoveryTitle": "รีเซ็ตรหัสผ่าน Tryggd ของคุณ",
-            "invitedTitle": "คุณได้รับคำเชิญให้เข้าร่วม Tryggd",
-            "recoverySubtitle": "{{inviter}} ส่งลิงก์กู้คืนที่ปลอดภัยสำหรับ {{account}} ให้คุณ",
-            "signupSubtitle": "{{inviter}} เชิญ {{invitee}} ให้เข้าร่วมวง Tryggd ของเขา",
-            "yourAccount": "บัญชี Tryggd ของคุณ",
-            "you": "คุณ",
-            "installTitle": "ติดตั้งหรือเปิดแอป",
-            "installHint": "เปิดคำเชิญนี้ในแอป Tryggd หากคุณยังไม่มีแอป กรุณาติดตั้งก่อน แล้วกลับมาที่ลิงก์เดิมนี้",
-            "openInApp": "เปิดใน Tryggd",
-            "downloadAppStore": "ดาวน์โหลดบน App Store",
-            "downloadGooglePlay": "ดาวน์โหลดบน Google Play",
-            "keepLink": "เก็บลิงก์คำเชิญนี้ไว้:",
-            "enterCodeTitle": "กรอกรหัสคำเชิญของคุณ",
-            "enterCodeHint": "ขอรหัส 6 หลักที่ตรงกับคำเชิญนี้จาก {{inviter}}",
-            "codePlaceholder": "รหัสคำเชิญ 6 หลัก",
-            "checkingCode": "กำลังตรวจสอบรหัส…",
-            "setPasswordTitle": "ตั้งรหัสผ่านใหม่",
-            "setPasswordHint": "การทำเช่นนี้จะรีเซ็ตรหัสผ่านของ Tryggd ID {{id}}",
-            "tryggdIdPlaceholder": "Tryggd ID",
-            "resettingPassword": "กำลังรีเซ็ตรหัสผ่าน…",
-            "resetPassword": "รีเซ็ตรหัสผ่าน",
-            "createAccountTitle": "สร้างบัญชีของคุณ",
-            "createAccountHint": "ภายหลังคุณจะเข้าสู่ระบบด้วย Tryggd ID และรหัสผ่านของคุณ คุณสามารถใช้ Tryggd ID ที่แนะนำหรือแก้ไขได้ตอนนี้",
-            "mobilePlaceholder": "หมายเลขมือถือ (ไม่บังคับ)",
-            "creatingAccount": "กำลังสร้างบัญชี…",
-            "createAccountButton": "สร้างบัญชี",
-            "errors": {
-                "incorrectCode": "รหัสไม่ถูกต้อง",
-                "verifyCode": "ยืนยันรหัสคำเชิญไม่สำเร็จ",
-                "createAccount": "สร้างบัญชีไม่สำเร็จ",
-                "completeSignup": "ลงทะเบียนจากคำเชิญไม่สำเร็จ",
-                "missingAccount": "ไม่สามารถระบุบัญชีที่จะใช้เข้าสู่ระบบได้",
-                "completeRecovery": "กู้คืนรหัสผ่านไม่สำเร็จ",
-                "phoneAlreadyInUse": "หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว",
-                "tooManyAttempts": "พยายามผิดพลาดมากเกินไป กรุณาขอคำเชิญใหม่"
-            },
-            "enterCodeStandaloneHint": "หากคุณติดตั้งแอปหลังจากได้รับคำเชิญ ให้กรอกรหัส 6 หลักเพื่อดำเนินการต่อ"
-        }
+    "notices": {
+      "title": "แจ้งเตือน",
+      "emailConfirmation": "บันทึกโปรไฟล์แล้ว แต่การเปลี่ยนอีเมลต้องยืนยันก่อน"
     },
-    "completeProfile": {
-        "kicker": "อีกขั้นตอนเดียว",
-        "title": "กรอกโปรไฟล์ให้สมบูรณ์",
-        "description": "เพิ่มชื่อที่คนอื่นจะเห็นและ Tryggd ID ของคุณสำหรับการค้นหาผู้ติดต่อ",
-        "nameLabel": "ชื่อ",
-        "namePlaceholder": "เช่น Emily Cooper",
-        "nameHelperEmpty": "นี่คือชื่อที่ผู้ติดต่อของคุณจะเห็น",
-        "nameHelper": "นี่คือชื่อที่ผู้ติดต่อของคุณจะเห็น",
-        "tryggdIdLabel": "Tryggd ID",
-        "tryggdIdPlaceholder": "เช่น emilycooper",
-        "tryggdIdHelper": "คนอื่นใช้สิ่งนี้เพื่อค้นหาและเพิ่มคุณใน Tryggd",
-        "continue": "ดำเนินการต่อ",
-        "saving": "กำลังบันทึก...",
-        "saveErrorTitle": "ไม่สามารถบันทึกโปรไฟล์ได้",
-        "saveErrorBody": "กรุณาลองอีกครั้ง",
-        "duplicateTitle": "ลองใช้ Tryggd ID อื่น",
-        "duplicateBody": "Tryggd ID นี้ถูกใช้ไปแล้ว",
-        "validation": {
-            "required": "ผู้คนใช้สิ่งนี้เพื่อค้นหาและเพิ่มคุณใน Tryggd",
-            "min": "Tryggd ID ต้องมีอย่างน้อย 3 ตัวอักษร",
-            "max": "Tryggd ID ต้องไม่เกิน 24 ตัวอักษร",
-            "chars": "ใช้ได้เฉพาะตัวพิมพ์เล็ก ตัวเลข จุด หรือขีดล่าง"
-        }
+    "success": {
+      "title": "บันทึกแล้ว",
+      "saved": "อัปเดตโปรไฟล์ของคุณแล้ว"
     },
-    "pilotPreview": {
-        "dialogTitle": "✨ ทดลอง Plus plan ฟรี",
-        "dialogIntro": "ลองใช้ Tryggd Plus plan ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
-        "dialogFreeSectionTitle": "Basic plan รวมถึง:",
-        "dialogFreeFeature1": "✓ เช็คอิน   🔔 แจ้งเตือนอัปเดตผู้ติดต่อ   👥 สูงสุด 5 ผู้ติดต่อ",
-        "dialogFreeFeature2": "",
-        "dialogFreeFeature3": "",
-        "dialogFreeFeature4": "",
-        "dialogPlusSectionTitle": "Plus plan รวมทุกอย่างใน Basic plan และเพิ่ม:",
-        "dialogFeature1": "🌿 โหมดประจำวัน   ✈️ โหมดการเดินทาง   ✋ สัญญาณช่วยเหลือ",
-        "dialogFeature2": "🙂 อัปเดตอารมณ์   📍 แชร์ตำแหน่ง   👥 ผู้ติดต่อเพิ่มเติม",
-        "dialogFeature3": "",
-        "dialogFeature4": "",
-        "dialogPricingTitle": "ราคา Plus plan",
-        "dialogPricingNote": "หลัง {{deadline}} หากคุณเลือกใช้ Plus plan ต่อ:",
-        "dialogPricingMonthly": "US$2.99 / เดือน",
-        "dialogPricingYearly": "US$19.99 / ปี",
-        "dialogSupportNote": "Plus plan เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
-        "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
-        "activate": "ทดลอง Plus plan ฟรี",
-        "notNow": "ใช้ Basic plan",
-        "activatedMessage": "Plus เปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
-        "expiredTitle": "การดูตัวอย่าง Plus สิ้นสุดแล้ว",
-        "expiredBody": "คุณยังสามารถใช้ Tryggd Basic plan ต่อได้ รวมถึงการเช็คอิน ผู้ติดต่อที่เชื่อถือได้ และการอัปเดตพื้นฐาน\n\nการเช็คอินและกิจกรรมก่อนหน้าของคุณจะไม่ถูกลบ",
-        "expiredButton": "เข้าใจแล้ว",
-        "settingsRowTitle": "ดูตัวอย่าง Plus",
-        "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงนำร่อง",
-        "settingsRowAction": "เริ่มดูตัวอย่าง",
-        "activeRowTitle": "กำลังดูตัวอย่าง Plus",
-        "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
-        "dialogFeature5": "",
-        "dialogFeature6": ""
+    "errors": {
+      "loadProfile": "ไม่สามารถโหลดโปรไฟล์ได้",
+      "notLoggedIn": "คุณยังไม่ได้เข้าสู่ระบบ",
+      "updateProfile": "ไม่สามารถอัปเดตโปรไฟล์ได้",
+      "saveProfile": "ไม่สามารถบันทึกโปรไฟล์ได้",
+      "deleteAccount": "ไม่สามารถลบบัญชีได้"
     },
-    "onboarding": {
-        "skip": "ข้าม",
-        "next": "ถัดไป",
-        "getStarted": "เริ่มต้น",
-        "slides": {
-            "checkin": {
-                "eyebrow": "จังหวะประจำวัน",
-                "title": "เช็กอินรายวันอย่างรวดเร็ว",
-                "body": "💚 เช็กอินด้วยการแตะเพียงครั้งเดียวและแจ้งให้ผู้ติดต่อที่เชื่อถือได้รู้ว่าคุณปลอดภัย",
-                "points": {
-                    "one": "✓ แตะครั้งเดียวเพื่อเช็กอิน",
-                    "two": "✓ การอัปเดตง่ายๆ ว่า \"ฉันปลอดภัย\""
-                }
-            },
-            "contacts": {
-                "eyebrow": "วงของคุณ",
-                "title": "ผู้ติดต่อที่เชื่อถือได้",
-                "body": "👥 เพิ่มสมาชิกในครอบครัวหรือเพื่อนสนิทที่สามารถรับการเช็กอิน สัญญาณขอความช่วยเหลือ และการอัปเดตที่แชร์ของคุณ",
-                "points": {
-                    "one": "✓ เลือกว่าใครเห็นการอัปเดตของคุณ",
-                    "two": "✓ สัญญาณขอความช่วยเหลือส่งถึงคนที่ถูกต้อง"
-                }
-            },
-            "sharing": {
-                "eyebrow": "ข้อมูลเพิ่มเติมเป็นทางเลือก",
-                "title": "สถานะและตำแหน่ง",
-                "body": "📍 แชร์ว่าคุณเป็นอย่างไร อยู่บ้านหรืออยู่ข้างนอก สถานะการเดินทาง หรือตำแหน่งกับผู้ติดต่อที่เลือก",
-                "points": {
-                    "one": "✓ 🙂 อารมณ์, 🏠 อยู่บ้าน/ออกไปข้างนอก, หรือ ✈️ สถานะการเดินทาง",
-                    "two": "✓ 📍 ตำแหน่งเฉพาะเมื่อคุณเลือกที่จะแชร์"
-                }
-            },
-            "free": {
-                "eyebrow": "เรียบง่ายตามค่าเริ่มต้น",
-                "title": "Plus Preview",
-                "body": "Tryggd Free รักษาความเรียบง่ายของพื้นฐาน ในช่วงการทดลอง คุณสามารถดูตัวอย่างคุณสมบัติ Plus ได้:",
-                "freeSummary": "Free: เช็กอิน, ผู้ติดต่อที่เชื่อถือได้, สถานะพื้นฐาน",
-                "bodyFreeSuffix": " รักษาความเรียบง่ายของพื้นฐาน",
-                "bodyPilotPrefix": "ในช่วงการทดลอง ดูตัวอย่าง ",
-                "bodyPilotSuffix": ":",
-                "points": {
-                    "one": "✈️ โหมดการเดินทาง",
-                    "two": "📍 ตัวเลือกการแชร์ตำแหน่ง",
-                    "three": "🙂 การอัปเดตอารมณ์",
-                    "four": "⚙️ การควบคุมการแชร์มากขึ้น"
-                },
-                "footer": "Plus Preview เป็นทางเลือก"
-            }
-        },
-        "disclaimer": {
-            "eyebrow": "ควรรู้",
-            "title": "หมายเหตุสำคัญบางประการ",
-            "productName": "Tryggd ",
-            "paragraph1": "ช่วยให้คุณแชร์การเช็กอินด้วยตนเอง สัญญาณขอความช่วยเหลือ และการอัปเดตที่เลือกกับผู้ติดต่อที่เชื่อถือได้",
-            "paragraph2": "ผู้ติดต่อของคุณอาจเห็นการอัปเดตสถานะที่คุณเลือกแชร์ ตำแหน่งจะถูกแชร์เฉพาะเมื่อคุณเปิดการแชร์ตำแหน่ง",
-            "paragraph3": "การแจ้งเตือนอาจล่าช้าเนื่องจากการเชื่อมต่อเครือข่าย ระดับแบตเตอรี่ การตั้งค่าอุปกรณ์ หรือบริการพุชของบุคคลที่สาม",
-            "paragraph4": "Tryggd ไม่ใช่บริการฉุกเฉินและไม่ควรพึ่งพาในสถานการณ์เร่งด่วนหรือที่เป็นอันตรายต่อชีวิต",
-            "acceptLabel": "ฉันเข้าใจ",
-            "saving": "กำลังบันทึก...",
-            "decline": "ปฏิเสธ / กลับ"
-        },
-        "errors": {
-            "saveTitle": "ไม่สามารถดำเนินการต่อ",
-            "saveBody": "โปรดลองอีกครั้ง"
-        }
+    "deleteAccount": {
+      "title": "ลบบัญชี",
+      "confirm": "การดำเนินการนี้จะลบบัญชีและข้อมูลของคุณอย่างถาวร และไม่สามารถย้อนกลับได้",
+      "finalTitle": "ลบบัญชีอย่างถาวร?",
+      "finalConfirm": "บัญชี ผู้ติดต่อ การเช็กอิน และการตั้งค่าของคุณจะถูกลบอย่างถาวร",
+      "button": "ลบบัญชี",
+      "deleting": "กำลังลบ...",
+      "successTitle": "ลบบัญชีแล้ว",
+      "successMessage": "บัญชีของคุณถูกลบอย่างถาวรแล้ว"
     },
-    "watchOver": {
-        "toggle": "ดูแล",
-        "toggleHint": "รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
-        "limitReached": "คุณสามารถดูแลได้ {{max}} คนในแผนฟรี อัปเกรดเป็น Plus เพื่อไม่จำกัด",
-        "notification": {
-            "day1_one": "{{name}} has not checked in today.",
-            "day1_other": "{{count}} people have not checked in today.",
-            "day2_one": "{{name}} still hasn't checked in (2 days).",
-            "day2_other": "{{count}} people still haven't checked in (2 days)."
-        }
-    },
-    "away": {
-        "title": "สถานะไม่อยู่",
-        "setAway": "ตั้งเป็นไม่อยู่",
-        "clearAway": "ยกเลิกสถานะไม่อยู่",
-        "label": "ข้อความ (ไม่บังคับ)",
-        "labelPlaceholder": "เช่น พักร้อน",
-        "until": "ไม่อยู่จนถึง",
-        "active": "ไม่อยู่จนถึง {{date}}",
-        "activeNoDate": "ไม่อยู่ (ไม่มีวันสิ้นสุด)",
-        "hint": "ขณะที่ไม่อยู่ ผู้ติดต่อของคุณจะไม่ได้รับการแจ้งเตือนการขาดหายไป",
-        "saving": "กำลังบันทึก...",
-        "error": "ไม่สามารถอัปเดตสถานะไม่อยู่"
+    "qr": {
+      "title": "QR Code ของฉัน",
+      "hint": "ให้คนอื่นสแกน QR นี้เพื่อเพิ่มคุณเป็นผู้ติดต่อทันที",
+      "errorGenerating": "ไม่สามารถสร้าง QR code ได้ กรุณาลองใหม่อีกครั้ง"
     }
+  },
+  "settings": {
+    "title": "การตั้งค่า",
+    "account": "บัญชี",
+    "information": "ข้อมูล",
+    "language": "ภาษา",
+    "theme": "ธีม",
+    "homeStyle": {
+      "title": "เลือกมุมมองหน้าหลัก",
+      "plusBadge": "Plus",
+      "simple": {
+        "title": "เรียบง่าย",
+        "description": "เช็กอินด้วยแท็บเดียว ไม่มีสิ่งรบกวน"
+      },
+      "enhanced": {
+        "title": "ขั้นสูง",
+        "description": "แชร์อารมณ์ สถานะการเดินทาง และตำแหน่ง"
+      }
+    },
+    "notifications": {
+      "title": "การแจ้งเตือน",
+      "preferences": "การตั้งค่าการแจ้งเตือน",
+      "summary": {
+        "reminders": "การเตือน",
+        "activity": "กิจกรรม",
+        "allOff": "ปิดการแจ้งเตือนทั้งหมด"
+      },
+      "stayOnTrack": {
+        "title": "เตือนความจำ",
+        "description": "เตือนฉันให้เช็กอินความปลอดภัยประจำวันของตัวเอง"
+      },
+      "contactActivity": {
+        "title": "กิจกรรมของผู้ติดต่อ",
+        "description": "แจ้งเตือนเมื่อผู้ติดต่อของฉันเช็กอินเสร็จ"
+      }
+    },
+    "about": "เกี่ยวกับ",
+    "privacy": "นโยบายความเป็นส่วนตัว",
+    "terms": "ข้อกำหนดการใช้งาน",
+    "feedback": "ส่งความคิดเห็น",
+    "logout": "ออกจากระบบ",
+    "resetData": "รีเซ็ตข้อมูล",
+    "light": "สว่าง",
+    "dark": "มืด",
+    "systemDefault": "ใช้การตั้งค่าระบบ",
+    "english": "อังกฤษ",
+    "swedish": "สวีเดน",
+    "norwegian": "นอร์เวย์",
+    "danish": "เดนมาร์ก",
+    "finnish": "ฟินแลนด์",
+    "chineseSimplified": "จีน (ตัวย่อ)",
+    "chineseTraditional": "จีน (ตัวเต็ม)",
+    "tripMode": {
+      "title": "โหมดเช็คอิน",
+      "home": "บ้าน",
+      "trip": "การเดินทาง",
+      "homeDescription": "การเช็คอินประจำวันมาตรฐาน",
+      "tripDescription": "แชร์สถานะการเดินทางของคุณ"
+    },
+    "resetWarning": "แน่ใจหรือไม่? ข้อมูลทั้งหมดของคุณจะถูกลบ",
+    "logoutConfirm": "คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?",
+    "confirmReset": "รีเซ็ต",
+    "cancel": "ยกเลิก",
+    "ok": "ตกลง"
+  },
+  "common": {
+    "ok": "ตกลง",
+    "cancel": "ยกเลิก",
+    "save": "บันทึก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "loading": "กำลังโหลด...",
+    "refreshing": "กำลังรีเฟรช...",
+    "back": "กลับ",
+    "next": "ถัดไป",
+    "submit": "ส่ง",
+    "yes": "ใช่",
+    "no": "ไม่",
+    "done": "เสร็จ"
+  },
+  "plus": {
+    "title": "Tryggd Plus",
+    "subtitle": "ฟีเจอร์เพิ่มเติมสำหรับการเช็กอินประจำวันแบบละเอียดขึ้น",
+    "badge": "Plus",
+    "heading": "ปลดล็อกข้อมูลเพิ่มเติม",
+    "description": "Tryggd Plus เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
+    "comingSoon": {
+      "title": "Plus Preview",
+      "message": "Plus Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+      "button": "ทดลอง Plus plan ฟรี",
+      "note": "คุณสามารถกลับไปใช้ Basic plan ได้ทุกเมื่อ"
+    },
+    "features": {
+      "wellness": {
+        "title": "แชร์ความรู้สึก",
+        "description": "แชร์ความรู้สึกของคุณเป็นส่วนหนึ่งของการเช็กอินประจำวัน"
+      },
+      "location": {
+        "title": "แชร์ตำแหน่ง",
+        "description": "ให้ผู้ติดต่อที่ไว้ใจเห็นตำแหน่งที่คุณแชร์ในหน้ากิจกรรม"
+      },
+      "notifications": {
+        "title": "ควบคุมการแจ้งเตือน",
+        "description": "กำหนดว่าผู้ติดต่อคนใดจะได้รับการแจ้งเตือนการเช็กอินของคุณ"
+      },
+      "contacts": {
+        "title": "ผู้ติดต่อไม่จำกัด",
+        "description": "เพิ่มผู้ติดต่อได้มากกว่าขีดจำกัดของแผนฟรี"
+      },
+      "welfare": {
+        "title": "คำทักทายห่วงใย",
+        "description": "ใช้ฟีเจอร์ติดตามความเป็นอยู่เพิ่มเติมสำหรับผู้ติดต่อของคุณ"
+      },
+      "tripMode": {
+        "title": "Trip Mode",
+        "description": "Share travel progress and trip-specific updates."
+      },
+      "mood": {
+        "title": "Mood updates",
+        "description": "Add emotional context to your check-ins."
+      },
+      "controls": {
+        "title": "More sharing control",
+        "description": "Decide which trusted contacts receive which updates."
+      },
+      "activity": {
+        "title": "Richer activity updates",
+        "description": "Show more detail in shared check-in and status history."
+      }
+    }
+  },
+  "time": {
+    "justNow": "เมื่อสักครู่",
+    "minutesAgo": "{{count}} นาทีที่แล้ว",
+    "hoursAgo_one": "{{count}} ชั่วโมงที่แล้ว",
+    "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
+    "daysAgo_one": "{{count}} วันที่แล้ว",
+    "daysAgo_other": "{{count}} วันที่แล้ว"
+  },
+  "errors": {
+    "title": "ข้อผิดพลาด",
+    "notAuthenticated": "ยังไม่ได้ยืนยันตัวตน"
+  },
+  "permissions": {
+    "title": "สิทธิ์การเข้าถึง"
+  },
+  "auth": {
+    "signup": {
+      "title": "สร้างบัญชี",
+      "create": "สร้างบัญชี",
+      "creating": "กำลังสร้างบัญชี...",
+      "success": {
+        "title": "🎉 สร้างบัญชีแล้ว",
+        "message": "บัญชีของคุณพร้อมแล้ว ตอนนี้คุณสามารถเข้าสู่ระบบได้"
+      },
+      "verifyEmail": {
+        "title": "กรุณายืนยันอีเมลของคุณ!",
+        "message": "เราได้ส่งอีเมลยืนยันไปยังกล่องจดหมายของคุณแล้ว หลังจากยืนยันแล้ว กรุณาเข้าสู่ระบบ"
+      },
+      "error": "สมัครสมาชิกไม่สำเร็จ"
+    },
+    "login": {
+      "title": "เข้าสู่ระบบ",
+      "signIn": "เข้าสู่ระบบ",
+      "loggingIn": "กำลังเข้าสู่ระบบ...",
+      "error": "เข้าสู่ระบบไม่สำเร็จ",
+      "continueWithGoogle": "ดำเนินการต่อด้วย Google",
+      "connectingToGoogle": "กำลังเชื่อมต่อกับ Google...",
+      "continueWithApple": "ดำเนินการต่อด้วย Apple",
+      "connectingToApple": "กำลังเชื่อมต่อกับ Apple...",
+      "orContinueWithEmail": "หรือดำเนินการต่อด้วยอีเมล",
+      "socialError": "เข้าสู่ระบบไม่สำเร็จ",
+      "useInviteCode": "มีรหัสคำเชิญหรือไม่?"
+    },
+    "email": "อีเมล",
+    "displayName": "ชื่อ",
+    "password": {
+      "placeholder": "รหัสผ่าน (อย่างน้อย 8 ตัวอักษร)",
+      "minimumLength": "ใช้รหัสผ่านอย่างน้อย 8 ตัวอักษร"
+    },
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "passwordsMatch": "✔ รหัสผ่านตรงกัน",
+    "passwordsNoMatch": "✖ รหัสผ่านไม่ตรงกัน",
+    "alreadyHaveAccount": "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
+    "noAccount": "ยังไม่มีบัญชี? สมัครสมาชิก",
+    "unknownError": "ข้อผิดพลาดที่ไม่ทราบสาเหตุ",
+    "forgotPassword": {
+      "title": "ลืมรหัสผ่าน",
+      "instructions": "กรอกอีเมลของคุณ",
+      "send": "ส่งอีเมลรีเซ็ต",
+      "sending": "กำลังส่ง...",
+      "sentTitle": "ตรวจสอบอีเมลของคุณ",
+      "sentMessage": "เราได้ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว",
+      "login": "ไปที่หน้าเข้าสู่ระบบ",
+      "error": "ส่งอีเมลรีเซ็ตไม่สำเร็จ"
+    },
+    "resetPassword": {
+      "title": "รีเซ็ตรหัสผ่าน",
+      "instructions": "กรอกรหัสผ่านใหม่ของคุณด้านล่าง",
+      "save": "บันทึกรหัสผ่านใหม่",
+      "saving": "กำลังบันทึก...",
+      "successTitle": "รีเซ็ตรหัสผ่านแล้ว!",
+      "successMessage": "ตอนนี้คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้แล้ว",
+      "login": "ไปที่หน้าเข้าสู่ระบบ",
+      "error": "รีเซ็ตรหัสผ่านไม่สำเร็จ",
+      "passwordPlaceholder": "รหัสผ่านใหม่"
+    },
+    "invite": {
+      "invalidLink": "ลิงก์คำเชิญไม่ถูกต้อง",
+      "notFound": "ไม่พบคำเชิญ",
+      "alreadyUsed": "คำเชิญนี้ถูกใช้ไปแล้ว",
+      "expired": "คำเชิญนี้หมดอายุแล้ว",
+      "unavailable": "คำเชิญนี้ไม่สามารถใช้งานได้อีก",
+      "unavailableTitle": "ไม่สามารถใช้คำเชิญได้",
+      "couldNotOpen": "ไม่สามารถเปิดคำเชิญนี้ได้",
+      "backToLogin": "กลับไปเข้าสู่ระบบ",
+      "recoveryTitle": "รีเซ็ตรหัสผ่าน Tryggd ของคุณ",
+      "invitedTitle": "คุณได้รับคำเชิญให้เข้าร่วม Tryggd",
+      "recoverySubtitle": "{{inviter}} ส่งลิงก์กู้คืนที่ปลอดภัยสำหรับ {{account}} ให้คุณ",
+      "signupSubtitle": "{{inviter}} เชิญ {{invitee}} ให้เข้าร่วมวง Tryggd ของเขา",
+      "yourAccount": "บัญชี Tryggd ของคุณ",
+      "you": "คุณ",
+      "installTitle": "ติดตั้งหรือเปิดแอป",
+      "installHint": "เปิดคำเชิญนี้ในแอป Tryggd หากคุณยังไม่มีแอป กรุณาติดตั้งก่อน แล้วกลับมาที่ลิงก์เดิมนี้",
+      "openInApp": "เปิดใน Tryggd",
+      "downloadAppStore": "ดาวน์โหลดบน App Store",
+      "downloadGooglePlay": "ดาวน์โหลดบน Google Play",
+      "keepLink": "เก็บลิงก์คำเชิญนี้ไว้:",
+      "enterCodeTitle": "กรอกรหัสคำเชิญของคุณ",
+      "enterCodeHint": "ขอรหัส 6 หลักที่ตรงกับคำเชิญนี้จาก {{inviter}}",
+      "codePlaceholder": "รหัสคำเชิญ 6 หลัก",
+      "checkingCode": "กำลังตรวจสอบรหัส…",
+      "setPasswordTitle": "ตั้งรหัสผ่านใหม่",
+      "setPasswordHint": "การทำเช่นนี้จะรีเซ็ตรหัสผ่านของ Tryggd ID {{id}}",
+      "tryggdIdPlaceholder": "Tryggd ID",
+      "resettingPassword": "กำลังรีเซ็ตรหัสผ่าน…",
+      "resetPassword": "รีเซ็ตรหัสผ่าน",
+      "createAccountTitle": "สร้างบัญชีของคุณ",
+      "createAccountHint": "ภายหลังคุณจะเข้าสู่ระบบด้วย Tryggd ID และรหัสผ่านของคุณ คุณสามารถใช้ Tryggd ID ที่แนะนำหรือแก้ไขได้ตอนนี้",
+      "mobilePlaceholder": "หมายเลขมือถือ (ไม่บังคับ)",
+      "creatingAccount": "กำลังสร้างบัญชี…",
+      "createAccountButton": "สร้างบัญชี",
+      "errors": {
+        "incorrectCode": "รหัสไม่ถูกต้อง",
+        "verifyCode": "ยืนยันรหัสคำเชิญไม่สำเร็จ",
+        "createAccount": "สร้างบัญชีไม่สำเร็จ",
+        "completeSignup": "ลงทะเบียนจากคำเชิญไม่สำเร็จ",
+        "missingAccount": "ไม่สามารถระบุบัญชีที่จะใช้เข้าสู่ระบบได้",
+        "completeRecovery": "กู้คืนรหัสผ่านไม่สำเร็จ",
+        "phoneAlreadyInUse": "หมายเลขโทรศัพท์นี้ถูกใช้งานแล้ว",
+        "tooManyAttempts": "พยายามผิดพลาดมากเกินไป กรุณาขอคำเชิญใหม่"
+      },
+      "enterCodeStandaloneHint": "หากคุณติดตั้งแอปหลังจากได้รับคำเชิญ ให้กรอกรหัส 6 หลักเพื่อดำเนินการต่อ"
+    }
+  },
+  "completeProfile": {
+    "kicker": "อีกขั้นตอนเดียว",
+    "title": "กรอกโปรไฟล์ให้สมบูรณ์",
+    "description": "เพิ่มชื่อที่คนอื่นจะเห็นและ Tryggd ID ของคุณสำหรับการค้นหาผู้ติดต่อ",
+    "nameLabel": "ชื่อ",
+    "namePlaceholder": "เช่น Emily Cooper",
+    "nameHelperEmpty": "นี่คือชื่อที่ผู้ติดต่อของคุณจะเห็น",
+    "nameHelper": "นี่คือชื่อที่ผู้ติดต่อของคุณจะเห็น",
+    "tryggdIdLabel": "Tryggd ID",
+    "tryggdIdPlaceholder": "เช่น emilycooper",
+    "tryggdIdHelper": "คนอื่นใช้สิ่งนี้เพื่อค้นหาและเพิ่มคุณใน Tryggd",
+    "continue": "ดำเนินการต่อ",
+    "saving": "กำลังบันทึก...",
+    "saveErrorTitle": "ไม่สามารถบันทึกโปรไฟล์ได้",
+    "saveErrorBody": "กรุณาลองอีกครั้ง",
+    "duplicateTitle": "ลองใช้ Tryggd ID อื่น",
+    "duplicateBody": "Tryggd ID นี้ถูกใช้ไปแล้ว",
+    "validation": {
+      "required": "ผู้คนใช้สิ่งนี้เพื่อค้นหาและเพิ่มคุณใน Tryggd",
+      "min": "Tryggd ID ต้องมีอย่างน้อย 3 ตัวอักษร",
+      "max": "Tryggd ID ต้องไม่เกิน 24 ตัวอักษร",
+      "chars": "ใช้ได้เฉพาะตัวพิมพ์เล็ก ตัวเลข จุด หรือขีดล่าง"
+    }
+  },
+  "pilotPreview": {
+    "dialogTitle": "✨ ทดลอง Plus plan ฟรี",
+    "dialogIntro": "ลองใช้ Tryggd Plus plan ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+    "dialogFreeSectionTitle": "Basic plan รวมถึง:",
+    "dialogFreeFeature1": "✓ เช็คอิน   🔔 แจ้งเตือนอัปเดตผู้ติดต่อ   👥 สูงสุด 5 ผู้ติดต่อ",
+    "dialogFreeFeature2": "",
+    "dialogFreeFeature3": "",
+    "dialogFreeFeature4": "",
+    "dialogPlusSectionTitle": "Plus plan รวมทุกอย่างใน Basic plan และเพิ่ม:",
+    "dialogFeature1": "🌿 โหมดประจำวัน   ✈️ โหมดการเดินทาง   ✋ สัญญาณช่วยเหลือ",
+    "dialogFeature2": "🙂 อัปเดตอารมณ์   📍 แชร์ตำแหน่ง   👥 ผู้ติดต่อเพิ่มเติม",
+    "dialogFeature3": "",
+    "dialogFeature4": "",
+    "dialogPricingTitle": "ราคา Plus plan",
+    "dialogPricingNote": "หลัง {{deadline}} หากคุณเลือกใช้ Plus plan ต่อ:",
+    "dialogPricingMonthly": "US$2.99 / เดือน",
+    "dialogPricingYearly": "US$19.99 / ปี",
+    "dialogSupportNote": "Plus plan เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
+    "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
+    "activate": "ทดลอง Plus plan ฟรี",
+    "notNow": "ใช้ Basic plan",
+    "activatedMessage": "Plus เปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
+    "expiredTitle": "การดูตัวอย่าง Plus สิ้นสุดแล้ว",
+    "expiredBody": "คุณยังสามารถใช้ Tryggd Basic plan ต่อได้ รวมถึงการเช็คอิน ผู้ติดต่อที่เชื่อถือได้ และการอัปเดตพื้นฐาน\n\nการเช็คอินและกิจกรรมก่อนหน้าของคุณจะไม่ถูกลบ",
+    "expiredButton": "เข้าใจแล้ว",
+    "settingsRowTitle": "ดูตัวอย่าง Plus",
+    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงนำร่อง",
+    "settingsRowAction": "เริ่มดูตัวอย่าง",
+    "activeRowTitle": "กำลังดูตัวอย่าง Plus",
+    "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
+    "dialogFeature5": "",
+    "dialogFeature6": ""
+  },
+  "onboarding": {
+    "skip": "ข้าม",
+    "next": "ถัดไป",
+    "getStarted": "เริ่มต้น",
+    "slides": {
+      "checkin": {
+        "eyebrow": "จังหวะประจำวัน",
+        "title": "เช็กอินรายวันอย่างรวดเร็ว",
+        "body": "💚 เช็กอินด้วยการแตะเพียงครั้งเดียวและแจ้งให้ผู้ติดต่อที่เชื่อถือได้รู้ว่าคุณปลอดภัย",
+        "points": {
+          "one": "✓ แตะครั้งเดียวเพื่อเช็กอิน",
+          "two": "✓ การอัปเดตง่ายๆ ว่า \"ฉันปลอดภัย\""
+        }
+      },
+      "contacts": {
+        "eyebrow": "วงของคุณ",
+        "title": "ผู้ติดต่อที่เชื่อถือได้",
+        "body": "👥 เพิ่มสมาชิกในครอบครัวหรือเพื่อนสนิทที่สามารถรับการเช็กอิน สัญญาณขอความช่วยเหลือ และการอัปเดตที่แชร์ของคุณ",
+        "points": {
+          "one": "✓ เลือกว่าใครเห็นการอัปเดตของคุณ",
+          "two": "✓ สัญญาณขอความช่วยเหลือส่งถึงคนที่ถูกต้อง"
+        }
+      },
+      "sharing": {
+        "eyebrow": "ข้อมูลเพิ่มเติมเป็นทางเลือก",
+        "title": "สถานะและตำแหน่ง",
+        "body": "📍 แชร์ว่าคุณเป็นอย่างไร อยู่บ้านหรืออยู่ข้างนอก สถานะการเดินทาง หรือตำแหน่งกับผู้ติดต่อที่เลือก",
+        "points": {
+          "one": "✓ 🙂 อารมณ์, 🏠 อยู่บ้าน/ออกไปข้างนอก, หรือ ✈️ สถานะการเดินทาง",
+          "two": "✓ 📍 ตำแหน่งเฉพาะเมื่อคุณเลือกที่จะแชร์"
+        }
+      },
+      "free": {
+        "eyebrow": "เรียบง่ายตามค่าเริ่มต้น",
+        "title": "Plus Preview",
+        "body": "Tryggd Free รักษาความเรียบง่ายของพื้นฐาน ในช่วงการทดลอง คุณสามารถดูตัวอย่างคุณสมบัติ Plus ได้:",
+        "freeSummary": "Free: เช็กอิน, ผู้ติดต่อที่เชื่อถือได้, สถานะพื้นฐาน",
+        "bodyFreeSuffix": " รักษาความเรียบง่ายของพื้นฐาน",
+        "bodyPilotPrefix": "ในช่วงการทดลอง ดูตัวอย่าง ",
+        "bodyPilotSuffix": ":",
+        "points": {
+          "one": "✈️ โหมดการเดินทาง",
+          "two": "📍 ตัวเลือกการแชร์ตำแหน่ง",
+          "three": "🙂 การอัปเดตอารมณ์",
+          "four": "⚙️ การควบคุมการแชร์มากขึ้น"
+        },
+        "footer": "Plus Preview เป็นทางเลือก"
+      }
+    },
+    "disclaimer": {
+      "eyebrow": "ควรรู้",
+      "title": "หมายเหตุสำคัญบางประการ",
+      "productName": "Tryggd ",
+      "paragraph1": "ช่วยให้คุณแชร์การเช็กอินด้วยตนเอง สัญญาณขอความช่วยเหลือ และการอัปเดตที่เลือกกับผู้ติดต่อที่เชื่อถือได้",
+      "paragraph2": "ผู้ติดต่อของคุณอาจเห็นการอัปเดตสถานะที่คุณเลือกแชร์ ตำแหน่งจะถูกแชร์เฉพาะเมื่อคุณเปิดการแชร์ตำแหน่ง",
+      "paragraph3": "การแจ้งเตือนอาจล่าช้าเนื่องจากการเชื่อมต่อเครือข่าย ระดับแบตเตอรี่ การตั้งค่าอุปกรณ์ หรือบริการพุชของบุคคลที่สาม",
+      "paragraph4": "Tryggd ไม่ใช่บริการฉุกเฉินและไม่ควรพึ่งพาในสถานการณ์เร่งด่วนหรือที่เป็นอันตรายต่อชีวิต",
+      "acceptLabel": "ฉันเข้าใจ",
+      "saving": "กำลังบันทึก...",
+      "decline": "ปฏิเสธ / กลับ"
+    },
+    "errors": {
+      "saveTitle": "ไม่สามารถดำเนินการต่อ",
+      "saveBody": "โปรดลองอีกครั้ง"
+    }
+  },
+  "watchOver": {
+    "toggle": "ดูแล",
+    "toggleHint": "รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
+    "limitReached": "คุณสามารถดูแลได้ {{max}} คนในแผนฟรี อัปเกรดเป็น Plus เพื่อไม่จำกัด",
+    "notification": {
+      "day1_one": "{{name}} has not checked in today.",
+      "day1_other": "{{count}} people have not checked in today.",
+      "day2_one": "{{name}} still hasn't checked in (2 days).",
+      "day2_other": "{{count}} people still haven't checked in (2 days)."
+    }
+  },
+  "away": {
+    "title": "สถานะไม่อยู่",
+    "setAway": "ตั้งเป็นไม่อยู่",
+    "clearAway": "ยกเลิกสถานะไม่อยู่",
+    "label": "ข้อความ (ไม่บังคับ)",
+    "labelPlaceholder": "เช่น พักร้อน",
+    "until": "ไม่อยู่จนถึง",
+    "active": "ไม่อยู่จนถึง {{date}}",
+    "activeNoDate": "ไม่อยู่ (ไม่มีวันสิ้นสุด)",
+    "hint": "ขณะที่ไม่อยู่ ผู้ติดต่อของคุณจะไม่ได้รับการแจ้งเตือนการขาดหายไป",
+    "saving": "กำลังบันทึก...",
+    "error": "ไม่สามารถอัปเดตสถานะไม่อยู่"
+  }
 }
