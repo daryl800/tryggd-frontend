@@ -492,7 +492,8 @@
       "button": "登出"
     },
     "permissions": {
-      "camera": "需要相機權限"
+      "camera": "需要相機權限",
+      "photoLibrary": "需要存取相簿權限"
     },
     "notices": {
       "title": "注意",

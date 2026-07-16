@@ -440,7 +440,8 @@
       "button": "Logg ut"
     },
     "permissions": {
-      "camera": "Kameratilgang kreves"
+      "camera": "Kameratilgang kreves",
+      "photoLibrary": "Tilgang til fotobiblioteket er påkrevd"
     },
     "notices": {
       "title": "Varsel",

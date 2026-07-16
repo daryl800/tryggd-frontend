@@ -439,7 +439,8 @@
       "button": "Abmelden"
     },
     "permissions": {
-      "camera": "Kamerazugriff ist erforderlich"
+      "camera": "Kamerazugriff ist erforderlich",
+      "photoLibrary": "Zugriff auf die Fotomediathek ist erforderlich"
     },
     "notices": {
       "title": "Hinweis",

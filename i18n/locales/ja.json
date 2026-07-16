@@ -439,7 +439,8 @@
       "button": "ログアウト"
     },
     "permissions": {
-      "camera": "カメラへのアクセスが必要です"
+      "camera": "カメラへのアクセスが必要です",
+      "photoLibrary": "フォトライブラリへのアクセスが必要です"
     },
     "notices": {
       "title": "お知らせ",

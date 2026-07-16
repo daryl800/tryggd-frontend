@@ -480,7 +480,8 @@
       "button": "Log Out"
     },
     "permissions": {
-      "camera": "Camera access is required"
+      "camera": "Camera access is required",
+      "photoLibrary": "Photo library access is required"
     },
     "notices": {
       "title": "Notice",

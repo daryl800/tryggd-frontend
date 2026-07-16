@@ -439,7 +439,8 @@
       "button": "로그아웃"
     },
     "permissions": {
-      "camera": "카메라 접근 권한이 필요합니다"
+      "camera": "카메라 접근 권한이 필요합니다",
+      "photoLibrary": "사진 라이브러리 접근 권한이 필요합니다"
     },
     "notices": {
       "title": "알림",

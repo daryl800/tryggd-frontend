@@ -439,7 +439,8 @@
       "button": "Cerrar sesión"
     },
     "permissions": {
-      "camera": "Se requiere acceso a la cámara"
+      "camera": "Se requiere acceso a la cámara",
+      "photoLibrary": "Se requiere acceso a la biblioteca de fotos"
     },
     "notices": {
       "title": "Aviso",

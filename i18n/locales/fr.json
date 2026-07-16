@@ -439,7 +439,8 @@
       "button": "Se déconnecter"
     },
     "permissions": {
-      "camera": "L'accès à la caméra est requis"
+      "camera": "L'accès à la caméra est requis",
+      "photoLibrary": "L'accès à la photothèque est requis"
     },
     "notices": {
       "title": "Information",

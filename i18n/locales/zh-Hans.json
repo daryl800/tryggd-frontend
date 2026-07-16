@@ -492,7 +492,8 @@
       "button": "退出登录"
     },
     "permissions": {
-      "camera": "需要相机权限"
+      "camera": "需要相机权限",
+      "photoLibrary": "需要访问相册权限"
     },
     "notices": {
       "title": "注意",

@@ -440,7 +440,8 @@
       "button": "Kirjaudu ulos"
     },
     "permissions": {
-      "camera": "Kameran käyttöoikeus vaaditaan"
+      "camera": "Kameran käyttöoikeus vaaditaan",
+      "photoLibrary": "Kuvagallerian käyttöoikeus vaaditaan"
     },
     "notices": {
       "title": "Huomio",

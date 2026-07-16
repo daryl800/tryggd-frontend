@@ -300,6 +300,12 @@ export default function ProfileScreen() {
 
     const pickAvatar = async () => {
         try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(t('permissions.title'), t('profile.permissions.photoLibrary'));
+                return;
+            }
+
             const result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
                 aspect: [1, 1],

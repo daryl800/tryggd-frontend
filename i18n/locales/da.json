@@ -440,7 +440,8 @@
       "button": "Log ud"
     },
     "permissions": {
-      "camera": "Kameratilladelse kræves"
+      "camera": "Kameratilladelse kræves",
+      "photoLibrary": "Adgang til fotobibliotek er påkrævet"
     },
     "notices": {
       "title": "Bemærk",

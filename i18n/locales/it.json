@@ -439,7 +439,8 @@
       "button": "Esci"
     },
     "permissions": {
-      "camera": "È richiesto l'accesso alla fotocamera"
+      "camera": "È richiesto l'accesso alla fotocamera",
+      "photoLibrary": "L'accesso alla libreria foto è richiesto"
     },
     "notices": {
       "title": "Avviso",

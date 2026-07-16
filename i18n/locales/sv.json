@@ -447,7 +447,8 @@
       "button": "Logga ut"
     },
     "permissions": {
-      "camera": "Kameratillstånd krävs"
+      "camera": "Kameratillstånd krävs",
+      "photoLibrary": "Åtkomst till fotobiblioteket krävs"
     },
     "notices": {
       "title": "Meddelande",
