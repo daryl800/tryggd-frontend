@@ -38,14 +38,25 @@ export default function LoginScreen() {
         setLoading(true);
 
         try {
-            const authEmailCandidates = resolveAuthEmailCandidates(identifier);
-            if (authEmailCandidates.length === 0) {
+            let candidates = resolveAuthEmailCandidates(identifier);
+            if (candidates.length === 0) {
                 throw new Error("Please enter a valid email or Tryggd ID.");
+            }
+
+            // For Tryggd ID input, also try the real auth email via RPC lookup
+            const trimmed = identifier.trim().toLowerCase();
+            if (!trimmed.includes('@')) {
+                const { data: resolvedEmail } = await supabase.rpc('resolve_email_from_tryggd_id', {
+                    p_tryggd_id: trimmed,
+                });
+                if (resolvedEmail && !candidates.includes(resolvedEmail)) {
+                    candidates = [resolvedEmail, ...candidates];
+                }
             }
 
             let signInError: Error | null = null;
 
-            for (const authEmail of authEmailCandidates) {
+            for (const authEmail of candidates) {
                 const { error } = await supabase.auth.signInWithPassword({
                     email: authEmail,
                     password,
