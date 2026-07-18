@@ -609,12 +609,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Basic plan 保持實用且不加入廣告。Plus plan 提供更多連繫方式，並支持 Tryggd 持續改善。",
     "badge": "Plus",
-    "heading": "免費預覽 Plus plan",
+    "heading": "免費試用 Plus",
     "description": "試用更多分享功能，同時保留原本簡單的打卡流程。",
     "comingSoon": {
       "title": "Plus 預覽",
       "message": "試用期間可免費使用 Plus Preview。不需要付款資料，也不會自動收費。",
-      "button": "免費預覽 Plus plan",
+      "button": "免費試用 Plus",
       "note": "你可以隨時回到 Basic plan。"
     },
     "features": {
@@ -871,7 +871,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ 免費預覽 Plus plan",
+    "dialogTitle": "✨ 免費試用 Plus",
     "dialogIntro": "現在可以免費試用 Tryggd Plus plan。\n不需要付款資料，也不會自動收費。",
     "dialogFreeSectionTitle": "Basic plan 包括：",
     "dialogFreeFeature1": "✓ 打卡   🔔 親友即時收到打卡通知   👥 5位聯繫人",
@@ -891,7 +891,7 @@
     "dialogPricingYearly": "US$19.99 / 年",
     "dialogSupportNote": "Plus plan 是支持 Tryggd 持續運作和改善的一種方式。\n我們希望保持 Tryggd 實用、穩定、可靠，並且不加入廣告。",
     "dialogPreviewNote": "Plus 預覽開放至 {{deadline}}。\n預覽結束後，帳戶會自動回到 Basic plan。",
-    "activate": "免費預覽 Plus plan",
+    "activate": "免費試用 Plus",
     "notNow": "使用 Basic plan",
     "activatedMessage": "Plus 已開啟。主頁已切換到加強顯示，你可以在設定中隨時改回簡易顯示。",
     "expiredTitle": "Plus 預覽已結束",
@@ -901,7 +901,8 @@
     "settingsRowSubtitle": "試用期間可免費體驗目前的 Plus 功能。",
     "settingsRowAction": "開始預覽",
     "activeRowTitle": "Plus 預覽進行中",
-    "activeRowSubtitle": "試用期間可使用目前的 Plus 功能。"
+    "activeRowSubtitle": "試用期間可使用目前的 Plus 功能。",
+    "subscriptionNote": "繼續使用 Plus 功能需要訂閱。"
   },
   "watchOver": {
     "toggle": "關注",

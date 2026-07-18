@@ -704,12 +704,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Additional features for richer daily check-ins",
     "badge": "Plus",
-    "heading": "Unlock more context",
+    "heading": "Essayer Plus gratuitement",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "Plus Preview est gratuit pendant la phase pilote. Aucun détail de paiement requis, aucun prélèvement automatique.",
-      "button": "Essayer Plus plan gratuitement",
+      "button": "Essayer Plus gratuitement",
       "note": "Vous pouvez revenir au Basic plan à tout moment."
     },
     "features": {
@@ -752,7 +752,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Essayer Plus plan gratuitement",
+    "dialogTitle": "✨ Essayer Plus gratuitement",
     "dialogIntro": "Essayez Tryggd Plus plan gratuitement maintenant.\nAucun détail de paiement requis, aucun prélèvement automatique.",
     "dialogFreeSectionTitle": "Basic plan comprend :",
     "dialogFreeFeature1": "✓ Check-in   🔔 notifications de mise à jour des contacts   👥 jusqu’à 5 contacts",
@@ -770,7 +770,7 @@
     "dialogPricingYearly": "19,99 $ US / an",
     "dialogSupportNote": "Plus plan est une façon de soutenir le fonctionnement continu et l’amélioration de Tryggd.\nNous voulons garder Tryggd utile, stable, fiable et sans publicité.",
     "dialogPreviewNote": "Plus Preview est ouvert jusqu’au {{deadline}}.\nÀ la fin de la preview, votre compte reviendra automatiquement au Basic plan.",
-    "activate": "Essayer Plus plan gratuitement",
+    "activate": "Essayer Plus gratuitement",
     "notNow": "Utiliser Basic plan",
     "activatedMessage": "Plus est maintenant actif. L'accueil a été réglé sur Amélioré. Vous pouvez revenir à Simple à tout moment dans les Paramètres.",
     "expiredTitle": "L'aperçu Plus est terminé",
@@ -782,7 +782,8 @@
     "activeRowTitle": "Aperçu Plus actif",
     "activeRowSubtitle": "Les fonctionnalités Plus actuelles sont disponibles pendant le pilote.",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "Un abonnement sera nécessaire pour continuer à utiliser les fonctionnalités Plus."
   },
   "onboarding": {
     "skip": "Passer",

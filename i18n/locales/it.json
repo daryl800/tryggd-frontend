@@ -704,12 +704,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Additional features for richer daily check-ins",
     "badge": "Plus",
-    "heading": "Unlock more context",
+    "heading": "Prova Plus gratuitamente",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "Plus Preview è gratis durante il pilot. Nessun dato di pagamento richiesto e nessun addebito automatico.",
-      "button": "Prova Plus plan gratis",
+      "button": "Prova Plus gratuitamente",
       "note": "Puoi tornare al Basic plan in qualsiasi momento."
     },
     "features": {
@@ -752,7 +752,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Prova Plus plan gratis",
+    "dialogTitle": "✨ Prova Plus gratuitamente",
     "dialogIntro": "Prova Tryggd Plus plan gratis ora.\nNessun dato di pagamento richiesto e nessun addebito automatico.",
     "dialogFreeSectionTitle": "Basic plan include:",
     "dialogFreeFeature1": "✓ Check-in   🔔 notifiche aggiornamenti contatti   👥 fino a 5 contatti",
@@ -770,7 +770,7 @@
     "dialogPricingYearly": "US$19.99 / anno",
     "dialogSupportNote": "Plus plan è un modo per supportare il funzionamento continuo e il miglioramento di Tryggd.\nVogliamo mantenere Tryggd utile, stabile, affidabile e senza pubblicità.",
     "dialogPreviewNote": "Plus Preview è aperto fino al {{deadline}}.\nAl termine della preview, il tuo account tornerà automaticamente al Basic plan.",
-    "activate": "Prova Plus plan gratis",
+    "activate": "Prova Plus gratuitamente",
     "notNow": "Usa Basic plan",
     "activatedMessage": "Plus è ora attivo. La schermata Home è stata impostata su Avanzata. Puoi tornare a Semplice in qualsiasi momento nelle Impostazioni.",
     "expiredTitle": "L'anteprima Plus è terminata",
@@ -782,7 +782,8 @@
     "activeRowTitle": "Anteprima Plus attiva",
     "activeRowSubtitle": "Le funzionalità Plus attuali sono disponibili durante il pilota.",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "Sarà necessario un abbonamento per continuare a utilizzare le funzionalità Plus."
   },
   "onboarding": {
     "skip": "Salta",

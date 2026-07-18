@@ -597,12 +597,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Basic plan stays useful and ad-free. Plus plan gives you more ways to stay connected and helps us keep improving Tryggd.",
     "badge": "Plus",
-    "heading": "Preview Plus plan for free",
+    "heading": "Try Plus for free",
     "description": "Try extra sharing tools during the pilot without changing the simple core check-in flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "Plus Preview is free during the pilot. No payment details needed, no automatic charge.",
-      "button": "Preview Plus plan for free",
+      "button": "Try Plus for free",
       "note": "You can return to Basic plan anytime."
     },
     "features": {
@@ -847,7 +847,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Preview Plus plan for free",
+    "dialogTitle": "✨ Try Plus for free",
     "dialogIntro": "Try Tryggd Plus plan for free now.\nNo payment details needed, no automatic charge.",
     "dialogFreeSectionTitle": "Basic plan includes:",
     "dialogFreeFeature1": "✓ Check-in   🔔 contact update notifications   👥 up to 5 contacts",
@@ -867,7 +867,7 @@
     "dialogPricingYearly": "US$19.99 / year",
     "dialogSupportNote": "Plus plan is a way to support Tryggd's continued operation and improvement.\nWe want to keep Tryggd useful, stable, reliable, and ad-free.",
     "dialogPreviewNote": "Plus Preview is open until {{deadline}}.\nAfter the preview ends, your account will automatically return to the Basic plan.",
-    "activate": "Preview Plus plan for free",
+    "activate": "Try Plus for free",
     "notNow": "Use Basic plan",
     "activatedMessage": "Plus is now active. Home has been set to Enhanced so you can try more sharing options. You can switch back to Simple anytime in Settings.",
     "expiredTitle": "Plus Preview has ended",
@@ -877,6 +877,7 @@
     "settingsRowSubtitle": "Preview current Plus features during the pilot.",
     "settingsRowAction": "Start Preview",
     "activeRowTitle": "Plus Preview active",
-    "activeRowSubtitle": "Current Plus features are available during the pilot."
+    "activeRowSubtitle": "Current Plus features are available during the pilot.",
+    "subscriptionNote": "A subscription will be required to continue using Plus features."
   }
 }

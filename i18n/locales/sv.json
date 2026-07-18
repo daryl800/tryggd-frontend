@@ -714,12 +714,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Additional features for richer daily check-ins",
     "badge": "Plus",
-    "heading": "Unlock more context",
+    "heading": "Prova Plus gratis",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "Plus Preview är gratis under pilotperioden. Inga betalningsuppgifter behövs och ingen automatisk debitering.",
-      "button": "Förhandsvisa Plus plan gratis",
+      "button": "Prova Plus gratis",
       "note": "Du kan när som helst återgå till Basic plan."
     },
     "features": {
@@ -762,7 +762,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Förhandsvisa Plus plan gratis",
+    "dialogTitle": "✨ Prova Plus gratis",
     "dialogIntro": "Prova Tryggd Plus plan gratis nu.\nInga betalningsuppgifter behövs och ingen automatisk debitering.",
     "dialogFreeSectionTitle": "Basic plan inkluderar:",
     "dialogFreeFeature1": "✓ Incheckning   🔔 kontaktuppdateringsnotiser   👥 upp till 5 kontakter",
@@ -780,7 +780,7 @@
     "dialogPricingYearly": "US$19.99 / år",
     "dialogSupportNote": "Plus plan är ett sätt att stödja Tryggds fortsatta drift och förbättring.\nVi vill hålla Tryggd användbar, stabil, pålitlig och reklamfri.",
     "dialogPreviewNote": "Plus Preview är öppen till {{deadline}}.\nNär preview-perioden slutar återgår ditt konto automatiskt till Basic plan.",
-    "activate": "Förhandsvisa Plus plan gratis",
+    "activate": "Prova Plus gratis",
     "notNow": "Använd Basic plan",
     "activatedMessage": "Plus är nu aktivt. Hem har ställts in på Utökad. Du kan byta tillbaka till Enkel när som helst i Inställningar.",
     "expiredTitle": "Plus-förhandsgranskning har avslutats",
@@ -792,7 +792,8 @@
     "activeRowTitle": "Plus-förhandsgranskning aktiv",
     "activeRowSubtitle": "Aktuella Plus-funktioner är tillgängliga under piloten.",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "En prenumeration krävs för att fortsätta använda Plus-funktioner."
   },
   "onboarding": {
     "skip": "Hoppa över",

@@ -556,12 +556,12 @@
     "title": "Tryggd Plus",
     "subtitle": "ฟีเจอร์เพิ่มเติมสำหรับการเช็กอินประจำวันแบบละเอียดขึ้น",
     "badge": "Plus",
-    "heading": "ปลดล็อกข้อมูลเพิ่มเติม",
+    "heading": "ลองใช้ Plus ฟรี",
     "description": "Tryggd Plus เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "Plus Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
-      "button": "ทดลอง Plus plan ฟรี",
+      "button": "ลองใช้ Plus ฟรี",
       "note": "คุณสามารถกลับไปใช้ Basic plan ได้ทุกเมื่อ"
     },
     "features": {
@@ -752,7 +752,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ ทดลอง Plus plan ฟรี",
+    "dialogTitle": "✨ ลองใช้ Plus ฟรี",
     "dialogIntro": "ลองใช้ Tryggd Plus plan ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
     "dialogFreeSectionTitle": "Basic plan รวมถึง:",
     "dialogFreeFeature1": "✓ เช็คอิน   🔔 แจ้งเตือนอัปเดตผู้ติดต่อ   👥 สูงสุด 5 ผู้ติดต่อ",
@@ -770,7 +770,7 @@
     "dialogPricingYearly": "US$19.99 / ปี",
     "dialogSupportNote": "Plus plan เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
     "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
-    "activate": "ทดลอง Plus plan ฟรี",
+    "activate": "ลองใช้ Plus ฟรี",
     "notNow": "ใช้ Basic plan",
     "activatedMessage": "Plus เปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
     "expiredTitle": "การดูตัวอย่าง Plus สิ้นสุดแล้ว",
@@ -782,7 +782,8 @@
     "activeRowTitle": "กำลังดูตัวอย่าง Plus",
     "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "จำเป็นต้องมีการสมัครสมาชิกเพื่อใช้คุณสมบัติ Plus ต่อไป"
   },
   "onboarding": {
     "skip": "ข้าม",

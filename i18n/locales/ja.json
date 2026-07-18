@@ -704,12 +704,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Additional features for richer daily check-ins",
     "badge": "Plus",
-    "heading": "Unlock more context",
+    "heading": "Plusを無料で試す",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "パイロット期間中、Plus Previewは無料で利用できます。支払い情報は不要で、自動請求もありません。",
-      "button": "Plus planを無料でプレビュー",
+      "button": "Plusを無料で試す",
       "note": "いつでもBasic planに戻れます。"
     },
     "features": {
@@ -752,7 +752,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Plus planを無料でプレビュー",
+    "dialogTitle": "✨ Plusを無料で試す",
     "dialogIntro": "Tryggd Plus planを今すぐ無料で試せます。\n支払い情報は不要で、自動請求もありません。",
     "dialogFreeSectionTitle": "Basic planに含まれるもの：",
     "dialogFreeFeature1": "✓ チェックイン   🔔 連絡先更新通知   👥 最大5件の連絡先",
@@ -770,7 +770,7 @@
     "dialogPricingYearly": "US$19.99 / 年",
     "dialogSupportNote": "Plus planはTryggdの継続的な運営と改善を支援する方法です。\nTryggdを実用的で、安定し、信頼でき、広告のないサービスとして保ちたいと考えています。",
     "dialogPreviewNote": "Plus Previewは{{deadline}}まで利用できます。\nプレビュー終了後、アカウントは自動的にBasic planに戻ります。",
-    "activate": "Plus planを無料でプレビュー",
+    "activate": "Plusを無料で試す",
     "notNow": "Basic planを使う",
     "activatedMessage": "Plusが有効になりました。ホームが拡張に切り替わりました。いつでも設定からシンプルに戻せます。",
     "expiredTitle": "Plusプレビューが終了しました",
@@ -782,7 +782,8 @@
     "activeRowTitle": "Plusプレビュー進行中",
     "activeRowSubtitle": "パイロット期間中、現在のPlus機能が利用可能です。",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "Plus機能を引き続き利用するにはサブスクリプションが必要になります。"
   },
   "onboarding": {
     "skip": "スキップ",

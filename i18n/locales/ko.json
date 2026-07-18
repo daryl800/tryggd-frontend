@@ -704,12 +704,12 @@
     "title": "Tryggd Plus",
     "subtitle": "Additional features for richer daily check-ins",
     "badge": "Plus",
-    "heading": "Unlock more context",
+    "heading": "플러스 무료로 체험하기",
     "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
       "title": "Plus Preview",
       "message": "파일럿 기간 동안 Plus Preview를 무료로 사용할 수 있습니다. 결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
-      "button": "Plus plan 무료 미리보기",
+      "button": "플러스 무료로 체험하기",
       "note": "언제든지 Basic plan으로 돌아갈 수 있습니다."
     },
     "features": {
@@ -752,7 +752,7 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Plus plan 무료 미리보기",
+    "dialogTitle": "✨ 플러스 무료로 체험하기",
     "dialogIntro": "지금 Tryggd Plus plan을 무료로 사용해 보세요.\n결제 정보가 필요하지 않으며 자동 결제도 없습니다.",
     "dialogFreeSectionTitle": "Basic plan 포함:",
     "dialogFreeFeature1": "✓ 체크인   🔔 연락처 업데이트 알림   👥 최대 5명 연락처",
@@ -770,7 +770,7 @@
     "dialogPricingYearly": "US$19.99 / 년",
     "dialogSupportNote": "Plus plan은 Tryggd의 지속적인 운영과 개선을 지원하는 방법입니다.\nTryggd를 유용하고 안정적이며 신뢰할 수 있고 광고 없는 서비스로 유지하고 싶습니다.",
     "dialogPreviewNote": "Plus Preview는 {{deadline}}까지 열려 있습니다.\nPreview가 끝나면 계정은 자동으로 Basic plan으로 돌아갑니다.",
-    "activate": "Plus plan 무료 미리보기",
+    "activate": "플러스 무료로 체험하기",
     "notNow": "Basic plan 사용",
     "activatedMessage": "Plus가 활성화되었습니다. 홈이 강화됨으로 전환되었습니다. 설정에서 언제든지 간단으로 전환할 수 있습니다.",
     "expiredTitle": "Plus 프리뷰가 종료되었습니다",
@@ -782,7 +782,8 @@
     "activeRowTitle": "Plus 프리뷰 진행 중",
     "activeRowSubtitle": "파일럿 기간 동안 현재 Plus 기능을 사용할 수 있습니다.",
     "dialogFeature5": "",
-    "dialogFeature6": ""
+    "dialogFeature6": "",
+    "subscriptionNote": "플러스 기능을 계속 사용하려면 구독이 필요합니다."
   },
   "onboarding": {
     "skip": "건너뛰기",
