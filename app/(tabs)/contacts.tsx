@@ -1616,7 +1616,7 @@ export default function ContactsScreen() {
             t('watchOver.limitReached', { max: maxWatchOver }),
             [
                 { text: t('common.cancel'), style: 'cancel' },
-                { text: 'Plus', onPress: () => router.push('/plus') },
+                { text: t('pilotPreview.settingsRowTitle'), onPress: () => router.push('/plus') },
             ]
         );
     }, [capabilities, router, t]);

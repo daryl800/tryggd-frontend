@@ -116,8 +116,8 @@
       "summaryWithStatus": "De viaje · {{status}}"
     },
     "plusWellness": {
-      "title": "Plus feature",
-      "message": "Upgrade to Plus to share how you feel with your check-in."
+      "title": "Advanced feature",
+      "message": "Available in the full version: share how you feel with your check-in."
     },
     "tripMode": {
       "statuses": {
@@ -403,9 +403,9 @@
       "shareButton": "Compartir enlace"
     },
     "plusFeature": {
-      "title": "Plus feature",
-      "notifications": "Upgrade to Plus to control contact check-in notifications.",
-      "location": "Upgrade to Plus to enable location sharing for a contact."
+      "title": "Advanced feature",
+      "notifications": "Available in the full version: contact check-in notifications.",
+      "location": "Available in the full version: location sharing for contacts."
     }
   },
   "profile": {
@@ -481,7 +481,7 @@
     "theme": "Tema",
     "homeStyle": {
       "title": "Elegir vista de inicio",
-      "plusBadge": "Plus",
+      "plusBadge": "Vista previa",
       "simple": {
         "title": "Simple",
         "description": "Check-in con un toque, sin distracciones."
@@ -701,15 +701,15 @@
     }
   },
   "plus": {
-    "title": "Tryggd Plus",
+    "title": "Tryggd Preview",
     "subtitle": "Additional features for richer daily check-ins",
-    "badge": "Plus",
-    "heading": "Prueba Plus gratis",
-    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "badge": "Vista previa",
+    "heading": "Prueba las funciones avanzadas",
+    "description": "Tryggd Preview adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Plus Preview",
-      "message": "Plus Preview es gratis durante el piloto. No se necesitan datos de pago ni cargo automático.",
-      "button": "Prueba Plus gratis",
+      "title": "Vista previa",
+      "message": "Preview es gratis durante el piloto. No se necesitan datos de pago ni cargo automático.",
+      "button": "Prueba las funciones avanzadas",
       "note": "Puedes volver a Basic plan en cualquier momento."
     },
     "features": {
@@ -752,38 +752,35 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Prueba Plus gratis",
-    "dialogIntro": "Prueba Tryggd Plus plan gratis ahora.\nNo se necesitan datos de pago ni cargo automático.",
+    "dialogTitle": "✨ Prueba las funciones avanzadas",
+    "dialogIntro": "Prueba Tryggd Preview features gratis ahora.\nNo se necesitan datos de pago ni cargo automático.",
     "dialogFreeSectionTitle": "Basic plan incluye:",
     "dialogFreeFeature1": "✓ Check-in   🔔 notificaciones de actualización de contactos   👥 hasta 5 contactos",
     "dialogFreeFeature2": "",
     "dialogFreeFeature3": "",
     "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus plan incluye todo lo de Basic plan, más:",
+    "dialogPlusSectionTitle": "Preview features incluye todo lo de Basic plan, más:",
     "dialogFeature1": "🌿 Modo diario   ✈️ Modo viaje   ✋ Señal de ayuda",
     "dialogFeature2": "🙂 Actualizaciones de ánimo   📍 Compartir ubicación   👥 Más contactos",
     "dialogFeature3": "",
     "dialogFeature4": "",
-    "dialogPricingTitle": "Precio de Plus plan",
-    "dialogPricingNote": "Después del {{deadline}}, si eliges continuar con Plus plan:",
     "dialogPricingMonthly": "US$2.99 / mes",
     "dialogPricingYearly": "US$19.99 / año",
-    "dialogSupportNote": "Plus plan es una forma de apoyar el funcionamiento y la mejora continua de Tryggd.\nQueremos mantener Tryggd útil, estable, fiable y sin publicidad.",
-    "dialogPreviewNote": "Plus Preview está abierto hasta el {{deadline}}.\nCuando termine la preview, tu cuenta volverá automáticamente a Basic plan.",
-    "activate": "Prueba Plus gratis",
+    "dialogSupportNote": "Preview features es una forma de apoyar el funcionamiento y la mejora continua de Tryggd.\nQueremos mantener Tryggd útil, estable, fiable y sin publicidad.",
+    "dialogPreviewNote": "Preview está abierto hasta el {{deadline}}.\nCuando termine la preview, tu cuenta volverá automáticamente a Basic plan.",
+    "activate": "Prueba las funciones avanzadas",
     "notNow": "Usar Basic plan",
-    "activatedMessage": "Plus ya está activo. El inicio se ha configurado en Mejorado. Puedes volver a Simple en cualquier momento desde Ajustes.",
-    "expiredTitle": "Vista previa de Plus finalizada",
+    "activatedMessage": "La vista previa está activa. El inicio se ha configurado en Mejorado. Puedes volver a Simple en cualquier momento desde Ajustes.",
+    "expiredTitle": "Vista previa finalizada",
     "expiredBody": "Puedes seguir usando Tryggd Basic plan, incluyendo check-in, contactos de confianza y actualizaciones básicas.\n\nTus check-ins y actividad anteriores no se eliminan.",
     "expiredButton": "Entendido",
-    "settingsRowTitle": "Vista previa de Plus",
-    "settingsRowSubtitle": "Prueba las funciones Plus actuales gratis durante el piloto.",
+    "settingsRowTitle": "Vista previa",
+    "settingsRowSubtitle": "Prueba las funciones avanzadas actuales gratis durante el piloto.",
     "settingsRowAction": "Iniciar vista previa",
-    "activeRowTitle": "Vista previa de Plus activa",
-    "activeRowSubtitle": "Las funciones Plus actuales están disponibles durante el piloto.",
+    "activeRowTitle": "Vista previa activa",
+    "activeRowSubtitle": "Las funciones avanzadas actuales están disponibles durante el piloto.",
     "dialogFeature5": "",
-    "dialogFeature6": "",
-    "subscriptionNote": "Se requerirá una suscripción para continuar usando las funciones Plus."
+    "dialogFeature6": ""
   },
   "onboarding": {
     "skip": "Omitir",
@@ -819,8 +816,8 @@
       },
       "free": {
         "eyebrow": "Simple por defecto",
-        "title": "Plus Preview",
-        "body": "Tryggd Free mantiene lo básico simple. Durante el piloto, puedes previsualizar las funciones Plus:",
+        "title": "Preview",
+        "body": "Tryggd Free mantiene lo básico simple. Durante el piloto, puedes previsualizar las funciones avanzadas:",
         "freeSummary": "Free: check-in, contactos de confianza, estado básico",
         "bodyFreeSuffix": " mantiene lo básico simple.",
         "bodyPilotPrefix": "Durante el piloto, previsualiza ",
@@ -831,7 +828,7 @@
           "three": "🙂 Actualizaciones de estado de ánimo",
           "four": "⚙️ Más control de compartición"
         },
-        "footer": "Plus Preview es opcional."
+        "footer": "Preview es opcional."
       }
     },
     "disclaimer": {
@@ -854,7 +851,7 @@
   "watchOver": {
     "toggle": "Vigilar",
     "toggleHint": "Recibe una notificación si {{name}} no ha registrado su entrada en un día.",
-    "limitReached": "Puedes vigilar a {{max}} persona con el plan gratuito. Actualiza a Plus para ilimitado.",
+    "limitReached": "Puedes vigilar a {{max}} persona con el plan gratuito. Disponible en la versión completa.",
     "notification": {
       "day1_one": "{{name}} has not checked in today.",
       "day1_other": "{{count}} people have not checked in today.",

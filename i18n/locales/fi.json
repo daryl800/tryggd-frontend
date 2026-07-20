@@ -116,8 +116,8 @@
       "summaryWithStatus": "Matkalla · {{status}}"
     },
     "plusWellness": {
-      "title": "Plus feature",
-      "message": "Upgrade to Plus to share how you feel with your check-in."
+      "title": "Advanced feature",
+      "message": "Available in the full version: share how you feel with your check-in."
     },
     "tripMode": {
       "statuses": {
@@ -404,9 +404,9 @@
       "shareButton": "Jaa linkki"
     },
     "plusFeature": {
-      "title": "Plus feature",
-      "notifications": "Upgrade to Plus to control contact check-in notifications.",
-      "location": "Upgrade to Plus to enable location sharing for a contact."
+      "title": "Advanced feature",
+      "notifications": "Available in the full version: contact check-in notifications.",
+      "location": "Available in the full version: location sharing for contacts."
     }
   },
   "profile": {
@@ -482,7 +482,7 @@
     "theme": "Teema",
     "homeStyle": {
       "title": "Valitse kotinäkymä",
-      "plusBadge": "Plus",
+      "plusBadge": "Esikatselu",
       "simple": {
         "title": "Yksinkertainen",
         "description": "Yhden napautuksen kuittaus, ei häiriötekijöitä."
@@ -704,15 +704,15 @@
     }
   },
   "plus": {
-    "title": "Tryggd Plus",
+    "title": "Tryggd Preview",
     "subtitle": "Additional features for richer daily check-ins",
-    "badge": "Plus",
-    "heading": "Kokeile Plus ilmaiseksi",
-    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "badge": "Esikatselu",
+    "heading": "Kokeile lisäominaisuuksia",
+    "description": "Tryggd Preview adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Plus Preview",
-      "message": "Plus Preview on pilotin aikana ilmainen. Maksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
-      "button": "Kokeile Plus ilmaiseksi",
+      "title": "Esikatselu",
+      "message": "Preview on pilotin aikana ilmainen. Maksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+      "button": "Kokeile lisäominaisuuksia",
       "note": "Voit palata Basic planiin milloin tahansa."
     },
     "features": {
@@ -755,38 +755,35 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Kokeile Plus ilmaiseksi",
-    "dialogIntro": "Kokeile Tryggd Plus plania ilmaiseksi nyt.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
+    "dialogTitle": "✨ Kokeile lisäominaisuuksia",
+    "dialogIntro": "Kokeile Tryggd Preview featuresia ilmaiseksi nyt.\nMaksutietoja ei tarvita, eikä automaattista veloitusta tehdä.",
     "dialogFreeSectionTitle": "Basic plan sisältää:",
     "dialogFreeFeature1": "✓ Kirjautuminen   🔔 kontaktien päivitysilmoitukset   👥 enintään 5 kontaktia",
     "dialogFreeFeature2": "",
     "dialogFreeFeature3": "",
     "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus plan sisältää kaiken Basic planista sekä lisäksi:",
+    "dialogPlusSectionTitle": "Preview features sisältää kaiken Basic planista sekä lisäksi:",
     "dialogFeature1": "🌿 Päivittäinen tila   ✈️ Matkatila   ✋ Hätäsignaali",
     "dialogFeature2": "🙂 Mielialan päivitykset   📍 Sijainnin jakaminen   👥 Lisää kontakteja",
     "dialogFeature3": "",
     "dialogFeature4": "",
-    "dialogPricingTitle": "Plus plan -hinta",
-    "dialogPricingNote": "{{deadline}} jälkeen, jos valitset jatkaa Plus planilla:",
     "dialogPricingMonthly": "US$2.99 / kuukausi",
     "dialogPricingYearly": "US$19.99 / vuosi",
-    "dialogSupportNote": "Plus plan on tapa tukea Tryggdin jatkuvaa toimintaa ja kehittämistä.\nHaluamme pitää Tryggdin hyödyllisenä, vakaana, luotettavana ja mainoksettomana.",
-    "dialogPreviewNote": "Plus Preview on avoinna {{deadline}} asti.\nPreview-jakson päättyessä tilisi palaa automaattisesti Basic planiin.",
-    "activate": "Kokeile Plus ilmaiseksi",
+    "dialogSupportNote": "Preview features on tapa tukea Tryggdin jatkuvaa toimintaa ja kehittämistä.\nHaluamme pitää Tryggdin hyödyllisenä, vakaana, luotettavana ja mainoksettomana.",
+    "dialogPreviewNote": "Preview on avoinna {{deadline}} asti.\nPreview-jakson päättyessä tilisi palaa automaattisesti Basic planiin.",
+    "activate": "Kokeile lisäominaisuuksia",
     "notNow": "Käytä Basic plania",
-    "activatedMessage": "Plus on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
-    "expiredTitle": "Plus-esikatselu on päättynyt",
+    "activatedMessage": "Esikatselu on nyt aktiivinen. Koti on asetettu Laajennetuksi. Voit vaihtaa takaisin Yksinkertaiseksi milloin tahansa Asetuksista.",
+    "expiredTitle": "Esikatselu on päättynyt",
     "expiredBody": "Voit jatkaa Tryggd Basic planin käyttöä, mukaan lukien kirjautuminen, luotetut kontaktit ja peruspäivitykset.\n\nAiemmat kirjautumisesi ja toimintasi eivät poistu.",
     "expiredButton": "Selvä",
-    "settingsRowTitle": "Plus-esikatselu",
-    "settingsRowSubtitle": "Kokeile nykyisiä Plus-ominaisuuksia ilmaiseksi esikatselujakson aikana.",
+    "settingsRowTitle": "Esikatselu",
+    "settingsRowSubtitle": "Kokeile nykyisiä lisäominaisuuksia ilmaiseksi esikatselujakson aikana.",
     "settingsRowAction": "Aloita esikatselu",
-    "activeRowTitle": "Plus-esikatselu aktiivinen",
-    "activeRowSubtitle": "Nykyiset Plus-ominaisuudet ovat saatavilla esikatselujakson aikana.",
+    "activeRowTitle": "Esikatselu aktiivinen",
+    "activeRowSubtitle": "Nykyiset lisäominaisuudet ovat saatavilla esikatselujakson aikana.",
     "dialogFeature5": "",
-    "dialogFeature6": "",
-    "subscriptionNote": "Tilaus vaaditaan Plus-ominaisuuksien jatkamiseen."
+    "dialogFeature6": ""
   },
   "onboarding": {
     "skip": "Ohita",
@@ -822,8 +819,8 @@
       },
       "free": {
         "eyebrow": "Yksinkertainen oletuksena",
-        "title": "Plus Preview",
-        "body": "Tryggd Free pitää perusasiat yksinkertaisina. Pilottijakson aikana voit esikatsella Plus-ominaisuuksia:",
+        "title": "Preview",
+        "body": "Tryggd Free pitää perusasiat yksinkertaisina. Pilottijakson aikana voit esikatsella lisäominaisuuksia:",
         "freeSummary": "Free: kuittaus, luotetut kontaktit, perustila",
         "bodyFreeSuffix": " pitää perusasiat yksinkertaisina.",
         "bodyPilotPrefix": "Pilottijakson aikana, esikatsele ",
@@ -834,7 +831,7 @@
           "three": "🙂 Mieliala-päivitykset",
           "four": "⚙️ Enemmän jakamisen hallintaa"
         },
-        "footer": "Plus Preview on valinnainen."
+        "footer": "Preview on valinnainen."
       }
     },
     "disclaimer": {
@@ -857,7 +854,7 @@
   "watchOver": {
     "toggle": "Seuraa",
     "toggleHint": "Saat ilmoituksen, jos {{name}} ei ole kirjautunut päivään.",
-    "limitReached": "Voit seurata {{max}} henkilöä ilmaisella suunnitelmalla. Päivitä Plus-versioon rajoittamattomasti.",
+    "limitReached": "Voit seurata {{max}} henkilöä ilmaisella suunnitelmalla. Täysversiossa rajoittamattomasti.",
     "notification": {
       "day1_one": "{{name}} has not checked in today.",
       "day1_other": "{{count}} people have not checked in today.",

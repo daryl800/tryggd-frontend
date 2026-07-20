@@ -82,8 +82,8 @@
       "summaryWithStatus": "旅行中 · {{status}}"
     },
     "plusWellness": {
-      "title": "Plus 功能",
-      "message": "升级到 Plus，让您在打卡时分享今天的感受。"
+      "title": "高级功能",
+      "message": "完整版功能：在打卡时分享今天的感受。"
     },
     "reset": "重置",
     "timer": "计时器",
@@ -371,9 +371,9 @@
       }
     },
     "plusFeature": {
-      "title": "Plus 功能",
-      "notifications": "升级到 Plus，才能控制联系人打卡通知。",
-      "location": "升级到 Plus，才能为联系人启用位置分享。"
+      "title": "高级功能",
+      "notifications": "完整版功能：控制联系人打卡通知。",
+      "location": "完整版功能：为联系人启用位置分享。"
     },
     "success": {
       "requestSent": {
@@ -534,7 +534,7 @@
     "theme": "主题",
     "homeStyle": {
       "title": "选择主页显示",
-      "plusBadge": "Plus",
+      "plusBadge": "预览",
       "simple": {
         "title": "简易",
         "description": "一键打卡，没有多余干扰。"
@@ -606,15 +606,15 @@
     "done": "完成"
   },
   "plus": {
-    "title": "Tryggd Plus",
-    "subtitle": "Basic plan 保持实用且不加入广告。Plus plan 提供更多联系方式，并支持 Tryggd 持续改善。",
-    "badge": "Plus",
-    "heading": "免费试用 Plus",
+    "title": "Tryggd Preview",
+    "subtitle": "Basic plan 保持实用且不加入广告。Preview features 提供更多联系方式，并支持 Tryggd 持续改善。",
+    "badge": "预览",
+    "heading": "免费体验高级功能",
     "description": "试用更多分享功能，同时保留原本简单的打卡流程。",
     "comingSoon": {
-      "title": "Plus 预览",
-      "message": "试用期间可免费使用 Plus Preview。不需要付款资料，也不会自动收费。",
-      "button": "免费试用 Plus",
+      "title": "预览",
+      "message": "试用期间可免费使用 Preview。不需要付款资料，也不会自动收费。",
+      "button": "免费体验高级功能",
       "note": "你可以随时回到 Basic plan。"
     },
     "features": {
@@ -838,8 +838,8 @@
       },
       "free": {
         "eyebrow": "默认保持简单",
-        "title": "Plus 预览",
-        "body": "Tryggd Free 保留简单基本功能。试用期间，你可以预览 Plus 功能：",
+        "title": "预览",
+        "body": "Tryggd Free 保留简单基本功能。试用期间，你可以预览高级功能：",
         "freeSummary": "Free：打卡、信任联系人、基本状态",
         "bodyFreeSuffix": " 保留简单基本功能。",
         "bodyPilotPrefix": "试用期间，预览 ",
@@ -850,7 +850,7 @@
           "three": "🙂 心情更新",
           "four": "⚙️ 更多分享控制"
         },
-        "footer": "Plus 预览可自由选择。"
+        "footer": "预览可自由选择。"
       }
     },
     "disclaimer": {
@@ -871,43 +871,40 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ 免费试用 Plus",
-    "dialogIntro": "现在可以免费试用 Tryggd Plus plan。\n不需要付款资料，也不会自动收费。",
+    "dialogTitle": "✨ 免费体验高级功能",
+    "dialogIntro": "现在可以免费试用 Tryggd Preview features。\n不需要付款资料，也不会自动收费。",
     "dialogFreeSectionTitle": "Basic plan 包括：",
     "dialogFreeFeature1": "✓ 打卡   🔔 亲友即时收到打卡通知   👥 5位联系人",
     "dialogFreeFeature2": "",
     "dialogFreeFeature3": "",
     "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus plan 包括 Basic plan 全部功能，并加入：",
+    "dialogPlusSectionTitle": "Preview features 包括 Basic plan 全部功能，并加入：",
     "dialogFeature1": "🌿 日常模式   ✈️ 出行模式   ✋ 求助功能",
     "dialogFeature2": "🙂 心情更新   📍 位置分享   👥 更多联系人",
     "dialogFeature3": "",
     "dialogFeature4": "",
     "dialogFeature5": "",
     "dialogFeature6": "",
-    "dialogPricingTitle": "Plus plan 价格",
-    "dialogPricingNote": "{{deadline}} 后，如选择继续使用 Plus plan：",
     "dialogPricingMonthly": "US$2.99 / 月",
     "dialogPricingYearly": "US$19.99 / 年",
-    "dialogSupportNote": "Plus plan 是支持 Tryggd 持续运作和改善的一种方式。\n我们希望保持 Tryggd 实用、稳定、可靠，并且不加入广告。",
-    "dialogPreviewNote": "Plus 预览开放至 {{deadline}}。\n预览结束后，账户会自动回到 Basic plan。",
-    "activate": "免费试用 Plus",
+    "dialogSupportNote": "Preview features 是支持 Tryggd 持续运作和改善的一种方式。\n我们希望保持 Tryggd 实用、稳定、可靠，并且不加入广告。",
+    "dialogPreviewNote": "预览开放至 {{deadline}}。\n预览结束后，账户会自动回到基础版本。",
+    "activate": "免费体验高级功能",
     "notNow": "使用 Basic plan",
-    "activatedMessage": "Plus 已开启。主页已切换到增强显示，你可以在设置中随时切换回简易显示。",
-    "expiredTitle": "Plus 预览已结束",
+    "activatedMessage": "预览已开启。主页已切换到增强显示，你可以在设置中随时切换回简易显示。",
+    "expiredTitle": "预览已结束",
     "expiredBody": "你可以继续使用 Tryggd Basic plan，包括一键打卡、信任联系人和基本动态。\n\n之前的打卡和动态记录不会被移除。",
     "expiredButton": "知道了",
-    "settingsRowTitle": "Plus 预览",
-    "settingsRowSubtitle": "试用期间可免费体验目前的 Plus 功能。",
+    "settingsRowTitle": "预览",
+    "settingsRowSubtitle": "试用期间可免费体验目前的高级功能。",
     "settingsRowAction": "开始预览",
-    "activeRowTitle": "Plus 预览进行中",
-    "activeRowSubtitle": "试用期间可使用目前的 Plus 功能。",
-    "subscriptionNote": "继续使用 Plus 功能需要订阅。"
+    "activeRowTitle": "预览进行中",
+    "activeRowSubtitle": "试用期间可使用目前的高级功能。"
   },
   "watchOver": {
     "toggle": "关注",
     "toggleHint": "若 {{name}} 超过一天未打卡，您将收到通知。",
-    "limitReached": "免费方案可关注 {{max}} 位联系人。升级至 Plus 可无限关注。",
+    "limitReached": "免费方案可关注 {{max}} 位联系人。完整版可无限关注。",
     "notification": {
       "day1_one": "{{name}} has not checked in today.",
       "day1_other": "{{count}} people have not checked in today.",

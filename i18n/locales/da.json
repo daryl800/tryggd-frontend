@@ -116,8 +116,8 @@
       "summaryWithStatus": "På rejse · {{status}}"
     },
     "plusWellness": {
-      "title": "Plus feature",
-      "message": "Upgrade to Plus to share how you feel with your check-in."
+      "title": "Advanced feature",
+      "message": "Available in the full version: share how you feel with your check-in."
     },
     "tripMode": {
       "statuses": {
@@ -404,9 +404,9 @@
       "shareButton": "Del link"
     },
     "plusFeature": {
-      "title": "Plus feature",
-      "notifications": "Upgrade to Plus to control contact check-in notifications.",
-      "location": "Upgrade to Plus to enable location sharing for a contact."
+      "title": "Advanced feature",
+      "notifications": "Available in the full version: contact check-in notifications.",
+      "location": "Available in the full version: location sharing for contacts."
     }
   },
   "profile": {
@@ -482,7 +482,7 @@
     "theme": "Tema",
     "homeStyle": {
       "title": "Vælg hjemmevisning",
-      "plusBadge": "Plus",
+      "plusBadge": "Forhåndsvisning",
       "simple": {
         "title": "Enkel",
         "description": "Et-tryk-tjek-in uden distraktioner."
@@ -704,15 +704,15 @@
     }
   },
   "plus": {
-    "title": "Tryggd Plus",
+    "title": "Tryggd Preview",
     "subtitle": "Additional features for richer daily check-ins",
-    "badge": "Plus",
-    "heading": "Prøv Plus gratis",
-    "description": "Tryggd Plus adds more context to daily check-ins without changing the core flow.",
+    "badge": "Forhåndsvisning",
+    "heading": "Prøv avancerede funktioner",
+    "description": "Tryggd Preview adds more context to daily check-ins without changing the core flow.",
     "comingSoon": {
-      "title": "Plus Preview",
-      "message": "Plus Preview er gratis under pilotperioden. Ingen betalingsoplysninger kræves, ingen automatisk opkrævning.",
-      "button": "Prøv Plus gratis",
+      "title": "Forhåndsvisning",
+      "message": "Preview er gratis under pilotperioden. Ingen betalingsoplysninger kræves, ingen automatisk opkrævning.",
+      "button": "Prøv avancerede funktioner",
       "note": "Du kan til enhver tid vende tilbage til Basic plan."
     },
     "features": {
@@ -755,38 +755,35 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ Prøv Plus gratis",
-    "dialogIntro": "Prøv Tryggd Plus plan gratis nu.\nIngen betalingsoplysninger kræves, ingen automatisk opkrævning.",
+    "dialogTitle": "✨ Prøv avancerede funktioner",
+    "dialogIntro": "Prøv Tryggd Preview features gratis nu.\nIngen betalingsoplysninger kræves, ingen automatisk opkrævning.",
     "dialogFreeSectionTitle": "Basic plan inkluderer:",
     "dialogFreeFeature1": "✓ Check-in   🔔 kontaktopdateringsnotifikationer   👥 op til 5 kontakter",
     "dialogFreeFeature2": "",
     "dialogFreeFeature3": "",
     "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus plan inkluderer alt i Basic plan plus:",
+    "dialogPlusSectionTitle": "Preview features inkluderer alt i Basic plan plus:",
     "dialogFeature1": "🌿 Daglig tilstand   ✈️ Rejsetilstand   ✋ Hjælpesignal",
     "dialogFeature2": "🙂 Stemningsopdateringer   📍 Deling af placering   👥 Flere kontakter",
     "dialogFeature3": "",
     "dialogFeature4": "",
-    "dialogPricingTitle": "Plus plan-pris",
-    "dialogPricingNote": "Efter {{deadline}}, hvis du vælger at fortsætte med Plus plan:",
     "dialogPricingMonthly": "US$2.99 / måned",
     "dialogPricingYearly": "US$19.99 / år",
-    "dialogSupportNote": "Plus plan er en måde at støtte Tryggds fortsatte drift og forbedring på.\nVi ønsker at holde Tryggd nyttig, stabil, pålidelig og reklamefri.",
-    "dialogPreviewNote": "Plus Preview er åben indtil {{deadline}}.\nNår preview-perioden slutter, vender din konto automatisk tilbage til Basic plan.",
-    "activate": "Prøv Plus gratis",
+    "dialogSupportNote": "Preview features er en måde at støtte Tryggds fortsatte drift og forbedring på.\nVi ønsker at holde Tryggd nyttig, stabil, pålidelig og reklamefri.",
+    "dialogPreviewNote": "Preview er åben indtil {{deadline}}.\nNår preview-perioden slutter, vender din konto automatisk tilbage til Basic plan.",
+    "activate": "Prøv avancerede funktioner",
     "notNow": "Brug Basic plan",
-    "activatedMessage": "Plus er nu aktivt. Startskærmen er skiftet til Udvidet, så du kan prøve flere delingsmuligheder. Du kan skifte tilbage til Simpel når som helst i Indstillinger.",
-    "expiredTitle": "Plus-forhåndsvisning er slut",
+    "activatedMessage": "Forhåndsvisning er nu aktiv. Startskærmen er skiftet til Udvidet, så du kan prøve flere delingsmuligheder. Du kan skifte tilbage til Simpel når som helst i Indstillinger.",
+    "expiredTitle": "Forhåndsvisning er slut",
     "expiredBody": "Du kan fortsætte med Tryggd Basic plan, inklusive check-in, betroede kontakter og grundlæggende opdateringer.\n\nDine tidligere check-ins og aktiviteter fjernes ikke.",
     "expiredButton": "Forstået",
-    "settingsRowTitle": "Plus-forhåndsvisning",
-    "settingsRowSubtitle": "Prøv nuværende Plus-funktioner gratis i forhåndsvisningsperioden.",
+    "settingsRowTitle": "Forhåndsvisning",
+    "settingsRowSubtitle": "Prøv nuværende avancerede funktioner gratis i forhåndsvisningsperioden.",
     "settingsRowAction": "Start forhåndsvisning",
-    "activeRowTitle": "Plus-forhåndsvisning aktiv",
-    "activeRowSubtitle": "Nuværende Plus-funktioner er tilgængelige i forhåndsvisningsperioden.",
+    "activeRowTitle": "Forhåndsvisning aktiv",
+    "activeRowSubtitle": "Nuværende avancerede funktioner er tilgængelige i forhåndsvisningsperioden.",
     "dialogFeature5": "",
-    "dialogFeature6": "",
-    "subscriptionNote": "Et abonnement vil være nødvendigt for at fortsætte med at bruge Plus-funktioner."
+    "dialogFeature6": ""
   },
   "onboarding": {
     "skip": "Spring over",
@@ -822,8 +819,8 @@
       },
       "free": {
         "eyebrow": "Enkelt som standard",
-        "title": "Plus Preview",
-        "body": "Tryggd Free holder det enkelt. Under pilotprojektet kan du forhåndsvise Plus-funktioner:",
+        "title": "Preview",
+        "body": "Tryggd Free holder det enkelt. Under pilotprojektet kan du forhåndsvise avancerede funktioner:",
         "freeSummary": "Free: check-in, betroede kontakter, grundlæggende status",
         "bodyFreeSuffix": " holder det enkelt.",
         "bodyPilotPrefix": "Under pilotprojektet, forhåndsvis ",
@@ -834,7 +831,7 @@
           "three": "🙂 Humøropdateringer",
           "four": "⚙️ Mere delingskontrol"
         },
-        "footer": "Plus Preview er valgfrit."
+        "footer": "Preview er valgfrit."
       }
     },
     "disclaimer": {
@@ -857,7 +854,7 @@
   "watchOver": {
     "toggle": "Hold øje med",
     "toggleHint": "Få besked hvis {{name}} ikke har tjekket ind i en dag.",
-    "limitReached": "Du kan holde øje med {{max}} person på gratisplanen. Opgrader til Plus for ubegrænset.",
+    "limitReached": "Du kan holde øje med {{max}} person på gratisplanen. Tilgængeligt i fuld version.",
     "notification": {
       "day1_one": "{{name}} has not checked in today.",
       "day1_other": "{{count}} people have not checked in today.",

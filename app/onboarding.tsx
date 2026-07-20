@@ -83,9 +83,9 @@ export default function OnboardingScreen() {
         icon: 'leaf',
         variant: 'plus-preview',
         eyebrow: t('onboarding.slides.free.eyebrow', { defaultValue: 'Simple by default' }),
-        title: t('onboarding.slides.free.title', { defaultValue: 'Plus Preview' }),
+        title: t('onboarding.slides.free.title', { defaultValue: 'Preview' }),
         body: t('onboarding.slides.free.body', {
-          defaultValue: 'Tryggd Free keeps the basics simple. During the pilot, you can preview Plus features:',
+          defaultValue: 'Tryggd Free keeps the basics simple. During the pilot, you can preview advanced features:',
         }),
         highlights: [
           t('onboarding.slides.free.points.one', { defaultValue: '✈️ Trip Mode' }),

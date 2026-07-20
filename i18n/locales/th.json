@@ -72,8 +72,8 @@
       "summaryWithStatus": "กำลังเดินทาง · {{status}}"
     },
     "plusWellness": {
-      "title": "ฟีเจอร์ Plus",
-      "message": "อัปเกรดเป็น Plus เพื่อแชร์ความรู้สึกของคุณพร้อมการเช็กอิน"
+      "title": "ฟีเจอร์ขั้นสูง",
+      "message": "ฟีเจอร์เวอร์ชันเต็ม: แชร์ความรู้สึกพร้อมการเช็กอิน"
     },
     "reset": "รีเซ็ต",
     "timer": "ตัวจับเวลา",
@@ -367,9 +367,9 @@
       "ownerLimitReached": "รายชื่อผู้ติดต่อของคนนี้เต็มแล้ว ขณะนี้ไม่สามารถรับผู้ติดต่อใหม่ได้"
     },
     "plusFeature": {
-      "title": "ฟีเจอร์ Plus",
-      "notifications": "อัปเกรดเป็น Plus เพื่อควบคุมการแจ้งเตือนเช็กอินของผู้ติดต่อ",
-      "location": "อัปเกรดเป็น Plus เพื่อเปิดการแชร์ตำแหน่งสำหรับผู้ติดต่อ"
+      "title": "ฟีเจอร์ขั้นสูง",
+      "notifications": "ฟีเจอร์เวอร์ชันเต็ม: ควบคุมการแจ้งเตือนเช็กอิน",
+      "location": "ฟีเจอร์เวอร์ชันเต็ม: เปิดการแชร์ตำแหน่ง"
     },
     "messages": {
       "contactDefault": "ผู้ติดต่อนี้"
@@ -481,7 +481,7 @@
     "theme": "ธีม",
     "homeStyle": {
       "title": "เลือกมุมมองหน้าหลัก",
-      "plusBadge": "Plus",
+      "plusBadge": "ตัวอย่าง",
       "simple": {
         "title": "เรียบง่าย",
         "description": "เช็กอินด้วยแท็บเดียว ไม่มีสิ่งรบกวน"
@@ -553,15 +553,15 @@
     "done": "เสร็จ"
   },
   "plus": {
-    "title": "Tryggd Plus",
+    "title": "Tryggd Preview",
     "subtitle": "ฟีเจอร์เพิ่มเติมสำหรับการเช็กอินประจำวันแบบละเอียดขึ้น",
-    "badge": "Plus",
-    "heading": "ลองใช้ Plus ฟรี",
-    "description": "Tryggd Plus เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
+    "badge": "ตัวอย่าง",
+    "heading": "ลองใช้คุณสมบัติขั้นสูงฟรี",
+    "description": "Tryggd Preview เพิ่มบริบทให้การเช็กอินประจำวันโดยไม่เปลี่ยนขั้นตอนหลัก",
     "comingSoon": {
-      "title": "Plus Preview",
-      "message": "Plus Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
-      "button": "ลองใช้ Plus ฟรี",
+      "title": "ตัวอย่าง",
+      "message": "Preview ใช้งานฟรีในช่วงทดลอง ไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+      "button": "ลองใช้คุณสมบัติขั้นสูงฟรี",
       "note": "คุณสามารถกลับไปใช้ Basic plan ได้ทุกเมื่อ"
     },
     "features": {
@@ -752,38 +752,35 @@
     }
   },
   "pilotPreview": {
-    "dialogTitle": "✨ ลองใช้ Plus ฟรี",
-    "dialogIntro": "ลองใช้ Tryggd Plus plan ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
+    "dialogTitle": "✨ ลองใช้คุณสมบัติขั้นสูงฟรี",
+    "dialogIntro": "ลองใช้ Tryggd Preview features ได้ฟรีตอนนี้\nไม่ต้องใส่ข้อมูลการชำระเงิน และไม่มีการหักเงินอัตโนมัติ",
     "dialogFreeSectionTitle": "Basic plan รวมถึง:",
     "dialogFreeFeature1": "✓ เช็คอิน   🔔 แจ้งเตือนอัปเดตผู้ติดต่อ   👥 สูงสุด 5 ผู้ติดต่อ",
     "dialogFreeFeature2": "",
     "dialogFreeFeature3": "",
     "dialogFreeFeature4": "",
-    "dialogPlusSectionTitle": "Plus plan รวมทุกอย่างใน Basic plan และเพิ่ม:",
+    "dialogPlusSectionTitle": "Preview features รวมทุกอย่างใน Basic plan และเพิ่ม:",
     "dialogFeature1": "🌿 โหมดประจำวัน   ✈️ โหมดการเดินทาง   ✋ สัญญาณช่วยเหลือ",
     "dialogFeature2": "🙂 อัปเดตอารมณ์   📍 แชร์ตำแหน่ง   👥 ผู้ติดต่อเพิ่มเติม",
     "dialogFeature3": "",
     "dialogFeature4": "",
-    "dialogPricingTitle": "ราคา Plus plan",
-    "dialogPricingNote": "หลัง {{deadline}} หากคุณเลือกใช้ Plus plan ต่อ:",
     "dialogPricingMonthly": "US$2.99 / เดือน",
     "dialogPricingYearly": "US$19.99 / ปี",
-    "dialogSupportNote": "Plus plan เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
-    "dialogPreviewNote": "Plus Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
-    "activate": "ลองใช้ Plus ฟรี",
+    "dialogSupportNote": "Preview features เป็นวิธีหนึ่งในการสนับสนุนการดำเนินงานและการพัฒนา Tryggd อย่างต่อเนื่อง\nเราต้องการให้ Tryggd มีประโยชน์ เสถียร เชื่อถือได้ และไม่มีโฆษณา",
+    "dialogPreviewNote": "Preview เปิดถึง {{deadline}}\nเมื่อสิ้นสุด Preview บัญชีของคุณจะกลับไปเป็น Basic plan โดยอัตโนมัติ",
+    "activate": "ลองใช้คุณสมบัติขั้นสูงฟรี",
     "notNow": "ใช้ Basic plan",
-    "activatedMessage": "Plus เปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
-    "expiredTitle": "การดูตัวอย่าง Plus สิ้นสุดแล้ว",
+    "activatedMessage": "ตัวอย่างเปิดใช้งานแล้ว หน้าหลักได้เปลี่ยนเป็นแบบเพิ่มเติม คุณสามารถเปลี่ยนกลับเป็นแบบง่ายได้ทุกเมื่อในการตั้งค่า",
+    "expiredTitle": "การดูตัวอย่างสิ้นสุดแล้ว",
     "expiredBody": "คุณยังสามารถใช้ Tryggd Basic plan ต่อได้ รวมถึงการเช็คอิน ผู้ติดต่อที่เชื่อถือได้ และการอัปเดตพื้นฐาน\n\nการเช็คอินและกิจกรรมก่อนหน้าของคุณจะไม่ถูกลบ",
     "expiredButton": "เข้าใจแล้ว",
-    "settingsRowTitle": "ดูตัวอย่าง Plus",
-    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ Plus ปัจจุบันฟรีในช่วงนำร่อง",
+    "settingsRowTitle": "ดูตัวอย่าง",
+    "settingsRowSubtitle": "ทดลองใช้ฟีเจอร์ขั้นสูงปัจจุบันฟรีในช่วงนำร่อง",
     "settingsRowAction": "เริ่มดูตัวอย่าง",
-    "activeRowTitle": "กำลังดูตัวอย่าง Plus",
-    "activeRowSubtitle": "ฟีเจอร์ Plus ปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
+    "activeRowTitle": "กำลังดูตัวอย่าง",
+    "activeRowSubtitle": "ฟีเจอร์ขั้นสูงปัจจุบันพร้อมใช้งานในช่วงนำร่อง",
     "dialogFeature5": "",
-    "dialogFeature6": "",
-    "subscriptionNote": "จำเป็นต้องมีการสมัครสมาชิกเพื่อใช้คุณสมบัติ Plus ต่อไป"
+    "dialogFeature6": ""
   },
   "onboarding": {
     "skip": "ข้าม",
@@ -819,8 +816,8 @@
       },
       "free": {
         "eyebrow": "เรียบง่ายตามค่าเริ่มต้น",
-        "title": "Plus Preview",
-        "body": "Tryggd Free รักษาความเรียบง่ายของพื้นฐาน ในช่วงการทดลอง คุณสามารถดูตัวอย่างคุณสมบัติ Plus ได้:",
+        "title": "Preview",
+        "body": "Tryggd Free รักษาความเรียบง่ายของพื้นฐาน ในช่วงการทดลอง คุณสามารถดูตัวอย่างคุณสมบัติขั้นสูง:",
         "freeSummary": "Free: เช็กอิน, ผู้ติดต่อที่เชื่อถือได้, สถานะพื้นฐาน",
         "bodyFreeSuffix": " รักษาความเรียบง่ายของพื้นฐาน",
         "bodyPilotPrefix": "ในช่วงการทดลอง ดูตัวอย่าง ",
@@ -831,7 +828,7 @@
           "three": "🙂 การอัปเดตอารมณ์",
           "four": "⚙️ การควบคุมการแชร์มากขึ้น"
         },
-        "footer": "Plus Preview เป็นทางเลือก"
+        "footer": "Preview เป็นทางเลือก"
       }
     },
     "disclaimer": {
@@ -854,7 +851,7 @@
   "watchOver": {
     "toggle": "ดูแล",
     "toggleHint": "รับการแจ้งเตือนหาก {{name}} ไม่ได้เช็คอินเป็นเวลาหนึ่งวัน",
-    "limitReached": "คุณสามารถดูแลได้ {{max}} คนในแผนฟรี อัปเกรดเป็น Plus เพื่อไม่จำกัด",
+    "limitReached": "คุณสามารถดูแลได้ {{max}} คนในแผนฟรี เวอร์ชันเต็มไม่จำกัด",
     "notification": {
       "day1_one": "{{name}} has not checked in today.",
       "day1_other": "{{count}} people have not checked in today.",
