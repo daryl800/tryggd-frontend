@@ -98,13 +98,21 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     )
 
-    const { data: entitlement } = await supabase
-      .from('user_entitlements')
-      .select('plan')
-      .eq('user_id', senderUserId)
-      .maybeSingle()
+    const [{ data: entitlement }, { data: senderProfilePlan }, { data: appSettings }] = await Promise.all([
+      supabase.from('user_entitlements').select('plan').eq('user_id', senderUserId).maybeSingle(),
+      supabase.from('profiles').select('pilot_preview_activated_at').eq('id', senderUserId).maybeSingle(),
+      supabase.from('app_settings').select('pilot_preview_enabled, pilot_preview_ends_at').eq('id', 1).maybeSingle(),
+    ])
 
-    if (entitlement?.plan !== 'plus') {
+    const hasPaidPlus = entitlement?.plan === 'plus'
+    const previewOpen =
+      appSettings?.pilot_preview_enabled === true &&
+      !!appSettings.pilot_preview_ends_at &&
+      new Date(appSettings.pilot_preview_ends_at).getTime() > Date.now()
+    const previewActivated = !!senderProfilePlan?.pilot_preview_activated_at
+    const isPlus = hasPaidPlus || (previewOpen && previewActivated)
+
+    if (!isPlus) {
       return new Response(JSON.stringify({ error: 'Emergency messages require Plus' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' },
