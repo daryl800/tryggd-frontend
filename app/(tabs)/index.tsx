@@ -2762,7 +2762,6 @@ export default function HomeScreen() {
               <View style={styles.pilotDialogNoteWrap}>
                 <Text style={styles.pilotDialogSupportNote}>{t('pilotPreview.dialogSupportNote' as any) as string}</Text>
                 <Text style={styles.pilotDialogPreviewNote}>{t('pilotPreview.dialogPreviewNote' as any, { deadline: pilotPreviewDeadline }) as string}</Text>
-                <Text style={styles.pilotDialogSubscriptionNote}>{t('pilotPreview.subscriptionNote' as any) as string}</Text>
               </View>
             </RNScrollView>
             <TouchableOpacity
@@ -4034,12 +4033,6 @@ const styles = StyleSheet.create({
     color: BaseColors.text.dark,
     fontWeight: '500',
     marginBottom: 8,
-  },
-  pilotDialogSubscriptionNote: {
-    fontSize: iosFontSize(13),
-    lineHeight: iosFontSize(19),
-    color: BaseColors.neutral[500],
-    marginBottom: 20,
   },
   pilotDialogActivateButton: {
     backgroundColor: BaseColors.primary,
