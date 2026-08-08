@@ -131,6 +131,26 @@
         "heading_home": "🏠 En route pour la maison",
         "trip_ended": "✅ Voyage terminé — rentré sain et sauf"
       }
+    },
+    "help": {
+      "callMeNowLabel": "J'AI BESOIN D'AIDE",
+      "callMeNowAccessLabel": "Avertissez vos contacts de confiance que vous avez besoin d'aide, quelle qu'en soit la raison.",
+      "callMeNowAccessHint": "Envoie immédiatement une alerte à tous les membres de votre cercle de confiance.",
+      "moneyHelpLabel": "ON ME DEMANDE D'ENVOYER DE L'ARGENT",
+      "moneyHelpAccessLabel": "Avertissez tous vos contacts de confiance que quelqu'un me demande d'envoyer de l'argent.",
+      "moneyHelpAccessHint": "Alerte votre cercle de confiance qu'on vous demande d'effectuer un paiement — ils vous appelleront avant que vous procédiez.",
+      "successBanner": "✓ ENVOYÉ — Vos contacts ont été notifiés.",
+      "errorMessage": "Impossible d'envoyer votre demande d'aide. Veuillez réessayer.",
+      "retryButton": "RÉESSAYER",
+      "retryLabel": "Essayer d'envoyer la demande d'aide à nouveau",
+      "disclaimer": "Pas pour les urgences médicales ou mortelles — contactez directement les services d'urgence locaux.",
+      "lastRequestPrefix": "Dernière demande",
+      "lastRequestCall": "Avait besoin d'aide",
+      "lastRequestMoney": "Alerte de virement bancaire 💸",
+      "noRequestsYet": "Aucune demande d'aide pour l'instant",
+      "attention": "Attention",
+      "statusNeedsHelp": "Besoin d'aide",
+      "statusMoney": "💰 virement"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "J'ai pris contact — tout va bien",
       "resolving": "Résolution...",
       "resolveError": "Impossible de marquer comme résolu. Réessayez."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "A BESOIN D'AIDE",
+      "labelMoneyTransfer": "ALERTE DE VIREMENT BANCAIRE",
+      "sentCall": "✋ Vous avez averti vos contacts que vous avez besoin d'aide",
+      "sentMoney": "❗ Vous avez envoyé une alerte de virement bancaire",
+      "receivedCall": "✋ {{name}} a besoin d'aide — veuillez le contacter",
+      "receivedMoney": "❗ {{name}} est peut-être en train d'être invité à envoyer de l'argent",
+      "todayRequests_one": "🆘 {{count}} demande d'aide aujourd'hui :",
+      "todayRequests_other": "🆘 {{count}} demandes d'aide aujourd'hui :"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Vous serez notifié si {{name}} ne pointe pas pendant un jour",
-      "watchOverDisabled": "Surveillance de {{name}} désactivée"
+      "watchOverDisabled": "Surveillance de {{name}} désactivée",
+      "helpAlertsEnabled": "{{name}} recevra vos alertes du mode aide",
+      "helpAlertsDisabled": "{{name}} ne recevra plus vos alertes du mode aide",
+      "helpAlertsTitle": "Alertes d'aide"
     },
     "invite": {
       "ready": "Invitation prête",

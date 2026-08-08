@@ -48,9 +48,11 @@ type ContactSlot = {
     checkin_notifications_enabled?: boolean;
     location_sharing_enabled?: boolean;
     watch_over_enabled?: boolean;
+    help_alerts_enabled?: boolean;
     toggling_notifications?: boolean;
     toggling_location?: boolean;
     toggling_watch_over?: boolean;
+    toggling_help_alerts?: boolean;
 };
 
 type ContactRequest = {
@@ -129,6 +131,7 @@ const ContactCard = memo(
         onToggleCheckinNotifications,
         onToggleLocationSharing,
         onToggleWatchOver,
+        onToggleHelpAlerts,
         onCreateRecoveryInvite,
         onSendEmergencyMessage,
         showCheckinNotificationControl,
@@ -154,6 +157,7 @@ const ContactCard = memo(
         onToggleCheckinNotifications?: (value: boolean) => void;
         onToggleLocationSharing?: (value: boolean) => void;
         onToggleWatchOver?: (value: boolean) => void;
+        onToggleHelpAlerts?: (value: boolean) => void;
         onCreateRecoveryInvite?: () => void;
         onSendEmergencyMessage?: () => void;
         showCheckinNotificationControl: boolean;
@@ -174,6 +178,29 @@ const ContactCard = memo(
             contact.display_name?.trim() || contact.username || contact.identifier || contact.email;
         const existingIdentifier = contact.username || contact.identifier;
         const lastAvatarTapRef = useRef(0);
+
+        // Scroll chevron state for the icon toggle row
+        const iconScrollViewWidthRef = useRef(0);
+        const iconContentWidthRef = useRef(0);
+        const [canScrollLeft, setCanScrollLeft] = useState(false);
+        const [canScrollRight, setCanScrollRight] = useState(false);
+
+        const handleIconScroll = useCallback((e: any) => {
+            const x = e.nativeEvent.contentOffset.x;
+            setCanScrollLeft(x > 1);
+            setCanScrollRight(x < iconContentWidthRef.current - iconScrollViewWidthRef.current - 1);
+        }, []);
+
+        const handleIconLayout = useCallback((e: any) => {
+            const w = e.nativeEvent.layout.width;
+            iconScrollViewWidthRef.current = w;
+            setCanScrollRight(iconContentWidthRef.current > w + 1);
+        }, []);
+
+        const handleIconContentSizeChange = useCallback((w: number) => {
+            iconContentWidthRef.current = w;
+            setCanScrollRight(w > iconScrollViewWidthRef.current + 1);
+        }, []);
 
         const handleAvatarPress = () => {
             if (!canSendEmergencyMessage) return;
@@ -289,7 +316,17 @@ const ContactCard = memo(
                                     )}
                                 </TouchableOpacity>
 
-                                <View style={styles.cardHeaderActions}>
+                                <View style={styles.cardHeaderActionsWrapper}>
+                                  <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    style={styles.cardHeaderActionsScroll}
+                                    contentContainerStyle={styles.cardHeaderActions}
+                                    onScroll={handleIconScroll}
+                                    scrollEventThrottle={16}
+                                    onLayout={handleIconLayout}
+                                    onContentSizeChange={handleIconContentSizeChange}
+                                  >
                                     {showCheckinNotificationControl && (
                                         <TouchableOpacity
                                             style={[
@@ -436,6 +473,26 @@ const ContactCard = memo(
                                             )}
                                         </TouchableOpacity>
                                     )}
+                                    {!isNewContact && (
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.headerActionButton,
+                                                contact.help_alerts_enabled !== false
+                                                    ? styles.helpAlertsToggleEnabled
+                                                    : styles.helpAlertsToggleDisabled,
+                                            ]}
+                                            onPress={() =>
+                                                onToggleHelpAlerts?.(!(contact.help_alerts_enabled !== false))
+                                            }
+                                            disabled={contact.toggling_help_alerts}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={styles.helpAlertsToggleIcon}>✋</Text>
+                                            {contact.help_alerts_enabled === false && (
+                                                <View style={styles.helpAlertsToggleSlash} />
+                                            )}
+                                        </TouchableOpacity>
+                                    )}
                                     <TouchableOpacity
                                         style={styles.headerActionButton}
                                         onPress={onCreateRecoveryInvite}
@@ -447,6 +504,21 @@ const ContactCard = memo(
                                             color={BaseColors.primary}
                                         />
                                     </TouchableOpacity>
+                                  </ScrollView>
+                                  {canScrollLeft ? (
+                                    <View style={styles.scrollChevronLeft} pointerEvents="none">
+                                      <View style={styles.scrollChevronBadge}>
+                                        <Ionicons name="chevron-back" size={14} color={BaseColors.neutral[600]} />
+                                      </View>
+                                    </View>
+                                  ) : null}
+                                  {canScrollRight ? (
+                                    <View style={styles.scrollChevronRight} pointerEvents="none">
+                                      <View style={styles.scrollChevronBadge}>
+                                        <Ionicons name="chevron-forward" size={14} color={BaseColors.neutral[600]} />
+                                      </View>
+                                    </View>
+                                  ) : null}
                                 </View>
                             </View>
                         </View>
@@ -674,7 +746,7 @@ export default function ContactsScreen() {
             const [contactsResult, incomingResult, outgoingResult] = await Promise.all([
                 supabase
                     .from('contacts')
-                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled, location_sharing_enabled, watch_over_enabled')
+                    .select('id, contact_user_id, contact_email, contact_display_name, checkin_notifications_enabled, location_sharing_enabled, watch_over_enabled, help_alerts_enabled')
                     .eq('owner_user_id', user.id)
                     .order('created_at'),
 
@@ -752,6 +824,8 @@ export default function ContactsScreen() {
                             row.location_sharing_enabled === true,
                         watch_over_enabled:
                             row.watch_over_enabled === true,
+                        help_alerts_enabled:
+                            row.help_alerts_enabled !== false,
                     })) || [];
 
                 setExistingContacts(contacts);
@@ -1597,6 +1671,76 @@ export default function ContactsScreen() {
         [existingContacts, fetchAllData, t, user?.id]
     );
 
+    const toggleContactHelpAlerts = useCallback(
+        async (index: number, enabled: boolean) => {
+            const contact = existingContacts[index];
+            if (!contact?.id) return;
+
+            setExistingContacts((prev) =>
+                prev.map((item, i) =>
+                    i === index
+                        ? { ...item, help_alerts_enabled: enabled, toggling_help_alerts: true }
+                        : item
+                )
+            );
+
+            const { data, error } = await supabase
+                .from('contacts')
+                .update({ help_alerts_enabled: enabled })
+                .eq('id', contact.id)
+                .select('id, help_alerts_enabled')
+                .maybeSingle();
+
+            let updatedContact = data;
+            let updateError = error;
+
+            if (!updatedContact && !updateError && contact.user_id && user?.id) {
+                const retryResult = await supabase
+                    .from('contacts')
+                    .update({ help_alerts_enabled: enabled })
+                    .eq('owner_user_id', user.id)
+                    .eq('contact_user_id', contact.user_id)
+                    .select('id, help_alerts_enabled')
+                    .maybeSingle();
+                updatedContact = retryResult.data;
+                updateError = retryResult.error;
+            }
+
+            if (updateError || !updatedContact) {
+                console.error('Toggle help alerts error:', updateError);
+                setExistingContacts((prev) =>
+                    prev.map((item, i) =>
+                        i === index
+                            ? { ...item, help_alerts_enabled: contact.help_alerts_enabled !== false, toggling_help_alerts: false }
+                            : item
+                    )
+                );
+                Alert.alert(t('errors.title'), updateError?.message || t('contacts.errors.noContactUpdated'));
+                return;
+            }
+
+            setExistingContacts((prev) =>
+                prev.map((item, i) =>
+                    i === index
+                        ? { ...item, help_alerts_enabled: updatedContact.help_alerts_enabled !== false, toggling_help_alerts: false }
+                        : item
+                )
+            );
+
+            Alert.alert(
+                t('contacts.status.helpAlertsTitle' as any) as string,
+                updatedContact.help_alerts_enabled !== false
+                    ? t('contacts.status.helpAlertsEnabled' as any, {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      }) as string
+                    : t('contacts.status.helpAlertsDisabled' as any, {
+                        name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
+                      }) as string
+            );
+        },
+        [existingContacts, t, user?.id]
+    );
+
     const showPlusFeatureAlert = useCallback(() => {
         router.push('/plus');
     }, [router]);
@@ -2333,6 +2477,9 @@ export default function ContactsScreen() {
                                             onToggleWatchOver={(value) =>
                                                 toggleContactWatchOver(index, value)
                                             }
+                                            onToggleHelpAlerts={(value) =>
+                                                toggleContactHelpAlerts(index, value)
+                                            }
                                             onCreateRecoveryInvite={() => handleCreateRecoveryInvite(contact)}
                                             onSendEmergencyMessage={() => handleOpenEmergencyMessage(contact)}
                                             showCheckinNotificationControl={
@@ -2966,7 +3113,6 @@ const styles = StyleSheet.create({
     existingContactMainRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
     },
     contactAvatar: {
         width: 64,
@@ -3174,11 +3320,46 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         textAlign: 'right',
     },
+    cardHeaderActionsWrapper: {
+        flexShrink: 1,
+        marginLeft: 10,
+    },
+    cardHeaderActionsScroll: {
+        flexShrink: 1,
+    },
     cardHeaderActions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
         justifyContent: 'flex-end',
+        gap: 8,
+    },
+    scrollChevronLeft: {
+        position: 'absolute',
+        left: -4,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 5,
+    },
+    scrollChevronRight: {
+        position: 'absolute',
+        right: -4,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 5,
+    },
+    scrollChevronBadge: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: BaseColors.surface,
+        borderWidth: 1,
+        borderColor: BaseColors.neutral[300],
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerActionButton: {
         width: 40,
@@ -3255,6 +3436,28 @@ const styles = StyleSheet.create({
         backgroundColor: BaseColors.error,
         transform: [{ rotate: '45deg' }],
         borderRadius: 1,
+    },
+    helpAlertsToggleEnabled: {
+        backgroundColor: BaseColors.primaryLight,
+        borderWidth: 1,
+        borderColor: BaseColors.primaryBorder,
+    },
+    helpAlertsToggleDisabled: {
+        backgroundColor: BaseColors.errorLight,
+        borderWidth: 1,
+        borderColor: BaseColors.errorBorder,
+    },
+    helpAlertsToggleSlash: {
+        position: 'absolute',
+        width: 22,
+        height: 1.75,
+        backgroundColor: BaseColors.error,
+        transform: [{ rotate: '45deg' }],
+        borderRadius: 1,
+    },
+    helpAlertsToggleIcon: {
+        fontSize: 18,
+        lineHeight: 22,
     },
     initialLoadingContainer: {
         flex: 1,

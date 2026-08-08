@@ -5,6 +5,7 @@ import { ICON_SIZES } from '@/constants/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { useContactCheckins } from '@/contexts/ContactCheckinsContext';
 import { clearCachedWelfareCheck, getCachedWelfareCheckSentAt, getLastWelfareCheckSentAt, hasCachedWelfareCheck, hasSentWelfareCheck, sendWelfareCheckNotification } from '@/lib/notifications/core';
+import { HelpRequest, fetchLastHelpRequest } from '@/lib/api/helpRequest';
 import { getCurrentCoordinates } from '@/lib/location/geolocator';
 import { openInMaps } from '@/lib/location/mapOpener';
 import { responseService } from '@/lib/notifications/responseService';
@@ -74,7 +75,7 @@ type ResponseNotification = {
   };
 };
 
-const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check', 'emergency_message'] as const;
+const ACTIVITY_NOTIFICATION_TYPES = ['checkin_response', 'welfare_check', 'emergency_message', 'call_me_now', 'money_transfer_help'] as const;
 const PLACEHOLDER_TIMESTAMP = '1970-01-01T00:00:00.000Z';
 const OVERDUE_WELFARE_COOLDOWN_HOURS = 12;
 const isActivityNotificationType = (type?: string | null) =>
@@ -136,6 +137,7 @@ export default function ActivityScreen() {
   const [, setResponses] = useState<ResponseNotification[]>([]);
   const [, setUnreadResponses] = useState<ResponseNotification[]>([]);
   const [todayResponses, setTodayResponses] = useState<ResponseNotification[]>([]);
+  const [ownHelpRequests, setOwnHelpRequests] = useState<HelpRequest[]>([]);
   const [watchOverEpisodeMap, setWatchOverEpisodeMap] = useState<Map<string, string>>(new Map());
 
   // Refs
@@ -345,6 +347,28 @@ export default function ActivityScreen() {
     for (const ep of data ?? []) map.set(ep.watched_user_id, ep.id);
     setWatchOverEpisodeMap(map);
   }, [contactIds]);
+
+  const fetchOwnHelpRequests = useCallback(async () => {
+    if (!user) return;
+    try {
+      const userTimezone = ownerTimezoneRef.current;
+      const cutoff = new Date(Date.now() - 36 * 60 * 60 * 1000);
+      const { data } = await supabase
+        .from('help_requests')
+        .select('id, user_id, type, created_at, status')
+        .eq('user_id', user.id)
+        .gte('created_at', cutoff.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      const todayItems = (data ?? []).filter(
+        (r) => isTodayLocal(r.created_at, userTimezone)
+      ) as HelpRequest[];
+      setOwnHelpRequests(todayItems);
+    } catch {
+      // non-critical
+    }
+  }, [user]);
 
   const fetchResponseNotifications = async () => {
     try {
@@ -819,6 +843,7 @@ export default function ActivityScreen() {
         fetchResponseNotifications(),
         loadInitialTodayResponses(),
         fetchWatchOverEpisodes(),
+        fetchOwnHelpRequests(),
       ]);
 
       setupOwnerCheckinsSubscription();
@@ -828,7 +853,7 @@ export default function ActivityScreen() {
     } catch (error) {
       console.error('Error during initialization:', error);
     }
-  }, [user, fetchWatchOverEpisodes]);
+  }, [user, fetchWatchOverEpisodes, fetchOwnHelpRequests]);
 
   // ============================================
   // Effects
@@ -856,6 +881,7 @@ export default function ActivityScreen() {
         fetchResponseNotifications();
         loadInitialTodayResponses();
         fetchWatchOverEpisodes();
+        void fetchOwnHelpRequests();
         setupResponsesSubscription();
         setupTodayResponsesSubscription();
       }
@@ -886,7 +912,8 @@ export default function ActivityScreen() {
       void refreshCheckins();
       fetchResponseNotifications();
       loadInitialTodayResponses();
-    }, [refreshCheckins])
+      void fetchOwnHelpRequests();
+    }, [refreshCheckins, fetchOwnHelpRequests])
   );
 
   // Rebuild activities whenever context check-in data changes
@@ -1869,6 +1896,9 @@ export default function ActivityScreen() {
   const todayLikeResponses = todayResponses.filter((response) => response.type === 'checkin_response');
   const todayWelfareResponses = todayResponses.filter((response) => response.type === 'welfare_check');
   const todayEmergencyMessages = todayResponses.filter((response) => response.type === 'emergency_message');
+  const todayHelpRequestsReceived = todayResponses.filter(
+    (r) => r.type === 'call_me_now' || r.type === 'money_transfer_help'
+  );
 
   return (
     <SafeAreaView style={styles.mainContainer} edges={['top']}>
@@ -1962,6 +1992,80 @@ export default function ActivityScreen() {
                           </Text>
                           {!response.read && <View style={styles.smallUnreadDot} />}
                         </View>
+                        );
+                      })}
+                    </View>
+                  )}
+
+                  {/* Own sent help requests (today) */}
+                  {ownHelpRequests.length > 0 && (
+                    <View style={styles.todayResponses}>
+                      <Text style={styles.todayResponsesTitle}>
+                        {t('activity.helpRequest.todayRequests', { count: ownHelpRequests.length })}
+                      </Text>
+                      {ownHelpRequests.map((req) => (
+                        <View key={req.id} style={[styles.todayResponseItem, styles.helpRequestItem]}>
+                          <Ionicons
+                            name={req.type === 'call_me_now' ? 'hand-left' : 'warning'}
+                            size={16}
+                            color={BaseColors.error}
+                          />
+                          <View style={styles.helpRequestTextGroup}>
+                            <Text style={styles.helpRequestLabel}>
+                              {req.type === 'call_me_now' ? t('activity.helpRequest.labelNeedsHelp') : t('activity.helpRequest.labelMoneyTransfer')}
+                            </Text>
+                            <Text style={styles.todayResponseText}>
+                              {req.type === 'call_me_now'
+                                ? t('activity.helpRequest.sentCall')
+                                : t('activity.helpRequest.sentMoney')}
+                            </Text>
+                          </View>
+                          <Text style={styles.responseTimeRight}>
+                            {new Date(req.created_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Help requests received from contacts */}
+                  {todayHelpRequestsReceived.length > 0 && (
+                    <View style={styles.todayResponses}>
+                      <Text style={styles.todayResponsesTitle}>
+                        {t('activity.helpRequest.todayRequests', { count: todayHelpRequestsReceived.length })}
+                      </Text>
+                      {todayHelpRequestsReceived.map((response) => {
+                        const senderName = response.sender?.display_name || 'Someone';
+                        return (
+                          <View key={response.id} style={[styles.todayResponseItem, styles.helpRequestItem]}>
+                            <Ionicons
+                              name={response.type === 'call_me_now' ? 'hand-left' : 'warning'}
+                              size={16}
+                              color={BaseColors.error}
+                            />
+                            <View style={styles.helpRequestTextGroup}>
+                              <Text style={styles.helpRequestLabel}>
+                                {response.type === 'call_me_now' ? t('activity.helpRequest.labelNeedsHelp') : t('activity.helpRequest.labelMoneyTransfer')}
+                              </Text>
+                              <Text style={styles.todayResponseText}>
+                                {response.type === 'call_me_now'
+                                  ? t('activity.helpRequest.receivedCall', { name: senderName })
+                                  : t('activity.helpRequest.receivedMoney', { name: senderName })}
+                              </Text>
+                            </View>
+                            <Text style={styles.responseTimeRight}>
+                              {new Date(response.created_at).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false,
+                              })}
+                            </Text>
+                            {!response.read && <View style={styles.smallUnreadDot} />}
+                          </View>
                         );
                       })}
                     </View>
@@ -2553,6 +2657,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: iosFontSize(14),
     color: BaseColors.primary,
+  },
+  helpRequestItem: {
+    alignItems: 'flex-start',
+  },
+  helpRequestTextGroup: {
+    flex: 1,
+  },
+  helpRequestLabel: {
+    fontSize: iosFontSize(11),
+    fontWeight: '800',
+    color: BaseColors.error,
+    letterSpacing: 0.8,
+    marginBottom: 2,
   },
   todayResponseName: {
     fontWeight: '600',

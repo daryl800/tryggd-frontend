@@ -158,6 +158,14 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
                 lightColor: '#5FA893',
                 lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
             });
+            await Notifications.setNotificationChannelAsync('help_alerts_v3', {
+                name: 'Help Alerts',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 100, 100, 500],
+                lightColor: '#EF4444',
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                bypassDnd: true,
+            });
         }
 
         // ── Step 5: Expo push token — 10 s timeout so China users don't block ──

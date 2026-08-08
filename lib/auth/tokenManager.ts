@@ -17,8 +17,8 @@ class TokenManager {
         if (this.refreshInterval) return;
 
         // Check every minute
-        this.refreshInterval = setInterval(async () => {
-            await this.refreshIfNeeded();
+        this.refreshInterval = setInterval(() => {
+            this.refreshIfNeeded().catch(() => {});
         }, 60 * 1000);
 
         console.log('🔄 Token auto-refresh started');
@@ -48,7 +48,16 @@ class TokenManager {
     async refreshTokenNow() {
         const { data, error } = await supabase.auth.refreshSession();
         if (error) {
-            console.error('Failed to refresh token:', error);
+            console.warn('Failed to refresh token:', error.message);
+            const isInvalidToken =
+                error.message?.toLowerCase().includes('refresh token') ||
+                error.message?.toLowerCase().includes('invalid token') ||
+                error.status === 400 ||
+                error.status === 401;
+            if (isInvalidToken) {
+                console.warn('🔄 Refresh token invalid — signing out');
+                await supabase.auth.signOut();
+            }
             return null;
         }
         console.log('✅ Token refreshed successfully');

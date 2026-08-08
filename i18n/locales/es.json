@@ -131,6 +131,26 @@
         "heading_home": "🏠 Camino a casa",
         "trip_ended": "✅ Viaje terminado — en casa sano/a"
       }
+    },
+    "help": {
+      "callMeNowLabel": "NECESITO AYUDA",
+      "callMeNowAccessLabel": "Avisa a tus contactos de confianza de que necesitas ayuda, por cualquier motivo.",
+      "callMeNowAccessHint": "Envía una alerta inmediata a todos en tu círculo de confianza.",
+      "moneyHelpLabel": "ME HAN PEDIDO QUE ENVÍE DINERO",
+      "moneyHelpAccessLabel": "Avisa a todos tus contactos de confianza de que alguien me está pidiendo que envíe dinero.",
+      "moneyHelpAccessHint": "Alerta a tu círculo de confianza de que alguien te está pidiendo que realices un pago — te llamarán antes de que procedas.",
+      "successBanner": "✓ ENVIADO — Tus contactos han sido notificados.",
+      "errorMessage": "No se pudo enviar tu solicitud de ayuda. Por favor, inténtalo de nuevo.",
+      "retryButton": "REINTENTAR",
+      "retryLabel": "Intentar enviar la solicitud de ayuda de nuevo",
+      "disclaimer": "No apto para emergencias médicas o situaciones de riesgo vital — contacta directamente con los servicios de emergencias locales.",
+      "lastRequestPrefix": "Última solicitud",
+      "lastRequestCall": "Necesitaba ayuda",
+      "lastRequestMoney": "Alerta de transferencia de dinero 💸",
+      "noRequestsYet": "Aún no hay solicitudes de ayuda",
+      "attention": "Atención",
+      "statusNeedsHelp": "Necesita ayuda",
+      "statusMoney": "💰 transferencia"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "He estado en contacto — todo está bien",
       "resolving": "Resolviendo...",
       "resolveError": "No se pudo marcar como resuelto. Inténtalo de nuevo."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "NECESITA AYUDA",
+      "labelMoneyTransfer": "ALERTA DE TRANSFERENCIA DE DINERO",
+      "sentCall": "✋ Has avisado a tus contactos de que necesitas ayuda",
+      "sentMoney": "❗ Has enviado una alerta de transferencia de dinero",
+      "receivedCall": "✋ {{name}} necesita ayuda — por favor, ponte en contacto",
+      "receivedMoney": "❗ Puede que estén pidiendo a {{name}} que envíe dinero",
+      "todayRequests_one": "🆘 {{count}} solicitud de ayuda hoy:",
+      "todayRequests_other": "🆘 {{count}} solicitudes de ayuda hoy:"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Recibirás una notificación si {{name}} no registra su entrada en un día",
-      "watchOverDisabled": "Vigilancia de {{name}} desactivada"
+      "watchOverDisabled": "Vigilancia de {{name}} desactivada",
+      "helpAlertsEnabled": "{{name}} recibirá tus alertas del modo de ayuda",
+      "helpAlertsDisabled": "{{name}} ya no recibirá tus alertas del modo de ayuda",
+      "helpAlertsTitle": "Alertas de ayuda"
     },
     "invite": {
       "ready": "Invitación lista",

@@ -131,6 +131,26 @@
         "heading_home": "🏠 På vej hjem",
         "trip_ended": "✅ Rejsen slut — hjemme sikkert"
       }
+    },
+    "help": {
+      "callMeNowLabel": "JEG HAR BRUG FOR HJÆLP",
+      "callMeNowAccessLabel": "Lad dine betroede kontakter vide, at du har brug for hjælp, uanset årsag.",
+      "callMeNowAccessHint": "Sender en øjeblikkelig alarm til alle i din betroede kreds.",
+      "moneyHelpLabel": "BEDT OM AT SENDE PENGE",
+      "moneyHelpAccessLabel": "Fortæl alle betroede kontakter, at nogen beder mig om at overføre penge.",
+      "moneyHelpAccessHint": "Advarer din betroede kreds om, at du er ved at blive bedt om at foretage en betaling — de ringer til dig, inden du fortsætter.",
+      "successBanner": "✓ SENDT — Dine kontakter er blevet underrettet.",
+      "errorMessage": "Din hjælpeanmodning kunne ikke sendes. Prøv igen.",
+      "retryButton": "PRØV IGEN",
+      "retryLabel": "Prøv at sende hjælpeanmodningen igen",
+      "disclaimer": "Ikke til medicinske eller livstruende nødsituationer — kontakt de lokale nødtjenester direkte.",
+      "lastRequestPrefix": "Seneste anmodning",
+      "lastRequestCall": "Havde brug for hjælp",
+      "lastRequestMoney": "Advarsel om pengeoverførsel 💸",
+      "noRequestsYet": "Ingen hjælpeanmodninger endnu",
+      "attention": "Obs",
+      "statusNeedsHelp": "Brug for hjælp",
+      "statusMoney": "💰 overførsel"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "Jeg har været i kontakt — alt er godt",
       "resolving": "Håndterer...",
       "resolveError": "Kunne ikke markere som håndteret. Prøv igen."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "HAR BRUG FOR HJÆLP",
+      "labelMoneyTransfer": "ADVARSEL OM PENGEOVERFØRSEL",
+      "sentCall": "✋ Du lod dine kontakter vide, at du har brug for hjælp",
+      "sentMoney": "❗ Du sendte en advarsel om pengeoverførsel",
+      "receivedCall": "✋ {{name}} har brug for hjælp — kontakt dem venligst",
+      "receivedMoney": "❗ {{name}} bliver muligvis bedt om at overføre penge",
+      "todayRequests_one": "🆘 {{count}} hjælpeanmodning i dag:",
+      "todayRequests_other": "🆘 {{count}} hjælpeanmodninger i dag:"
     }
   },
   "contacts": {
@@ -384,7 +414,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Du adviseres, hvis {{name}} ikke tjekker ind i en dag",
-      "watchOverDisabled": "Overvågning af {{name}} deaktiveret"
+      "watchOverDisabled": "Overvågning af {{name}} deaktiveret",
+      "helpAlertsEnabled": "{{name}} modtager dine hjælpe-alarmer",
+      "helpAlertsDisabled": "{{name}} modtager ikke længere dine hjælpe-alarmer",
+      "helpAlertsTitle": "Hjælpeadvarsler"
     },
     "invite": {
       "ready": "Invitationen er klar",

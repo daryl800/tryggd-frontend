@@ -139,6 +139,29 @@
       "noUser": "No user found",
       "checkin": "Check-in failed",
       "loadState": "Failed to load state"
+    },
+    "help": {
+      "headerTitle": "I NEED HELP",
+      "headerSubtitle": "Choose what you need help with",
+      "headerLabel": "Help options header",
+      "callMeNowLabel": "I NEED HELP",
+      "callMeNowAccessLabel": "Let your trusted contacts know you need help, for any reason.",
+      "callMeNowAccessHint": "Sends an immediate alert to everyone in your trusted circle.",
+      "moneyHelpLabel": "ASKED TO SEND MONEY",
+      "moneyHelpAccessLabel": "Tell all trusted contacts someone is asking me to send money",
+      "moneyHelpAccessHint": "Alerts your trusted circle that you are being asked to make a payment — they will call you before you proceed.",
+      "successBanner": "✓ SENT — Your contacts have been notified.",
+      "errorMessage": "Couldn't send your help request. Please try again.",
+      "retryButton": "TRY AGAIN",
+      "retryLabel": "Try sending the help request again",
+      "disclaimer": "Not for medical or life-threatening emergencies — contact local emergency services directly.",
+      "lastRequestPrefix": "Last request",
+      "lastRequestCall": "Needed help",
+      "lastRequestMoney": "Money transfer alert 💸",
+      "noRequestsYet": "No help requests yet",
+      "attention": "Attention",
+      "statusNeedsHelp": "Need help",
+      "statusMoney": "💰 transfer"
     }
   },
   "activity": {
@@ -246,6 +269,16 @@
       "markResolved": "I've been in touch — all is well",
       "resolving": "Resolving...",
       "resolveError": "Could not mark as resolved. Please try again."
+    },
+    "helpRequest": {
+      "sentCall": "✋ You let your contacts know you need help",
+      "sentMoney": "❗ You sent a money transfer alert",
+      "receivedCall": "✋ {{name}} needs help — please get in touch",
+      "receivedMoney": "❗ {{name}} may be being asked to send money",
+      "todayRequests_one": "🆘 {{count}} help request today:",
+      "todayRequests_other": "🆘 {{count}} help requests today:",
+      "labelNeedsHelp": "NEEDS HELP",
+      "labelMoneyTransfer": "MONEY TRANSFER ALERT"
     }
   },
   "watchOver": {
@@ -429,7 +462,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "You'll be notified if {{name}} hasn't checked in for a day",
-      "watchOverDisabled": "Watch over disabled for {{name}}"
+      "watchOverDisabled": "Watch over disabled for {{name}}",
+      "helpAlertsEnabled": "{{name}} will receive your Help-mode alerts",
+      "helpAlertsDisabled": "{{name}} will no longer receive your Help-mode alerts",
+      "helpAlertsTitle": "Help alerts"
     },
     "invite": {
       "ready": "Invite ready",

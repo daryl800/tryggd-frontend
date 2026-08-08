@@ -131,6 +131,26 @@
         "heading_home": "🏠 På vei hjem",
         "trip_ended": "✅ Turen er over — trygt hjemme"
       }
+    },
+    "help": {
+      "callMeNowLabel": "JEG TRENGER HJELP",
+      "callMeNowAccessLabel": "La dine betrodde kontakter vite at du trenger hjelp, av hvilken som helst grunn.",
+      "callMeNowAccessHint": "Sender umiddelbart en varsling til alle i din betrodde krets.",
+      "moneyHelpLabel": "BEDT OM Å SENDE PENGER",
+      "moneyHelpAccessLabel": "Fortell alle betrodde kontakter at noen ber meg om å sende penger.",
+      "moneyHelpAccessHint": "Varsler din betrodde krets om at du er i ferd med å bli bedt om å betale — de ringer deg før du fortsetter.",
+      "successBanner": "✓ SENDT — Dine kontakter har blitt varslet.",
+      "errorMessage": "Klarte ikke å sende hjelpeforespørselen din. Prøv igjen.",
+      "retryButton": "PRØV IGJEN",
+      "retryLabel": "Prøv å sende hjelpeforespørselen på nytt",
+      "disclaimer": "Ikke for medisinske eller livstruende nødsituasjoner — kontakt lokale nødetater direkte.",
+      "lastRequestPrefix": "Siste forespørsel",
+      "lastRequestCall": "Trengte hjelp",
+      "lastRequestMoney": "Advarsel om pengeoverføring 💸",
+      "noRequestsYet": "Ingen hjelpeforespørsler ennå",
+      "attention": "Obs",
+      "statusNeedsHelp": "Trenger hjelp",
+      "statusMoney": "💰 overføring"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "Jeg har vært i kontakt — alt er bra",
       "resolving": "Håndterer...",
       "resolveError": "Kunne ikke markere som håndtert. Prøv igjen."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "TRENGER HJELP",
+      "labelMoneyTransfer": "ADVARSEL OM PENGEOVERFØRING",
+      "sentCall": "✋ Du har informert kontaktene dine om at du trenger hjelp",
+      "sentMoney": "❗ Du sendte en advarsel om pengeoverføring",
+      "receivedCall": "✋ {{name}} trenger hjelp — ta kontakt",
+      "receivedMoney": "❗ {{name}} kan bli bedt om å overføre penger",
+      "todayRequests_one": "🆘 {{count}} hjelpeforespørsel i dag:",
+      "todayRequests_other": "🆘 {{count}} hjelpeforespørsler i dag:"
     }
   },
   "contacts": {
@@ -384,7 +414,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Du varsles hvis {{name}} ikke sjekker inn på en dag",
-      "watchOverDisabled": "Overvåking av {{name}} deaktivert"
+      "watchOverDisabled": "Overvåking av {{name}} deaktivert",
+      "helpAlertsEnabled": "{{name}} vil motta hjelpemodusvarsler fra deg",
+      "helpAlertsDisabled": "{{name}} vil ikke lenger motta hjelpemodusvarsler fra deg",
+      "helpAlertsTitle": "Hjelpevarsler"
     },
     "invite": {
       "ready": "Invitasjonen er klar",

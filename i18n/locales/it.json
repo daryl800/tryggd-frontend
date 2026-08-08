@@ -131,6 +131,26 @@
         "heading_home": "🏠 Tornando a casa",
         "trip_ended": "✅ Viaggio concluso — a casa sano/a"
       }
+    },
+    "help": {
+      "callMeNowLabel": "HO BISOGNO DI AIUTO",
+      "callMeNowAccessLabel": "Avvisa i tuoi contatti fidati che hai bisogno di aiuto, per qualsiasi motivo.",
+      "callMeNowAccessHint": "Invia immediatamente un avviso a tutti nel tuo cerchio di fiducia.",
+      "moneyHelpLabel": "MI È STATO CHIESTO DI INVIARE DENARO",
+      "moneyHelpAccessLabel": "Avvisa tutti i contatti fidati che qualcuno mi sta chiedendo di inviare denaro.",
+      "moneyHelpAccessHint": "Avvisa il tuo cerchio di fiducia che stai per effettuare un pagamento — ti chiameranno prima che tu proceda.",
+      "successBanner": "✓ INVIATO — I tuoi contatti sono stati avvisati.",
+      "errorMessage": "Impossibile inviare la tua richiesta di aiuto. Riprova.",
+      "retryButton": "RIPROVA",
+      "retryLabel": "Prova a inviare di nuovo la richiesta di aiuto",
+      "disclaimer": "Non per emergenze mediche o situazioni a rischio di vita — contatta direttamente i servizi di emergenza locali.",
+      "lastRequestPrefix": "Ultima richiesta",
+      "lastRequestCall": "Aveva bisogno di aiuto",
+      "lastRequestMoney": "Avviso di bonifico 💸",
+      "noRequestsYet": "Nessuna richiesta di aiuto ancora",
+      "attention": "Attenzione",
+      "statusNeedsHelp": "Bisogno d'aiuto",
+      "statusMoney": "💰 trasferimento"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "Sono stato in contatto — va tutto bene",
       "resolving": "Risolvendo...",
       "resolveError": "Impossibile contrassegnare come risolto. Riprova."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "HA BISOGNO DI AIUTO",
+      "labelMoneyTransfer": "AVVISO DI BONIFICO",
+      "sentCall": "✋ Hai avvisato i tuoi contatti che hai bisogno di aiuto",
+      "sentMoney": "❗ Hai inviato un avviso di bonifico",
+      "receivedCall": "✋ {{name}} ha bisogno di aiuto — contattalo/a",
+      "receivedMoney": "❗ Potrebbe essere chiesto a {{name}} di inviare denaro",
+      "todayRequests_one": "🆘 {{count}} richiesta di aiuto oggi:",
+      "todayRequests_other": "🆘 {{count}} richieste di aiuto oggi:"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Riceverai una notifica se {{name}} non effettua il check-in per un giorno",
-      "watchOverDisabled": "Sorveglianza di {{name}} disattivata"
+      "watchOverDisabled": "Sorveglianza di {{name}} disattivata",
+      "helpAlertsEnabled": "{{name}} riceverà i tuoi avvisi della modalità aiuto",
+      "helpAlertsDisabled": "{{name}} non riceverà più i tuoi avvisi della modalità aiuto",
+      "helpAlertsTitle": "Avvisi di aiuto"
     },
     "invite": {
       "ready": "Invito pronto",

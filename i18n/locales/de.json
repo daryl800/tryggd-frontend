@@ -131,6 +131,26 @@
         "heading_home": "🏠 Auf dem Heimweg",
         "trip_ended": "✅ Reise beendet — sicher zu Hause"
       }
+    },
+    "help": {
+      "callMeNowLabel": "ICH BRAUCHE HILFE",
+      "callMeNowAccessLabel": "Lass deine vertrauenswürdigen Kontakte wissen, dass du Hilfe brauchst – egal aus welchem Grund.",
+      "callMeNowAccessHint": "Sendet sofort eine Benachrichtigung an alle in deinem Vertrauenskreis.",
+      "moneyHelpLabel": "ICH WURDE GEBETEN, GELD ZU SENDEN",
+      "moneyHelpAccessLabel": "Benachrichtige alle vertrauenswürdigen Kontakte, dass jemand mich um eine Geldüberweisung bittet.",
+      "moneyHelpAccessHint": "Warnt deinen Vertrauenskreis, dass du um eine Zahlung gebeten wirst – sie rufen dich an, bevor du fortfährst.",
+      "successBanner": "✓ GESENDET — Deine Kontakte wurden benachrichtigt.",
+      "errorMessage": "Deine Hilfeanfrage konnte nicht gesendet werden. Bitte versuche es erneut.",
+      "retryButton": "ERNEUT VERSUCHEN",
+      "retryLabel": "Versuche, die Hilfeanfrage erneut zu senden",
+      "disclaimer": "Nicht für medizinische oder lebensbedrohliche Notfälle — kontaktiere direkt die lokalen Rettungsdienste.",
+      "lastRequestPrefix": "Letzte Anfrage",
+      "lastRequestCall": "Hilfe benötigt",
+      "lastRequestMoney": "Geldüberweisung-Warnung 💸",
+      "noRequestsYet": "Noch keine Hilfeanfragen",
+      "attention": "Achtung",
+      "statusNeedsHelp": "Braucht Hilfe",
+      "statusMoney": "💰 Überweisung"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "Ich war in Kontakt — alles ist gut",
       "resolving": "Wird erledigt...",
       "resolveError": "Konnte nicht als erledigt markiert werden. Bitte erneut versuchen."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "BRAUCHT HILFE",
+      "labelMoneyTransfer": "GELDÜBERWEISUNG-WARNUNG",
+      "sentCall": "✋ Du hast deine Kontakte darüber informiert, dass du Hilfe brauchst",
+      "sentMoney": "❗ Du hast eine Geldüberweisung-Warnung gesendet",
+      "receivedCall": "✋ {{name}} braucht Hilfe — bitte melde dich",
+      "receivedMoney": "❗ {{name}} wird möglicherweise gebeten, Geld zu überweisen",
+      "todayRequests_one": "🆘 {{count}} Hilfeanfrage heute:",
+      "todayRequests_other": "🆘 {{count}} Hilfeanfragen heute:"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Du wirst benachrichtigt, wenn {{name}} sich einen Tag nicht eincheckst",
-      "watchOverDisabled": "Beobachtung von {{name}} deaktiviert"
+      "watchOverDisabled": "Beobachtung von {{name}} deaktiviert",
+      "helpAlertsEnabled": "{{name}} erhält deine Hilfe-Modus-Alarme",
+      "helpAlertsDisabled": "{{name}} erhält keine Hilfe-Modus-Alarme mehr",
+      "helpAlertsTitle": "Hilfe-Benachrichtigung"
     },
     "invite": {
       "ready": "Einladung bereit",

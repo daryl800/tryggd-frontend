@@ -131,6 +131,26 @@
         "heading_home": "🏠 집으로 향하는 중",
         "trip_ended": "✅ 여행 종료 — 안전하게 귀가"
       }
+    },
+    "help": {
+      "callMeNowLabel": "도움이 필요합니다",
+      "callMeNowAccessLabel": "어떤 이유로든 도움이 필요하다는 것을 신뢰하는 연락처에 알립니다.",
+      "callMeNowAccessHint": "신뢰 서클의 모든 사람에게 즉시 알림을 보냅니다.",
+      "moneyHelpLabel": "돈을 보내달라는 요청을 받았어요",
+      "moneyHelpAccessLabel": "누군가가 송금을 요청하고 있다는 사실을 모든 신뢰 연락처에 알립니다.",
+      "moneyHelpAccessHint": "결제 요청을 받고 있다는 사실을 신뢰 서클에 알립니다 — 진행하기 전에 연락이 올 것입니다.",
+      "successBanner": "✓ 전송됨 — 연락처에 알림이 전송되었습니다.",
+      "errorMessage": "도움 요청을 전송할 수 없었습니다. 다시 시도해주세요.",
+      "retryButton": "다시 시도",
+      "retryLabel": "도움 요청 다시 보내기 시도",
+      "disclaimer": "의료 또는 생명을 위협하는 응급 상황에는 사용하지 마세요 — 지역 응급 서비스에 직접 연락하세요.",
+      "lastRequestPrefix": "마지막 요청",
+      "lastRequestCall": "도움이 필요했습니다",
+      "lastRequestMoney": "송금 경보 💸",
+      "noRequestsYet": "아직 도움 요청 없음",
+      "attention": "주의",
+      "statusNeedsHelp": "도움 필요",
+      "statusMoney": "💰 송금"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "연락했습니다 — 모든 것이 좋습니다",
       "resolving": "처리 중...",
       "resolveError": "해결됨으로 표시할 수 없습니다. 다시 시도해 주세요."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "도움 필요",
+      "labelMoneyTransfer": "송금 경보",
+      "sentCall": "✋ 도움이 필요하다는 것을 연락처에 알렸습니다",
+      "sentMoney": "❗ 송금 경보를 보냈습니다",
+      "receivedCall": "✋ {{name}}이(가) 도움을 요청합니다 — 연락해주세요",
+      "receivedMoney": "❗ {{name}}이(가) 송금 요청을 받고 있을 수 있습니다",
+      "todayRequests_one": "🆘 오늘 {{count}}개의 도움 요청:",
+      "todayRequests_other": "🆘 오늘 {{count}}개의 도움 요청:"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "{{name}}이 하루 동안 체크인하지 않으면 알림을 받습니다",
-      "watchOverDisabled": "{{name}} 지켜보기 비활성화됨"
+      "watchOverDisabled": "{{name}} 지켜보기 비활성화됨",
+      "helpAlertsEnabled": "{{name}}이(가) 도움 모드 알림을 받습니다",
+      "helpAlertsDisabled": "{{name}}이(가) 더 이상 도움 모드 알림을 받지 않습니다",
+      "helpAlertsTitle": "도움 알림"
     },
     "invite": {
       "ready": "초대가 준비되었습니다",

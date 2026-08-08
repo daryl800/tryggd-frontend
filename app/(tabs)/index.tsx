@@ -1,4 +1,5 @@
 // app/(tabs)/index.tsx 
+import { HelpModeScreen } from '@/components/screens/HelpModeScreen';
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
 import { BaseColors } from '@/constants/colors';
 import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
@@ -66,7 +67,7 @@ const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
 const SCROLL_OVERFLOW_TOLERANCE = 40;
-const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response'] as const;
+const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response', 'call_me_now', 'money_transfer_help'] as const;
 type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'resting' | 'goodmorning' | 'goodafternoon' | 'goodnight' | 'heading_home_alone' | 'hiking_alone';
 type ReachOutStatus = 'call_now' | 'call_available';
 
@@ -2097,7 +2098,13 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
+          {/* HELP MODE — replaces check-in circle when ✋ Help tab is active */}
+          {isReachOutMode && user ? (
+            <HelpModeScreen userId={user.id} />
+          ) : null}
+
           {/* MAIN CHECK-IN */}
+          {!isReachOutMode ? (
           <View style={[
             styles.checkInGroup,
             styles.groupContainer,
@@ -2106,7 +2113,6 @@ export default function HomeScreen() {
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
             overflowAmount > 72 && styles.simpleCheckInGroupUltra,
-            isReachOutMode && styles.reachOutCheckInGroup,
           ]}>
             <View style={styles.checkInContainer}>
               <Animated.View
@@ -2390,6 +2396,7 @@ export default function HomeScreen() {
               </View>
             ) : null}
           </View>
+          ) : null}
 
           {isPlusSimpleHome && !isReachOutMode ? (
             <WellnessButtonPicker
@@ -2416,7 +2423,7 @@ export default function HomeScreen() {
             </View>
           ) : null}
 
-          {canUseEnhancedHome && (
+          {canUseEnhancedHome && !isReachOutMode && (
             <View style={[styles.enhancedStatusCard, styles.groupContainer, styles.enhancedStatusCardTightGap]}>
               {checkinMode === 'home' ? (
                 <View style={styles.tripStatusGroupEnhanced}>
@@ -2532,6 +2539,7 @@ export default function HomeScreen() {
                   isCompactSimpleHome && styles.simpleStatusCardCompact,
                   isTightSimpleHome && styles.simpleStatusCardTight,
                   overflowAmount > 72 && styles.simpleStatusCardUltra,
+                  (latestDisplayStatus?.type === 'call_me_now' || latestDisplayStatus?.type === 'money_transfer_help') && styles.simpleStatusCardAlert,
                 ]}
               >
                   {latestDisplayStatus ? (
@@ -2562,7 +2570,11 @@ export default function HomeScreen() {
                           isCompactSimpleHome && styles.simpleStatusTitleCompact,
                           latestStatusIsEmergency && { color: BaseColors.error },
                         ]} numberOfLines={1}>
-                          {latestStatusTitle}
+                          {latestDisplayStatus?.type === 'call_me_now' ? (
+                            <>{latestDisplayStatus.senderName}{' - '}<Text style={{ color: BaseColors.error }}>{t('home.help.statusNeedsHelp' as any) as string}</Text></>
+                          ) : latestDisplayStatus?.type === 'money_transfer_help' ? (
+                            <>{latestDisplayStatus.senderName}{' - '}<Text style={{ color: BaseColors.error }}>{t('home.help.statusMoney' as any) as string}</Text></>
+                          ) : latestStatusTitle}
                         </Text>
                         <Text style={[
                           styles.simpleStatusSubtitle,
@@ -2681,6 +2693,47 @@ export default function HomeScreen() {
                               />
                             </TouchableOpacity>
                           </View>
+                        ) : null}
+                        {latestDisplayStatus?.type === 'call_me_now' ? (
+                          <View style={styles.simpleStatusBadgeWrapper}>
+                            <View style={[
+                              styles.simpleStatusEmojiCircle,
+                              isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                              { backgroundColor: '#FEE2E2', borderColor: '#EF4444', borderWidth: 1 },
+                            ]}>
+                              <Text style={[
+                                styles.simpleStatusEmoji,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCompact,
+                              ]}>✋</Text>
+                            </View>
+                          </View>
+                        ) : latestDisplayStatus?.type === 'money_transfer_help' ? (
+                          <>
+                            <View style={styles.simpleStatusBadgeWrapper}>
+                              <View style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                { backgroundColor: '#FEF3C7', borderColor: '#F59E0B', borderWidth: 1 },
+                              ]}>
+                                <Text style={[
+                                  styles.simpleStatusEmoji,
+                                  isCompactSimpleHome && styles.simpleStatusEmojiCompact,
+                                ]}>⚠️</Text>
+                              </View>
+                            </View>
+                            <View style={styles.simpleStatusBadgeWrapper}>
+                              <View style={[
+                                styles.simpleStatusEmojiCircle,
+                                isCompactSimpleHome && styles.simpleStatusEmojiCircleCompact,
+                                { backgroundColor: '#FEF3C7', borderColor: '#F59E0B', borderWidth: 1 },
+                              ]}>
+                                <Text style={[
+                                  styles.simpleStatusEmoji,
+                                  isCompactSimpleHome && styles.simpleStatusEmojiCompact,
+                                ]}>💸</Text>
+                              </View>
+                            </View>
+                          </>
                         ) : null}
                       </View>
                     </>
@@ -3652,6 +3705,10 @@ const styles = StyleSheet.create({
   simpleStatusCardUltra: {
     minHeight: 58,
     paddingVertical: 6,
+  },
+  simpleStatusCardAlert: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FECACA',
   },
   simpleStatusIcon: {
     width: 48,

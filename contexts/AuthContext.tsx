@@ -184,6 +184,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 console.log("[AuthContext] Auth state changed:", event, session?.user?.email);
+
+                if (event === "TOKEN_REFRESH_FAILED") {
+                    console.warn("[AuthContext] Token refresh failed — signing out");
+                    await supabase.auth.signOut();
+                    return;
+                }
+
                 setSession(session);
                 setUser(session?.user ?? null);
 

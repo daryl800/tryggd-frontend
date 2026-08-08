@@ -175,6 +175,26 @@
       "noUser": "找不到使用者",
       "checkin": "打卡失敗",
       "loadState": "無法載入狀態"
+    },
+    "help": {
+      "callMeNowLabel": "我需要幫助",
+      "callMeNowAccessLabel": "通知您的可信聯絡人您需要幫助，無論任何原因。",
+      "callMeNowAccessHint": "立即向您信任圈中的所有人發送警報。",
+      "moneyHelpLabel": "有人要我付錢",
+      "moneyHelpAccessLabel": "告知所有可信聯絡人有人要求我轉帳。",
+      "moneyHelpAccessHint": "提醒您的信任圈您被要求付款——在您操作前，他們會給您打電話。",
+      "successBanner": "✓ 已發送 — 您的聯絡人已收到通知。",
+      "errorMessage": "無法發送您的幫助請求。請重試。",
+      "retryButton": "重試",
+      "retryLabel": "重新嘗試發送幫助請求",
+      "disclaimer": "不適用於醫療或危及生命的緊急情況——請直接聯繫當地緊急服務。",
+      "lastRequestPrefix": "最近請求",
+      "lastRequestCall": "需要幫助",
+      "lastRequestMoney": "轉帳警報 💸",
+      "noRequestsYet": "暫無幫助請求",
+      "attention": "注意",
+      "statusNeedsHelp": "需要幫助",
+      "statusMoney": "💰 轉帳"
     }
   },
   "activity": {
@@ -282,6 +302,16 @@
       "markResolved": "我已聯繫上 — 一切安好",
       "resolving": "處理中...",
       "resolveError": "無法標記為已處理，請重試。"
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "需要幫助",
+      "labelMoneyTransfer": "轉帳警報",
+      "sentCall": "✋ 您已通知聯絡人您需要幫助",
+      "sentMoney": "❗ 您發送了轉帳警報",
+      "receivedCall": "✋ {{name}} 需要幫助 — 請聯繫他們",
+      "receivedMoney": "❗ {{name}} 可能正被要求轉帳",
+      "todayRequests_one": "🆘 今日 {{count}} 條幫助請求：",
+      "todayRequests_other": "🆘 今日 {{count}} 條幫助請求："
     }
   },
   "contacts": {
@@ -441,7 +471,10 @@
       "locationEnabled": "{{name}} 會在活動中看到您的位置",
       "locationDisabled": "{{name}} 不會在活動中看到您的位置",
       "watchOverEnabled": "若 {{name}} 超過一天未打卡，您將收到通知",
-      "watchOverDisabled": "已關閉對 {{name}} 的關注"
+      "watchOverDisabled": "已關閉對 {{name}} 的關注",
+      "helpAlertsEnabled": "{{name}} 將收到您的幫助模式警報",
+      "helpAlertsDisabled": "{{name}} 將不再收到您的幫助模式警報",
+      "helpAlertsTitle": "求助提醒"
     },
     "invite": {
       "ready": "邀請連結已準備好",

@@ -131,6 +131,26 @@
         "heading_home": "🏠 帰宅中",
         "trip_ended": "✅ 旅行終了・無事帰宅"
       }
+    },
+    "help": {
+      "callMeNowLabel": "助けが必要です",
+      "callMeNowAccessLabel": "信頼できる連絡先に、何らかの理由で助けが必要であることを知らせます。",
+      "callMeNowAccessHint": "信頼できる仲間全員に即時アラートを送信します。",
+      "moneyHelpLabel": "お金を送るよう頼まれました",
+      "moneyHelpAccessLabel": "誰かが送金を求めていることをすべての信頼できる連絡先に知らせます。",
+      "moneyHelpAccessHint": "支払いを求められていることを信頼できる仲間に警告します。手続き前に連絡が来ます。",
+      "successBanner": "✓ 送信済み — 連絡先に通知されました。",
+      "errorMessage": "ヘルプリクエストを送信できませんでした。もう一度お試しください。",
+      "retryButton": "再試行",
+      "retryLabel": "ヘルプリクエストの送信を再試行します",
+      "disclaimer": "医療上の緊急事態や生命の危機には使用しないでください — 地域の緊急サービスに直接ご連絡ください。",
+      "lastRequestPrefix": "最後のリクエスト",
+      "lastRequestCall": "助けが必要でした",
+      "lastRequestMoney": "送金アラート 💸",
+      "noRequestsYet": "まだヘルプリクエストはありません",
+      "attention": "注意",
+      "statusNeedsHelp": "助けが必要",
+      "statusMoney": "💰 送金"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "連絡済み — 問題ありません",
       "resolving": "解決中...",
       "resolveError": "解決済みにできませんでした。もう一度お試しください。"
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "助けが必要",
+      "labelMoneyTransfer": "送金アラート",
+      "sentCall": "✋ 助けが必要であることを連絡先に知らせました",
+      "sentMoney": "❗ 送金アラートを送信しました",
+      "receivedCall": "✋ {{name}}が助けを求めています — 連絡してください",
+      "receivedMoney": "❗ {{name}}が送金を求められている可能性があります",
+      "todayRequests_one": "🆘 今日 {{count}} 件のヘルプリクエスト:",
+      "todayRequests_other": "🆘 今日 {{count}} 件のヘルプリクエスト:"
     }
   },
   "contacts": {
@@ -383,7 +413,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "{{name}}が1日チェックインしていない場合に通知します",
-      "watchOverDisabled": "{{name}}の見守りを無効にしました"
+      "watchOverDisabled": "{{name}}の見守りを無効にしました",
+      "helpAlertsEnabled": "{{name}}はあなたのヘルプモードアラートを受け取ります",
+      "helpAlertsDisabled": "{{name}}はあなたのヘルプモードアラートを受け取らなくなります",
+      "helpAlertsTitle": "助けのアラート"
     },
     "invite": {
       "ready": "招待の準備ができました",

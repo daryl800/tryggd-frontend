@@ -131,6 +131,26 @@
         "heading_home": "🏠 Matkalla kotiin",
         "trip_ended": "✅ Matka päättyi — kotona turvassa"
       }
+    },
+    "help": {
+      "callMeNowLabel": "TARVITSEN APUA",
+      "callMeNowAccessLabel": "Ilmoita luotetuille yhteystiedoillesi, että tarvitset apua, mistä tahansa syystä.",
+      "callMeNowAccessHint": "Lähettää välittömän hälytyksen kaikille luottamuspiirissäsi.",
+      "moneyHelpLabel": "MINUA PYYDETTIIN LÄHETTÄMÄÄN RAHAA",
+      "moneyHelpAccessLabel": "Ilmoita kaikille luotetuille yhteystiedoillesi, että joku pyytää minua lähettämään rahaa.",
+      "moneyHelpAccessHint": "Varoittaa luottamuspiiriäsi, että sinua pyydetään suorittamaan maksu — he soittavat sinulle ennen kuin jatkat.",
+      "successBanner": "✓ LÄHETETTY — Yhteystiedoillesi on ilmoitettu.",
+      "errorMessage": "Avunpyyntöäsi ei voitu lähettää. Yritä uudelleen.",
+      "retryButton": "YRITÄ UUDELLEEN",
+      "retryLabel": "Yritä lähettää avunpyyntö uudelleen",
+      "disclaimer": "Ei tarkoitettu lääketieteellisiin tai hengenvaarallisiin hätätilanteisiin — ota yhteyttä suoraan paikallisiin pelastuspalveluihin.",
+      "lastRequestPrefix": "Viimeisin pyyntö",
+      "lastRequestCall": "Tarvitsi apua",
+      "lastRequestMoney": "Rahansiirtovaroitus 💸",
+      "noRequestsYet": "Ei avunpyyntöjä vielä",
+      "attention": "Huomio",
+      "statusNeedsHelp": "Tarvitsee apua",
+      "statusMoney": "💰 siirto"
     }
   },
   "activity": {
@@ -229,6 +249,16 @@
       "markResolved": "Olen ollut yhteydessä — kaikki hyvin",
       "resolving": "Käsitellään...",
       "resolveError": "Merkitseminen epäonnistui. Yritä uudelleen."
+    },
+    "helpRequest": {
+      "labelNeedsHelp": "TARVITSEE APUA",
+      "labelMoneyTransfer": "RAHANSIIRTOVAROITUS",
+      "sentCall": "✋ Ilmoitit yhteystiedoillesi, että tarvitset apua",
+      "sentMoney": "❗ Lähetit rahansiirtovaroituksen",
+      "receivedCall": "✋ {{name}} tarvitsee apua — ota yhteyttä",
+      "receivedMoney": "❗ {{name}} saattaa olla pyydetty lähettämään rahaa",
+      "todayRequests_one": "🆘 {{count}} avunpyyntö tänään:",
+      "todayRequests_other": "🆘 {{count}} avunpyyntöä tänään:"
     }
   },
   "contacts": {
@@ -384,7 +414,10 @@
       "locationEnabled": "{{name}} will see your location in Activity",
       "locationDisabled": "{{name}} will not see your location in Activity",
       "watchOverEnabled": "Saat ilmoituksen, jos {{name}} ei kirjaudu päivään",
-      "watchOverDisabled": "Seuranta poistettu käytöstä: {{name}}"
+      "watchOverDisabled": "Seuranta poistettu käytöstä: {{name}}",
+      "helpAlertsEnabled": "{{name}} vastaanottaa Apumoodi-hälytyksesi",
+      "helpAlertsDisabled": "{{name}} ei enää vastaanota Apumoodi-hälytyksesi",
+      "helpAlertsTitle": "Hälytykset"
     },
     "invite": {
       "ready": "Kutsu on valmis",

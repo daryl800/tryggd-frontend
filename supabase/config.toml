@@ -410,6 +410,11 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/send-checkin-notifications/index.ts"
 
+[functions.send-help-request]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/send-help-request/index.ts"
+
 [functions.register-invited-user]
 enabled = true
 verify_jwt = false
