@@ -143,7 +143,7 @@
       "errorMessage": "Kunde inte skicka din hjälpförfrågan. Försök igen.",
       "retryButton": "FÖRSÖK IGEN",
       "retryLabel": "Försök att skicka hjälpförfrågan igen",
-      "disclaimer": "Inte för medicinska eller livshotande nödfall — kontakta lokala räddningstjänster direkt.",
+      "disclaimer": "Inte för medicinska eller livshotande nödsituationer. Aviseringar kan försenas. Ring räddningstjänsten direkt om du är i omedelbar fara.",
       "lastRequestPrefix": "Senaste förfrågan",
       "lastRequestCall": "Behövde hjälp",
       "lastRequestMoney": "Varning för pengaöverföring 💸",
@@ -447,6 +447,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "Snabbare aviseringar",
+      "message": "För snabbaste möjliga aviseringar, tillåt notiser och inaktivera batterioptimering för Tryggd i telefonens inställningar.",
+      "openSettings": "Öppna inställningar",
+      "dismiss": "Förstått"
     }
   },
   "profile": {
@@ -576,6 +582,9 @@
       "trip": "Resa",
       "homeDescription": "Standardmässig daglig incheckning",
       "tripDescription": "Dela resestatus med dina kontakter"
+    },
+    "helpMode": {
+      "title": "Hjälpläge"
     }
   },
   "common": {

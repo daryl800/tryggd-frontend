@@ -20,6 +20,7 @@ import {
     Image,
     Keyboard,
     KeyboardAvoidingView,
+    Linking,
     Modal,
     Platform,
     RefreshControl,
@@ -1600,6 +1601,27 @@ export default function ContactsScreen() {
         [existingContacts, fetchAllData, t]
     );
 
+    const maybeShowAlertsTip = useCallback(async () => {
+        const ALERTS_TIP_KEY = '@alerts_optimization_tip_shown';
+        const shown = await AsyncStorage.getItem(ALERTS_TIP_KEY);
+        if (shown) return;
+        await AsyncStorage.setItem(ALERTS_TIP_KEY, 'true');
+        Alert.alert(
+            t('contacts.alertsTip.title' as any) as string,
+            t('contacts.alertsTip.message' as any) as string,
+            [
+                {
+                    text: t('contacts.alertsTip.openSettings' as any) as string,
+                    onPress: () => Linking.openSettings(),
+                },
+                {
+                    text: t('contacts.alertsTip.dismiss' as any) as string,
+                    style: 'cancel',
+                },
+            ]
+        );
+    }, [t]);
+
     const toggleContactWatchOver = useCallback(
         async (index: number, enabled: boolean) => {
             const contact = existingContacts[index];
@@ -1666,9 +1688,13 @@ export default function ContactsScreen() {
                       })
             );
 
+            if (updatedContact.watch_over_enabled === true) {
+                void maybeShowAlertsTip();
+            }
+
             await fetchAllData();
         },
-        [existingContacts, fetchAllData, t, user?.id]
+        [existingContacts, fetchAllData, maybeShowAlertsTip, t, user?.id]
     );
 
     const toggleContactHelpAlerts = useCallback(
@@ -1737,8 +1763,12 @@ export default function ContactsScreen() {
                         name: contact.display_name || contact.username || t('contacts.messages.contactDefault'),
                       }) as string
             );
+
+            if (updatedContact.help_alerts_enabled !== false) {
+                void maybeShowAlertsTip();
+            }
         },
-        [existingContacts, t, user?.id]
+        [existingContacts, maybeShowAlertsTip, t, user?.id]
     );
 
     const showPlusFeatureAlert = useCallback(() => {

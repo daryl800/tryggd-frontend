@@ -182,7 +182,7 @@ function LastRequestDisplay({ request }: { request: HelpRequest | null }) {
       <Ionicons
         name={request ? 'time-outline' : 'time-outline'}
         size={14}
-        color={BaseColors.neutral[400]}
+        color="#B91C1C"
       />
       <Text style={styles.lastRequestText}>
         {request && label && timeLabel
@@ -344,23 +344,20 @@ const styles = StyleSheet.create({
   disclaimer: {
     fontSize: iosFontSize(11),
     lineHeight: iosFontSize(15),
-    color: BaseColors.neutral[400],
-    textAlign: 'center',
-    paddingHorizontal: 4,
+    color: BaseColors.neutral[500],
   },
 
   // Last request
   lastRequestRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 5,
     marginTop: 4,
   },
   lastRequestText: {
     fontSize: iosFontSize(13),
     lineHeight: iosFontSize(18),
-    color: BaseColors.neutral[400],
+    color: '#B91C1C',
     fontWeight: '500',
   },
 });

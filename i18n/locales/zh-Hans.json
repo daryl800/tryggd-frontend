@@ -187,7 +187,7 @@
       "errorMessage": "无法发送您的帮助请求。请重试。",
       "retryButton": "重试",
       "retryLabel": "重新尝试发送帮助请求",
-      "disclaimer": "不适用于医疗或危及生命的紧急情况——请直接联系当地紧急服务。",
+      "disclaimer": "不适用于医疗或危及生命的紧急情况。提醒可能延迟。如处于紧急危险，请直接致电紧急服务。",
       "lastRequestPrefix": "最近请求",
       "lastRequestCall": "需要帮助",
       "lastRequestMoney": "转账警报 💸",
@@ -492,6 +492,12 @@
       "createButton": "创建邀请",
       "creating": "创建中…",
       "shareButton": "分享链接"
+    },
+    "alertsTip": {
+      "title": "获取更快的提醒",
+      "message": "为了获得最快的提醒，请在手机设置中允许通知并关闭Tryggd的电池优化。",
+      "openSettings": "打开设置",
+      "dismiss": "明白了"
     }
   },
   "profile": {
@@ -621,7 +627,10 @@
     "logoutConfirm": "确定要退出登录吗？",
     "confirmReset": "重置",
     "cancel": "取消",
-    "ok": "确定"
+    "ok": "确定",
+    "helpMode": {
+      "title": "求助模式"
+    }
   },
   "common": {
     "ok": "确定",

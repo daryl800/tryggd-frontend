@@ -143,7 +143,7 @@
       "errorMessage": "Deine Hilfeanfrage konnte nicht gesendet werden. Bitte versuche es erneut.",
       "retryButton": "ERNEUT VERSUCHEN",
       "retryLabel": "Versuche, die Hilfeanfrage erneut zu senden",
-      "disclaimer": "Nicht für medizinische oder lebensbedrohliche Notfälle — kontaktiere direkt die lokalen Rettungsdienste.",
+      "disclaimer": "Nicht für medizinische oder lebensbedrohliche Notfälle. Benachrichtigungen können verzögert sein. Rufen Sie direkt den Notruf an, wenn Sie in unmittelbarer Gefahr sind.",
       "lastRequestPrefix": "Letzte Anfrage",
       "lastRequestCall": "Hilfe benötigt",
       "lastRequestMoney": "Geldüberweisung-Warnung 💸",
@@ -439,6 +439,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "Schnellere Benachrichtigungen",
+      "message": "Für die schnellsten Benachrichtigungen erlauben Sie Benachrichtigungen und deaktivieren Sie die Akku-Optimierung für Tryggd in den Einstellungen Ihres Telefons.",
+      "openSettings": "Einstellungen öffnen",
+      "dismiss": "Verstanden"
     }
   },
   "profile": {
@@ -568,7 +574,10 @@
     "logoutConfirm": "Möchtest du dich wirklich abmelden?",
     "confirmReset": "Zurücksetzen",
     "cancel": "Abbrechen",
-    "ok": "OK"
+    "ok": "OK",
+    "helpMode": {
+      "title": "Hilfemodus"
+    }
   },
   "common": {
     "ok": "OK",

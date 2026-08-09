@@ -154,7 +154,7 @@
       "errorMessage": "Couldn't send your help request. Please try again.",
       "retryButton": "TRY AGAIN",
       "retryLabel": "Try sending the help request again",
-      "disclaimer": "Not for medical or life-threatening emergencies — contact local emergency services directly.",
+      "disclaimer": "Not for medical or life-threatening emergencies. Alerts may be delayed. Call emergency services directly if in immediate danger.",
       "lastRequestPrefix": "Last request",
       "lastRequestCall": "Needed help",
       "lastRequestMoney": "Money transfer alert 💸",
@@ -483,6 +483,12 @@
       "createButton": "Create invite",
       "creating": "Creating…",
       "shareButton": "Share link"
+    },
+    "alertsTip": {
+      "title": "Get faster alerts",
+      "message": "For the fastest alerts, allow notifications and turn off battery optimization for Tryggd in your phone's settings.",
+      "openSettings": "Open Settings",
+      "dismiss": "Got it"
     }
   },
   "profile": {
@@ -612,7 +618,10 @@
     "logoutConfirm": "Are you sure you want to log out?",
     "confirmReset": "Reset",
     "cancel": "Cancel",
-    "ok": "OK"
+    "ok": "OK",
+    "helpMode": {
+      "title": "Help mode"
+    }
   },
   "common": {
     "ok": "OK",

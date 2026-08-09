@@ -2718,7 +2718,7 @@ export default function HomeScreen() {
                                 <Text style={[
                                   styles.simpleStatusEmoji,
                                   isCompactSimpleHome && styles.simpleStatusEmojiCompact,
-                                ]}>⚠️</Text>
+                                ]}>🛑</Text>
                               </View>
                             </View>
                             <View style={styles.simpleStatusBadgeWrapper}>

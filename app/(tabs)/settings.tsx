@@ -552,6 +552,19 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
+                {/* Help Mode Section */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionLabel}>{t("settings.helpMode.title" as any) as string}</Text>
+                    <View style={styles.card}>
+                        <View style={styles.helpModeDisclaimerItem}>
+                            <View style={styles.settingIcon}>
+                                <Ionicons name="hand-left" size={22} color={BaseColors.error} />
+                            </View>
+                            <Text style={styles.helpModeDisclaimerText}>{t("home.help.disclaimer" as any) as string}</Text>
+                        </View>
+                    </View>
+                </View>
+
                 {/* Information Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionLabel}>{t("settings.information")}</Text>
@@ -826,5 +839,18 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: BaseColors.primary,
         marginLeft: 8,
+    },
+    helpModeDisclaimerItem: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        paddingVertical: CARD_ITEM_VERTICAL_PADDING,
+        paddingHorizontal: CARD_HORIZONTAL_PADDING,
+        gap: 12,
+    },
+    helpModeDisclaimerText: {
+        flex: 1,
+        fontSize: iosFontSize(13),
+        lineHeight: iosFontSize(19),
+        color: BaseColors.neutral[600],
     },
 });

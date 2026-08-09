@@ -143,7 +143,7 @@
       "errorMessage": "Din hjælpeanmodning kunne ikke sendes. Prøv igen.",
       "retryButton": "PRØV IGEN",
       "retryLabel": "Prøv at sende hjælpeanmodningen igen",
-      "disclaimer": "Ikke til medicinske eller livstruende nødsituationer — kontakt de lokale nødtjenester direkte.",
+      "disclaimer": "Ikke til medicinske eller livstruende nødsituationer. Beskeder kan forsinkes. Ring til nødtjenester direkte, hvis du er i umiddelbar fare.",
       "lastRequestPrefix": "Seneste anmodning",
       "lastRequestCall": "Havde brug for hjælp",
       "lastRequestMoney": "Advarsel om pengeoverførsel 💸",
@@ -440,6 +440,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "Få hurtigere beskeder",
+      "message": "For at modtage beskeder hurtigst muligt skal du tillade notifikationer og deaktivere batterioptimerng for Tryggd i telefonens indstillinger.",
+      "openSettings": "Åbn indstillinger",
+      "dismiss": "Forstået"
     }
   },
   "profile": {
@@ -569,6 +575,9 @@
       "trip": "Rejse",
       "homeDescription": "Standard daglig indtjekning",
       "tripDescription": "Del din rejsestatus"
+    },
+    "helpMode": {
+      "title": "Hjælpetilstand"
     }
   },
   "common": {

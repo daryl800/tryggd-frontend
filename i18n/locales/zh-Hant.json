@@ -187,7 +187,7 @@
       "errorMessage": "無法發送您的幫助請求。請重試。",
       "retryButton": "重試",
       "retryLabel": "重新嘗試發送幫助請求",
-      "disclaimer": "不適用於醫療或危及生命的緊急情況——請直接聯繫當地緊急服務。",
+      "disclaimer": "不適用於醫療或危及生命的緊急情況。提醒可能延遲。如處於緊急危險，請直接致電緊急服務。",
       "lastRequestPrefix": "最近請求",
       "lastRequestCall": "需要幫助",
       "lastRequestMoney": "轉帳警報 💸",
@@ -492,6 +492,12 @@
       "createButton": "建立邀請",
       "creating": "建立中…",
       "shareButton": "分享連結"
+    },
+    "alertsTip": {
+      "title": "獲取更快的提醒",
+      "message": "為了獲得最快的提醒，請在手機設定中允許通知並關閉Tryggd的電池優化。",
+      "openSettings": "開啟設定",
+      "dismiss": "明白了"
     }
   },
   "profile": {
@@ -621,7 +627,10 @@
     "logoutConfirm": "確定要登出嗎？",
     "confirmReset": "重置",
     "cancel": "取消",
-    "ok": "確定"
+    "ok": "確定",
+    "helpMode": {
+      "title": "求助模式"
+    }
   },
   "common": {
     "ok": "確定",

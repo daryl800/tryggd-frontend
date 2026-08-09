@@ -24,7 +24,7 @@ const PUSH_MESSAGES: Record<HelpRequestType, {
     body: () => `Please contact them right away.`,
   },
   money_transfer_help: {
-    title: (name) => `⚠️ Money transfer 💸❗`,
+    title: (name) => `🛑 Money transfer 💸❗`,
     body: (name) =>
       `${name} is being asked to send money. Please call them now before they make any payment.`,
   },
@@ -203,7 +203,7 @@ serve(async (req) => {
             senderName,
             screen: 'activity',
           },
-          channelId: 'help_alerts_v3',
+          channelId: 'default',
           priority: 'high',
         })
       } else if (pushToken?.aliyun_device_id) {

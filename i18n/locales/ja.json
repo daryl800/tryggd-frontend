@@ -143,7 +143,7 @@
       "errorMessage": "ヘルプリクエストを送信できませんでした。もう一度お試しください。",
       "retryButton": "再試行",
       "retryLabel": "ヘルプリクエストの送信を再試行します",
-      "disclaimer": "医療上の緊急事態や生命の危機には使用しないでください — 地域の緊急サービスに直接ご連絡ください。",
+      "disclaimer": "医療上または生命に関わる緊急事態には使用しないでください。アラートが遅延する場合があります。直ちに危険な場合は、緊急サービスに電話してください。",
       "lastRequestPrefix": "最後のリクエスト",
       "lastRequestCall": "助けが必要でした",
       "lastRequestMoney": "送金アラート 💸",
@@ -439,6 +439,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "より速い通知を受け取る",
+      "message": "最速のアラートを受け取るには、通知を許可し、スマートフォンの設定でTryggdのバッテリー最適化をオフにしてください。",
+      "openSettings": "設定を開く",
+      "dismiss": "わかった"
     }
   },
   "profile": {
@@ -568,7 +574,10 @@
     "logoutConfirm": "本当にログアウトしますか?",
     "confirmReset": "リセット",
     "cancel": "キャンセル",
-    "ok": "OK"
+    "ok": "OK",
+    "helpMode": {
+      "title": "ヘルプモード"
+    }
   },
   "common": {
     "ok": "OK",

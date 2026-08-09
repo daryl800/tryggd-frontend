@@ -143,7 +143,7 @@
       "errorMessage": "No se pudo enviar tu solicitud de ayuda. Por favor, inténtalo de nuevo.",
       "retryButton": "REINTENTAR",
       "retryLabel": "Intentar enviar la solicitud de ayuda de nuevo",
-      "disclaimer": "No apto para emergencias médicas o situaciones de riesgo vital — contacta directamente con los servicios de emergencias locales.",
+      "disclaimer": "No para emergencias médicas o que pongan en riesgo la vida. Las alertas pueden retrasarse. Llama a los servicios de emergencia si estás en peligro inmediato.",
       "lastRequestPrefix": "Última solicitud",
       "lastRequestCall": "Necesitaba ayuda",
       "lastRequestMoney": "Alerta de transferencia de dinero 💸",
@@ -439,6 +439,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "Recibe alertas más rápido",
+      "message": "Para recibir alertas lo más rápido posible, permite las notificaciones y desactiva la optimización de batería para Tryggd en la configuración de tu teléfono.",
+      "openSettings": "Abrir ajustes",
+      "dismiss": "Entendido"
     }
   },
   "profile": {
@@ -568,7 +574,10 @@
     "logoutConfirm": "¿Seguro que quieres cerrar sesión?",
     "confirmReset": "Restablecer",
     "cancel": "Cancelar",
-    "ok": "OK"
+    "ok": "OK",
+    "helpMode": {
+      "title": "Modo de ayuda"
+    }
   },
   "common": {
     "ok": "OK",

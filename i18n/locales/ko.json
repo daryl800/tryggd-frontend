@@ -143,7 +143,7 @@
       "errorMessage": "도움 요청을 전송할 수 없었습니다. 다시 시도해주세요.",
       "retryButton": "다시 시도",
       "retryLabel": "도움 요청 다시 보내기 시도",
-      "disclaimer": "의료 또는 생명을 위협하는 응급 상황에는 사용하지 마세요 — 지역 응급 서비스에 직접 연락하세요.",
+      "disclaimer": "의료적이거나 생명을 위협하는 응급 상황에는 사용하지 마세요. 알림이 지연될 수 있습니다. 즉각적인 위험 시 응급 서비스에 직접 전화하세요.",
       "lastRequestPrefix": "마지막 요청",
       "lastRequestCall": "도움이 필요했습니다",
       "lastRequestMoney": "송금 경보 💸",
@@ -439,6 +439,12 @@
       "title": "Advanced feature",
       "notifications": "Available in the full version: contact check-in notifications.",
       "location": "Available in the full version: location sharing for contacts."
+    },
+    "alertsTip": {
+      "title": "더 빠른 알림 받기",
+      "message": "가장 빠른 알림을 받으려면 알림을 허용하고 휴대폰 설정에서 Tryggd의 배터리 최적화를 끄세요.",
+      "openSettings": "설정 열기",
+      "dismiss": "알겠습니다"
     }
   },
   "profile": {
@@ -568,7 +574,10 @@
     "logoutConfirm": "정말 로그아웃하시겠습니까?",
     "confirmReset": "초기화",
     "cancel": "취소",
-    "ok": "확인"
+    "ok": "확인",
+    "helpMode": {
+      "title": "도움 모드"
+    }
   },
   "common": {
     "ok": "확인",

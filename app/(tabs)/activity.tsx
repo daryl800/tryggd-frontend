@@ -2005,11 +2005,10 @@ export default function ActivityScreen() {
                       </Text>
                       {ownHelpRequests.map((req) => (
                         <View key={req.id} style={[styles.todayResponseItem, styles.helpRequestItem]}>
-                          <Ionicons
-                            name={req.type === 'call_me_now' ? 'hand-left' : 'warning'}
-                            size={16}
-                            color={BaseColors.error}
-                          />
+                          {req.type === 'call_me_now'
+                            ? <Ionicons name="hand-left" size={16} color={BaseColors.error} />
+                            : <Text style={styles.helpRequestStopIcon}>🛑</Text>
+                          }
                           <View style={styles.helpRequestTextGroup}>
                             <Text style={styles.helpRequestLabel}>
                               {req.type === 'call_me_now' ? t('activity.helpRequest.labelNeedsHelp') : t('activity.helpRequest.labelMoneyTransfer')}
@@ -2042,11 +2041,10 @@ export default function ActivityScreen() {
                         const senderName = response.sender?.display_name || 'Someone';
                         return (
                           <View key={response.id} style={[styles.todayResponseItem, styles.helpRequestItem]}>
-                            <Ionicons
-                              name={response.type === 'call_me_now' ? 'hand-left' : 'warning'}
-                              size={16}
-                              color={BaseColors.error}
-                            />
+                            {response.type === 'call_me_now'
+                              ? <Ionicons name="hand-left" size={16} color={BaseColors.error} />
+                              : <Text style={styles.helpRequestStopIcon}>🛑</Text>
+                            }
                             <View style={styles.helpRequestTextGroup}>
                               <Text style={styles.helpRequestLabel}>
                                 {response.type === 'call_me_now' ? t('activity.helpRequest.labelNeedsHelp') : t('activity.helpRequest.labelMoneyTransfer')}
@@ -2663,6 +2661,10 @@ const styles = StyleSheet.create({
   },
   helpRequestTextGroup: {
     flex: 1,
+  },
+  helpRequestStopIcon: {
+    fontSize: 15,
+    lineHeight: 18,
   },
   helpRequestLabel: {
     fontSize: iosFontSize(11),
