@@ -3749,6 +3749,7 @@ const styles = StyleSheet.create({
   simpleStatusTextGroup: {
     flex: 1,
     minWidth: 0,
+    paddingRight: 6,
   },
   simpleStatusTitle: {
     fontSize: iosFontSize(19),
