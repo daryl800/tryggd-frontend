@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Ingen panikk.",
+      "justTap": "Bare trykk.",
+      "dontPanicLine": "Ingen panikk — bare trykk.",
       "callMeNowLabel": "JEG TRENGER HJELP",
       "callMeNowAccessLabel": "La dine betrodde kontakter vite at du trenger hjelp, av hvilken som helst grunn.",
       "callMeNowAccessHint": "Sender umiddelbart en varsling til alle i din betrodde krets.",
@@ -143,7 +146,7 @@
       "errorMessage": "Klarte ikke å sende hjelpeforespørselen din. Prøv igjen.",
       "retryButton": "PRØV IGJEN",
       "retryLabel": "Prøv å sende hjelpeforespørselen på nytt",
-      "disclaimer": "Ikke for medisinske eller livstruende nødsituasjoner. Varsler kan bli forsinket. Ring nødetatene direkte hvis du er i umiddelbar fare.",
+      "disclaimer": "Ikke for nødsituasjoner. Varsler kan bli forsinket — ring nødetatene direkte hvis du er i umiddelbar fare.",
       "lastRequestPrefix": "Siste forespørsel",
       "lastRequestCall": "Trengte hjelp",
       "lastRequestMoney": "Advarsel om pengeoverføring 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "TRENGER HJELP",
-      "labelMoneyTransfer": "ADVARSEL OM PENGEOVERFØRING",
+      "labelMoneyTransfer": "💸 ADVARSEL OM PENGEOVERFØRING ⚠️",
       "sentCall": "✋ Du har informert kontaktene dine om at du trenger hjelp",
       "sentMoney": "❗ Du sendte en advarsel om pengeoverføring",
       "receivedCall": "✋ {{name}} trenger hjelp — ta kontakt",

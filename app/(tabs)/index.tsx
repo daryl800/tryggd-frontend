@@ -1,6 +1,7 @@
 // app/(tabs)/index.tsx 
 import { HelpModeScreen } from '@/components/screens/HelpModeScreen';
 import { ScreenHeader } from '@/components/screens/ScreenHeader';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BaseColors } from '@/constants/colors';
 import { UI_FEATURE_FLAGS } from '@/constants/featureFlags';
 import {
@@ -25,7 +26,7 @@ import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
 import * as Notifications from 'expo-notifications';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -47,7 +48,7 @@ import {
   View,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Circle, Svg } from 'react-native-svg';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEntitlement } from '@/lib/entitlements/useEntitlement';
@@ -58,6 +59,14 @@ import { iosFontSize } from '@/constants/typography';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const STROKE_WIDTH = 40;
+
+// Module-level constants, not created inline in render — `now` ticks every
+// second (live clock), and a fresh array literal each render was making
+// LinearGradient repaint every second even when the colors never actually
+// changed. These stay the same reference for the app's lifetime.
+const DAY_GRADIENT_COLORS: [string, string, ...string[]] = ['#7b8ba3', '#d99b6f', '#e6b877', '#4a5578'];
+const NIGHT_GRADIENT_COLORS: [string, string, ...string[]] = ['#0f1226', '#232a52', '#3a3568', '#111427'];
+const HEADER_SCRIM_COLORS: [string, string, ...string[]] = ['rgba(20,20,30,0.45)', 'rgba(20,20,30,0.05)'];
 
 const STORAGE_KEY = '@checkin_state';
 const HOME_PRESENCE_STORAGE_KEY = '@settings_home_presence';
@@ -139,14 +148,6 @@ const getGreetingInfo = (date: Date, t: any): { greeting: string; iconName: stri
     greeting: t('home.greetings.night'),
     iconName: 'moon',
   };
-};
-
-const formatTimeLeft = (ms: number): string => {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-  const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-  const s = String(totalSeconds % 60).padStart(2, '0');
-  return `${h}:${m}:${s}`;
 };
 
 const isSameDay = (date1: Date, date2: Date): boolean => {
@@ -722,6 +723,37 @@ const WellnessButtonPicker = ({
   );
 };
 
+// Memoized so this only re-renders when day/night actually flips, not on
+// every parent re-render — the screen re-renders every second for the live
+// clock, and without this the LinearGradients were being reconciled (and
+// visibly repainting/flickering, especially on the iOS simulator) every
+// second even though their props never actually changed.
+const AppBackground = memo(function AppBackground({ isDaytimeBackground }: { isDaytimeBackground: boolean }) {
+  const backgroundGradientColors = isDaytimeBackground ? DAY_GRADIENT_COLORS : NIGHT_GRADIENT_COLORS;
+  return (
+    <>
+      {/* Warm background wash — stands in for a bundled photo asset. Swap the
+          colors array for an ImageBackground + this same gradient as a scrim
+          once a real photo is chosen; the header contrast logic below doesn't
+          change either way. */}
+      <LinearGradient
+        colors={backgroundGradientColors}
+        locations={[0, 0.35, 0.55, 1]}
+        style={StyleSheet.absoluteFillObject}
+        pointerEvents="none"
+      />
+      {/* Scrim behind the header text only — guarantees contrast regardless
+          of what's behind it, so the greeting/date never depend on the photo
+          being dark at that exact spot. */}
+      <LinearGradient
+        colors={HEADER_SCRIM_COLORS}
+        style={styles.headerScrim}
+        pointerEvents="none"
+      />
+    </>
+  );
+});
+
 export default function HomeScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -731,6 +763,7 @@ export default function HomeScreen() {
     ? pilotPreviewEndsAt.toLocaleDateString(i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
   const windowDimensions = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   // State
   const [now, setNow] = useState(new Date());
@@ -749,6 +782,9 @@ export default function HomeScreen() {
   const [, setSubmittedMoodScore] = useState(WELLNESS_DEFAULT);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
+  // Sticky compactness tier — see the effect below for why this can't be a
+  // plain per-render derivation of contentHeight/viewportHeight.
+  const [stickyCompactnessTier, setStickyCompactnessTier] = useState<'regular' | 'compact' | 'tight'>('regular');
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip' | 'reach_out'>('home');
   const [tripPresence, setTripPresence] = useState<string | null>(null);
   const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
@@ -1691,11 +1727,45 @@ export default function HomeScreen() {
   ]);
 
 
+  // Sticky compactness tier ('regular' | 'compact' | 'tight'), used further
+  // down to size the circle/stroke/padding/font on the simple home layout.
+  // This has to run unconditionally on every render (i.e. before the
+  // loading early-return below), or the hook count differs between the
+  // loading and loaded render passes and React throws. Inputs are
+  // recomputed inline here (rather than reusing the named consts declared
+  // later) for the same reason — those consts aren't in scope yet.
+  //
+  // The tier used to be derived fresh every render straight from
+  // overflowAmount, with hard 0/72 cutoffs. But the tier controls
+  // circleSize/strokeWidth/padding/font-size, i.e. the very things that
+  // produce contentHeight — so a device sitting near either cutoff would
+  // flip tiers, which changed the rendered size, which flipped the tier
+  // back, forever (seen as flicker on iOS, as a slower "jump" on Android,
+  // where layout/font metrics land closer to the boundary and settle
+  // slower). Making the tier sticky state, with a wide dead zone before
+  // stepping back down, breaks that loop.
+  useEffect(() => {
+    if (viewportHeight <= 0) return;
+    const currentFontScaleForTier = windowDimensions.fontScale || fontScale;
+    const currentScreenHeightForTier = windowDimensions.height || SCREEN_HEIGHT;
+    const effectiveHeightForTier = viewportHeight > 0 ? viewportHeight : currentScreenHeightForTier - 150;
+    const rawOverflow = contentHeight - viewportHeight - SCROLL_OVERFLOW_TOLERANCE;
+    const forcesTight = currentFontScaleForTier >= 1.2 || effectiveHeightForTier < 560 || rawOverflow > 72;
+    const forcesCompactOrTighter = currentFontScaleForTier >= 1.1 || effectiveHeightForTier < 640 || rawOverflow > 0;
+
+    setStickyCompactnessTier((prev) => {
+      if (forcesTight) return 'tight';
+      if (prev === 'tight') return rawOverflow > 30 ? 'tight' : 'compact';
+      if (forcesCompactOrTighter) return 'compact';
+      if (prev === 'compact') return rawOverflow > -40 ? 'compact' : 'regular';
+      return 'regular';
+    });
+  }, [contentHeight, viewportHeight, windowDimensions.fontScale, windowDimensions.height, fontScale]);
+
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
   const elapsedMs = now.getTime() - startOfDay.getTime();
   const progress = Math.min(elapsedMs / MS_IN_DAY, 1);
-  const remainingMs = Math.max(0, MS_IN_DAY - elapsedMs);
 
   if (loading || isInitialLoad) {
     return (
@@ -1768,12 +1838,7 @@ export default function HomeScreen() {
   // screenHeight = full window height. viewportHeight is ~120-150px smaller on most devices.
   // Use viewportHeight when available for accurate compactness; thresholds adjusted accordingly.
   const effectiveHeight = viewportHeight > 0 ? viewportHeight : currentScreenHeight - 150;
-  const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> =
-    effectiveHeight < 560 || currentFontScale >= 1.2 || overflowAmount > 72
-      ? 'tight'
-      : effectiveHeight < 640 || currentFontScale >= 1.1 || overflowAmount > 0
-        ? 'compact'
-        : 'regular';
+  const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> = stickyCompactnessTier;
   const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
   const isTightSimpleHome = simpleHomeCompactness === 'tight';
   const fitTightenOffset = overflowAmount > 72 ? 22 : overflowAmount > 0 ? 10 : 0;
@@ -1839,10 +1904,6 @@ export default function HomeScreen() {
     isChineseUncheckedTypography ? 24 : 18,
   );
   const uncheckedCtaLineHeight = Math.round(uncheckedCtaFontSize * (isChineseUncheckedTypography ? 1.1 : 1.16));
-  const uncheckedCountdownFontSize = clampNumber(Math.round(innerButtonSize * 0.105), 13, 19);
-  const uncheckedCountdownLineHeight = Math.round(uncheckedCountdownFontSize * 1.12);
-  const uncheckedMetaFontSize = clampNumber(Math.round(innerButtonSize * 0.075), 10, 13);
-  const uncheckedMetaLineHeight = Math.round(uncheckedMetaFontSize * 1.16);
   const uncheckedIconSize = clampNumber(Math.round(innerButtonSize * 0.26), 34, 60);
   const shouldScroll = contentHeight > viewportHeight + SCROLL_OVERFLOW_TOLERANCE;
   const formatHomeStatusAgo = (createdAt?: string | null) => {
@@ -1969,8 +2030,17 @@ export default function HomeScreen() {
     !pilotDialogDismissed &&
     !loading;
 
+  // Simple local-time day/night swap for the background wash — no weather
+  // API, no permissions, no network failure states. Deliberately not doing
+  // per-condition (rain/cloud/etc.) backgrounds: see earlier discussion —
+  // that multiplies the number of header-contrast combinations to verify
+  // for very little benefit to the app's actual job.
+  const currentHour = now.getHours();
+  const isDaytimeBackground = currentHour >= 6 && currentHour < 19;
+
   return (
     <SafeAreaView style={[styles.mainContainer, styles.simpleMainContainer]} edges={['top']}>
+      <AppBackground isDaytimeBackground={isDaytimeBackground} />
       {/* HEADER - OUTSIDE SCROLLVIEW (FIXED) */}
       <ScreenHeader
         title={profile?.display_name || t('home.welcome')}
@@ -1978,6 +2048,9 @@ export default function HomeScreen() {
         iconName={greetingInfo.iconName as any}
         style={styles.simpleHeader}
         showGreetingInLine={true}
+        titleColor="#FFFFFF"
+        subtitleColor="rgba(255,255,255,0.85)"
+        iconColor="#FFFFFF"
         rightElement={
           <View style={styles.headerActions}>
             {showDebugResetCheckin ? (
@@ -2018,7 +2091,7 @@ export default function HomeScreen() {
       <Text style={[
         styles.simpleHeaderDate,
         isCompactSimpleHome && styles.simpleHeaderDateCompact,
-        overflowAmount > 72 && styles.simpleHeaderDateUltra,
+        isTightSimpleHome && styles.simpleHeaderDateUltra,
       ]}>
         {simpleDateTimeText}
       </Text>
@@ -2049,8 +2122,22 @@ export default function HomeScreen() {
           styles.scrollContent,
           !shouldScroll && styles.scrollContentStatic,
         ]}
-        onLayout={(event) => setViewportHeight(event.nativeEvent.layout.height)}
-        onContentSizeChange={(_, height) => setContentHeight(height)}
+        onLayout={(event) => {
+          const height = event.nativeEvent.layout.height;
+          // Only commit real changes. contentHeight/viewportHeight feed
+          // overflowAmount/shouldScroll, which in turn drive padding, font
+          // size, and flexGrow on this same content — so small measurement
+          // jitter (a few px of layout noise, worse on Android) was
+          // re-triggering another measurement nearly every render (i.e.
+          // every second, from the clock tick), which showed up as
+          // flicker/jump. 1px of tolerance wasn't enough on Android; 8px
+          // absorbs realistic layout noise while still catching real
+          // content changes, which are normally tens of px.
+          setViewportHeight((prev) => (Math.abs(prev - height) > 8 ? height : prev));
+        }}
+        onContentSizeChange={(_, height) => {
+          setContentHeight((prev) => (Math.abs(prev - height) > 8 ? height : prev));
+        }}
         bounces={false}
         showsVerticalScrollIndicator={false}
         scrollEnabled={shouldScroll}
@@ -2064,33 +2151,57 @@ export default function HomeScreen() {
             <View style={[
               styles.modeTabsContainer,
               styles.groupContainer,
-              overflowAmount > 72 && styles.modeTabsContainerUltra,
+              isTightSimpleHome && styles.modeTabsContainerUltra,
             ]}>
               <View style={styles.modeTabsRow}>
                 <TouchableOpacity
-                  style={[styles.modeTab, checkinMode === 'home' && styles.modeTabActive]}
+                  style={[
+                    styles.modeTab,
+                    styles.modeTabHomeResting,
+                    checkinMode === 'home' && styles.modeTabHomeActive,
+                  ]}
                   onPress={() => handleCheckinModeChange('home')}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.modeTabText, checkinMode === 'home' && styles.modeTabTextActive]}>
+                  <Text style={[
+                    styles.modeTabText,
+                    styles.modeTabTextHomeResting,
+                    checkinMode === 'home' && styles.modeTabTextActive,
+                  ]}>
                     {t('home.context.homeTab')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modeTab, checkinMode === 'trip' && styles.modeTabActive]}
+                  style={[
+                    styles.modeTab,
+                    styles.modeTabTripResting,
+                    checkinMode === 'trip' && styles.modeTabTripActive,
+                  ]}
                   onPress={() => handleCheckinModeChange('trip')}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.modeTabText, checkinMode === 'trip' && styles.modeTabTextActive]}>
+                  <Text style={[
+                    styles.modeTabText,
+                    styles.modeTabTextTripResting,
+                    checkinMode === 'trip' && styles.modeTabTextActive,
+                  ]}>
                     {t('home.context.tripTab')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.modeTab, checkinMode === 'reach_out' && styles.modeTabActiveReachOut]}
+                  style={[
+                    styles.modeTab,
+                    styles.modeTabReachOutResting,
+                    checkinMode === 'reach_out' && styles.modeTabActiveReachOut,
+                  ]}
                   onPress={() => handleCheckinModeChange('reach_out')}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.modeTabText, checkinMode === 'reach_out' && styles.modeTabTextActiveReachOut]}>
+                  <Text style={[
+                    styles.modeTabText,
+                    styles.modeTabTextReachOutResting,
+                    checkinMode === 'reach_out' && styles.modeTabTextActiveReachOut,
+                  ]}>
                     {t('home.context.reachOutTab')}
                   </Text>
                 </TouchableOpacity>
@@ -2112,7 +2223,7 @@ export default function HomeScreen() {
             canUseEnhancedHome && styles.enhancedCheckInGroup,
             isCompactSimpleHome && styles.simpleCheckInGroupCompact,
             isTightSimpleHome && styles.simpleCheckInGroupTight,
-            overflowAmount > 72 && styles.simpleCheckInGroupUltra,
+            isTightSimpleHome && styles.simpleCheckInGroupUltra,
           ]}>
             <View style={styles.checkInContainer}>
               <Animated.View
@@ -2328,33 +2439,16 @@ export default function HomeScreen() {
                             </Text>
                           </View>
                           <View style={{ flex: 1 }} />
-                          {!isReachOutMode && (
-                            <View style={styles.uncheckedMetaGroup}>
+                          {!!checkedInMsgEmoji && (
+                            <View style={styles.uncheckedStatusPreview}>
+                              <Text style={styles.uncheckedStatusPreviewEmoji}>{checkedInMsgEmoji}</Text>
                               <Text
-                                style={[
-                                  styles.timeLeftText,
-                                  {
-                                    fontSize: uncheckedMetaFontSize,
-                                    lineHeight: uncheckedMetaLineHeight,
-                                  },
-                                  fontScale > 1.2 && styles.compactTimeLeftText,
-                                ]}
+                                style={styles.uncheckedStatusPreviewText}
                                 numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.6}
                               >
-                                {t('home.timeLeftToday')}
-                              </Text>
-                              <Text
-                                style={[
-                                  styles.countdownText,
-                                  {
-                                    fontSize: uncheckedCountdownFontSize,
-                                    lineHeight: uncheckedCountdownLineHeight,
-                                  },
-                                  fontScale > 1.2 && styles.compactCountdownText,
-                                ]}
-                                numberOfLines={1}
-                              >
-                                {formatTimeLeft(remainingMs)}
+                                {checkedInMsgText}
                               </Text>
                             </View>
                           )}
@@ -2371,6 +2465,12 @@ export default function HomeScreen() {
                       ]}>{checkedInMsgEmoji}</Text>
                     )}
                   </View>
+                  {streak > 0 && (
+                    <View style={styles.streakBadge} pointerEvents="none">
+                      <Ionicons name="flame" size={12} color={BaseColors.warning} />
+                      <Text style={styles.streakBadgeText}>{streak}</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               </Animated.View>
             </View>
@@ -2378,7 +2478,7 @@ export default function HomeScreen() {
               <View style={[
                 styles.simpleCheckinInfoRow,
                 isCompactSimpleHome && styles.simpleCheckinInfoRowCompact,
-                overflowAmount > 72 && styles.simpleCheckinInfoRowUltra,
+                isTightSimpleHome && styles.simpleCheckinInfoRowUltra,
               ]}>
                 <Ionicons
                   name={checkedInToday ? 'checkmark-circle' : 'alert-circle'}
@@ -2520,16 +2620,27 @@ export default function HomeScreen() {
             </View>
           )}
 
-          <View style={[
-            styles.simpleStatusDock,
-            canUseEnhancedHome && styles.simpleStatusDockEnhanced,
-            isCompactSimpleHome && styles.simpleStatusDockCompact,
-            overflowAmount > 72 && styles.simpleStatusDockUltra,
-          ]}>
+          {/* Bottom padding */}
+          <View style={styles.bottomPadding} />
+        </Animated.View>
+      </ScrollView>
+
+      {/* Bottom status card — pinned above the tab bar, outside the
+          ScrollView. It used to live inside the scroll content, where its
+          own size fed into the same overflow measurement that sized it
+          (overflowAmount -> compact styles -> card height -> overflowAmount
+          again), which was the actual cause of the iOS simulator flicker. */}
+      <View style={[
+        styles.simpleStatusDock,
+        styles.simpleStatusDockPinned,
+        canUseEnhancedHome && styles.simpleStatusDockEnhanced,
+        isCompactSimpleHome && styles.simpleStatusDockCompact,
+        isTightSimpleHome && styles.simpleStatusDockUltra,
+      ]}>
             <View style={[
               styles.simpleStatusGroup,
               isCompactSimpleHome && styles.simpleStatusGroupCompact,
-              overflowAmount > 72 && styles.simpleStatusGroupUltra,
+              isTightSimpleHome && styles.simpleStatusGroupUltra,
             ]}>
               <TouchableOpacity
                 activeOpacity={0.85}
@@ -2538,7 +2649,7 @@ export default function HomeScreen() {
                   styles.simpleStatusCard,
                   isCompactSimpleHome && styles.simpleStatusCardCompact,
                   isTightSimpleHome && styles.simpleStatusCardTight,
-                  overflowAmount > 72 && styles.simpleStatusCardUltra,
+                  isTightSimpleHome && styles.simpleStatusCardUltra,
                   (latestDisplayStatus?.type === 'call_me_now' || latestDisplayStatus?.type === 'money_transfer_help') && styles.simpleStatusCardAlert,
                 ]}
               >
@@ -2771,11 +2882,6 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* Bottom padding */}
-          <View style={styles.bottomPadding} />
-        </Animated.View>
-      </ScrollView>
-
       <Modal
         visible={showPilotDialog}
         transparent
@@ -2847,7 +2953,16 @@ const styles = StyleSheet.create({
     backgroundColor: BaseColors.background,
   },
   simpleMainContainer: {
-    backgroundColor: '#F7F3EA',
+    // Solid fallback in case the gradient hasn't painted yet on slow devices;
+    // the LinearGradient sibling covers this once mounted.
+    backgroundColor: '#d99b6f',
+  },
+  headerScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 170,
   },
   headerActions: {
     flexDirection: 'row',
@@ -2897,11 +3012,10 @@ const styles = StyleSheet.create({
     backgroundColor: BaseColors.primaryLight,
   },
   scrollContent: {
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   scrollContentStatic: {
     flexGrow: 1,
-    paddingBottom: 0,
   },
   groupContainer: {
     marginBottom: GROUP_GAP,
@@ -2913,20 +3027,20 @@ const styles = StyleSheet.create({
   simpleHeaderDate: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
     marginTop: 4,
-    marginBottom: 8,
+    marginBottom: 16,
     fontSize: iosFontSize(18),
     lineHeight: iosFontSize(23),
-    color: BaseColors.neutral[500],
+    color: 'rgba(255,255,255,0.85)',
     fontWeight: '700',
   },
   simpleHeaderDateCompact: {
-    marginBottom: 4,
+    marginBottom: 10,
     fontSize: iosFontSize(17),
     lineHeight: iosFontSize(21),
   },
   simpleHeaderDateUltra: {
     marginTop: 2,
-    marginBottom: 2,
+    marginBottom: 6,
     fontSize: iosFontSize(15),
     lineHeight: iosFontSize(19),
   },
@@ -2961,7 +3075,7 @@ const styles = StyleSheet.create({
   },
   simpleCheckInGroupUltra: {
     minHeight: 208,
-    paddingTop: 0,
+    paddingTop: 8,
     paddingBottom: 0,
   },
   reachOutCheckInGroup: {
@@ -3143,11 +3257,11 @@ const styles = StyleSheet.create({
   },
   modeTabsContainer: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginTop: 2,
+    marginTop: 6,
   },
   modeTabsContainerUltra: {
     marginTop: 0,
-    marginBottom: -2,
+    marginBottom: 2,
   },
   modeTabsRow: {
     flexDirection: 'row',
@@ -3182,17 +3296,71 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  modeTabActive: {
-    backgroundColor: BaseColors.surface,
+  // Resting (unselected) states — every tab carries its own light tint + border
+  // at rest so the row reads as three tappable buttons, not text-on-a-bar.
+  modeTabHomeResting: {
+    backgroundColor: BaseColors.primaryBorder,
+    borderWidth: 1,
+    borderColor: BaseColors.primary,
+  },
+  modeTabTripResting: {
+    backgroundColor: '#DBEAFE',
+    borderWidth: 1,
+    borderColor: BaseColors.info,
+  },
+  modeTabReachOutResting: {
+    backgroundColor: '#FEE2E2',
+    borderWidth: 1,
+    borderColor: BaseColors.error,
+  },
+  // Active (selected) states — solid, saturated fill + bold white text.
+  // Every tab uses the SAME white-on-solid rule; do not let green fall back
+  // to a dark-text pairing here, it needs to match blue/red exactly.
+  modeTabHomeActive: {
+    backgroundColor: BaseColors.primaryDark,
+    borderWidth: 1,
+    borderColor: BaseColors.primaryDark,
     ...Platform.select({
       ios: {
         shadowColor: BaseColors.shadowColor,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.15,
         shadowRadius: 4,
       },
       android: {
-        elevation: 1,
+        elevation: 2,
+      },
+    }),
+  },
+  modeTabTripActive: {
+    backgroundColor: '#2563EB',
+    borderWidth: 1,
+    borderColor: '#2563EB',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#2563EB',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  modeTabActiveReachOut: {
+    backgroundColor: '#DC2626',
+    borderWidth: 1,
+    borderColor: '#DC2626',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#DC2626',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
       },
     }),
   },
@@ -3203,32 +3371,29 @@ const styles = StyleSheet.create({
     color: BaseColors.neutral[500],
     includeFontPadding: false,
   },
-  modeTabTextActive: {
+  modeTabTextHomeResting: {
     color: BaseColors.primary,
   },
-  modeTabActiveReachOut: {
-    backgroundColor: '#FEE2E2',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#EF4444',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 1,
-      },
-    }),
+  modeTabTextTripResting: {
+    color: BaseColors.info,
+  },
+  modeTabTextReachOutResting: {
+    color: BaseColors.error,
+  },
+  modeTabTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   modeTabTextActiveReachOut: {
-    color: '#EF4444',
+    color: '#FFFFFF',
+    fontWeight: '800',
   },
   enhancedStatusCard: {
     marginHorizontal: SCREEN_PADDING.horizontal,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#EEF8F3',
+    backgroundColor: '#FBFBFA',
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     minHeight: 48,
@@ -3248,7 +3413,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   wellnessCard: {
-    backgroundColor: BaseColors.surface,
+    backgroundColor: '#FBFBFA',
     borderRadius: 22,
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
@@ -3459,6 +3624,50 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
+  // Small, non-ticking badge replacing the old countdown text. Only shown
+  // when there's an actual streak to report — doesn't update every second.
+  streakBadge: {
+    position: 'absolute',
+    top: '12%',
+    right: '6%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+  },
+  streakBadgeText: {
+    fontSize: iosFontSize(11),
+    fontWeight: '700',
+    color: BaseColors.warning,
+  },
+  // Live preview of the mood/status you're about to check in with — fills
+  // the space the countdown used to occupy, mirroring how the same info
+  // looks once you've actually checked in (smaller and muted, since this
+  // is a preview, not a confirmation).
+  uncheckedStatusPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingBottom: 12,
+    paddingHorizontal: 10,
+    maxWidth: '92%',
+    alignSelf: 'center',
+  },
+  uncheckedStatusPreviewEmoji: {
+    fontSize: 22,
+    lineHeight: 26,
+  },
+  uncheckedStatusPreviewText: {
+    fontSize: iosFontSize(17),
+    lineHeight: iosFontSize(21),
+    fontWeight: '700',
+    color: BaseColors.primaryDark,
+    flexShrink: 1,
+  },
   checkedInText: {
     color: BaseColors.surface,
     fontSize: 28,
@@ -3564,11 +3773,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 0,
   },
-  uncheckedMetaGroup: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
   textContainerCompactCheckedIn: {
     paddingHorizontal: 18,
   },
@@ -3584,38 +3788,31 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     marginTop: -2,
   },
-  countdownText: {
-    color: BaseColors.primary,
-    fontSize: iosFontSize(20),
-    fontWeight: '700',
-    textAlign: 'center',
-    marginTop: 0,
-  },
-  timeLeftText: {
-    color: BaseColors.text.light,
-    fontSize: iosFontSize(16),
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: -1,
-  },
   compactCtaText: {
     fontSize: iosFontSize(14),
     letterSpacing: 0.3,
     marginBottom: 1,
   },
-  compactCountdownText: {
-    fontSize: iosFontSize(14),
-    marginTop: 2,
-  },
-  compactTimeLeftText: {
-    fontSize: iosFontSize(11),
-    marginTop: 0,
-  },
   simpleStatusDock: {
     marginTop: 'auto',
     paddingTop: 12,
     paddingBottom: 2,
-    backgroundColor: 'rgba(238, 248, 243, 0.24)',
+  },
+  // Now rendered as a sibling of the ScrollView (not inside it), so it's
+  // always visible above the tab bar instead of scrolling with content.
+  //
+  // No background/border/shadow of its own on purpose — the outer dock used
+  // to be its own opaque/translucent slab wrapped around the status card,
+  // which read as two stacked surfaces (a flat bar behind a rounded card)
+  // instead of one thing. Now it's just a transparent layout container: the
+  // gradient shows straight through it, and the inner simpleStatusCard
+  // (which already has the same rounded corners, side margins, and floating
+  // shadow as every other card on this screen) is the only visible surface
+  // — so it reads as one more card floating on the page, not a separate bar
+  // pinned above the tab bar.
+  simpleStatusDockPinned: {
+    marginTop: 0,
+    paddingBottom: 4,
   },
   simpleStatusDockEnhanced: {
     paddingTop: 6,
@@ -3646,18 +3843,22 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   simpleCheckinInfoRow: {
-    paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginTop: 10,
+    alignSelf: 'center',
+    marginTop: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 7,
+    backgroundColor: '#F7F7F5',
+    borderRadius: 14,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
   },
   simpleCheckinInfoRowCompact: {
-    marginTop: 6,
+    marginTop: 12,
   },
   simpleCheckinInfoRowUltra: {
-    marginTop: 2,
+    marginTop: 8,
   },
   simpleCheckinInfoIcon: {
     flexShrink: 0,
@@ -3675,7 +3876,7 @@ const styles = StyleSheet.create({
   simpleStatusCard: {
     minHeight: 76,
     borderRadius: 20,
-    backgroundColor: '#EEF8F3',
+    backgroundColor: '#EFEEE8',
     borderWidth: 1,
     borderColor: BaseColors.primaryBorder,
     paddingHorizontal: 14,

@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Niente panico.",
+      "justTap": "Basta un tocco.",
+      "dontPanicLine": "Niente panico — basta un tocco.",
       "callMeNowLabel": "HO BISOGNO DI AIUTO",
       "callMeNowAccessLabel": "Avvisa i tuoi contatti fidati che hai bisogno di aiuto, per qualsiasi motivo.",
       "callMeNowAccessHint": "Invia immediatamente un avviso a tutti nel tuo cerchio di fiducia.",
@@ -143,7 +146,7 @@
       "errorMessage": "Impossibile inviare la tua richiesta di aiuto. Riprova.",
       "retryButton": "RIPROVA",
       "retryLabel": "Prova a inviare di nuovo la richiesta di aiuto",
-      "disclaimer": "Non per emergenze mediche o pericolo di vita. Gli avvisi possono essere ritardati. Chiama i servizi di emergenza direttamente se sei in pericolo immediato.",
+      "disclaimer": "Non per le emergenze. Gli avvisi possono essere ritardati — chiama i servizi di emergenza direttamente se sei in pericolo immediato.",
       "lastRequestPrefix": "Ultima richiesta",
       "lastRequestCall": "Aveva bisogno di aiuto",
       "lastRequestMoney": "Avviso di bonifico 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "HA BISOGNO DI AIUTO",
-      "labelMoneyTransfer": "AVVISO DI BONIFICO",
+      "labelMoneyTransfer": "💸 AVVISO DI BONIFICO ⚠️",
       "sentCall": "✋ Hai avvisato i tuoi contatti che hai bisogno di aiuto",
       "sentMoney": "❗ Hai inviato un avviso di bonifico",
       "receivedCall": "✋ {{name}} ha bisogno di aiuto — contattalo/a",

@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Ei hätää.",
+      "justTap": "Napauta vain.",
+      "dontPanicLine": "Ei hätää — napauta vain.",
       "callMeNowLabel": "TARVITSEN APUA",
       "callMeNowAccessLabel": "Ilmoita luotetuille yhteystiedoillesi, että tarvitset apua, mistä tahansa syystä.",
       "callMeNowAccessHint": "Lähettää välittömän hälytyksen kaikille luottamuspiirissäsi.",
@@ -143,7 +146,7 @@
       "errorMessage": "Avunpyyntöäsi ei voitu lähettää. Yritä uudelleen.",
       "retryButton": "YRITÄ UUDELLEEN",
       "retryLabel": "Yritä lähettää avunpyyntö uudelleen",
-      "disclaimer": "Ei lääketieteellisiin tai hengenvaarallisiin tilanteisiin. Hälytykset voivat viivästyä. Soita hätänumeroon, jos olet välittömässä vaarassa.",
+      "disclaimer": "Ei hätätilanteisiin. Hälytykset voivat viivästyä — soita hätänumeroon, jos olet välittömässä vaarassa.",
       "lastRequestPrefix": "Viimeisin pyyntö",
       "lastRequestCall": "Tarvitsi apua",
       "lastRequestMoney": "Rahansiirtovaroitus 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "TARVITSEE APUA",
-      "labelMoneyTransfer": "RAHANSIIRTOVAROITUS",
+      "labelMoneyTransfer": "💸 RAHANSIIRTOVAROITUS ⚠️",
       "sentCall": "✋ Ilmoitit yhteystiedoillesi, että tarvitset apua",
       "sentMoney": "❗ Lähetit rahansiirtovaroituksen",
       "receivedCall": "✋ {{name}} tarvitsee apua — ota yhteyttä",

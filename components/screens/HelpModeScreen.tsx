@@ -2,7 +2,7 @@
 import { BaseColors } from '@/constants/colors';
 import { SCREEN_PADDING } from '@/constants/spacing';
 import { iosFontSize } from '@/constants/typography';
-import { fetchLastHelpRequest, HelpRequest, HelpRequestType, sendHelpRequest } from '@/lib/api/helpRequest';
+import { fetchLastHelpRequestByType, HelpRequest, HelpRequestType, sendHelpRequest } from '@/lib/api/helpRequest';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -27,26 +27,34 @@ type Props = {
 export function HelpModeScreen({ userId, onRequestSent }: Props) {
   const { t } = useTranslation();
   const [sendState, setSendState] = useState<SendState>('idle');
-  const [lastRequest, setLastRequest] = useState<HelpRequest | null>(null);
+  // Tracked per type, not as one shared "last request" — a user can press
+  // both buttons within a short window, and each needs its own timestamp
+  // rather than one line hiding whichever button wasn't pressed last.
+  const [lastCallRequest, setLastCallRequest] = useState<HelpRequest | null>(null);
+  const [lastMoneyRequest, setLastMoneyRequest] = useState<HelpRequest | null>(null);
   const [activeType, setActiveType] = useState<HelpRequestType | null>(null);
   const successOpacity = useRef(new Animated.Value(0)).current;
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadLastRequest = useCallback(async () => {
+  const loadLastRequests = useCallback(async () => {
     try {
-      const req = await fetchLastHelpRequest(userId);
-      setLastRequest(req);
+      const [call, money] = await Promise.all([
+        fetchLastHelpRequestByType(userId, 'call_me_now'),
+        fetchLastHelpRequestByType(userId, 'money_transfer_help'),
+      ]);
+      setLastCallRequest(call);
+      setLastMoneyRequest(money);
     } catch {
       // non-critical
     }
   }, [userId]);
 
   useEffect(() => {
-    loadLastRequest();
+    loadLastRequests();
     return () => {
       if (successTimer.current) clearTimeout(successTimer.current);
     };
-  }, [loadLastRequest]);
+  }, [loadLastRequests]);
 
   const showSuccess = useCallback(() => {
     Animated.timing(successOpacity, {
@@ -77,14 +85,14 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
       showSuccess();
       // Defer non-visual updates so they don't re-render during the fade-in
       setTimeout(() => {
-        loadLastRequest();
+        loadLastRequests();
         onRequestSent?.();
       }, 250);
     } catch (err) {
       console.error('Help request failed:', err);
       setSendState('error');
     }
-  }, [sendState, showSuccess, loadLastRequest, onRequestSent]);
+  }, [sendState, showSuccess, loadLastRequests, onRequestSent]);
 
   const handleRetry = useCallback(() => {
     if (activeType) handleSend(activeType);
@@ -112,6 +120,11 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
         </View>
       ) : null}
 
+      {/* ── CALM REMINDER ── */}
+      <View style={styles.panicReminderPill}>
+        <Text style={styles.panicReminderText}>{t('home.help.dontPanicLine' as any) as string}</Text>
+      </View>
+
       {/* ── ACTION BUTTONS ── */}
       <View style={styles.buttonRow}>
         {/* I NEED HELP */}
@@ -124,8 +137,13 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
           accessibilityLabel={t('home.help.callMeNowAccessLabel' as any) as string}
           accessibilityHint={t('home.help.callMeNowAccessHint' as any) as string}
         >
-          <Text style={styles.buttonIcon}>✋</Text>
-          <Text style={styles.buttonLabel} numberOfLines={2} adjustsFontSizeToFit>{t('home.help.callMeNowLabel' as any) as string}</Text>
+          <View style={styles.iconBadge}>
+            <Text style={styles.buttonIcon}>✋</Text>
+          </View>
+          <Text style={styles.buttonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.55}>{t('home.help.callMeNowLabel' as any) as string}</Text>
+          {lastCallRequest && (
+            <Text style={styles.buttonTimestamp}>{formatRelativeTime(lastCallRequest.created_at, t)}</Text>
+          )}
         </TouchableOpacity>
 
         {/* ASKED TO SEND MONEY */}
@@ -139,19 +157,25 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
           accessibilityHint={t('home.help.moneyHelpAccessHint' as any) as string}
         >
           <View style={styles.moneyIconRow}>
-            <Text style={styles.moneyExclamation}>!!</Text>
-            <Text style={styles.buttonIcon}>💸</Text>
-            <Text style={styles.moneyExclamation}>!!</Text>
+            <View style={styles.iconBadge}>
+              <Ionicons name="cash-outline" size={20} color="#FFFFFF" />
+            </View>
+            <View style={styles.iconBadge}>
+              <Ionicons name="call-outline" size={18} color="#FFFFFF" />
+            </View>
           </View>
-          <Text style={styles.buttonLabel}>{t('home.help.moneyHelpLabel' as any) as string}</Text>
+          <Text style={styles.buttonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.55}>{t('home.help.moneyHelpLabel' as any) as string}</Text>
+          {lastMoneyRequest && (
+            <Text style={styles.buttonTimestamp}>{formatRelativeTime(lastMoneyRequest.created_at, t)}</Text>
+          )}
         </TouchableOpacity>
       </View>
 
       {/* ── DISCLAIMER ── */}
-      <Text style={styles.disclaimer}>{t('home.help.disclaimer' as any) as string}</Text>
-
-      {/* ── LAST HELP REQUEST ── */}
-      <LastRequestDisplay request={lastRequest} />
+      <View style={styles.disclaimerBox}>
+        <Ionicons name="bulb-outline" size={16} color={BaseColors.warning} style={styles.disclaimerIcon} />
+        <Text style={styles.disclaimer}>{t('home.help.disclaimer' as any) as string}</Text>
+      </View>
 
       {/* ── SUCCESS POPUP — floats over the entire card content ── */}
       {isSuccess ? (
@@ -160,35 +184,6 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
           <Text style={styles.successText}>{t('home.help.successBanner' as any) as string}</Text>
         </Animated.View>
       ) : null}
-    </View>
-  );
-}
-
-// ── Last request display ──────────────────────────────────────────────────
-
-function LastRequestDisplay({ request }: { request: HelpRequest | null }) {
-  const { t } = useTranslation();
-
-  const label = request
-    ? request.type === 'call_me_now'
-      ? t('home.help.lastRequestCall' as any) as string
-      : t('home.help.lastRequestMoney' as any) as string
-    : null;
-
-  const timeLabel = request ? formatRelativeTime(request.created_at, t) : null;
-
-  return (
-    <View style={styles.lastRequestRow}>
-      <Ionicons
-        name={request ? 'time-outline' : 'time-outline'}
-        size={14}
-        color="#B91C1C"
-      />
-      <Text style={styles.lastRequestText}>
-        {request && label && timeLabel
-          ? `${t('home.help.lastRequestPrefix' as any) as string} ${label} · ${timeLabel}`
-          : (t('home.help.noRequestsYet' as any) as string)}
-      </Text>
     </View>
   );
 }
@@ -221,9 +216,9 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    paddingTop: 8,
-    paddingBottom: 16,
-    gap: 12,
+    paddingTop: 6,
+    paddingBottom: 10,
+    gap: 10,
   },
 
   // Success popup — covers the full card content area
@@ -281,18 +276,41 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-  // Action buttons
+  // Calm reminder — sits above the buttons, emotional reassurance rather
+  // than navigational context (the Help tab itself already establishes
+  // where you are). Boxed in its own frosted pill, same language as the
+  // cards on the main screen — this section sits on the same photo/gradient
+  // background, so plain text here isn't guaranteed enough contrast on its
+  // own (this is what was nearly invisible before).
+  panicReminderPill: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: 14,
+    paddingVertical: 7,
+    paddingHorizontal: 17,
+  },
+  panicReminderText: {
+    fontSize: iosFontSize(15),
+    fontWeight: '700',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+  },
+
+  // Action buttons — sized to keep the whole screen fitting in one
+  // viewport (header + tabs + reminder + both buttons + disclaimer). The
+  // font is the big/bold part; the button itself doesn't need much extra
+  // padding around that to read as "large."
   buttonRow: {
     flexDirection: 'column',
     gap: 10,
   },
   actionButton: {
-    minHeight: 120,
+    minHeight: 128,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
     gap: 6,
     ...Platform.select({
       ios: {
@@ -318,21 +336,26 @@ const styles = StyleSheet.create({
   moneyIconRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
-  moneyExclamation: {
-    fontSize: 32,
-    lineHeight: 38,
-    fontWeight: '900',
-    color: '#FFFFFF',
+  // Circular badge behind each icon — same treatment on both buttons.
+  // Uses real vector icons (Ionicons), not native emoji, so the icon color
+  // is actually controllable — a plain emoji glyph can't be recolored white.
+  iconBadge: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonIcon: {
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 22,
+    lineHeight: 27,
   },
   buttonLabel: {
-    fontSize: iosFontSize(17),
-    lineHeight: iosFontSize(22),
+    fontSize: Platform.OS === 'android' ? 21 : iosFontSize(25),
+    lineHeight: Platform.OS === 'android' ? 26 : iosFontSize(30),
     fontWeight: '900',
     color: '#FFFFFF',
     textAlign: 'center',
@@ -340,24 +363,35 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     ...Platform.select({ android: { includeFontPadding: false } }),
   },
-  // Disclaimer
+  // Per-button last-sent time — small and quiet, sits under the label
+  // inside the button itself.
+  buttonTimestamp: {
+    fontSize: iosFontSize(12),
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  // Disclaimer — boxed so the full safety copy stays scannable at a glance
+  // instead of reading as a dense line of small text.
+  disclaimerBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    backgroundColor: BaseColors.warningLight,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 13,
+  },
+  disclaimerIcon: {
+    marginTop: 1,
+  },
   disclaimer: {
-    fontSize: iosFontSize(11),
-    lineHeight: iosFontSize(15),
-    color: BaseColors.neutral[500],
+    flex: 1,
+    fontSize: iosFontSize(12),
+    lineHeight: iosFontSize(17),
+    color: BaseColors.text.dark,
   },
 
-  // Last request
-  lastRequestRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    marginTop: 4,
-  },
-  lastRequestText: {
-    fontSize: iosFontSize(13),
-    lineHeight: iosFontSize(18),
-    color: '#B91C1C',
-    fontWeight: '500',
-  },
 });

@@ -68,13 +68,13 @@
         "sleepy": "😪 眼瞓",
         "daydreaming": "💭 發呆中",
         "playing_sport": "🏃 運動中",
-        "having_fun": "🎉 開心中",
+        "having_fun": "🎉 派對中",
         "watching_movie": "🎬 看電影",
         "resting": "😌 休息中",
         "goodmorning": "🌅 早晨",
         "goodafternoon": "🌞 午安",
         "goodnight": "🌙 晚安",
-        "heading_home_alone": "🚶 獨自回家路上",
+        "heading_home_alone": "🚶 獨自回家",
         "hiking_alone": "🥾 獨自行山"
       },
       "summaryHome": "普通打卡",
@@ -160,14 +160,14 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出發了",
-        "boarding": "🛫 登機／🚅 啟程",
-        "layover": "🛑 中途停留／轉機",
-        "landed": "🛬 已安全抵達",
+        "boarding": "🛫 啟程",
+        "layover": "🛑 轉機",
+        "landed": "🛬 已抵達",
         "on_the_move": "🚕 在移動中",
-        "at_hotel": "🏨 已抵達酒店",
+        "at_hotel": "🏨 抵達酒店",
         "on_trip": "🗺️ 旅程中",
-        "heading_home": "🏠 正在回家途中",
-        "trip_ended": "✅ 旅程結束 — 已安全到家"
+        "heading_home": "🏠 回家途中",
+        "trip_ended": "✅ 旅程結束"
       }
     },
     "errors": {
@@ -177,6 +177,9 @@
       "loadState": "無法載入狀態"
     },
     "help": {
+      "dontPanic": "別慌。",
+      "justTap": "輕點一下就好。",
+      "dontPanicLine": "別慌 - 輕點一下就好",
       "callMeNowLabel": "我需要幫助",
       "callMeNowAccessLabel": "通知您的可信聯絡人您需要幫助，無論任何原因。",
       "callMeNowAccessHint": "立即向您信任圈中的所有人發送警報。",
@@ -187,7 +190,7 @@
       "errorMessage": "無法發送您的幫助請求。請重試。",
       "retryButton": "重試",
       "retryLabel": "重新嘗試發送幫助請求",
-      "disclaimer": "不適用於醫療或危及生命的緊急情況。提醒可能延遲。如處於緊急危險，請直接致電緊急服務。",
+      "disclaimer": "不適用於緊急情況。提醒可能延遲。如處於緊急危險，請直接致電緊急服務。",
       "lastRequestPrefix": "最近請求",
       "lastRequestCall": "需要幫助",
       "lastRequestMoney": "轉帳警報 💸",
@@ -305,7 +308,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "需要幫助",
-      "labelMoneyTransfer": "轉帳警報",
+      "labelMoneyTransfer": "💸 轉帳警報 ⚠️",
       "sentCall": "✋ 您已通知聯絡人您需要幫助",
       "sentMoney": "❗ 您發送了轉帳警報",
       "receivedCall": "✋ {{name}} 需要幫助 — 請聯繫他們",

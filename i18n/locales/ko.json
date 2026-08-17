@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "당황하지 마세요.",
+      "justTap": "탭만 하면 돼요.",
+      "dontPanicLine": "당황하지 마세요 — 탭만 하면 돼요.",
       "callMeNowLabel": "도움이 필요합니다",
       "callMeNowAccessLabel": "어떤 이유로든 도움이 필요하다는 것을 신뢰하는 연락처에 알립니다.",
       "callMeNowAccessHint": "신뢰 서클의 모든 사람에게 즉시 알림을 보냅니다.",
@@ -143,7 +146,7 @@
       "errorMessage": "도움 요청을 전송할 수 없었습니다. 다시 시도해주세요.",
       "retryButton": "다시 시도",
       "retryLabel": "도움 요청 다시 보내기 시도",
-      "disclaimer": "의료적이거나 생명을 위협하는 응급 상황에는 사용하지 마세요. 알림이 지연될 수 있습니다. 즉각적인 위험 시 응급 서비스에 직접 전화하세요.",
+      "disclaimer": "응급 상황에는 사용하지 마세요. 알림이 지연될 수 있습니다. 즉각적인 위험 시 응급 서비스에 직접 전화하세요.",
       "lastRequestPrefix": "마지막 요청",
       "lastRequestCall": "도움이 필요했습니다",
       "lastRequestMoney": "송금 경보 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "도움 필요",
-      "labelMoneyTransfer": "송금 경보",
+      "labelMoneyTransfer": "💸 송금 경보 ⚠️",
       "sentCall": "✋ 도움이 필요하다는 것을 연락처에 알렸습니다",
       "sentMoney": "❗ 송금 경보를 보냈습니다",
       "receivedCall": "✋ {{name}}이(가) 도움을 요청합니다 — 연락해주세요",

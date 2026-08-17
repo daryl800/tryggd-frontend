@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Ingen panik.",
+      "justTap": "Tryck bara.",
+      "dontPanicLine": "Ingen panik — tryck bara.",
       "callMeNowLabel": "JAG BEHÖVER HJÄLP",
       "callMeNowAccessLabel": "Låt dina betrodda kontakter veta att du behöver hjälp, oavsett anledning.",
       "callMeNowAccessHint": "Skickar omedelbart en avisering till alla i din betrodda krets.",
@@ -143,7 +146,7 @@
       "errorMessage": "Kunde inte skicka din hjälpförfrågan. Försök igen.",
       "retryButton": "FÖRSÖK IGEN",
       "retryLabel": "Försök att skicka hjälpförfrågan igen",
-      "disclaimer": "Inte för medicinska eller livshotande nödsituationer. Aviseringar kan försenas. Ring räddningstjänsten direkt om du är i omedelbar fara.",
+      "disclaimer": "Inte för nödsituationer. Aviseringar kan försenas — ring räddningstjänsten direkt om du är i omedelbar fara.",
       "lastRequestPrefix": "Senaste förfrågan",
       "lastRequestCall": "Behövde hjälp",
       "lastRequestMoney": "Varning för pengaöverföring 💸",
@@ -259,7 +262,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "BEHÖVER HJÄLP",
-      "labelMoneyTransfer": "VARNING FÖR PENGAÖVERFÖRING",
+      "labelMoneyTransfer": "💸 VARNING FÖR PENGAÖVERFÖRING ⚠️",
       "sentCall": "✋ Du har informerat dina kontakter om att du behöver hjälp",
       "sentMoney": "❗ Du skickade en varning om pengaöverföring",
       "receivedCall": "✋ {{name}} behöver hjälp — ta kontakt",

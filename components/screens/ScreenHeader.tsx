@@ -17,6 +17,12 @@ interface ScreenHeaderProps extends ViewProps {
     titleNumberOfLines?: number;
     titleAdjustsFontSizeToFit?: boolean;
     titleMinimumFontScale?: number;
+    // Optional color overrides — used when the header sits over a photo/gradient
+    // background instead of the default flat surface. Leave unset elsewhere;
+    // defaults match the original dark-text-on-light-surface look.
+    titleColor?: string;
+    subtitleColor?: string;
+    iconColor?: string;
 }
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
@@ -28,6 +34,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     titleNumberOfLines = 1,
     titleAdjustsFontSizeToFit = true,
     titleMinimumFontScale = 0.7,
+    titleColor,
+    subtitleColor,
+    iconColor,
     style,
     ...props
 }) => {
@@ -38,9 +47,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                 <>
                     <View style={styles.greetingRow}>
                         <View style={styles.greetingLeft}>
-                            <Ionicons name={iconName} size={ICON_SIZES.MD} color={BaseColors.primary} />
+                            <Ionicons name={iconName} size={ICON_SIZES.MD} color={iconColor ?? BaseColors.primary} />
                             <Text
-                                style={styles.greetingText}
+                                style={[styles.greetingText, subtitleColor ? { color: subtitleColor } : null]}
                                 numberOfLines={1}
                                 ellipsizeMode="tail"
                             >
@@ -50,7 +59,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                         {rightElement}
                     </View>
                     <Text
-                        style={styles.titleLarge}
+                        style={[styles.titleLarge, titleColor ? { color: titleColor } : null]}
                         numberOfLines={titleNumberOfLines}
                         adjustsFontSizeToFit={titleAdjustsFontSizeToFit}
                         minimumFontScale={titleMinimumFontScale}

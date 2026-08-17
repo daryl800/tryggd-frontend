@@ -144,6 +144,9 @@
       "headerTitle": "I NEED HELP",
       "headerSubtitle": "Choose what you need help with",
       "headerLabel": "Help options header",
+      "dontPanic": "Don't panic.",
+      "justTap": "Just tap.",
+      "dontPanicLine": "Don't panic — just tap.",
       "callMeNowLabel": "I NEED HELP",
       "callMeNowAccessLabel": "Let your trusted contacts know you need help, for any reason.",
       "callMeNowAccessHint": "Sends an immediate alert to everyone in your trusted circle.",
@@ -154,7 +157,7 @@
       "errorMessage": "Couldn't send your help request. Please try again.",
       "retryButton": "TRY AGAIN",
       "retryLabel": "Try sending the help request again",
-      "disclaimer": "Not for medical or life-threatening emergencies. Alerts may be delayed. Call emergency services directly if in immediate danger.",
+      "disclaimer": "Not for emergencies. Alerts may be delayed — call emergency services directly if in immediate danger.",
       "lastRequestPrefix": "Last request",
       "lastRequestCall": "Needed help",
       "lastRequestMoney": "Money transfer alert 💸",
@@ -278,7 +281,7 @@
       "todayRequests_one": "🆘 {{count}} help request today:",
       "todayRequests_other": "🆘 {{count}} help requests today:",
       "labelNeedsHelp": "NEEDS HELP",
-      "labelMoneyTransfer": "MONEY TRANSFER ALERT"
+      "labelMoneyTransfer": "💸 MONEY TRANSFER ALERT ⚠️"
     }
   },
   "watchOver": {

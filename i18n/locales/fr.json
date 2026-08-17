@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Pas de panique.",
+      "justTap": "Appuyez simplement.",
+      "dontPanicLine": "Pas de panique — appuyez simplement.",
       "callMeNowLabel": "J'AI BESOIN D'AIDE",
       "callMeNowAccessLabel": "Avertissez vos contacts de confiance que vous avez besoin d'aide, quelle qu'en soit la raison.",
       "callMeNowAccessHint": "Envoie immédiatement une alerte à tous les membres de votre cercle de confiance.",
@@ -143,7 +146,7 @@
       "errorMessage": "Impossible d'envoyer votre demande d'aide. Veuillez réessayer.",
       "retryButton": "RÉESSAYER",
       "retryLabel": "Essayer d'envoyer la demande d'aide à nouveau",
-      "disclaimer": "Pas pour les urgences médicales ou mettant en danger la vie. Les alertes peuvent être retardées. Appelez les secours directement si vous êtes en danger immédiat.",
+      "disclaimer": "Pas pour les urgences. Les alertes peuvent être retardées — appelez les secours directement si vous êtes en danger immédiat.",
       "lastRequestPrefix": "Dernière demande",
       "lastRequestCall": "Avait besoin d'aide",
       "lastRequestMoney": "Alerte de virement bancaire 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "A BESOIN D'AIDE",
-      "labelMoneyTransfer": "ALERTE DE VIREMENT BANCAIRE",
+      "labelMoneyTransfer": "💸 ALERTE DE VIREMENT BANCAIRE ⚠️",
       "sentCall": "✋ Vous avez averti vos contacts que vous avez besoin d'aide",
       "sentMoney": "❗ Vous avez envoyé une alerte de virement bancaire",
       "receivedCall": "✋ {{name}} a besoin d'aide — veuillez le contacter",

@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "落ち着いて。",
+      "justTap": "タップするだけ。",
+      "dontPanicLine": "落ち着いて。タップするだけ。",
       "callMeNowLabel": "助けが必要です",
       "callMeNowAccessLabel": "信頼できる連絡先に、何らかの理由で助けが必要であることを知らせます。",
       "callMeNowAccessHint": "信頼できる仲間全員に即時アラートを送信します。",
@@ -143,7 +146,7 @@
       "errorMessage": "ヘルプリクエストを送信できませんでした。もう一度お試しください。",
       "retryButton": "再試行",
       "retryLabel": "ヘルプリクエストの送信を再試行します",
-      "disclaimer": "医療上または生命に関わる緊急事態には使用しないでください。アラートが遅延する場合があります。直ちに危険な場合は、緊急サービスに電話してください。",
+      "disclaimer": "緊急事態には使用しないでください。アラートが遅延する場合があります。直ちに危険な場合は、緊急サービスに電話してください。",
       "lastRequestPrefix": "最後のリクエスト",
       "lastRequestCall": "助けが必要でした",
       "lastRequestMoney": "送金アラート 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "助けが必要",
-      "labelMoneyTransfer": "送金アラート",
+      "labelMoneyTransfer": "💸 送金アラート ⚠️",
       "sentCall": "✋ 助けが必要であることを連絡先に知らせました",
       "sentMoney": "❗ 送金アラートを送信しました",
       "receivedCall": "✋ {{name}}が助けを求めています — 連絡してください",

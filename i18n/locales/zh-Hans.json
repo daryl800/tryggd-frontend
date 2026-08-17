@@ -68,14 +68,14 @@
         "sleepy": "😪 困了",
         "daydreaming": "💭 发呆中",
         "playing_sport": "🏃 运动中",
-        "having_fun": "🎉 开心中",
+        "having_fun": "🎉 派对中",
         "watching_movie": "🎬 看电影",
         "resting": "😌 休息中",
         "goodmorning": "🌅 早上好",
         "goodafternoon": "🌞 午安",
         "goodnight": "🌙 晚安",
-        "heading_home_alone": "🚶 独自回家路上",
-        "hiking_alone": "🥾 独自徒步"
+        "heading_home_alone": "🚶 独自回家",
+        "hiking_alone": "🥾 独自爬山"
       },
       "summaryHome": "普通打卡",
       "summaryTrip": "添加旅行状态",
@@ -160,14 +160,14 @@
     "tripMode": {
       "statuses": {
         "leaving": "🧳 出发了",
-        "boarding": "🛫 登机／🚅启程",
-        "layover": "🛑 中途停留/转机",
-        "landed": "🛬 已安全抵达",
+        "boarding": "🛫 启程",
+        "layover": "🛑 转机",
+        "landed": "🛬 已抵达",
         "on_the_move": "🚕 在移动中",
-        "at_hotel": "🏨 已抵达酒店",
+        "at_hotel": "🏨 抵达酒店",
         "on_trip": "🗺️ 旅程中",
-        "heading_home": "🏠 正在回家途中",
-        "trip_ended": "✅ 旅程结束 — 已安全到家"
+        "heading_home": "🏠 回家途中",
+        "trip_ended": "✅ 旅程结束"
       }
     },
     "errors": {
@@ -177,6 +177,9 @@
       "loadState": "无法加载状态"
     },
     "help": {
+      "dontPanic": "别慌。",
+      "justTap": "轻点一下就好。",
+      "dontPanicLine": "别慌 - 轻点一下就好",
       "callMeNowLabel": "我需要帮助",
       "callMeNowAccessLabel": "通知您的可信联系人您需要帮助，无论任何原因。",
       "callMeNowAccessHint": "立即向您信任圈中的所有人发送警报。",
@@ -187,7 +190,7 @@
       "errorMessage": "无法发送您的帮助请求。请重试。",
       "retryButton": "重试",
       "retryLabel": "重新尝试发送帮助请求",
-      "disclaimer": "不适用于医疗或危及生命的紧急情况。提醒可能延迟。如处于紧急危险，请直接致电紧急服务。",
+      "disclaimer": "不适用于紧急情况。提醒可能延迟。如处于紧急危险，请直接致电紧急服务。",
       "lastRequestPrefix": "最近请求",
       "lastRequestCall": "需要帮助",
       "lastRequestMoney": "转账警报 💸",
@@ -305,7 +308,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "需要帮助",
-      "labelMoneyTransfer": "转账警报",
+      "labelMoneyTransfer": "💸 转账警报 ⚠️",
       "sentCall": "✋ 您已通知联系人您需要帮助",
       "sentMoney": "❗ 您发送了转账警报",
       "receivedCall": "✋ {{name}} 需要帮助 — 请联系他们",

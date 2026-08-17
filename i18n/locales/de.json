@@ -133,6 +133,9 @@
       }
     },
     "help": {
+      "dontPanic": "Keine Panik.",
+      "justTap": "Einfach tippen.",
+      "dontPanicLine": "Keine Panik — einfach tippen.",
       "callMeNowLabel": "ICH BRAUCHE HILFE",
       "callMeNowAccessLabel": "Lass deine vertrauenswürdigen Kontakte wissen, dass du Hilfe brauchst – egal aus welchem Grund.",
       "callMeNowAccessHint": "Sendet sofort eine Benachrichtigung an alle in deinem Vertrauenskreis.",
@@ -143,7 +146,7 @@
       "errorMessage": "Deine Hilfeanfrage konnte nicht gesendet werden. Bitte versuche es erneut.",
       "retryButton": "ERNEUT VERSUCHEN",
       "retryLabel": "Versuche, die Hilfeanfrage erneut zu senden",
-      "disclaimer": "Nicht für medizinische oder lebensbedrohliche Notfälle. Benachrichtigungen können verzögert sein. Rufen Sie direkt den Notruf an, wenn Sie in unmittelbarer Gefahr sind.",
+      "disclaimer": "Nicht für Notfälle. Benachrichtigungen können verzögert sein — rufen Sie direkt den Notruf an, wenn Sie in unmittelbarer Gefahr sind.",
       "lastRequestPrefix": "Letzte Anfrage",
       "lastRequestCall": "Hilfe benötigt",
       "lastRequestMoney": "Geldüberweisung-Warnung 💸",
@@ -252,7 +255,7 @@
     },
     "helpRequest": {
       "labelNeedsHelp": "BRAUCHT HILFE",
-      "labelMoneyTransfer": "GELDÜBERWEISUNG-WARNUNG",
+      "labelMoneyTransfer": "💸 GELDÜBERWEISUNG-WARNUNG ⚠️",
       "sentCall": "✋ Du hast deine Kontakte darüber informiert, dass du Hilfe brauchst",
       "sentMoney": "❗ Du hast eine Geldüberweisung-Warnung gesendet",
       "receivedCall": "✋ {{name}} braucht Hilfe — bitte melde dich",

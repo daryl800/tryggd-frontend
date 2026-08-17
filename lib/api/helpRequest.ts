@@ -47,3 +47,22 @@ export async function fetchLastHelpRequest(userId: string): Promise<HelpRequest 
 
   return data ?? null
 }
+
+// Per-type lookup — used so each button can show its own last-sent time.
+// A user can press both buttons within a short window, and each needs its
+// own timestamp rather than one shared "last request" line hiding the other.
+export async function fetchLastHelpRequestByType(
+  userId: string,
+  type: HelpRequestType
+): Promise<HelpRequest | null> {
+  const { data } = await supabase
+    .from('help_requests')
+    .select('id, user_id, type, created_at, status')
+    .eq('user_id', userId)
+    .eq('type', type)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return data ?? null
+}
