@@ -9,19 +9,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
+  Modal,
   Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type SendState = 'idle' | 'sending' | 'success' | 'error';
 const SUCCESS_DISPLAY_MS = 2500;
 
 type Props = {
   userId: string;
-  onRequestSent?: () => void;
+  // Fired after a successful send with the request type and the SERVER's
+  // created_at (from the send-help-request edge function's response, not a
+  // client-side guess) — lets the parent screen push an updated widget
+  // snapshot with the authoritative timestamp for `money_transfer_help`
+  // sends, without this screen needing to know anything about widgets.
+  onRequestSent?: (type: HelpRequestType, createdAt: string) => void;
 };
 
 export function HelpModeScreen({ userId, onRequestSent }: Props) {
@@ -80,13 +87,20 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
 
     try {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      await sendHelpRequest(type);
+      const result = await sendHelpRequest(type);
       setSendState('success');
-      showSuccess();
+      // "call_me_now" keeps its existing brief auto-dismissing toast — that
+      // flow is explicitly out of scope. "money_transfer_help" instead gets
+      // a full-screen state (rendered below) that stays up until the user
+      // taps "Back to Tryggd" themselves; it should NOT auto-dismiss, so we
+      // deliberately skip the showSuccess() fade-out timer for that type.
+      if (type === 'call_me_now') {
+        showSuccess();
+      }
       // Defer non-visual updates so they don't re-render during the fade-in
       setTimeout(() => {
         loadLastRequests();
-        onRequestSent?.();
+        onRequestSent?.(type, result.created_at);
       }, 250);
     } catch (err) {
       console.error('Help request failed:', err);
@@ -97,6 +111,13 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
   const handleRetry = useCallback(() => {
     if (activeType) handleSend(activeType);
   }, [activeType, handleSend]);
+
+  // Dismiss the money-alert post-screen — the ONLY way it closes. No
+  // auto-timer, no tap-anywhere-to-dismiss; the user has to deliberately
+  // choose to leave the pause screen.
+  const handleBackToTryggd = useCallback(() => {
+    setSendState('idle');
+  }, []);
 
   const isSending = sendState === 'sending';
   const isError = sendState === 'error';
@@ -141,9 +162,9 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
             <Text style={styles.buttonIcon}>✋</Text>
           </View>
           <Text style={styles.buttonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.55}>{t('home.help.callMeNowLabel' as any) as string}</Text>
-          {lastCallRequest && (
-            <Text style={styles.buttonTimestamp}>{formatRelativeTime(lastCallRequest.created_at, t)}</Text>
-          )}
+          <Text style={styles.buttonTimestamp}>
+            {t('home.help.lastReportTimeLabel' as any) as string} {(lastCallRequest && formatRelativeTime(lastCallRequest.created_at, t)) || '--:--'}
+          </Text>
         </TouchableOpacity>
 
         {/* ASKED TO SEND MONEY */}
@@ -165,9 +186,9 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
             </View>
           </View>
           <Text style={styles.buttonLabel} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.55}>{t('home.help.moneyHelpLabel' as any) as string}</Text>
-          {lastMoneyRequest && (
-            <Text style={styles.buttonTimestamp}>{formatRelativeTime(lastMoneyRequest.created_at, t)}</Text>
-          )}
+          <Text style={styles.buttonTimestamp}>
+            {t('home.help.lastReportTimeLabel' as any) as string} {(lastMoneyRequest && formatRelativeTime(lastMoneyRequest.created_at, t)) || '--:--'}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -177,18 +198,79 @@ export function HelpModeScreen({ userId, onRequestSent }: Props) {
         <Text style={styles.disclaimer}>{t('home.help.disclaimer' as any) as string}</Text>
       </View>
 
-      {/* ── SUCCESS POPUP — floats over the entire card content ── */}
-      {isSuccess ? (
+      {/* ── SUCCESS POPUP (call_me_now only) — floats over the card content.
+          The money-alert flow uses the full-screen Modal below instead. ── */}
+      {isSuccess && activeType === 'call_me_now' ? (
         <Animated.View style={[styles.successOverlay, { opacity: successOpacity }]} pointerEvents="none">
           <Ionicons name="checkmark-circle" size={48} color="#fff" />
           <Text style={styles.successText}>{t('home.help.successBanner' as any) as string}</Text>
         </Animated.View>
       ) : null}
+
+      {/* ── MONEY ALERT SENT — full-screen "pause" state. Replaces the
+          brief toast for this flow specifically: the user may be mid-call
+          with a scammer or otherwise under pressure, so this stays on
+          screen until they deliberately dismiss it, rather than fading
+          away on its own after a couple of seconds. ── */}
+      <Modal
+        visible={isSuccess && activeType === 'money_transfer_help'}
+        animationType="fade"
+        presentationStyle="fullScreen"
+        onRequestClose={handleBackToTryggd}
+      >
+        <SafeAreaView
+          style={styles.moneyAlertScreen}
+          accessibilityViewIsModal
+          accessibilityLiveRegion="polite"
+        >
+          <View style={styles.moneyAlertContent}>
+            <View style={styles.moneyAlertIconBadge}>
+              <Ionicons name="checkmark" size={56} color="#FFFFFF" />
+            </View>
+            {/* Reading order matches visual order: sent -> pause -> wait ->
+                caution. No extra label overrides — a screen reader hearing
+                these four lines in sequence already gives the short,
+                unambiguous message this screen needs to convey. */}
+            <Text style={styles.moneyAlertTitle} accessibilityRole="header">
+              {t('home.help.moneyAlertSentTitle' as any) as string}
+            </Text>
+            <Text style={styles.moneyAlertPauseTitle}>
+              {t('home.help.moneyAlertPauseTitle' as any) as string}
+            </Text>
+            <Text style={styles.moneyAlertBody}>
+              {t('home.help.moneyAlertWaitBody' as any) as string}
+            </Text>
+            <View style={styles.moneyAlertCautionBox}>
+              <Text style={styles.moneyAlertCautionText}>
+                {t('home.help.moneyAlertCautionBody' as any) as string}
+              </Text>
+            </View>
+          </View>
+
+          {/* Deliberately subtle and low on the screen — this is the ONLY
+              way to dismiss, and it's not meant to look like a "Continue"
+              CTA the user reflexively taps to make the message go away. */}
+          <TouchableOpacity
+            style={styles.backToTryggdButton}
+            onPress={handleBackToTryggd}
+            activeOpacity={0.6}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.help.backToTryggd' as any) as string}
+          >
+            <Ionicons name="chevron-back" size={18} color={BaseColors.text.muted} />
+            <Text style={styles.backToTryggdText}>{t('home.help.backToTryggd' as any) as string}</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 }
 
-function formatRelativeTime(isoString: string, t: any): string {
+// Returns null once a request is more than 24 hours old — this timestamp is
+// meant to answer "was this recent?", not to track history indefinitely, so
+// anything past a day falls back to the "--:--" placeholder instead of
+// counting up in days.
+function formatRelativeTime(isoString: string, t: any): string | null {
   const diffMs = Date.now() - new Date(isoString).getTime();
   const diffMinutes = Math.floor(diffMs / 60000);
 
@@ -198,16 +280,7 @@ function formatRelativeTime(isoString: string, t: any): string {
   const diffHours = Math.round(diffMinutes / 60);
   if (diffHours < 24) return t('home.status.hoursAgo', { count: diffHours });
 
-  // For older: show the actual time as HH:MM
-  try {
-    return new Date(isoString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-  } catch {
-    return isoString;
-  }
+  return null;
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────
@@ -216,9 +289,9 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    paddingTop: 6,
-    paddingBottom: 10,
-    gap: 10,
+    paddingTop: 8,
+    paddingBottom: 14,
+    gap: 16,
   },
 
   // Success popup — covers the full card content area
@@ -302,7 +375,7 @@ const styles = StyleSheet.create({
   // padding around that to read as "large."
   buttonRow: {
     flexDirection: 'column',
-    gap: 10,
+    gap: 14,
   },
   actionButton: {
     minHeight: 128,
@@ -392,6 +465,102 @@ const styles = StyleSheet.create({
     fontSize: iosFontSize(12),
     lineHeight: iosFontSize(17),
     color: BaseColors.text.dark,
+  },
+
+  // ── Money alert "pause" screen ──────────────────────────────────────────
+  // A calm, quiet full-screen state — soft mint wash rather than the urgent
+  // red of the button that triggered it, deliberately far from anything
+  // alarming. Content is centered and short; the dismiss control sits low
+  // and separate so it doesn't read as "step 2 of the instruction."
+  moneyAlertScreen: {
+    flex: 1,
+    backgroundColor: BaseColors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: SCREEN_PADDING.horizontal,
+    paddingBottom: 12,
+  },
+  moneyAlertContent: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 440,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 18,
+  },
+  moneyAlertIconBadge: {
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    backgroundColor: BaseColors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.12,
+        shadowRadius: 10,
+      },
+      android: { elevation: 3 },
+    }),
+  },
+  moneyAlertTitle: {
+    fontSize: iosFontSize(26),
+    lineHeight: iosFontSize(32),
+    fontWeight: '800',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+  },
+  moneyAlertPauseTitle: {
+    fontSize: iosFontSize(20),
+    lineHeight: iosFontSize(26),
+    fontWeight: '700',
+    color: BaseColors.primaryDark,
+    textAlign: 'center',
+    marginTop: -6,
+  },
+  moneyAlertBody: {
+    fontSize: iosFontSize(17),
+    lineHeight: iosFontSize(24),
+    fontWeight: '500',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+    paddingHorizontal: 6,
+  },
+  moneyAlertCautionBox: {
+    width: '100%',
+    backgroundColor: BaseColors.warningLight,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    marginTop: 6,
+  },
+  moneyAlertCautionText: {
+    fontSize: iosFontSize(15),
+    lineHeight: iosFontSize(21),
+    fontWeight: '700',
+    color: BaseColors.text.dark,
+    textAlign: 'center',
+  },
+  // Subtle, secondary — generous touch target (44pt+) for accessibility
+  // without looking like the primary action on the screen.
+  backToTryggdButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    minHeight: 44,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  backToTryggdText: {
+    fontSize: iosFontSize(15),
+    fontWeight: '600',
+    color: BaseColors.text.muted,
   },
 
 });

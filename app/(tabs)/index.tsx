@@ -20,12 +20,16 @@ import {
   cancelTodayReminderAfterCheckin
 } from '@/lib/notifications/reminderManager';
 import { isLocalAvatarUri } from '@/lib/profile/avatarStorage';
+import { HOME_STATUS_NOTIFICATION_TYPES } from '@/lib/notifications/homeStatusTypes';
+import { buildWidgetOwnState } from '@/lib/widget/snapshot';
+import { setWidgetSnapshot } from 'tryggd-widget-bridge';
+import { fetchLastHelpRequestByType, HelpRequestType } from '@/lib/api/helpRequest';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import * as Localization from 'expo-localization';
 import * as Notifications from 'expo-notifications';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -64,8 +68,15 @@ const STROKE_WIDTH = 40;
 // second (live clock), and a fresh array literal each render was making
 // LinearGradient repaint every second even when the colors never actually
 // changed. These stay the same reference for the app's lifetime.
-const DAY_GRADIENT_COLORS: [string, string, ...string[]] = ['#7b8ba3', '#d99b6f', '#e6b877', '#4a5578'];
-const NIGHT_GRADIENT_COLORS: [string, string, ...string[]] = ['#0f1226', '#232a52', '#3a3568', '#111427'];
+// Three tiers, matching getGreetingInfo's own hour boundaries below (5-12
+// morning, 12-18 afternoon, 18-5 evening/night) so the background and the
+// "Good morning/afternoon/evening/night" greeting text never disagree about
+// what part of the day it is. Evening and night share one palette rather
+// than getting a 4th — greeting text still has its own separate evening vs.
+// night copy, this is just the background wash.
+const MORNING_GRADIENT_COLORS: [string, string, ...string[]] = ['#a9c6d8', '#f2b48a', '#f6d9a0', '#7b8ba3'];
+const AFTERNOON_GRADIENT_COLORS: [string, string, ...string[]] = ['#7b8ba3', '#d99b6f', '#e6b877', '#4a5578'];
+const EVENING_NIGHT_GRADIENT_COLORS: [string, string, ...string[]] = ['#0f1226', '#232a52', '#3a3568', '#111427'];
 const HEADER_SCRIM_COLORS: [string, string, ...string[]] = ['rgba(20,20,30,0.45)', 'rgba(20,20,30,0.05)'];
 
 const STORAGE_KEY = '@checkin_state';
@@ -75,8 +86,23 @@ const WELLNESS_MIN = -2;
 const WELLNESS_MAX = 2;
 const WELLNESS_DEFAULT = 0;
 const WELLNESS_STEPS = WELLNESS_MAX - WELLNESS_MIN + 1;
-const SCROLL_OVERFLOW_TOLERANCE = 40;
-const HOME_STATUS_NOTIFICATION_TYPES = ['welfare_check', 'emergency_message', 'checkin_response', 'call_me_now', 'money_transfer_help'] as const;
+// Must stay comfortably ABOVE scrollContent's paddingBottom (40, below) —
+// onContentSizeChange measures the ScrollView's content container INCLUDING
+// that padding, so when the tolerance exactly equals the padding (as it
+// used to), "content fits exactly" sits right on the shouldScroll boundary.
+// Android's text/font metrics round slightly differently than iOS's and
+// land closer to that boundary (documented elsewhere in this file re: the
+// compactness-tier hysteresis), so a few px of harmless measurement noise
+// was enough to flip shouldScroll to true — meaning the screen became
+// draggable even though nothing new was revealed by scrolling, just the
+// tail end of the invisible bottom padding. The 24px buffer here absorbs
+// that noise without hiding genuine overflow (real extra content is
+// normally tens of px, same reasoning as the 8px viewport/content
+// measurement debounce below).
+const SCROLL_OVERFLOW_TOLERANCE = 64;
+// Moved to lib/notifications/homeStatusTypes.ts so the widget's own fetch
+// (contexts/ContactCheckinsContext.tsx) can use the exact same filter —
+// see docs/home-screen-widget.md §12/§13.
 type HomePresence = 'chilling' | 'home' | 'outside' | 'at_school' | 'working' | 'busy' | 'relaxing' | 'gathering' | 'on_call' | 'eating' | 'exhausted' | 'sleepy' | 'daydreaming' | 'having_fun' | 'playing_sport' | 'watching_movie' | 'resting' | 'goodmorning' | 'goodafternoon' | 'goodnight' | 'heading_home_alone' | 'hiking_alone';
 type ReachOutStatus = 'call_now' | 'call_available';
 
@@ -383,6 +409,33 @@ const getWellnessStatusMeta = (score?: number | null) => {
 };
 
 const TRIP_STATUS_EMOJI_PATTERN = /^[\u{1F000}-\u{1FFFF}\u{2600}-\u{27FF}]+️?/u;
+
+/**
+ * Pushes the widget's own-check-in-state snapshot (see
+ * lib/widget/types.ts and docs/home-screen-widget.md — the widget shows
+ * ONLY the current user's own check-in completion, never trusted-circle
+ * data). Called from the four places this screen tracks that state
+ * changing: a successful check-in, a Supabase sync that discovers a
+ * check-in from another device, a reset (manual or day-rollover), and a
+ * successful "Asked to Send Money" send. No closure dependencies, so it's
+ * a plain module-level function rather than a useCallback — nothing to add
+ * to a dependency array at any call site.
+ *
+ * `lastMoneyAlertSentUtc` is carried through every call (not just the
+ * send-money one) so a regular check-in or sync push doesn't accidentally
+ * blank out previously-known "last sent" info — see the component's own
+ * `lastMoneyAlertSentUtc` state, which is what call sites should pass here
+ * unless they're the one place actually updating it.
+ */
+function pushWidgetOwnState(
+  isLoggedIn: boolean,
+  checkedInToday: boolean,
+  lastCheckinUtc: string | null,
+  lastMoneyAlertSentUtc: string | null
+) {
+  const state = buildWidgetOwnState(isLoggedIn, checkedInToday, lastCheckinUtc, lastMoneyAlertSentUtc);
+  setWidgetSnapshot(JSON.stringify(state));
+}
 
 const parseNotificationData = (value: unknown) => {
   if (!value) return {};
@@ -728,8 +781,13 @@ const WellnessButtonPicker = ({
 // clock, and without this the LinearGradients were being reconciled (and
 // visibly repainting/flickering, especially on the iOS simulator) every
 // second even though their props never actually changed.
-const AppBackground = memo(function AppBackground({ isDaytimeBackground }: { isDaytimeBackground: boolean }) {
-  const backgroundGradientColors = isDaytimeBackground ? DAY_GRADIENT_COLORS : NIGHT_GRADIENT_COLORS;
+type BackgroundTimeOfDay = 'morning' | 'afternoon' | 'eveningNight';
+
+const AppBackground = memo(function AppBackground({ timeOfDayBackground }: { timeOfDayBackground: BackgroundTimeOfDay }) {
+  const backgroundGradientColors =
+    timeOfDayBackground === 'morning' ? MORNING_GRADIENT_COLORS
+    : timeOfDayBackground === 'afternoon' ? AFTERNOON_GRADIENT_COLORS
+    : EVENING_NIGHT_GRADIENT_COLORS;
   return (
     <>
       {/* Warm background wash — stands in for a bundled photo asset. Swap the
@@ -756,6 +814,16 @@ const AppBackground = memo(function AppBackground({ isDaytimeBackground }: { isD
 
 export default function HomeScreen() {
   const router = useRouter();
+  // Widget deep link (tryggd:///(tabs)?mode=help or ?mode=home — see
+  // docs/home-screen-widget.md "Deep linking") lands here with ?mode=help
+  // to open directly into the anti-fraud Help flow, or ?mode=home to force
+  // the Daily tab (checkinMode is persisted across app opens, so a bare
+  // deep link would otherwise resume whatever tab — Trip, Reach Out — was
+  // last active instead of Daily, which the Check In widget always shows
+  // status for). Reusing this route's own existing mode-tab state rather
+  // than a new screen/route, per the spec's "do not create new duplicate
+  // navigation infrastructure."
+  const widgetDeepLinkParams = useLocalSearchParams<{ mode?: string }>();
   const { t, i18n } = useTranslation();
   const { user, profile, loading, capabilities, refreshProfile } = useAuth();
   const { isPlusPreviewOpen, hasActivatedPilotPreview, hasPilotPreviewAccess, hasPaidPlusAccess, campaignId, pilotPreviewEndsAt } = useEntitlement();
@@ -770,7 +838,15 @@ export default function HomeScreen() {
   const [checkedInToday, setCheckedInToday] = useState(false);
   const [lastCheckinUtc, setLastCheckinUtc] = useState<string | null>(null);
   const [lastCheckinId, setLastCheckinId] = useState<string | null>(null);
-  const { streak, refetch: refetchStreak } = useStreak();
+  // Widget-only: the user's own most recent `money_transfer_help` send —
+  // see lib/widget/types.ts. Loaded once below (same data source that
+  // already powers HelpModeScreen's own "last sent" button label) and kept
+  // current via handleHelpRequestSent, then threaded through every
+  // pushWidgetOwnState call so it's never accidentally dropped.
+  const [lastMoneyAlertSentUtc, setLastMoneyAlertSentUtc] = useState<string | null>(null);
+  // loading destructured so the badge doesn't hide itself for reasons that
+  // have nothing to do with the actual streak value — see streakBadge below.
+  const { streak, loading: streakLoading, refetch: refetchStreak } = useStreak();
   const [, setShowResetButton] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [fontScale, setFontScale] = useState(1);
@@ -785,6 +861,16 @@ export default function HomeScreen() {
   // Sticky compactness tier — see the effect below for why this can't be a
   // plain per-render derivation of contentHeight/viewportHeight.
   const [stickyCompactnessTier, setStickyCompactnessTier] = useState<'regular' | 'compact' | 'tight'>('regular');
+  // Same sticky/hysteresis idea as stickyCompactnessTier, but for
+  // fitTightenOffset/uncheckedCircleBoost below — those used to read the
+  // RAW per-render overflowAmount directly (via an `=== 0` check and hard
+  // 0/72 cutoffs), which controls circleSize, which changes contentHeight,
+  // which changes overflowAmount right back — the exact feedback loop the
+  // comment above already describes for the compactness tier, just in a
+  // second place that hadn't hit the oscillation boundary until a larger
+  // circleSize pushed it there (observed as a real "Maximum update depth
+  // exceeded" crash). Computed in the same effect, same dead-zone pattern.
+  const [stickyOverflowBand, setStickyOverflowBand] = useState<'fits' | 'over' | 'overMore'>('fits');
   const [checkinMode, setCheckinMode] = useState<'home' | 'trip' | 'reach_out'>('home');
   const [tripPresence, setTripPresence] = useState<string | null>(null);
   const [homePresence, setHomePresence] = useState<HomePresence>('chilling');
@@ -992,7 +1078,18 @@ export default function HomeScreen() {
   const canUseEnhancedHome = homeLayout === 'plus-enhanced';
   const canUseWellnessHome = homeLayout !== 'free';
 
-  // Load checkin mode from Supabase / AsyncStorage
+  // Load trip/home/reach-out PRESENCE (what shows on the button/status text
+  // once a tab is active) from Supabase / AsyncStorage — but deliberately
+  // does NOT restore which TAB was last active. checkinMode itself stays at
+  // its useState('home') default on every fresh app open, so the app
+  // always opens on the Daily tab, only ever landing on Trip/Reach Out via
+  // an explicit tap or a widget deep link (?mode=... — see
+  // widgetDeepLinkParams above), never by silently resuming wherever you
+  // left off. checkin_mode is still WRITTEN to AsyncStorage/user_settings
+  // in handleCheckinModeChange below (harmless, nothing else currently
+  // reads it back — grepped the whole repo — but no reason to stop
+  // recording it); this effect just stopped being the thing that reads it
+  // back on mount.
   useEffect(() => {
     const loadCheckinMode = async () => {
       try {
@@ -1001,18 +1098,7 @@ export default function HomeScreen() {
           setTripPresence(null);
           return;
         }
-        const saved = await AsyncStorage.getItem('@settings_checkin_mode');
-        if (saved === 'home' || saved === 'trip' || saved === 'reach_out') setCheckinMode(saved);
         if (!user) return;
-        const { data } = await supabase
-          .from('user_settings')
-          .select('checkin_mode')
-          .eq('user_id', user.id)
-          .maybeSingle();
-        if (data?.checkin_mode === 'home' || data?.checkin_mode === 'trip' || data?.checkin_mode === 'reach_out') {
-          setCheckinMode(data.checkin_mode as 'home' | 'trip' | 'reach_out');
-          await AsyncStorage.setItem('@settings_checkin_mode', data.checkin_mode);
-        }
         // Also load last trip_status / home_presence / reach_out_status from users_latest_checkin
         const { data: checkinData } = await supabase
           .from('users_latest_checkin')
@@ -1075,6 +1161,19 @@ export default function HomeScreen() {
     }
   }, [checkinMode, user]);
 
+  // Widget deep links — "Asked to Send Money" (?mode=help) and "Check In"
+  // (?mode=home). See widgetDeepLinkParams above. Only acts once per param
+  // value (guarded by the ref) so navigating to a different tab afterward
+  // doesn't get pulled back by a re-render of this same effect.
+  const consumedWidgetDeepLinkRef = useRef(false);
+  useEffect(() => {
+    const mode = widgetDeepLinkParams.mode;
+    if (mode !== 'help' && mode !== 'home') return;
+    if (consumedWidgetDeepLinkRef.current) return;
+    consumedWidgetDeepLinkRef.current = true;
+    void handleCheckinModeChange(mode === 'help' ? 'reach_out' : 'home');
+  }, [widgetDeepLinkParams.mode, handleCheckinModeChange]);
+
   const handleReachOutPresenceChange = useCallback((value: ReachOutStatus) => {
     if (value === reachOutPresence) return;
     void Haptics.selectionAsync();
@@ -1114,7 +1213,11 @@ export default function HomeScreen() {
     setMoodScore(WELLNESS_DEFAULT);
     setSubmittedMoodScore(WELLNESS_DEFAULT);
     await AsyncStorage.removeItem(STORAGE_KEY);
-  }, []);
+    // Covers both the manual reset button (line ~2069) and the day-rollover
+    // reset (checkDateAndReset below) — either way, the widget should flip
+    // back to "Check In" the moment this screen's own state does.
+    pushWidgetOwnState(!!user, false, null, lastMoneyAlertSentUtc);
+  }, [user, lastMoneyAlertSentUtc]);
 
   const resetOnboardingFlow = useCallback(async () => {
     await resetOnboarding();
@@ -1211,6 +1314,10 @@ export default function HomeScreen() {
           lastCheckinUtc: data.last_checked_in_utc,
         })
       );
+      // This fetch is also how "checked in from another device" reaches
+      // this device (§7 of the widget spec) — whatever it resolves here
+      // is exactly what the widget should show too.
+      pushWidgetOwnState(true, isFromToday, data.last_checked_in_utc, lastMoneyAlertSentUtc);
       } else {
         setCheckedInToday(false);
         setShowResetButton(false);
@@ -1219,16 +1326,43 @@ export default function HomeScreen() {
         setMoodScore(WELLNESS_DEFAULT);
         setSubmittedMoodScore(WELLNESS_DEFAULT);
         await AsyncStorage.removeItem(STORAGE_KEY);
+        pushWidgetOwnState(true, false, null, lastMoneyAlertSentUtc);
       }
-  }, [user, t]);
+  }, [user, t, lastMoneyAlertSentUtc]);
+
+  // Loads the user's own most recent `money_transfer_help` send (see
+  // lib/api/helpRequest.ts — the same data source HelpModeScreen's own
+  // button timestamp already uses) so the widget has this history from the
+  // very first snapshot push after app load, not just sends made this
+  // session. Non-critical: a failure here just means the widget's "Last
+  // sent" line stays blank until the next successful send.
+  const fetchLastMoneyAlertSent = useCallback(async () => {
+    if (!user) return;
+    try {
+      const lastRequest = await fetchLastHelpRequestByType(user.id, 'money_transfer_help');
+      setLastMoneyAlertSentUtc(lastRequest?.created_at ?? null);
+    } catch {
+      // non-critical
+    }
+  }, [user]);
+
+  // Fired by HelpModeScreen after a successful send — see its onRequestSent
+  // prop. Only 'money_transfer_help' is relevant to the widget's "Send
+  // Money Alert" surface; 'call_me_now' sends are ignored here.
+  const handleHelpRequestSent = useCallback((type: HelpRequestType, createdAt: string) => {
+    if (type !== 'money_transfer_help') return;
+    setLastMoneyAlertSentUtc(createdAt);
+    pushWidgetOwnState(true, checkedInToday, lastCheckinUtc, createdAt);
+  }, [checkedInToday, lastCheckinUtc]);
 
   // Fetch initial data when user loads
   useEffect(() => {
     if (!loading && user) {
       fetchLastCheckin();
       fetchContactsCount();
+      fetchLastMoneyAlertSent();
     }
-  }, [loading, user, fetchLastCheckin, fetchContactsCount]);
+  }, [loading, user, fetchLastCheckin, fetchContactsCount, fetchLastMoneyAlertSent]);
 
   const refreshHomeData = useCallback((reason: 'focus' | 'active' | 'manual' = 'manual') => {
     console.log(`📱 Home refresh (${reason})`);
@@ -1694,6 +1828,12 @@ export default function HomeScreen() {
                 checkinTimezone: timeZone,
               })
             );
+            // Only reached after the Supabase write above actually
+            // resolved successfully — if it throws, this whole .then()
+            // never runs and the .catch() below reverts the optimistic
+            // UI state instead, so the widget is never told "checked in"
+            // for a check-in that didn't actually happen.
+            pushWidgetOwnState(true, true, checkinRow.checked_in_at_utc, lastMoneyAlertSentUtc);
 
             await cancelTodayReminderAfterCheckin();
             refetchStreak();
@@ -1717,6 +1857,7 @@ export default function HomeScreen() {
     homePresence,
     lastCheckinId,
     lastCheckinUtc,
+    lastMoneyAlertSentUtc,
     moodScore,
     reachOutPresence,
     refetchStreak,
@@ -1759,6 +1900,18 @@ export default function HomeScreen() {
       if (forcesCompactOrTighter) return 'compact';
       if (prev === 'compact') return rawOverflow > -40 ? 'compact' : 'regular';
       return 'regular';
+    });
+
+    // Same dead-zone approach as above, sized to comfortably exceed the
+    // biggest single jump fitTightenOffset/uncheckedCircleBoost can cause
+    // in contentHeight (~22px + ~16px) so crossing a boundary once can't
+    // immediately cross back.
+    setStickyOverflowBand((prev) => {
+      if (rawOverflow > 72) return 'overMore';
+      if (prev === 'overMore') return rawOverflow > 40 ? 'overMore' : 'over';
+      if (rawOverflow > 0) return 'over';
+      if (prev !== 'fits') return rawOverflow > -50 ? prev : 'fits';
+      return 'fits';
     });
   }, [contentHeight, viewportHeight, windowDimensions.fontScale, windowDimensions.height, fontScale]);
 
@@ -1841,15 +1994,22 @@ export default function HomeScreen() {
   const simpleHomeCompactness: NonNullable<WellnessButtonPickerProps['compactness']> = stickyCompactnessTier;
   const isCompactSimpleHome = simpleHomeCompactness !== 'regular';
   const isTightSimpleHome = simpleHomeCompactness === 'tight';
-  const fitTightenOffset = overflowAmount > 72 ? 22 : overflowAmount > 0 ? 10 : 0;
-  const uncheckedCircleBoost = !checkedInToday && overflowAmount === 0
+  // fitTightenOffset/uncheckedCircleBoost used to read the raw per-render
+  // overflowAmount directly (hard 0/72 cutoffs, an `=== 0` exact check) —
+  // but both feed circleSize, which changes contentHeight, which changes
+  // overflowAmount right back. That's the same feedback loop
+  // stickyCompactnessTier already exists to break (see its comment above);
+  // these just hadn't hit the oscillation boundary before. Now sourced
+  // from stickyOverflowBand, which applies the same dead-zone hysteresis.
+  const fitTightenOffset = stickyOverflowBand === 'overMore' ? 22 : stickyOverflowBand === 'over' ? 10 : 0;
+  const uncheckedCircleBoost = !checkedInToday && stickyOverflowBand === 'fits'
     ? (isTightSimpleHome ? 12 : isCompactSimpleHome ? 14 : 16)
     : 0;
   const circleSize = Math.min(
-    currentScreenWidth * (isTightSimpleHome ? 0.58 : isCompactSimpleHome ? 0.64 : 0.70),
-    (isTightSimpleHome ? 212 : isCompactSimpleHome ? 230 : 258) + uncheckedCircleBoost,
+    currentScreenWidth * (isTightSimpleHome ? 0.64 : isCompactSimpleHome ? 0.70 : 0.76),
+    (isTightSimpleHome ? 232 : isCompactSimpleHome ? 250 : 280) + uncheckedCircleBoost,
   ) - fitTightenOffset + uncheckedCircleBoost;
-  const strokeWidth = Math.max(28, (isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH) - (overflowAmount > 72 ? 4 : overflowAmount > 0 ? 2 : 0));
+  const strokeWidth = Math.max(28, (isTightSimpleHome ? 32 : isCompactSimpleHome ? 36 : STROKE_WIDTH) - (stickyOverflowBand === 'overMore' ? 4 : stickyOverflowBand === 'over' ? 2 : 0));
   const maxStroke = strokeWidth + 3;
   const circleRadius = (circleSize - maxStroke) / 2;
   const innerButtonSize = circleSize - strokeWidth;
@@ -2030,17 +2190,23 @@ export default function HomeScreen() {
     !pilotDialogDismissed &&
     !loading;
 
-  // Simple local-time day/night swap for the background wash — no weather
-  // API, no permissions, no network failure states. Deliberately not doing
-  // per-condition (rain/cloud/etc.) backgrounds: see earlier discussion —
-  // that multiplies the number of header-contrast combinations to verify
-  // for very little benefit to the app's actual job.
+  // Simple local-time morning/afternoon/evening-night swap for the
+  // background wash — no weather API, no permissions, no network failure
+  // states. Deliberately not doing per-condition (rain/cloud/etc.)
+  // backgrounds: see earlier discussion — that multiplies the number of
+  // header-contrast combinations to verify for very little benefit to the
+  // app's actual job. Boundaries match getGreetingInfo's above, so the
+  // background and the greeting text always agree on what part of the day
+  // it is.
   const currentHour = now.getHours();
-  const isDaytimeBackground = currentHour >= 6 && currentHour < 19;
+  const timeOfDayBackground: BackgroundTimeOfDay =
+    currentHour >= 5 && currentHour < 12 ? 'morning'
+    : currentHour >= 12 && currentHour < 18 ? 'afternoon'
+    : 'eveningNight';
 
   return (
     <SafeAreaView style={[styles.mainContainer, styles.simpleMainContainer]} edges={['top']}>
-      <AppBackground isDaytimeBackground={isDaytimeBackground} />
+      <AppBackground timeOfDayBackground={timeOfDayBackground} />
       {/* HEADER - OUTSIDE SCROLLVIEW (FIXED) */}
       <ScreenHeader
         title={profile?.display_name || t('home.welcome')}
@@ -2051,6 +2217,14 @@ export default function HomeScreen() {
         titleColor="#FFFFFF"
         subtitleColor="rgba(255,255,255,0.85)"
         iconColor="#FFFFFF"
+        titleRightElement={
+          !streakLoading ? (
+            <View style={styles.streakBadge} pointerEvents="none">
+              <Ionicons name="flame" size={18} color={BaseColors.warning} />
+              <Text style={styles.streakBadgeText}>{streak}</Text>
+            </View>
+          ) : null
+        }
         rightElement={
           <View style={styles.headerActions}>
             {showDebugResetCheckin ? (
@@ -2211,7 +2385,7 @@ export default function HomeScreen() {
 
           {/* HELP MODE — replaces check-in circle when ✋ Help tab is active */}
           {isReachOutMode && user ? (
-            <HelpModeScreen userId={user.id} />
+            <HelpModeScreen userId={user.id} onRequestSent={handleHelpRequestSent} />
           ) : null}
 
           {/* MAIN CHECK-IN */}
@@ -2465,12 +2639,6 @@ export default function HomeScreen() {
                       ]}>{checkedInMsgEmoji}</Text>
                     )}
                   </View>
-                  {streak > 0 && (
-                    <View style={styles.streakBadge} pointerEvents="none">
-                      <Ionicons name="flame" size={12} color={BaseColors.warning} />
-                      <Text style={styles.streakBadgeText}>{streak}</Text>
-                    </View>
-                  )}
                 </TouchableOpacity>
               </Animated.View>
             </View>
@@ -2945,7 +3113,7 @@ export default function HomeScreen() {
 }
 
 // ==================== STYLES ====================
-const GROUP_GAP = 10;
+const GROUP_GAP = 16;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -3084,15 +3252,15 @@ const styles = StyleSheet.create({
   },
   simpleWellnessGroup: {
     paddingHorizontal: SCREEN_PADDING.horizontal,
-    marginTop: -2,
-    marginBottom: 12,
+    marginTop: 2,
+    marginBottom: 18,
   },
   simpleWellnessGroupCompact: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   simpleWellnessGroupTight: {
-    marginTop: -6,
-    marginBottom: 6,
+    marginTop: -3,
+    marginBottom: 9,
   },
   simpleWellnessCard: {
     alignItems: 'center',
@@ -3624,23 +3792,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  // Small, non-ticking badge replacing the old countdown text. Only shown
-  // when there's an actual streak to report — doesn't update every second.
+  // Non-ticking badge replacing the old countdown text. Lives next to the
+  // user's name in the header now, not overlapping the check-in circle —
+  // it used to be absolutely positioned over the circle's corner, which
+  // read as messy/overlapping the ring. Solid white pill (not a translucent
+  // tint of the same warning color) so it stays readable against the photo
+  // background behind the header.
   streakBadge: {
-    position: 'absolute',
-    top: '12%',
-    right: '6%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    borderRadius: 10,
-    paddingHorizontal: 7,
-    paddingVertical: 3,
+    gap: 5,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+      },
+      android: { elevation: 3 },
+    }),
   },
   streakBadgeText: {
-    fontSize: iosFontSize(11),
-    fontWeight: '700',
+    fontSize: iosFontSize(15),
+    fontWeight: '800',
     color: BaseColors.warning,
   },
   // Live preview of the mood/status you're about to check in with — fills
@@ -3812,7 +3992,7 @@ const styles = StyleSheet.create({
   // pinned above the tab bar.
   simpleStatusDockPinned: {
     marginTop: 0,
-    paddingBottom: 4,
+    paddingBottom: 14,
   },
   simpleStatusDockEnhanced: {
     paddingTop: 6,
@@ -3822,7 +4002,7 @@ const styles = StyleSheet.create({
   },
   simpleStatusDockUltra: {
     paddingTop: 4,
-    paddingBottom: 0,
+    paddingBottom: 8,
   },
   simpleStatusDockHandle: {
     alignSelf: 'center',
@@ -3844,7 +4024,7 @@ const styles = StyleSheet.create({
   },
   simpleCheckinInfoRow: {
     alignSelf: 'center',
-    marginTop: 18,
+    marginTop: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -3855,10 +4035,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   simpleCheckinInfoRowCompact: {
-    marginTop: 12,
+    marginTop: 16,
   },
   simpleCheckinInfoRowUltra: {
-    marginTop: 8,
+    marginTop: 11,
   },
   simpleCheckinInfoIcon: {
     flexShrink: 0,

@@ -194,7 +194,13 @@ serve(async (req) => {
       if (pushToken?.expo_push_token && Expo.isExpoPushToken(pushToken.expo_push_token)) {
         expoMessages.push({
           to: pushToken.expo_push_token,
-          sound: 'default',
+          // iOS reads `sound` directly from this payload — help_alert.caf is
+          // bundled in ios/ (restored from git history; it existed from the
+          // very first version of this feature but had never actually been
+          // wired up here). Android ignores this field once a channelId is
+          // set below; its sound/urgency comes entirely from that channel's
+          // own config (see lib/notifications/core.ts).
+          sound: 'help_alert.caf',
           title: notifTitle,
           body: notifBody,
           data: {
@@ -203,7 +209,12 @@ serve(async (req) => {
             senderName,
             screen: 'activity',
           },
-          channelId: 'default',
+          // help_alerts_v5: MAX importance + distinct vibration + bypasses
+          // Do Not Disturb + custom sound (help_alert.mp3) on Android (see
+          // lib/notifications/core.ts for the full channel definition and
+          // why it's _v5, not _v4/_v3/'default' — channels are immutable
+          // once created, so adding the sound required yet another rename).
+          channelId: 'help_alerts_v5',
           priority: 'high',
         })
       } else if (pushToken?.aliyun_device_id) {

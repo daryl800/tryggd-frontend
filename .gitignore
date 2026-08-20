@@ -42,6 +42,18 @@ app-example
 /ios
 /android
 
+# Native build output/caches inside local Expo modules (e.g.
+# modules/*/android/build, .gradle/) — these aren't scoped by the /android
+# rule above since that's anchored to the repo root only, not nested module
+# paths. Caught these accidentally staged once; keeping this so it can't
+# happen again.
+**/android/build/
+**/android/.gradle/
+
 google-services.json
 **/google-services.json
+
+# Local Claude Code tooling state — not app source, shouldn't be shared via
+# the repo.
+.claude/
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-de/strings.xml — German -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">Heute eingecheckt</string>
+    <string name="tryggd_widget_check_in">Einchecken</string>
+    <string name="tryggd_widget_check_in_hint">Öffnet Tryggd zum Einchecken</string>
+    <string name="tryggd_widget_asked_to_send_money">Ich wurde gebeten, Geld zu senden</string>
+    <string name="tryggd_widget_money_help_hint">Öffnet Tryggds Betrugswarnbildschirm</string>
+    <string name="tryggd_widget_open_to_connect">Öffne Tryggd, um dich mit deinem Vertrauenskreis zu verbinden.</string>
+    <string name="tryggd_widget_open_tryggd">Tryggd öffnen</string>
+    <string name="tryggd_widget_description">Checke ein, oder lass deinen Kreis wissen, dass etwas nicht stimmt.</string>
+    <string name="tryggd_widget_check_in_today">Heutiger Check-in</string>
+    <string name="tryggd_widget_please_check_in">Bitte einchecken!</string>
+    <string name="tryggd_widget_last_checked_in">Zuletzt eingecheckt</string>
+    <string name="tryggd_widget_last_sent">Zuletzt gesendet</string>
+    <string name="tryggd_widget_send_money_alert">Geldsendungs-Warnung!</string>
+</resources>

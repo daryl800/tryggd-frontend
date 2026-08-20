@@ -11,6 +11,16 @@ import React, {
 import * as Notifications from 'expo-notifications';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+// NOTE: this context used to also push a trusted-circle-status snapshot to
+// the widget bridge (buildWidgetSnapshot/setWidgetSnapshot) and fetch a
+// "latest activity" notification just for that purpose. Both were removed
+// when the widget's product purpose changed from "trusted-circle status
+// dashboard" to "action surface showing only the current user's own
+// check-in state" — see docs/home-screen-widget.md. The widget push now
+// happens in app/(tabs)/index.tsx itself, right where the user's own
+// check-in state is already tracked, not here. This context is back to
+// being purely about trusted-circle data for Home/Activity — the widget
+// has no dependency on it at all anymore.
 
 export type ContactCheckinProfile = {
   display_name: string | null;

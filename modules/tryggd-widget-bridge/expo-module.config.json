@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["TryggdWidgetBridgeModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.tryggdwidgetbridge.TryggdWidgetBridgeModule"]
+  }
+}

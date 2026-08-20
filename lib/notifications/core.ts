@@ -114,7 +114,63 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             return false;
         }
 
-        // ── Step 1: Check / request OS notification permission ───────────────
+        // ── Step 1: Android notification channels — created UNCONDITIONALLY,
+        // before the permission check below, and every time this function
+        // runs (every login/app launch). Channels are just configuration;
+        // Android doesn't require notification permission to create one —
+        // only to actually show/sound a notification on it. This used to run
+        // AFTER the permission-gate return below, which meant a user who
+        // hadn't granted permission yet (or hadn't re-run this flow since
+        // granting it via OS Settings) could have a push arrive targeting a
+        // channel that didn't exist on their device yet — Android silently
+        // drops those instead of falling back to anything. That gap is what
+        // caused 'help_alerts_v3' targeting to be abandoned for 'default'
+        // (see send-help-request edge function history). Moving channel
+        // creation ahead of the permission gate closes that gap.
+        //
+        // help_alerts_v5: 'sound' points at help_alert.mp3, bundled into
+        // android/app/src/main/res/raw/ by
+        // plugins/withAndroidNotificationSound.js on every prebuild — the
+        // Android counterpart of iOS's help_alert.caf (see
+        // plugins/withIosNotificationSound.js and
+        // supabase/functions/send-help-request for the matching `sound`
+        // field on the push payload). Renamed from _v4 to _v5 because
+        // Android channels are IMMUTABLE once created — a device that
+        // already has a v4 channel (MAX importance + vibration, but no
+        // sound) won't pick up a sound added under that same ID, so a fresh
+        // ID is required to actually change behavior for existing installs.
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('default', {
+                name: 'default',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#5FA893',
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+            });
+            await Notifications.setNotificationChannelAsync('contact-checkins', {
+                name: 'Contact Check-ins',
+                importance: Notifications.AndroidImportance.HIGH,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#5FA893',
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+            });
+            await Notifications.setNotificationChannelAsync('help_alerts_v5', {
+                name: 'Help Alerts',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 100, 100, 500],
+                lightColor: '#EF4444',
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                bypassDnd: true,
+                // expo-notifications resolves this against a raw resource
+                // by basename (extension optional/ignored) — see
+                // SoundResolver.java. Falls back to the system default
+                // sound if the resource isn't found, so this is safe even
+                // if the plugin somehow didn't run.
+                sound: 'help_alert.mp3',
+            });
+        }
+
+        // ── Step 2: Check / request OS notification permission ───────────────
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
         if (existingStatus !== 'granted') {
@@ -123,7 +179,7 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
         }
         const permissionGranted = finalStatus === 'granted';
 
-        // ── Step 2: Early DB write — persists even if Expo token fails ────────
+        // ── Step 3: Early DB write — persists even if Expo token fails ────────
         // Records permission status so we can diagnose missing tokens and guide
         // users to enable notifications. Aliyun device ID is saved separately by
         // bindAliyunAccount (which has the proper initialized guard).
@@ -142,33 +198,7 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             return false;
         }
 
-        // ── Step 4: Android notification channels ─────────────────────────────
-        if (Platform.OS === 'android') {
-            await Notifications.setNotificationChannelAsync('default', {
-                name: 'default',
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#5FA893',
-                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-            });
-            await Notifications.setNotificationChannelAsync('contact-checkins', {
-                name: 'Contact Check-ins',
-                importance: Notifications.AndroidImportance.HIGH,
-                vibrationPattern: [0, 250, 250, 250],
-                lightColor: '#5FA893',
-                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-            });
-            await Notifications.setNotificationChannelAsync('help_alerts_v3', {
-                name: 'Help Alerts',
-                importance: Notifications.AndroidImportance.MAX,
-                vibrationPattern: [0, 100, 100, 500],
-                lightColor: '#EF4444',
-                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
-                bypassDnd: true,
-            });
-        }
-
-        // ── Step 5: Expo push token — 10 s timeout so China users don't block ──
+        // ── Step 4: Expo push token — 10 s timeout so China users don't block ──
         let expoToken: string | null = null;
         try {
             const tokenData = await Promise.race([
@@ -184,9 +214,9 @@ export async function registerAndSavePushToken(userId: string): Promise<boolean>
             console.warn('⚠️ Expo push token unavailable (timeout or no Google Play):', e);
         }
 
-        // ── Step 6: Second DB write — add Expo token + notification prefs ──────
+        // ── Step 5: Second DB write — add Expo token + notification prefs ──────
         // Uses upsert (not update) so a row is always created even if the early
-        // upsert in Step 2 failed silently (e.g. schema/RLS error).
+        // upsert in Step 3 failed silently (e.g. schema/RLS error).
         if (expoToken) {
             const contactCheckInPref = await AsyncStorage.getItem(STORAGE_KEYS.CONTACT_CHECK_IN);
             const isEnabled = contactCheckInPref !== 'false';

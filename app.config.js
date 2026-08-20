@@ -1,4 +1,13 @@
 // app.config.js
+const withAndroidWidget = require("./plugins/withAndroidWidget");
+const withIosNotificationSound = require("./plugins/withIosNotificationSound");
+const withAndroidNotificationSound = require("./plugins/withAndroidNotificationSound");
+
+// Shared with modules/tryggd-widget-bridge/ios/TryggdWidgetBridgeModule.swift
+// and targets/widget/expo-target.config.js — all three MUST match. See
+// docs/home-screen-widget.md.
+const WIDGET_APP_GROUP_ID = "group.com.marcustechnology.tryggd.widget";
+
 export default ({ config }) => ({
     ...config,
 
@@ -21,8 +30,17 @@ export default ({ config }) => ({
 
     ios: {
         supportsTablet: true,
+        // REQUIRED before the widget target will build/sign — see
+        // docs/home-screen-widget.md "Apple configuration steps". Find
+        // this in Xcode under Signing & Capabilities, or
+        // developer.apple.com/account under Membership.
+        appleTeamId: process.env.APPLE_TEAM_ID,
         entitlements: {
             "aps-environment": "production",
+            // Lets the main app and the widget extension (targets/widget)
+            // read/write the same shared UserDefaults — see
+            // modules/tryggd-widget-bridge and docs/home-screen-widget.md.
+            "com.apple.security.application-groups": [WIDGET_APP_GROUP_ID],
         },
         infoPlist: {
             UIBackgroundModes: ["remote-notification"],
@@ -119,6 +137,26 @@ export default ({ config }) => ({
                 },
             },
         ],
+        // iOS "My Circle" widget — generates/links the targets/widget
+        // Xcode extension target on every prebuild. See
+        // docs/home-screen-widget.md.
+        "@bacons/apple-targets",
+        // Android "My Circle" widget — see plugins/withAndroidWidget.js
+        // and docs/home-screen-widget.md.
+        withAndroidWidget,
+        // Bundles help_alert.caf into the iOS app target and registers it
+        // in Xcode's Copy Bundle Resources build phase on every prebuild —
+        // required for the `sound: 'help_alert.caf'` push payload field
+        // (see supabase/functions/send-help-request) to actually play a
+        // custom sound instead of silently falling back to the system
+        // default. See plugins/withIosNotificationSound.js for the full
+        // backstory.
+        withIosNotificationSound,
+        // Android counterpart — bundles help_alert.mp3 into
+        // android/app/src/main/res/raw/ so the help_alerts_v5 channel (see
+        // lib/notifications/core.ts) can point its `sound` at it instead of
+        // the system default. See plugins/withAndroidNotificationSound.js.
+        withAndroidNotificationSound,
     ],
 
     experiments: {

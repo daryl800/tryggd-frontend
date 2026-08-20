@@ -1,6 +1,6 @@
 // contexts/AuthContext.tsx
 import { Session } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import {
     FREE_CONTACT_LIMIT,
@@ -10,6 +10,7 @@ import {
 } from "../lib/entitlements/capabilities";
 import { deriveDisplayName, isLikelyGeneratedDisplayName } from "../lib/profile/displayName";
 import { supabase } from "../lib/supabase";
+import { clearWidgetSnapshot } from "tryggd-widget-bridge";
 
 type Profile = {
     id: string;
@@ -57,6 +58,11 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [user, setUser] = useState<any | null>(null);
+    // Tracks the last user id we saw, purely to detect an account switch
+    // so the Home Screen/Lock Screen widgets' own-check-in-state snapshot
+    // (WidgetOwnState — see lib/widget/types.ts) never leaks across
+    // accounts — see the auth-state-change handler further down.
+    const lastWidgetUserIdRef = useRef<string | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [plan, setPlan] = useState<UserPlan>(DEFAULT_PLAN);
     const [contactLimit, setContactLimit] = useState<number>(FREE_CONTACT_LIMIT);
@@ -178,6 +184,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setInitialized(true);
+            lastWidgetUserIdRef.current = session?.user?.id ?? null;
         });
 
         // Listen for auth changes
@@ -198,6 +205,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 if (event === "SIGNED_OUT") {
                     setProfile(null);
                 }
+
+                // Widgets: never let one account's own-check-in-state
+                // snapshot (WidgetOwnState — lib/widget/types.ts) linger
+                // under a different (or no) account. Covers both an
+                // explicit sign-out and switching accounts without one in
+                // between (e.g. a magic-link sign-in over an existing
+                // session) — the second case has no dedicated auth event,
+                // so it's detected here by the user id actually changing.
+                // app/(tabs)/index.tsx pushes the new account's own
+                // snapshot the moment it has fresh check-in state to push
+                // (its fetchLastCheckin effect, right after this same
+                // sign-in); this handler only needs to make sure the
+                // previous account's snapshot never bridges the gap until
+                // that happens.
+                const nextUserId = session?.user?.id ?? null;
+                const previousUserId = lastWidgetUserIdRef.current;
+                if (event === "SIGNED_OUT" || (previousUserId && nextUserId !== previousUserId)) {
+                    clearWidgetSnapshot();
+                }
+                lastWidgetUserIdRef.current = nextUserId;
             }
         );
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	targets/widget/Info.plist
+
+	This is the one key WidgetKit actually needs to know this extension
+	provides a Home Screen widget — without it, the extension builds and
+	embeds fine but never appears in the widget gallery (found the hard
+	way; see docs/home-screen-widget.md). GENERATE_INFOPLIST_FILE=YES is
+	also set on the widget target's build settings, so Xcode merges the
+	INFOPLIST_KEY_* build settings (display name, etc.) into this file at
+	build time rather than requiring everything to be hand-written here.
+	-->
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.widgetkit-extension</string>
+	</dict>
+</dict>
+</plist>

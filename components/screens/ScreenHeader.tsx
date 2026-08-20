@@ -12,6 +12,11 @@ interface ScreenHeaderProps extends ViewProps {
     subtitle?: string;
     iconName?: keyof typeof Ionicons.glyphMap;
     rightElement?: React.ReactNode;
+    // Sits to the right of the title itself (the name line), not the
+    // greeting line above it — separate from rightElement so callers can
+    // use both independently (e.g. a streak badge next to the name, plus
+    // debug buttons next to the greeting).
+    titleRightElement?: React.ReactNode;
     showGreetingInLine?: boolean;
     // New optional props for title scaling
     titleNumberOfLines?: number;
@@ -30,6 +35,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
     subtitle,
     iconName = 'pulse',
     rightElement,
+    titleRightElement,
     showGreetingInLine = false,
     titleNumberOfLines = 1,
     titleAdjustsFontSizeToFit = true,
@@ -58,15 +64,18 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                         </View>
                         {rightElement}
                     </View>
-                    <Text
-                        style={[styles.titleLarge, titleColor ? { color: titleColor } : null]}
-                        numberOfLines={titleNumberOfLines}
-                        adjustsFontSizeToFit={titleAdjustsFontSizeToFit}
-                        minimumFontScale={titleMinimumFontScale}
-                        maxFontSizeMultiplier={1.2}
-                    >
-                        {title}
-                    </Text>
+                    <View style={styles.titleRow}>
+                        <Text
+                            style={[styles.titleLarge, styles.titleLargeFlex, titleColor ? { color: titleColor } : null]}
+                            numberOfLines={titleNumberOfLines}
+                            adjustsFontSizeToFit={titleAdjustsFontSizeToFit}
+                            minimumFontScale={titleMinimumFontScale}
+                            maxFontSizeMultiplier={1.2}
+                        >
+                            {title}
+                        </Text>
+                        {titleRightElement}
+                    </View>
                 </>
             ) : (
                 // Layout for other screens: Title with icon, optional subtitle
@@ -148,6 +157,14 @@ const styles = StyleSheet.create({
         flexShrink: 1,
         minWidth: 0,
     },
+    // Row so an optional element (e.g. a streak badge) can sit to the right
+    // of the name itself, right-aligned, on its own line — separate from
+    // greetingRow above, which holds the "Good morning" line + rightElement.
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     titleLarge: {
         fontSize: iosFontSize(34),
         fontWeight: '800',
@@ -162,5 +179,11 @@ const styles = StyleSheet.create({
                 textAlignVertical: 'center',
             },
         }),
+    },
+    // Lets the name shrink/ellipsize instead of pushing titleRightElement
+    // off-screen when the display name is long.
+    titleLargeFlex: {
+        flexShrink: 1,
+        marginRight: 8,
     },
 });

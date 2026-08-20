@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  plugins/android-widget/res/values/strings.xml (English / default)
+
+  Widget-specific strings, merged into android/app/src/main/res/values/strings.xml
+  by plugins/withAndroidWidget.js on every prebuild. Keys are read via
+  context.getString(R.string.<name>) in TryggdWidget.kt — see that file's
+  header comment for the "language-neutral snapshot, native localization
+  tables" design (mirrors targets/widget/*.lproj/Localizable.strings on iOS).
+-->
+<resources>
+    <string name="tryggd_widget_checked_in_today">Checked In Today</string>
+    <string name="tryggd_widget_check_in">Check In</string>
+    <string name="tryggd_widget_check_in_hint">Opens Tryggd to check in</string>
+    <string name="tryggd_widget_asked_to_send_money">Asked to Send Money</string>
+    <string name="tryggd_widget_money_help_hint">Opens Tryggd\'s anti-fraud alert screen</string>
+    <string name="tryggd_widget_open_to_connect">Open Tryggd to connect with your trusted circle.</string>
+    <string name="tryggd_widget_open_tryggd">Open Tryggd</string>
+    <string name="tryggd_widget_description">Check in, or let your circle know something\'s wrong.</string>
+    <string name="tryggd_widget_check_in_today">Check-in Today</string>
+    <string name="tryggd_widget_please_check_in">Please check-in!</string>
+    <string name="tryggd_widget_last_checked_in">Last checked-in</string>
+    <string name="tryggd_widget_last_sent">Last sent</string>
+    <string name="tryggd_widget_send_money_alert">Send Money Alert!</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-no/strings.xml — Norwegian (Bokmål), ISO "no" qualifier -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">Sjekket inn i dag</string>
+    <string name="tryggd_widget_check_in">Sjekk inn</string>
+    <string name="tryggd_widget_check_in_hint">Åpner Tryggd for å sjekke inn</string>
+    <string name="tryggd_widget_asked_to_send_money">Bedt om å sende penger</string>
+    <string name="tryggd_widget_money_help_hint">Åpner Tryggds varslingsskjerm for svindel</string>
+    <string name="tryggd_widget_open_to_connect">Åpne Tryggd for å koble deg til din betrodde krets.</string>
+    <string name="tryggd_widget_open_tryggd">Åpne Tryggd</string>
+    <string name="tryggd_widget_description">Sjekk inn, eller la kretsen din vite at noe er galt.</string>
+    <string name="tryggd_widget_check_in_today">Dagens Innsjekking</string>
+    <string name="tryggd_widget_please_check_in">Sjekk inn!</string>
+    <string name="tryggd_widget_last_checked_in">Sist sjekket inn</string>
+    <string name="tryggd_widget_last_sent">Sist sendt</string>
+    <string name="tryggd_widget_send_money_alert">Send Penger-varsel!</string>
+</resources>

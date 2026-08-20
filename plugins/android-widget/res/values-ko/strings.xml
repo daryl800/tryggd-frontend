@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-ko/strings.xml — Korean -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">오늘 체크인 완료</string>
+    <string name="tryggd_widget_check_in">체크인</string>
+    <string name="tryggd_widget_check_in_hint">Tryggd를 열어 체크인합니다</string>
+    <string name="tryggd_widget_asked_to_send_money">돈을 보내달라는 요청을 받았어요</string>
+    <string name="tryggd_widget_money_help_hint">Tryggd의 사기 방지 알림 화면을 엽니다</string>
+    <string name="tryggd_widget_open_to_connect">Tryggd를 열어 신뢰하는 서클과 연결하세요.</string>
+    <string name="tryggd_widget_open_tryggd">Tryggd 열기</string>
+    <string name="tryggd_widget_description">체크인하거나, 문제가 있다는 걸 서클에 알려주세요.</string>
+    <string name="tryggd_widget_check_in_today">오늘의 체크인</string>
+    <string name="tryggd_widget_please_check_in">체크인해 주세요!</string>
+    <string name="tryggd_widget_last_checked_in">마지막 체크인</string>
+    <string name="tryggd_widget_last_sent">마지막 전송</string>
+    <string name="tryggd_widget_send_money_alert">송금 알림!</string>
+</resources>

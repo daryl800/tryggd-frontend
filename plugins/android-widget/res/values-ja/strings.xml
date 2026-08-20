@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-ja/strings.xml — Japanese -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">本日チェックイン済み</string>
+    <string name="tryggd_widget_check_in">チェックイン</string>
+    <string name="tryggd_widget_check_in_hint">Tryggdを開いてチェックインします</string>
+    <string name="tryggd_widget_asked_to_send_money">お金を送るよう頼まれました</string>
+    <string name="tryggd_widget_money_help_hint">Tryggdの詐欺防止アラート画面を開きます</string>
+    <string name="tryggd_widget_open_to_connect">Tryggdを開いて信頼できる仲間とつながりましょう。</string>
+    <string name="tryggd_widget_open_tryggd">Tryggdを開く</string>
+    <string name="tryggd_widget_description">チェックインするか、何か問題があることを仲間に知らせましょう。</string>
+    <string name="tryggd_widget_check_in_today">本日のチェックイン</string>
+    <string name="tryggd_widget_please_check_in">チェックインしてください！</string>
+    <string name="tryggd_widget_last_checked_in">前回のチェックイン</string>
+    <string name="tryggd_widget_last_sent">前回の送信</string>
+    <string name="tryggd_widget_send_money_alert">送金アラート！</string>
+</resources>

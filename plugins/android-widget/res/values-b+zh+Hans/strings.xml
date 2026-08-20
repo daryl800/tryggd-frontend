@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-b+zh+Hans/strings.xml — Simplified Chinese (BCP-47 script qualifier) -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">今日已打卡</string>
+    <string name="tryggd_widget_check_in">打卡</string>
+    <string name="tryggd_widget_check_in_hint">打开 Tryggd 进行打卡</string>
+    <string name="tryggd_widget_asked_to_send_money">有人要我付钱</string>
+    <string name="tryggd_widget_money_help_hint">打开 Tryggd 的防诈骗警报页面</string>
+    <string name="tryggd_widget_open_to_connect">打开 Tryggd，与你的信任圈联系。</string>
+    <string name="tryggd_widget_open_tryggd">打开 Tryggd</string>
+    <string name="tryggd_widget_description">打卡，或告诉你的圈子有情况不对。</string>
+    <string name="tryggd_widget_check_in_today">今日打卡</string>
+    <string name="tryggd_widget_please_check_in">请打卡！</string>
+    <string name="tryggd_widget_last_checked_in">上次打卡</string>
+    <string name="tryggd_widget_last_sent">上次发送</string>
+    <string name="tryggd_widget_send_money_alert">转账警报！</string>
+</resources>

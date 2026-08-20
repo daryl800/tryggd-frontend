@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-fi/strings.xml — Finnish -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">Kirjautunut sisään tänään</string>
+    <string name="tryggd_widget_check_in">Kirjaudu</string>
+    <string name="tryggd_widget_check_in_hint">Avaa Tryggdin kirjautumista varten</string>
+    <string name="tryggd_widget_asked_to_send_money">Minua pyydettiin lähettämään rahaa</string>
+    <string name="tryggd_widget_money_help_hint">Avaa Tryggdin petoshälytysnäytön</string>
+    <string name="tryggd_widget_open_to_connect">Avaa Tryggd muodostaaksesi yhteyden luotettuun piiriisi.</string>
+    <string name="tryggd_widget_open_tryggd">Avaa Tryggd</string>
+    <string name="tryggd_widget_description">Kirjaudu sisään tai kerro piirillesi, että jokin on vialla.</string>
+    <string name="tryggd_widget_check_in_today">Päivän Kirjautuminen</string>
+    <string name="tryggd_widget_please_check_in">Kirjaudu sisään!</string>
+    <string name="tryggd_widget_last_checked_in">Viimeksi kirjautunut</string>
+    <string name="tryggd_widget_last_sent">Viimeksi lähetetty</string>
+    <string name="tryggd_widget_send_money_alert">Rahahälytys!</string>
+</resources>

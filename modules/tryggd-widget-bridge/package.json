@@ -1,0 +1,9 @@
+{
+  "name": "tryggd-widget-bridge",
+  "version": "1.0.0",
+  "description": "Local Expo module: writes the Home Screen widget snapshot to shared native storage and requests a widget refresh. Not published — lives in modules/ and is autolinked locally. See docs/home-screen-widget.md.",
+  "main": "index.ts",
+  "types": "index.ts",
+  "private": true,
+  "license": "UNLICENSED"
+}

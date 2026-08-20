@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  plugins/android-widget/res/xml/tryggd_widget_info.xml
+
+  AppWidgetProviderInfo for Tryggd's action widget (Check In / Asked to
+  Send Money). Copied into android/app/src/main/res/xml/ by
+  plugins/withAndroidWidget.js on every prebuild — edit here, not in the
+  generated android/ folder.
+
+  updatePeriodMillis is 0 (disabled) on purpose: refreshes are driven by
+  the app calling the widget bridge (modules/tryggd-widget-bridge) whenever
+  the user's own check-in state actually changes, not by polling. Android
+  may still occasionally refresh the widget on its own for other reasons —
+  see docs/home-screen-widget.md "Refresh Behaviour" and the
+  isCheckedInNow() comment in TryggdWidget.kt for what that means for the
+  daily reset.
+
+  minWidth/minHeight bumped up from the old V1 "My Circle" list widget's
+  110x40dp: this widget's content is a title row plus two full-width
+  action buttons (each with their own vertical padding), which needs
+  meaningfully more room than a single compact contact row did.
+
+  minHeight/targetCellHeight bumped AGAIN for the V2.2 "BIG" redesign
+  (BigCheckInPrompt/BigCheckedInStatus/BigMoneyAlertButton in
+  TryggdWidget.kt): that pass added a big emoji line to every row plus a
+  second "Last sent" line on the money button, which needs real height —
+  content this tall was overflowing the old 100dp/2-cell default and
+  getting clipped by the launcher (reported: title + check-in box visible,
+  money box's label/last-sent lines cut off entirely). 190dp/3 cells is
+  sized to fit title row + both BIG boxes with their padding; maxResizeHeight
+  raised to match so the widget doesn't clip when a user drags it back down
+  toward the old smaller size either.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="140dp"
+    android:minHeight="190dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="3"
+    android:maxResizeWidth="250dp"
+    android:maxResizeHeight="260dp"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@android:layout/simple_list_item_1"
+    android:description="@string/tryggd_widget_description"
+    android:previewImage="@mipmap/ic_launcher" />

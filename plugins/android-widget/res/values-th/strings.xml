@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-th/strings.xml — Thai -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">เช็กอินวันนี้แล้ว</string>
+    <string name="tryggd_widget_check_in">เช็กอิน</string>
+    <string name="tryggd_widget_check_in_hint">เปิด Tryggd เพื่อเช็กอิน</string>
+    <string name="tryggd_widget_asked_to_send_money">ถูกขอให้จ่ายเงิน</string>
+    <string name="tryggd_widget_money_help_hint">เปิดหน้าจอแจ้งเตือนการฉ้อโกงของ Tryggd</string>
+    <string name="tryggd_widget_open_to_connect">เปิด Tryggd เพื่อเชื่อมต่อกับกลุ่มคนที่คุณไว้ใจ</string>
+    <string name="tryggd_widget_open_tryggd">เปิด Tryggd</string>
+    <string name="tryggd_widget_description">เช็กอิน หรือแจ้งกลุ่มของคุณว่ามีบางอย่างผิดปกติ</string>
+    <string name="tryggd_widget_check_in_today">เช็กอินวันนี้</string>
+    <string name="tryggd_widget_please_check_in">กรุณาเช็กอิน!</string>
+    <string name="tryggd_widget_last_checked_in">เช็กอินล่าสุด</string>
+    <string name="tryggd_widget_last_sent">ส่งล่าสุด</string>
+    <string name="tryggd_widget_send_money_alert">แจ้งเตือนส่งเงิน!</string>
+</resources>

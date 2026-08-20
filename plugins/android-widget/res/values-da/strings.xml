@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- plugins/android-widget/res/values-da/strings.xml — Danish -->
+<resources>
+    <string name="tryggd_widget_checked_in_today">Tjekket ind i dag</string>
+    <string name="tryggd_widget_check_in">Tjek ind</string>
+    <string name="tryggd_widget_check_in_hint">Åbner Tryggd, så du kan tjekke ind</string>
+    <string name="tryggd_widget_asked_to_send_money">Bedt om at sende penge</string>
+    <string name="tryggd_widget_money_help_hint">Åbner Tryggds skærm til svindelalarm</string>
+    <string name="tryggd_widget_open_to_connect">Åbn Tryggd for at oprette forbindelse til din betroede kreds.</string>
+    <string name="tryggd_widget_open_tryggd">Åbn Tryggd</string>
+    <string name="tryggd_widget_description">Tjek ind, eller fortæl din kreds, at noget er galt.</string>
+    <string name="tryggd_widget_check_in_today">Dagens Tjek Ind</string>
+    <string name="tryggd_widget_please_check_in">Tjek ind, tak!</string>
+    <string name="tryggd_widget_last_checked_in">Sidst tjekket ind</string>
+    <string name="tryggd_widget_last_sent">Sidst sendt</string>
+    <string name="tryggd_widget_send_money_alert">Send Penge-alarm!</string>
+</resources>

@@ -31,6 +31,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import { iosFontSize } from '@/constants/typography';
 import { isLocalAvatarUri } from '@/lib/profile/avatarStorage';
+import { computeRecencyStatus } from '@/lib/recencyStatus';
 
 type Activity = {
   user_id: string;
@@ -1015,52 +1016,14 @@ export default function ActivityScreen() {
       setAvatarLoadFailed(false);
     }, [displayAvatarUrl]);
 
+    // Moved to lib/recencyStatus.ts (computeRecencyStatus) so the widget
+    // snapshot builder (lib/widget/snapshot.ts) can use this exact same
+    // day-bucketed definition of recency instead of an independently
+    // invented one — see docs/home-screen-widget.md for the bug that
+    // caused (widget and Activity screen disagreeing about the same
+    // contact's status).
     const getFallbackRecencyStatus = useCallback((): NonNullable<Activity['recency_status']> => {
-      if (!timestamp) {
-        return 'none';
-      }
-
-      try {
-        const lastCheckIn = new Date(timestamp);
-        const now = new Date();
-
-        const lastDateStr = lastCheckIn.toISOString().split('T')[0];
-        const todayStr = now.toISOString().split('T')[0];
-
-        const lastHour = lastCheckIn.getUTCHours();
-        const nowHour = now.getUTCHours();
-
-        let adjustedLastDate = lastDateStr;
-        if (lastHour >= 23) {
-          const nextDay = new Date(lastCheckIn);
-          nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-          adjustedLastDate = nextDay.toISOString().split('T')[0];
-        }
-
-        let adjustedToday = todayStr;
-        if (nowHour >= 23) {
-          const nextDay = new Date(now);
-          nextDay.setUTCDate(nextDay.getUTCDate() + 1);
-          adjustedToday = nextDay.toISOString().split('T')[0];
-        }
-
-        if (adjustedLastDate === adjustedToday) {
-          return 'today';
-        }
-
-        const yesterday = new Date(adjustedToday);
-        const yesterdayParts = adjustedToday.split('-').map(Number);
-        yesterday.setUTCFullYear(yesterdayParts[0], yesterdayParts[1] - 1, yesterdayParts[2] - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-        if (adjustedLastDate === yesterdayStr) {
-          return 'yesterday';
-        }
-
-        return 'older';
-      } catch {
-        return 'none';
-      }
+      return computeRecencyStatus(timestamp);
     }, [timestamp]);
 
     const resolvedRecencyStatus = recency_status || getFallbackRecencyStatus();
